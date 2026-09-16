@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
@@ -67,6 +68,7 @@ class _ProjectBody extends ConsumerWidget {
   List<({String label, Widget Function() builder})> _tabsFor(Project project) {
     return [
       (label: 'Overview', builder: () => ProjectOverviewTab(project: project)),
+      (label: 'Issues', builder: () => ProjectIssuesTab(projectId: project.id)),
       if (!project.emptyRepo)
         (
           label: 'Files',

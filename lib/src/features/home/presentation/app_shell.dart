@@ -46,6 +46,13 @@ const navDestinations = <NavDestination>[
   ),
   NavDestination(
     branch: 2,
+    path: '/issues',
+    icon: Icons.radio_button_unchecked,
+    selectedIcon: Icons.adjust,
+    label: 'Issues',
+  ),
+  NavDestination(
+    branch: 3,
     path: '/settings',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,
