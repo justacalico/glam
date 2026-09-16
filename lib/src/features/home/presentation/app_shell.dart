@@ -53,6 +53,13 @@ const navDestinations = <NavDestination>[
   ),
   NavDestination(
     branch: 3,
+    path: '/merge-requests',
+    icon: Icons.merge_type_outlined,
+    selectedIcon: Icons.merge,
+    label: 'MRs',
+  ),
+  NavDestination(
+    branch: 4,
     path: '/settings',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,

@@ -8,6 +8,8 @@ import 'package:glam/src/features/home/presentation/app_shell.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
+import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
+import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
@@ -103,6 +105,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                           iid: int.parse(state.pathParameters['iid']!),
                         ),
                       ),
+                      GoRoute(
+                        path: 'mrs/:iid',
+                        builder: (context, state) => MrDetailScreen(
+                          projectId: state.pathParameters['id']!,
+                          iid: int.parse(state.pathParameters['iid']!),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -114,6 +123,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.issues,
                 builder: (context, state) => const IssuesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.mergeRequests,
+                builder: (context, state) => const MergeRequestsScreen(),
               ),
             ],
           ),
