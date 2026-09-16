@@ -135,4 +135,15 @@ void main() {
     expect(hunks, hasLength(2));
     expect(hunks.last.lines.last, '}');
   });
+
+  test('compareProvider loads commits and diffs', () async {
+    adapter.get('/projects/42/repository/compare', fixtureJson('compare'));
+
+    const loc = (project: 42, from: 'main', to: 'dev');
+    final result = await container.read(compareProvider(loc).future);
+
+    expect(result.commits, hasLength(1));
+    expect(result.diffs, hasLength(2));
+    expect(result.diffs.first.newPath, 'lib/main.dart');
+  });
 }

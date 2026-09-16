@@ -149,6 +149,22 @@ void main() {
       expect(c.title, 'Sanitize for network graph');
     });
 
+    test('compare decodes commits, diffs, and flags', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/compare', fixtureJson('compare'));
+      final repo = RepositoryRepository(client);
+
+      final result = await repo.compare(42, 'main', 'feature/x');
+
+      expect(result.commits.single.shortId, '61049424');
+      expect(result.diffs, hasLength(2));
+      expect(result.compareSameRef, isFalse);
+      expect(result.compareTimeout, isFalse);
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['from'], 'main');
+      expect(query['to'], 'feature/x');
+    });
+
     test('commitDiff decodes change entries', () async {
       final (client, adapter) = testClient();
       adapter.get(
