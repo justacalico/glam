@@ -21,7 +21,7 @@ class ScheduleVariable extends Equatable {
   final String variableType;
 
   @override
-  List<Object?> get props => [key, value];
+  List<Object?> get props => [key, value, variableType];
 }
 
 /// A scheduled pipeline (`/projects/:id/pipeline_schedules`).
@@ -82,5 +82,16 @@ class PipelineSchedule extends Equatable {
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
   @override
-  List<Object?> get props => [id, active];
+  List<Object?> get props => [
+    id,
+    description,
+    ref,
+    cron,
+    cronTimezone,
+    nextRunAt,
+    active,
+    owner,
+    lastPipelineStatus,
+    variables,
+  ];
 }

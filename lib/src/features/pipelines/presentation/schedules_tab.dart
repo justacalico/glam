@@ -35,9 +35,8 @@ class PipelineSchedulesTab extends ConsumerWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
-            onPressed: () => unawaited(
-              _ScheduleForm.show(context, ref, projectId: projectId),
-            ),
+            onPressed: () =>
+                unawaited(_ScheduleForm.show(context, projectId: projectId)),
             icon: const Icon(Icons.add, size: 16),
             label: const Text('New schedule'),
           ),
@@ -136,11 +135,11 @@ class _ScheduleTile extends ConsumerWidget {
     try {
       switch (action) {
         case 'play':
-          final pipeline = await notifier.play(s.id);
+          await notifier.play(s.id);
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Pipeline #${pipeline.id} started')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Schedule triggered')));
           }
         case 'own':
           await notifier.takeOwnership(s.id);
@@ -152,7 +151,6 @@ class _ScheduleTile extends ConsumerWidget {
             unawaited(
               _ScheduleForm.show(
                 context,
-                ref,
                 projectId: projectId,
                 schedule: detail,
               ),
@@ -189,6 +187,12 @@ class _ScheduleTile extends ConsumerWidget {
           context,
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
+    } on Object {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
+      }
     }
   }
 }
@@ -200,8 +204,7 @@ class _ScheduleForm extends ConsumerStatefulWidget {
   final PipelineSchedule? schedule;
 
   static Future<void> show(
-    BuildContext context,
-    WidgetRef ref, {
+    BuildContext context, {
     required Object projectId,
     PipelineSchedule? schedule,
   }) {
@@ -219,14 +222,21 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
   late final TextEditingController _description;
   late final TextEditingController _cron;
   late final TextEditingController _timezone;
-  late List<({TextEditingController key, TextEditingController value})> _vars;
+  late List<
+    ({TextEditingController key, TextEditingController value, String type})
+  >
+  _vars;
   late final Set<String> _existingKeys;
   String? _ref;
   var _active = true;
   var _saving = false;
   String? _error;
 
-  bool get _editing => widget.schedule != null;
+  /// Set once a create succeeds so a retry after a variable failure
+  /// updates instead of duplicating the schedule.
+  int? _createdId;
+
+  bool get _editing => widget.schedule != null || _createdId != null;
 
   @override
   void initState() {
@@ -245,6 +255,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
         (
           key: TextEditingController(text: v.key),
           value: TextEditingController(text: v.value),
+          type: v.variableType,
         ),
     ];
   }
@@ -263,11 +274,24 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
 
   Future<void> _save() async {
     final cron = _cron.text.trim();
-    if (_ref == null || _ref!.isEmpty || cron.isEmpty || _saving) {
+    final keys = _vars
+        .map((v) => v.key.text.trim())
+        .where((k) => k.isNotEmpty)
+        .toList();
+    if (_ref == null ||
+        _ref!.isEmpty ||
+        cron.isEmpty ||
+        _description.text.trim().isEmpty ||
+        keys.length != keys.toSet().length ||
+        _saving) {
       setState(
         () => _error = _ref == null || _ref!.isEmpty
             ? 'Pick a target ref'
-            : 'A cron expression is required',
+            : _description.text.trim().isEmpty
+            ? 'A description is required'
+            : cron.isEmpty
+            ? 'A cron expression is required'
+            : 'Variable keys must be unique',
       );
       return;
     }
@@ -300,7 +324,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
     if (_editing) {
       final s = await repo.updateSchedule(
         widget.projectId,
-        widget.schedule!.id,
+        widget.schedule?.id ?? _createdId!,
         description: _description.text.trim(),
         ref: _ref,
         cron: _cron.text.trim(),
@@ -317,6 +341,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
       cronTimezone: _timezone.text.trim(),
       active: _active,
     );
+    _createdId = s.id;
     return s.id;
   }
 
@@ -334,6 +359,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
           id,
           key,
           value: v.value.text,
+          variableType: v.type,
         );
       } else {
         await repo.createScheduleVariable(
@@ -341,6 +367,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
           id,
           key: key,
           value: v.value.text,
+          variableType: v.type,
         );
       }
     }
@@ -380,7 +407,21 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  for (final b in branchNames ?? <String>[_ref ?? ''])
+                  // The current ref may be a tag or past the first
+                  // branches page; keep it selectable either way.
+                  if (_ref != null &&
+                      !(branchNames ?? const <String>[]).contains(_ref))
+                    DropdownMenuItem(
+                      value: _ref,
+                      child: Text(
+                        _ref!,
+                        style: const TextStyle(
+                          fontFamily: 'JetBrains Mono',
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  for (final b in branchNames ?? <String>[])
                     DropdownMenuItem(
                       value: b,
                       child: Text(
@@ -437,6 +478,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                       () => _vars.add((
                         key: TextEditingController(),
                         value: TextEditingController(),
+                        type: 'env_var',
                       )),
                     ),
                   ),

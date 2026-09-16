@@ -87,13 +87,15 @@ class PipelineSchedulesNotifier extends PagedListNotifier<PipelineSchedule> {
         .schedules(project, page: page);
   }
 
-  /// Runs the schedule now. A fresh list page picks up `last_pipeline`.
-  Future<Pipeline> play(int id) async {
-    final pipeline = await ref
-        .read(pipelinesRepositoryProvider)
-        .playSchedule(project, id);
-    await refresh();
-    return pipeline;
+  /// Runs the schedule now. The refetch only updates `last_pipeline`,
+  /// so a failed refresh doesn't mask the triggered run.
+  Future<void> play(int id) async {
+    await ref.read(pipelinesRepositoryProvider).playSchedule(project, id);
+    try {
+      await refresh();
+    } on Object {
+      // The run was still triggered; the list just stays stale.
+    }
   }
 
   Future<void> takeOwnership(int id) async {
