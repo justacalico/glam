@@ -16,6 +16,8 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/engagement/application/engagement_providers.dart';
+import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
@@ -33,6 +35,9 @@ class IssueDetailScreen extends ConsumerWidget {
   final int iid;
 
   IssueRef get _loc => (project: projectId, iid: iid);
+
+  AwardableRef get _awardable =>
+      (kind: 'issue', project: projectId, iid: iid, noteId: null);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,6 +76,8 @@ class IssueDetailScreen extends ConsumerWidget {
                       child: MarkdownViewer(data: issue.description!),
                     ),
                   ],
+                  const SizedBox(height: Insets.md),
+                  ReactionsRow(loc: _awardable),
                   const SizedBox(height: Insets.xl),
                   Text(
                     'Activity',
@@ -112,13 +119,73 @@ class _IssueActions extends ConsumerWidget {
         );
   }
 
+  Future<void> _promptDuration(
+    BuildContext context,
+    WidgetRef ref, {
+    required String title,
+    required Future<void> Function(String) onSubmit,
+  }) async {
+    final controller = TextEditingController();
+    final duration = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'e.g. 2h, 1d 4h, 30m'),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (duration != null && duration.isNotEmpty) {
+      await onSubmit(duration);
+      ref.invalidate(issueProvider(loc));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final repo = ref.read(issuesRepositoryProvider);
     return PopupMenuButton<String>(
       onSelected: (action) async {
         switch (action) {
           case 'toggle':
             await _toggleState(ref);
+            ref.invalidate(issueProvider(loc));
+          case 'subscribe':
+            await repo.setSubscribed(
+              loc.project,
+              loc.iid,
+              subscribed: !issue.subscribed,
+            );
+            ref.invalidate(issueProvider(loc));
+          case 'estimate':
+            await _promptDuration(
+              context,
+              ref,
+              title: 'Time estimate',
+              onSubmit: (d) => repo.setTimeEstimate(loc.project, loc.iid, d),
+            );
+          case 'spent':
+            await _promptDuration(
+              context,
+              ref,
+              title: 'Add time spent',
+              onSubmit: (d) => repo.addTimeSpent(loc.project, loc.iid, d),
+            );
+          case 'reset':
+            await repo.resetTimeSpent(loc.project, loc.iid);
             ref.invalidate(issueProvider(loc));
           case 'edit':
             unawaited(
@@ -143,6 +210,17 @@ class _IssueActions extends ConsumerWidget {
           value: 'toggle',
           child: Text(issue.isOpen ? 'Close issue' : 'Reopen issue'),
         ),
+        PopupMenuItem(
+          value: 'subscribe',
+          child: Text(issue.subscribed ? 'Unsubscribe' : 'Subscribe'),
+        ),
+        const PopupMenuItem(
+          value: 'estimate',
+          child: Text('Set time estimate'),
+        ),
+        const PopupMenuItem(value: 'spent', child: Text('Add time spent')),
+        if ((issue.timeSpent ?? 0) > 0)
+          const PopupMenuItem(value: 'reset', child: Text('Reset time spent')),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),
@@ -204,6 +282,15 @@ class _Header extends StatelessWidget {
               _MetaRow(
                 icon: Icons.scale_outlined,
                 label: 'Weight ${issue.weight}',
+                colors: colors,
+                theme: theme,
+              ),
+            if ((issue.timeEstimate ?? 0) > 0 || (issue.timeSpent ?? 0) > 0)
+              _MetaRow(
+                icon: Icons.timer_outlined,
+                label:
+                    '${Format.humanDuration(issue.timeSpent)} spent'
+                    ' of ${Format.humanDuration(issue.timeEstimate)}',
                 colors: colors,
                 theme: theme,
               ),
@@ -330,7 +417,20 @@ class _NotesList extends ConsumerWidget {
           );
         }
         return Column(
-          children: [for (final note in visible) NoteCard(note: note)],
+          children: [
+            for (final note in visible)
+              NoteCard(
+                note: note,
+                footer: ReactionsRow(
+                  loc: (
+                    kind: 'issue',
+                    project: loc.project,
+                    iid: loc.iid,
+                    noteId: note.id,
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );

@@ -42,6 +42,7 @@ class MergeRequest extends Equatable {
     this.mergeWhenPipelineSucceeds = false,
     this.sourceProjectId,
     this.targetProjectId,
+    this.subscribed = false,
   });
 
   factory MergeRequest.fromJson(Map<String, dynamic> json) {
@@ -99,6 +100,7 @@ class MergeRequest extends Equatable {
           json['merge_when_pipeline_succeeds'] as bool? ?? false,
       sourceProjectId: json['source_project_id'] as int?,
       targetProjectId: json['target_project_id'] as int?,
+      subscribed: json['subscribed'] as bool? ?? false,
     );
   }
 
@@ -141,6 +143,7 @@ class MergeRequest extends Equatable {
   final bool mergeWhenPipelineSucceeds;
   final int? sourceProjectId;
   final int? targetProjectId;
+  final bool subscribed;
 
   bool get isOpen => state == 'opened';
   bool get isMerged => state == 'merged';

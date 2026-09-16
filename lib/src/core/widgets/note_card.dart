@@ -8,9 +8,12 @@ import 'package:glam/src/core/widgets/user_avatar.dart';
 
 /// One comment in an issue/MR thread.
 class NoteCard extends StatelessWidget {
-  const NoteCard({required this.note, super.key});
+  const NoteCard({required this.note, this.footer, super.key});
 
   final Note note;
+
+  /// Optional row under the body, e.g. emoji reactions.
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +65,16 @@ class NoteCard extends StatelessWidget {
             padding: const EdgeInsets.all(Insets.md),
             child: MarkdownViewer(data: note.body),
           ),
+          if (footer != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Insets.md,
+                0,
+                Insets.md,
+                Insets.sm,
+              ),
+              child: footer,
+            ),
         ],
       ),
     );

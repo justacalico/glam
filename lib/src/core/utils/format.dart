@@ -58,6 +58,20 @@ abstract final class Format {
     return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
+  /// `3d 2h 30m` — for issue time tracking totals.
+  static String humanDuration(int? seconds) {
+    if (seconds == null || seconds <= 0) {
+      return '0m';
+    }
+    final d = Duration(seconds: seconds);
+    final parts = <String>[
+      if (d.inDays > 0) '${d.inDays}d',
+      if (d.inHours.remainder(24) > 0) '${d.inHours.remainder(24)}h',
+      if (d.inMinutes.remainder(60) > 0) '${d.inMinutes.remainder(60)}m',
+    ];
+    return parts.isEmpty ? '${d.inSeconds}s' : parts.join(' ');
+  }
+
   /// `42 %` with no trailing `.0`.
   static String percent(num? value) {
     if (value == null) {

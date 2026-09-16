@@ -30,6 +30,9 @@ class Issue extends Equatable {
     this.taskCompletion,
     this.webUrl,
     this.references,
+    this.subscribed = false,
+    this.timeEstimate,
+    this.timeSpent,
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
@@ -78,6 +81,9 @@ class Issue extends Equatable {
       references: json['references'] is Map<String, dynamic>
           ? (json['references'] as Map<String, dynamic>)['full'] as String?
           : null,
+      subscribed: json['subscribed'] as bool? ?? false,
+      timeEstimate: json['time_estimate'] as int?,
+      timeSpent: json['total_time_spent'] as int?,
     );
   }
 
@@ -115,6 +121,12 @@ class Issue extends Equatable {
   /// `group/project#iid` — handy for lists that span projects.
   final String? references;
 
+  final bool subscribed;
+
+  /// Seconds. `time_estimate` / `total_time_spent` from the API.
+  final int? timeEstimate;
+  final int? timeSpent;
+
   bool get isOpen => state == 'opened' || state == 'reopened';
 
   static DateTime? _date(Object? v) =>
@@ -130,5 +142,5 @@ class Issue extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, iid, projectId, state];
+  List<Object?> get props => [id, iid, projectId, state, subscribed];
 }
