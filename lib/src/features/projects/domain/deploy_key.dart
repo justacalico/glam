@@ -28,8 +28,10 @@ class DeployKey extends Equatable {
 
   /// Fingerprint-style display: last chunk of the base64 body.
   String get fingerprint {
-    final body = key.trim().split(' ');
-    final material = body.length > 1 ? body[1] : key;
+    final parts = key.trim().split(RegExp(r'\s+'));
+    final material = parts.length > 1 && parts[1].isNotEmpty
+        ? parts[1]
+        : key.trim();
     return material.length <= 12
         ? material
         : '…${material.substring(material.length - 12)}';

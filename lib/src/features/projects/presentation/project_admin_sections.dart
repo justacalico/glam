@@ -221,18 +221,11 @@ class _HookDialogState extends State<_HookDialog> {
   final _url = TextEditingController();
   final _token = TextEditingController();
   var _ssl = true;
-  final _events = <String, bool>{
-    'push_events': true,
-    'tag_push_events': false,
-    'issues_events': false,
-    'note_events': false,
-    'merge_requests_events': false,
-    'pipeline_events': false,
-    'job_events': false,
-    'wiki_page_events': false,
-    'deployment_events': false,
-    'releases_events': false,
-  };
+  var _urlError = false;
+  // Default webhook: push events on, everything else off.
+  final _events = Map<String, bool>.of(
+    const Webhook(id: 0, url: '').eventFlags,
+  );
 
   static const _labels = {
     'push_events': 'Push events',
@@ -266,10 +259,16 @@ class _HookDialogState extends State<_HookDialog> {
             TextField(
               controller: _url,
               autofocus: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'URL',
                 hintText: 'https://example.com/hook',
+                errorText: _urlError ? 'Required' : null,
               ),
+              onChanged: (_) {
+                if (_urlError) {
+                  setState(() => _urlError = false);
+                }
+              },
             ),
             const SizedBox(height: Insets.sm),
             TextField(
@@ -308,6 +307,7 @@ class _HookDialogState extends State<_HookDialog> {
           onPressed: () {
             final url = _url.text.trim();
             if (url.isEmpty) {
+              setState(() => _urlError = true);
               return;
             }
             Navigator.pop(
@@ -626,7 +626,12 @@ class ProtectedBranchesSection extends ConsumerWidget {
               child: const Text('Cancel'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () {
+                if (name.text.trim().isEmpty) {
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
               child: const Text('Protect'),
             ),
           ],

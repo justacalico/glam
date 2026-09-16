@@ -41,7 +41,8 @@ class ProtectedBranch extends Equatable {
   static List<int> _levels(Object? json) => json is List
       ? json
             .whereType<Map<String, dynamic>>()
-            .map((l) => l['access_level'] as int? ?? 0)
+            .map((l) => l['access_level'] as int?)
+            .nonNulls
             .toList()
       : const [];
 

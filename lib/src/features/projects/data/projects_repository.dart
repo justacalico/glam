@@ -212,7 +212,8 @@ class ProjectsRepository {
     );
   }
 
-  /// Fires a test event. GitLab only supports `push_events` triggers.
+  /// Fires a test event (`test/:trigger` accepts every event type;
+  /// the UI sends `push_events`).
   Future<void> testHook(Object id, int hookId) {
     return _client.post(
       '/projects/${GitLabApiClient.encodeProject(id)}/hooks/$hookId/'

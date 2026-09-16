@@ -410,25 +410,32 @@ class _VariablesSection extends ConsumerWidget {
       ),
     );
 
-    if (saved == true && key.text.trim().isNotEmpty) {
+    final k = key.text.trim();
+    final v = value.text;
+    final s = scope.text.trim();
+    key.dispose();
+    value.dispose();
+    scope.dispose();
+
+    if (saved == true && k.isNotEmpty && context.mounted) {
       final repo = ref.read(projectsRepositoryProvider);
       if (existing == null) {
         await repo.createVariable(
           project.id,
-          key: key.text.trim(),
-          value: value.text,
+          key: k,
+          value: v,
           protected_: protected_,
           masked: masked,
-          environmentScope: scope.text.trim().isEmpty ? '*' : scope.text.trim(),
+          environmentScope: s.isEmpty ? '*' : s,
         );
       } else {
         await repo.updateVariable(
           project.id,
           existing.key,
-          value: value.text,
+          value: v,
           protected_: protected_,
           masked: masked,
-          environmentScope: scope.text.trim(),
+          environmentScope: s,
         );
       }
       ref.invalidate(projectVariablesProvider(project.id));

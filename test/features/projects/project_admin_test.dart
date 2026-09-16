@@ -181,15 +181,25 @@ void main() {
 
     test('unprotectBranch encodes wildcard names', () async {
       final (client, adapter) = testClient();
-      adapter.delete('/projects/42/protected_branches/release-*');
+      adapter
+        ..delete('/projects/42/protected_branches/release-*')
+        ..delete('/projects/42/protected_branches/feature%2Fx');
       final repo = ProjectsRepository(client);
 
       await repo.unprotectBranch(42, 'release-*');
+      await repo.unprotectBranch(42, 'feature/x');
 
       expect(
         adapter.requestsTo(
           'DELETE',
           '/projects/42/protected_branches/release-*',
+        ),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/protected_branches/feature%2Fx',
         ),
         hasLength(1),
       );
