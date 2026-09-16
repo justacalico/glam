@@ -67,6 +67,13 @@ const navDestinations = <NavDestination>[
   ),
   NavDestination(
     branch: 5,
+    path: '/snippets',
+    icon: Icons.notes_outlined,
+    selectedIcon: Icons.notes,
+    label: 'Snippets',
+  ),
+  NavDestination(
+    branch: 6,
     path: '/settings',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,

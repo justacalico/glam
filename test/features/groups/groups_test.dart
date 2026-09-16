@@ -4,7 +4,6 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 
-import '../../helpers/fake_dio_adapter.dart';
 import '../../helpers/fixtures.dart';
 import '../../helpers/test_client.dart';
 
@@ -87,8 +86,9 @@ void main() {
 
     setUp(() {
       final (client, a) = testClient();
-      a.get('/groups', fixtureJson('groups'));
-      a.get('/groups/9', (fixtureJson('groups') as List).first);
+      a
+        ..get('/groups', fixtureJson('groups'))
+        ..get('/groups/9', (fixtureJson('groups') as List).first);
       container = ProviderContainer(
         overrides: [
           groupsRepositoryProvider.overrideWithValue(GroupsRepository(client)),

@@ -20,6 +20,8 @@ import 'package:glam/src/features/repository/presentation/commit_detail_screen.d
 import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/settings/presentation/settings_screen.dart';
+import 'package:glam/src/features/snippets/presentation/snippet_detail_screen.dart';
+import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 
 /// go_router wiring. The shell is a [StatefulShellRoute] so each top
 /// section keeps its own stack and scroll position.
@@ -162,6 +164,25 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: ':id',
                     builder: (context, state) =>
                         GroupDetailScreen(groupId: state.pathParameters['id']!),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.snippets,
+                builder: (context, state) => const SnippetsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => SnippetDetailScreen(
+                      loc: (
+                        id: int.parse(state.pathParameters['id']!),
+                        projectId: state.uri.queryParameters['project'],
+                      ),
+                    ),
                   ),
                 ],
               ),
