@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
@@ -316,7 +317,7 @@ class _PeoplePicker extends ConsumerWidget {
           context: context,
           builder: (_) => _MembersDialog(
             title: label,
-            members: members,
+            projectId: projectId,
             selected: selected,
           ),
         );
@@ -330,7 +331,9 @@ class _PeoplePicker extends ConsumerWidget {
           border: const OutlineInputBorder(),
         ),
         child: Text(
-          names.isEmpty ? 'Unassigned' : names,
+          names.isEmpty
+              ? (selected.isEmpty ? 'None' : '${selected.length} selected')
+              : names,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -339,45 +342,41 @@ class _PeoplePicker extends ConsumerWidget {
   }
 }
 
-class _MembersDialog extends StatefulWidget {
+class _MembersDialog extends ConsumerStatefulWidget {
   const _MembersDialog({
     required this.title,
-    required this.members,
+    required this.projectId,
     required this.selected,
   });
 
   final String title;
-  final List<Member> members;
+  final Object projectId;
   final Set<int> selected;
 
   @override
-  State<_MembersDialog> createState() => _MembersDialogState();
+  ConsumerState<_MembersDialog> createState() => _MembersDialogState();
 }
 
-class _MembersDialogState extends State<_MembersDialog> {
+class _MembersDialogState extends ConsumerState<_MembersDialog> {
   late final Set<int> _selected = {...widget.selected};
   String _query = '';
 
   @override
   Widget build(BuildContext context) {
-    final visible = widget.members
-        .where(
-          (m) =>
-              _query.isEmpty ||
-              m.name.toLowerCase().contains(_query) ||
-              m.username.toLowerCase().contains(_query),
-        )
-        .toList();
+    final membersAsync = ref.watch(
+      membersProvider((id: widget.projectId, isProject: true)),
+    );
+    final wide = MediaQuery.sizeOf(context).width >= 840;
 
     return AlertDialog(
       title: Text(widget.title),
-      content: SizedBox(
-        width: 420,
-        height: 380,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420, maxHeight: 420),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              autofocus: true,
+              autofocus: wide,
               decoration: const InputDecoration(
                 hintText: 'Search members',
                 prefixIcon: Icon(Icons.search, size: 20),
@@ -387,25 +386,7 @@ class _MembersDialogState extends State<_MembersDialog> {
               onChanged: (v) => setState(() => _query = v.toLowerCase()),
             ),
             const SizedBox(height: Insets.sm),
-            Expanded(
-              child: visible.isEmpty
-                  ? const Center(child: Text('No members found'))
-                  : ListView(
-                      children: [
-                        for (final m in visible)
-                          CheckboxListTile(
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(m.name),
-                            subtitle: Text('@${m.username}'),
-                            value: _selected.contains(m.id),
-                            onChanged: (v) => setState(() {
-                              v! ? _selected.add(m.id) : _selected.remove(m.id);
-                            }),
-                          ),
-                      ],
-                    ),
-            ),
+            Flexible(child: _memberList(membersAsync)),
           ],
         ),
       ),
@@ -419,6 +400,70 @@ class _MembersDialogState extends State<_MembersDialog> {
           child: const Text('Done'),
         ),
       ],
+    );
+  }
+
+  Widget _memberList(AsyncValue<PagedListState<Member>> membersAsync) {
+    return membersAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: TextButton(
+          onPressed: () => ref.invalidate(
+            membersProvider((id: widget.projectId, isProject: true)),
+          ),
+          child: const Text('Could not load members. Retry'),
+        ),
+      ),
+      data: (state) {
+        final visible = state.items
+            .where(
+              (m) =>
+                  (m.state == null || m.state == 'active') &&
+                  (_query.isEmpty ||
+                      m.name.toLowerCase().contains(_query) ||
+                      m.username.toLowerCase().contains(_query)),
+            )
+            .toList();
+        if (visible.isEmpty) {
+          return const Center(child: Text('No members found'));
+        }
+        return NotificationListener<ScrollNotification>(
+          onNotification: (n) {
+            if (n.metrics.pixels > n.metrics.maxScrollExtent - 200) {
+              ref
+                  .read(
+                    membersProvider((
+                      id: widget.projectId,
+                      isProject: true,
+                    )).notifier,
+                  )
+                  .loadMore();
+            }
+            return false;
+          },
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final m in visible)
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(m.name),
+                  subtitle: Text('@${m.username}'),
+                  value: _selected.contains(m.id),
+                  onChanged: (v) => setState(() {
+                    v! ? _selected.add(m.id) : _selected.remove(m.id);
+                  }),
+                ),
+              if (state.loadingMore)
+                const Padding(
+                  padding: EdgeInsets.all(Insets.sm),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

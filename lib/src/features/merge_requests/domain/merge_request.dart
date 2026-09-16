@@ -157,6 +157,9 @@ class MergeRequest extends Equatable {
     'ci_must_pass' || 'ci_still_running' => 'Pipeline must pass',
     'discussions_not_resolved' => 'Unresolved discussions',
     'draft_status' => 'Draft',
+    'not_approved' => 'Needs approval',
+    'blocked_status' => 'Blocked',
+    'external_status_checks' => 'Waiting on status checks',
     'checking' || 'unchecked' => 'Checking…',
     _ => mergeStatus == 'can_be_merged' ? 'Ready to merge' : 'Unknown',
   };
@@ -222,6 +225,8 @@ class ApprovalState extends Equatable {
     this.approvalsRequired = 0,
     this.approvalsLeft = 0,
     this.approvedBy = const [],
+    this.userHasApproved,
+    this.userCanApprove,
   });
 
   factory ApprovalState.fromJson(Map<String, dynamic> json) {
@@ -237,6 +242,8 @@ class ApprovalState extends Equatable {
                 .whereType<GitLabUser>()
                 .toList()
           : const [],
+      userHasApproved: json['user_has_approved'] as bool?,
+      userCanApprove: json['user_can_approve'] as bool?,
     );
   }
 
@@ -245,6 +252,14 @@ class ApprovalState extends Equatable {
   final int approvalsLeft;
   final List<GitLabUser> approvedBy;
 
+  /// Whether the current user already approved. Null on API versions
+  /// that don't return it — fall back to scanning [approvedBy].
+  final bool? userHasApproved;
+
+  /// Whether the current user is allowed to approve (false for the
+  /// author when author-approval is disabled, for example).
+  final bool? userCanApprove;
+
   static GitLabUser? _userOf(Map<String, dynamic> e) {
     final u = e['user'];
     return u is Map<String, dynamic> ? GitLabUser.fromJson(u) : null;
@@ -252,4 +267,19 @@ class ApprovalState extends Equatable {
 
   @override
   List<Object?> get props => [approved, approvalsLeft];
+}
+
+/// Removes a leading `Draft:`/`WIP:` marker, including GitLab's
+/// bracketed spellings (`[Draft]`, `(wip)`). GitLab accepts stacked
+/// prefixes, so the marker is stripped repeatedly.
+String stripDraftPrefix(String title) {
+  final prefix = RegExp(
+    r'^\s*(\[(draft|wip)\]|\((draft|wip)\)|(draft|wip)\s*[:-])\s*',
+    caseSensitive: false,
+  );
+  var t = title;
+  while (prefix.hasMatch(t)) {
+    t = t.replaceFirst(prefix, '');
+  }
+  return t;
 }

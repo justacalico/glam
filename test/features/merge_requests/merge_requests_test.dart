@@ -40,6 +40,29 @@ void main() {
       final mr = MergeRequest.fromJson(const {'work_in_progress': true});
       expect(mr.draft, isTrue);
     });
+
+    test('not_approved maps to a readable label', () {
+      final mr = MergeRequest.fromJson(const {
+        'state': 'opened',
+        'detailed_merge_status': 'not_approved',
+      });
+      expect(mr.mergeabilityLabel, 'Needs approval');
+    });
+  });
+
+  group('stripDraftPrefix', () {
+    test('removes colon, bracketed and stacked prefixes', () {
+      expect(stripDraftPrefix('Draft: Add files'), 'Add files');
+      expect(stripDraftPrefix('[Draft] Add files'), 'Add files');
+      expect(stripDraftPrefix('(wip) Add files'), 'Add files');
+      expect(stripDraftPrefix('WIP - Add files'), 'Add files');
+      expect(stripDraftPrefix('Draft: Draft: Add files'), 'Add files');
+    });
+
+    test('leaves non-draft titles and mid-title markers alone', () {
+      expect(stripDraftPrefix('Add files'), 'Add files');
+      expect(stripDraftPrefix('fix draft: handling'), 'fix draft: handling');
+    });
   });
 
   group('MergeRequestsRepository', () {
@@ -145,6 +168,8 @@ void main() {
         'approved': true,
         'approvals_required': 2,
         'approvals_left': 0,
+        'user_has_approved': true,
+        'user_can_approve': false,
         'approved_by': [
           {
             'user': {'id': 8, 'name': 'John Smith', 'username': 'john'},
@@ -157,6 +182,8 @@ void main() {
 
       expect(state.approved, isTrue);
       expect(state.approvedBy.single.name, 'John Smith');
+      expect(state.userHasApproved, isTrue);
+      expect(state.userCanApprove, isFalse);
     });
 
     test('createMergeRequest posts branches and flags', () async {

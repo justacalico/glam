@@ -364,20 +364,31 @@ class _People extends StatelessWidget {
 }
 
 /// Merge readiness + the merge button.
-class _MergeBox extends ConsumerWidget {
+class _MergeBox extends ConsumerStatefulWidget {
   const _MergeBox({required this.mr, required this.loc});
 
   final MergeRequest mr;
   final MrRef loc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MergeBox> createState() => _MergeBoxState();
+}
+
+class _MergeBoxState extends ConsumerState<_MergeBox> {
+  var _approving = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final mr = widget.mr;
+    final loc = widget.loc;
     final colors = context.colors;
     final approvals = ref.watch(mrApprovalsProvider(loc)).value;
     final myId = ref.watch(sessionProvider).value?.user.id;
     final iApproved =
-        myId != null &&
-        (approvals?.approvedBy.any((u) => u.id == myId) ?? false);
+        approvals != null &&
+        (approvals.userHasApproved ??
+            (myId != null && approvals.approvedBy.any((u) => u.id == myId)));
+    final canAct = iApproved || (approvals?.userCanApprove ?? true);
     final mergeable =
         mr.detailedMergeStatus == 'mergeable' && !mr.draft && !mr.hasConflicts;
 
@@ -436,10 +447,11 @@ class _MergeBox extends ConsumerWidget {
                 label: const Text('Merge'),
               ),
               const SizedBox(width: Insets.sm),
-              if (approvals != null)
+              if (approvals != null && canAct)
                 OutlinedButton.icon(
-                  onPressed: () =>
-                      unawaited(_toggleApproval(context, ref, iApproved)),
+                  onPressed: _approving
+                      ? null
+                      : () => unawaited(_toggleApproval(iApproved)),
                   icon: Icon(
                     iApproved
                         ? Icons.thumb_down_outlined
@@ -463,24 +475,30 @@ class _MergeBox extends ConsumerWidget {
     );
   }
 
-  Future<void> _toggleApproval(
-    BuildContext context,
-    WidgetRef ref,
-    bool approved,
-  ) async {
+  Future<void> _toggleApproval(bool approved) async {
+    setState(() => _approving = true);
     final repo = ref.read(mrRepositoryProvider);
     try {
       if (approved) {
-        await repo.unapprove(loc.project, loc.iid);
+        await repo.unapprove(widget.loc.project, widget.loc.iid);
       } else {
-        await repo.approve(loc.project, loc.iid);
+        await repo.approve(widget.loc.project, widget.loc.iid);
       }
-      ref.invalidate(mrApprovalsProvider(loc));
+      if (!mounted) {
+        return;
+      }
+      ref
+        ..invalidate(mrApprovalsProvider(widget.loc))
+        ..invalidate(mrProvider(widget.loc));
     } on ApiException catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _approving = false);
       }
     }
   }
@@ -605,42 +623,61 @@ class _MrActions extends ConsumerWidget {
     return PopupMenuButton<String>(
       onSelected: (action) async {
         final repo = ref.read(mrRepositoryProvider);
-        switch (action) {
-          case 'toggle':
-            await repo.updateMergeRequest(
-              loc.project,
-              loc.iid,
-              stateEvent: mr.isOpen ? 'close' : 'reopen',
-            );
-            ref.invalidate(mrProvider(loc));
-          case 'draft':
-            await repo.updateMergeRequest(
-              loc.project,
-              loc.iid,
-              title: mr.draft ? _stripDraft(mr.title) : 'Draft: ${mr.title}',
-            );
-            ref.invalidate(mrProvider(loc));
-          case 'rebase':
-            await repo.rebase(loc.project, loc.iid);
-          case 'subscribe':
-            await repo.setSubscribed(
-              loc.project,
-              loc.iid,
-              subscribed: !mr.subscribed,
-            );
-            ref.invalidate(mrProvider(loc));
-          case 'edit':
-            unawaited(
-              MrFormScreen.show(context, projectId: loc.project, mr: mr),
-            );
-          case 'copy':
-            if (mr.webUrl != null) {
-              unawaited(Clipboard.setData(ClipboardData(text: mr.webUrl!)));
-            }
-          case 'open':
-            if (mr.webUrl != null) {
-              unawaited(launchExternal(mr.webUrl!));
-            }
+        try {
+          switch (action) {
+            case 'toggle':
+              await repo.updateMergeRequest(
+                loc.project,
+                loc.iid,
+                stateEvent: mr.isOpen ? 'close' : 'reopen',
+              );
+            case 'draft':
+              final title = mr.draft
+                  ? stripDraftPrefix(mr.title)
+                  : 'Draft: ${mr.title}';
+              if (title.isEmpty) {
+                return;
+              }
+              await repo.updateMergeRequest(loc.project, loc.iid, title: title);
+            case 'subscribe':
+              await repo.setSubscribed(
+                loc.project,
+                loc.iid,
+                subscribed: !mr.subscribed,
+              );
+            case 'rebase':
+              await repo.rebase(loc.project, loc.iid);
+            case 'edit':
+              if (context.mounted) {
+                unawaited(
+                  MrFormScreen.show(context, projectId: loc.project, mr: mr),
+                );
+              }
+              return;
+            case 'copy':
+              if (mr.webUrl != null) {
+                unawaited(Clipboard.setData(ClipboardData(text: mr.webUrl!)));
+              }
+              return;
+            case 'open':
+              if (mr.webUrl != null) {
+                unawaited(launchExternal(mr.webUrl!));
+              }
+              return;
+          }
+          if (!context.mounted) {
+            return;
+          }
+          ref
+            ..invalidate(mrProvider(loc))
+            ..invalidate(projectMrsProvider)
+            ..invalidate(mergeRequestsProvider);
+        } on ApiException catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e.message)));
+          }
         }
       },
       itemBuilder: (context) => [
@@ -666,11 +703,6 @@ class _MrActions extends ConsumerWidget {
     );
   }
 }
-
-String _stripDraft(String title) => title.replaceFirst(
-  RegExp(r'^\s*(draft|wip):\s*', caseSensitive: false),
-  '',
-);
 
 class _ChangesTab extends ConsumerWidget {
   const _ChangesTab({required this.loc});
