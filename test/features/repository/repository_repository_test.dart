@@ -226,12 +226,10 @@ void main() {
         42,
         'abc123',
         note: 'unused import',
-        path: 'lib/main.dart',
-        line: 4,
-        lineType: 'new',
+        anchor: (path: 'lib/main.dart', line: 4, lineType: 'new'),
       );
 
-      expect(comment.id, 502);
+      expect(comment.anchor, 'lib/main.dart:4');
       final body = adapter.lastRequest!.data as Map<String, dynamic>;
       expect(body['note'], 'unused import');
       expect(body['path'], 'lib/main.dart');
@@ -253,22 +251,6 @@ void main() {
       expect(body.containsKey('path'), isFalse);
       expect(body.containsKey('line'), isFalse);
       expect(body.containsKey('line_type'), isFalse);
-    });
-
-    test('deleteCommitComment DELETEs the comment id', () async {
-      final (client, adapter) = testClient();
-      adapter.delete('/projects/42/repository/commits/abc123/comments/502');
-      final repo = RepositoryRepository(client);
-
-      await repo.deleteCommitComment(42, 'abc123', 502);
-
-      expect(
-        adapter.requestsTo(
-          'DELETE',
-          '/projects/42/repository/commits/abc123/comments/502',
-        ),
-        hasLength(1),
-      );
     });
   });
 

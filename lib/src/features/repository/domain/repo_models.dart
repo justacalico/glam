@@ -436,7 +436,6 @@ class ReleaseLink extends Equatable {
 /// (`/repository/commits/:sha/comments`).
 class CommitComment extends Equatable {
   const CommitComment({
-    required this.id,
     required this.note,
     this.path,
     this.line,
@@ -447,7 +446,6 @@ class CommitComment extends Equatable {
 
   factory CommitComment.fromJson(Map<String, dynamic> json) {
     return CommitComment(
-      id: json['id'] as int? ?? 0,
       note: json['note'] as String? ?? '',
       path: json['path'] as String?,
       line: json['line'] as int?,
@@ -461,7 +459,6 @@ class CommitComment extends Equatable {
     );
   }
 
-  final int id;
   final String note;
   final String? path;
   final int? line;
@@ -471,11 +468,16 @@ class CommitComment extends Equatable {
   final GitLabUser? author;
   final DateTime? createdAt;
 
-  /// `path:line` for the comment anchor, when present.
-  String? get anchor => path == null ? null : '$path:${line ?? ''}';
+  /// `path` or `path:line` for the comment anchor, when present.
+  String? get anchor {
+    if (path == null) {
+      return null;
+    }
+    return line == null ? path : '$path:$line';
+  }
 
   @override
-  List<Object?> get props => [id, note, path, line];
+  List<Object?> get props => [note, path, line];
 }
 
 /// Result of `/repository/compare`: the commits `to` has that `from`

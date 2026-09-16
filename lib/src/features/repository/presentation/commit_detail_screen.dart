@@ -12,7 +12,6 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/comment_composer.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
-import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -42,7 +41,8 @@ class CommitDetailScreen extends ConsumerWidget {
         value: commit,
         onRetry: () => ref
           ..invalidate(commitProvider((project: projectId, sha: sha)))
-          ..invalidate(commitDiffProvider((project: projectId, sha: sha))),
+          ..invalidate(commitDiffProvider((project: projectId, sha: sha)))
+          ..invalidate(commitCommentsProvider((project: projectId, sha: sha))),
         data: (c) => ListView(
           padding: Insets.pagePadding,
           children: [
@@ -76,7 +76,8 @@ class CommitDetailScreen extends ConsumerWidget {
   }
 
   /// Opens a composer anchored to the tapped diff line, then posts the
-  /// comment with `path`/`line`/`line_type` for the commits API.
+  /// comment with `path`/`line`/`line_type` for the commits API. Only
+  /// added/removed lines can anchor; GitLab can't pin context lines.
   void _commentOnLine(
     BuildContext context,
     WidgetRef ref,
@@ -84,13 +85,15 @@ class CommitDetailScreen extends ConsumerWidget {
     DiffLine line,
   ) {
     final isOld = line.kind == DiffLineKind.removed;
+    final isNew = line.kind == DiffLineKind.added;
     final lineNo = isOld ? line.oldLine : line.newLine;
-    if (line.kind == DiffLineKind.meta || lineNo == null) {
+    if ((!isOld && !isNew) || lineNo == null) {
       return;
     }
     unawaited(() async {
       final controller = TextEditingController();
-      final path = isOld ? change.oldPath : change.newPath;
+      // The API always wants new_path, even for old-side comments.
+      final path = change.newPath;
       final body = await showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
@@ -141,9 +144,11 @@ class CommitDetailScreen extends ConsumerWidget {
               projectId,
               sha,
               note: body,
-              path: path,
-              line: lineNo,
-              lineType: isOld ? 'old' : 'new',
+              anchor: (
+                path: path,
+                line: lineNo,
+                lineType: isOld ? 'old' : 'new',
+              ),
             );
         if (context.mounted) {
           ref.invalidate(
@@ -308,7 +313,8 @@ class _Meta extends StatelessWidget {
 }
 
 /// The commit's comment thread plus a composer. Line-anchored comments
-/// show their `path:line` next to the timestamp.
+/// show their `path:line` next to the timestamp. The comments API never
+/// returns ids, so comments can't be edited or deleted here.
 class _CommitComments extends ConsumerWidget {
   const _CommitComments({required this.projectId, required this.sha});
 
@@ -319,7 +325,6 @@ class _CommitComments extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final loc = (project: projectId as Object, sha: sha);
     final comments = ref.watch(commitCommentsProvider(loc));
-    final userId = ref.watch(sessionProvider).value?.user.id;
     final theme = Theme.of(context);
 
     return Column(
@@ -334,19 +339,13 @@ class _CommitComments extends ConsumerWidget {
               child: CircularProgressIndicator(),
             ),
           ),
-          error: (e, _) => Text(
-            'Could not load comments: $e',
-            style: theme.textTheme.bodySmall,
+          error: (e, _) => TextButton.icon(
+            icon: const Icon(Icons.refresh, size: 16),
+            label: Text('Could not load comments ($e)'),
+            onPressed: () => ref.invalidate(commitCommentsProvider(loc)),
           ),
           data: (list) => Column(
-            children: [
-              for (final c in list)
-                _CommentTile(
-                  comment: c,
-                  canDelete: c.id != 0 && c.author?.id == userId,
-                  onDelete: () => _delete(context, ref, c.id),
-                ),
-            ],
+            children: [for (final c in list) _CommentTile(comment: c)],
           ),
         ),
         const SizedBox(height: Insets.sm),
@@ -356,68 +355,20 @@ class _CommitComments extends ConsumerWidget {
             await ref
                 .read(repositoryRepositoryProvider)
                 .addCommitComment(projectId, sha, note: body);
-            ref.invalidate(commitCommentsProvider(loc));
+            if (context.mounted) {
+              ref.invalidate(commitCommentsProvider(loc));
+            }
           },
         ),
       ],
     );
   }
-
-  Future<void> _delete(
-    BuildContext context,
-    WidgetRef ref,
-    int commentId,
-  ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete comment?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) {
-      return;
-    }
-    try {
-      await ref
-          .read(repositoryRepositoryProvider)
-          .deleteCommitComment(projectId, sha, commentId);
-      ref.invalidate(commitCommentsProvider((project: projectId, sha: sha)));
-    } on ApiException catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
-      }
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not delete the comment')),
-        );
-      }
-    }
-  }
 }
 
 class _CommentTile extends StatelessWidget {
-  const _CommentTile({
-    required this.comment,
-    required this.canDelete,
-    required this.onDelete,
-  });
+  const _CommentTile({required this.comment});
 
   final CommitComment comment;
-  final bool canDelete;
-  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -475,21 +426,6 @@ class _CommentTile extends StatelessWidget {
                         fontSize: 10.5,
                       ),
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-                if (canDelete) ...[
-                  const SizedBox(width: Insets.xs),
-                  InkWell(
-                    onTap: onDelete,
-                    borderRadius: Radii.borderSm,
-                    child: Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: Icon(
-                        Icons.delete_outline,
-                        size: 15,
-                        color: colors.inkMuted,
-                      ),
                     ),
                   ),
                 ],
