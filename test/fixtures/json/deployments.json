@@ -1,0 +1,25 @@
+[
+  {
+    "id": 42,
+    "iid": 7,
+    "ref": "main",
+    "sha": "abcdef1234567890",
+    "status": "success",
+    "created_at": "2024-05-20T12:00:00.000Z",
+    "updated_at": "2024-05-20T12:05:00.000Z",
+    "user": {"id": 1, "username": "jane", "name": "Jane Doe"},
+    "environment": {"id": 9, "name": "production"},
+    "deployable": {"id": 99, "name": "deploy:prod", "status": "success"}
+  },
+  {
+    "id": 41,
+    "iid": 6,
+    "ref": "main",
+    "sha": "1234567890abcdef",
+    "status": "failed",
+    "created_at": "2024-05-19T12:00:00.000Z",
+    "user": {"id": 2, "username": "ci-bot", "name": "CI Bot"},
+    "environment": {"id": 9, "name": "production"},
+    "deployable": {"id": 98, "name": "deploy:prod", "status": "failed"}
+  }
+]
