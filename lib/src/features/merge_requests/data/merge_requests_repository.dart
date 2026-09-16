@@ -1,6 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
+import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -257,6 +258,78 @@ class MergeRequestsRepository {
     return _client.post(
       '${_p(projectId)}/merge_requests/$iid/notes',
       body: {'body': body},
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Threads (diff comments + regular comments), oldest first.
+  Future<Paginated<Discussion>> discussions(
+    Object projectId,
+    int iid, {
+    int page = 1,
+    int perPage = 30,
+  }) {
+    return _client.getPage(
+      '${_p(projectId)}/merge_requests/$iid/discussions',
+      query: {'per_page': perPage},
+      page: page,
+      decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Starts a new thread; pass [position] for a diff-line comment.
+  Future<Discussion> addDiscussion(
+    Object projectId,
+    int iid,
+    String body, {
+    NotePosition? position,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/discussions',
+      body: {
+        'body': body,
+        if (position != null)
+          'position': {
+            'base_sha': ?position.baseSha,
+            'start_sha': ?position.startSha,
+            'head_sha': ?position.headSha,
+            'position_type': 'text',
+            'old_path': ?position.oldPath,
+            'new_path': ?position.newPath,
+            'old_line': ?position.oldLine,
+            'new_line': ?position.newLine,
+          },
+      },
+      decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Replies inside an existing thread.
+  Future<Note> replyToDiscussion(
+    Object projectId,
+    int iid,
+    String discussionId,
+    String body,
+  ) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId/notes',
+      body: {'body': body},
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Marks the first note of a thread resolved/unresolved.
+  Future<Note> resolveDiscussion(
+    Object projectId,
+    int iid,
+    String discussionId,
+    int noteId, {
+    required bool resolved,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId/'
+      'notes/$noteId',
+      body: {'resolved': resolved},
       decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
     );
   }

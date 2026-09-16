@@ -13,6 +13,7 @@ class Note extends Equatable {
     this.resolvable = false,
     this.resolved = false,
     this.confidential = false,
+    this.position,
   });
 
   factory Note.fromJson(Map<String, dynamic> json) {
@@ -28,6 +29,9 @@ class Note extends Equatable {
       resolvable: json['resolvable'] as bool? ?? false,
       resolved: json['resolved'] as bool? ?? false,
       confidential: json['confidential'] as bool? ?? false,
+      position: json['position'] is Map<String, dynamic>
+          ? NotePosition.fromJson(json['position'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -43,9 +47,68 @@ class Note extends Equatable {
   final bool resolved;
   final bool confidential;
 
+  /// Set on diff notes created through the discussions API.
+  final NotePosition? position;
+
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
   @override
   List<Object?> get props => [id, body];
+}
+
+/// Where a diff note sits (`position` on notes returned by discussions).
+class NotePosition extends Equatable {
+  const NotePosition({
+    this.baseSha,
+    this.startSha,
+    this.headSha,
+    this.oldPath,
+    this.newPath,
+    this.oldLine,
+    this.newLine,
+  });
+
+  factory NotePosition.fromJson(Map<String, dynamic> json) => NotePosition(
+    baseSha: json['base_sha'] as String?,
+    startSha: json['start_sha'] as String?,
+    headSha: json['head_sha'] as String?,
+    oldPath: json['old_path'] as String?,
+    newPath: json['new_path'] as String?,
+    oldLine: json['old_line'] as int?,
+    newLine: json['new_line'] as int?,
+  );
+
+  final String? baseSha;
+  final String? startSha;
+  final String? headSha;
+  final String? oldPath;
+  final String? newPath;
+  final int? oldLine;
+  final int? newLine;
+
+  /// `path:line` label shown above diff threads.
+  String? get label {
+    final path = newPath ?? oldPath;
+    if (path == null) {
+      return null;
+    }
+    final line = newLine ?? oldLine;
+    return line == null ? path : '$path:$line';
+  }
+
+  /// Serialized for the `position[...]` params on create-discussion.
+  Map<String, dynamic> toQuery() => {
+    'position[base_sha]': ?baseSha,
+    'position[start_sha]': ?startSha,
+    'position[head_sha]': ?headSha,
+    'position[position_type]': 'text',
+    'position[old_path]': ?oldPath,
+    'position[new_path]': ?newPath,
+    'position[old_line]': ?oldLine,
+    'position[new_line]': ?newLine,
+  };
+
+  @override
+  List<Object?> get props => [oldPath, newPath, oldLine, newLine];
 }

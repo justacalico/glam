@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
@@ -135,5 +136,66 @@ class MrNotesNotifier extends PagedListNotifier<Note> {
         .addNote(loc.project, loc.iid, body);
     await refresh();
     return note;
+  }
+}
+
+/// Threaded discussions (diff comments + threads) for the overview tab.
+final mrDiscussionsProvider =
+    AsyncNotifierProvider.family<
+      MrDiscussionsNotifier,
+      PagedListState<Discussion>,
+      MrRef
+    >(MrDiscussionsNotifier.new);
+
+class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
+  MrDiscussionsNotifier(this.loc);
+
+  final MrRef loc;
+
+  @override
+  Future<Paginated<Discussion>> fetchPage(int page) {
+    return ref
+        .watch(mrRepositoryProvider)
+        .discussions(loc.project, loc.iid, page: page);
+  }
+
+  /// Top-level comment (individual note thread).
+  Future<void> addComment(String body) async {
+    await ref
+        .read(mrRepositoryProvider)
+        .addDiscussion(loc.project, loc.iid, body);
+    await refresh();
+  }
+
+  /// Comment pinned to a diff line.
+  Future<void> addDiffComment(String body, NotePosition position) async {
+    await ref
+        .read(mrRepositoryProvider)
+        .addDiscussion(loc.project, loc.iid, body, position: position);
+    await refresh();
+  }
+
+  Future<void> reply(String discussionId, String body) async {
+    await ref
+        .read(mrRepositoryProvider)
+        .replyToDiscussion(loc.project, loc.iid, discussionId, body);
+    await refresh();
+  }
+
+  Future<void> toggleResolved(Discussion discussion) async {
+    final first = discussion.notes.where((n) => n.resolvable).firstOrNull;
+    if (first == null) {
+      return;
+    }
+    await ref
+        .read(mrRepositoryProvider)
+        .resolveDiscussion(
+          loc.project,
+          loc.iid,
+          discussion.id,
+          first.id,
+          resolved: !discussion.resolved,
+        );
+    await refresh();
   }
 }

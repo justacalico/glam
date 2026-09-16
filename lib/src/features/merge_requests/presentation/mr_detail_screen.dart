@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/core/utils/diff_parser.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
@@ -18,13 +19,13 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
-import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
+import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -106,7 +107,7 @@ class _OverviewTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final notes = ref.watch(mrNotesProvider(loc));
+    final threads = ref.watch(mrDiscussionsProvider(loc));
 
     return Column(
       children: [
@@ -141,14 +142,16 @@ class _OverviewTab extends ConsumerWidget {
               const SizedBox(height: Insets.xl),
               Text('Activity', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: Insets.sm),
-              notes.when(
+              threads.when(
                 loading: () => const Padding(
                   padding: EdgeInsets.all(Insets.xl),
                   child: Center(child: CircularProgressIndicator()),
                 ),
                 error: (e, _) => ErrorView(error: e),
                 data: (state) {
-                  final visible = state.items.where((n) => !n.system).toList();
+                  final visible = state.items
+                      .where((d) => d.notes.any((n) => !n.system))
+                      .toList();
                   if (visible.isEmpty) {
                     return Padding(
                       padding: const EdgeInsets.all(Insets.lg),
@@ -160,18 +163,8 @@ class _OverviewTab extends ConsumerWidget {
                   }
                   return Column(
                     children: [
-                      for (final note in visible)
-                        NoteCard(
-                          note: note,
-                          footer: ReactionsRow(
-                            loc: (
-                              kind: 'mr',
-                              project: loc.project,
-                              iid: loc.iid,
-                              noteId: note.id,
-                            ),
-                          ),
-                        ),
+                      for (final d in visible)
+                        DiscussionCard(discussion: d, loc: loc),
                     ],
                   );
                 },
@@ -183,7 +176,9 @@ class _OverviewTab extends ConsumerWidget {
         if (mr.isOpen)
           CommentComposer(
             onSend: (body) async {
-              await ref.read(mrNotesProvider(loc).notifier).addComment(body);
+              await ref
+                  .read(mrDiscussionsProvider(loc).notifier)
+                  .addComment(body);
             },
           ),
       ],
@@ -601,6 +596,7 @@ class _ChangesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final changes = ref.watch(mrChangesProvider(loc));
+    final diffRefs = ref.watch(mrProvider(loc)).value?.diffRefs;
 
     return AsyncValueWidget<List<ChangeEntry>>(
       value: changes,
@@ -616,20 +612,27 @@ class _ChangesTab extends ConsumerWidget {
           padding: Insets.pagePadding,
           itemCount: entries.length,
           separatorBuilder: (_, _) => const SizedBox(height: Insets.md),
-          itemBuilder: (context, index) => _ChangeCard(entry: entries[index]),
+          itemBuilder: (context, index) =>
+              _ChangeCard(entry: entries[index], loc: loc, diffRefs: diffRefs),
         );
       },
     );
   }
 }
 
-class _ChangeCard extends StatelessWidget {
-  const _ChangeCard({required this.entry});
+class _ChangeCard extends ConsumerWidget {
+  const _ChangeCard({
+    required this.entry,
+    required this.loc,
+    required this.diffRefs,
+  });
 
   final ChangeEntry entry;
+  final MrRef loc;
+  final DiffRefs? diffRefs;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final diff = FileDiff(
       oldPath: entry.oldPath,
@@ -707,11 +710,85 @@ class _ChangeCard extends StatelessWidget {
           else
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: SizedBox(width: 1100, child: DiffViewer(diff: diff)),
+              child: SizedBox(
+                width: 1100,
+                child: DiffViewer(
+                  diff: diff,
+                  onLineTap: diffRefs == null
+                      ? null
+                      : (line) => _commentOnLine(context, ref, line),
+                ),
+              ),
             ),
         ],
       ),
     );
+  }
+
+  Future<void> _commentOnLine(
+    BuildContext context,
+    WidgetRef ref,
+    DiffLine line,
+  ) async {
+    final controller = TextEditingController();
+    final refs = diffRefs!;
+    final body = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          left: Insets.lg,
+          right: Insets.lg,
+          bottom: MediaQuery.viewInsetsOf(context).bottom + Insets.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Comment on ${entry.displayPath}:'
+              '${line.newLine ?? line.oldLine ?? ''}',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: Insets.sm),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              minLines: 2,
+              maxLines: 5,
+              decoration: const InputDecoration(hintText: 'Write a comment…'),
+            ),
+            const SizedBox(height: Insets.md),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton(
+                onPressed: () => Navigator.pop(context, controller.text.trim()),
+                child: const Text('Comment'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (body == null || body.isEmpty || !context.mounted) {
+      return;
+    }
+    final isOldSide = line.kind == DiffLineKind.removed;
+    await ref
+        .read(mrDiscussionsProvider(loc).notifier)
+        .addDiffComment(
+          body,
+          NotePosition(
+            baseSha: refs.baseSha,
+            startSha: refs.startSha,
+            headSha: refs.headSha,
+            oldPath: entry.oldPath,
+            newPath: entry.newPath,
+            oldLine: isOldSide ? line.oldLine : null,
+            newLine: isOldSide ? null : line.newLine,
+          ),
+        );
   }
 }
 
