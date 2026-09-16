@@ -1,0 +1,39 @@
+[
+  {
+    "id": 5001,
+    "name": "lint",
+    "status": "success",
+    "stage": "test",
+    "ref": "main",
+    "started_at": "2025-07-12T10:00:30.000+00:00",
+    "finished_at": "2025-07-12T10:02:00.000+00:00",
+    "duration": 90.0,
+    "allow_failure": false,
+    "tag_list": ["flutter", "docker"],
+    "user": {
+      "id": 7,
+      "name": "Jane Doe",
+      "username": "jane"
+    },
+    "web_url": "https://gitlab.example.com/calico/glam/-/jobs/5001"
+  },
+  {
+    "id": 5002,
+    "name": "unit tests",
+    "status": "failed",
+    "stage": "test",
+    "ref": "main",
+    "duration": 240.2,
+    "allow_failure": false,
+    "tag_list": []
+  },
+  {
+    "id": 5003,
+    "name": "deploy staging",
+    "status": "manual",
+    "stage": "deploy",
+    "ref": "main",
+    "allow_failure": false,
+    "tag_list": []
+  }
+]
