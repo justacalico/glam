@@ -1,0 +1,16 @@
+[
+  {
+    "id": 55,
+    "title": "CI runner",
+    "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFakeKeyMaterial0AbCdEfGhIjKl ci@runner",
+    "can_push": false,
+    "created_at": "2024-03-15T08:00:00.000Z"
+  },
+  {
+    "id": 56,
+    "title": "Deploy bot",
+    "key": "ssh-ed25519 BBBBD4ObBm2oOEj6OUF7BHblFmLzNpQsTuVwXyZaBcDe deploy@bot",
+    "can_push": true,
+    "created_at": "2024-03-20T08:00:00.000Z"
+  }
+]

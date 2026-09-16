@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Prefix non-conventional subjects with misc: so cog check keeps working.
+msg_file="$1"
+subject="$(head -n1 "$msg_file")"
+if ! printf '%s' "$subject" | grep -qE '^(feat|fix|chore|ci|docs|refactor|style|test|perf|revert|build|misc)(\(.+\))?!?: '; then
+  case "$subject" in
+    Merge\ *|Revert\ *) exit 0 ;;
+  esac
+  sed -i "1s/^/misc: /" "$msg_file"
+fi

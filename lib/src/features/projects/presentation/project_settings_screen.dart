@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/presentation/project_admin_sections.dart';
 
 /// Project settings: general info, feature toggles, archive, and CI/CD
 /// variables.
@@ -32,6 +33,12 @@ class ProjectSettingsScreen extends ConsumerWidget {
             _FeaturesSection(project: p),
             const SizedBox(height: Insets.xl),
             _VariablesSection(project: p),
+            const SizedBox(height: Insets.xl),
+            WebhooksSection(project: p),
+            const SizedBox(height: Insets.xl),
+            DeployKeysSection(project: p),
+            const SizedBox(height: Insets.xl),
+            ProtectedBranchesSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),
@@ -403,25 +410,32 @@ class _VariablesSection extends ConsumerWidget {
       ),
     );
 
-    if (saved == true && key.text.trim().isNotEmpty) {
+    final k = key.text.trim();
+    final v = value.text;
+    final s = scope.text.trim();
+    key.dispose();
+    value.dispose();
+    scope.dispose();
+
+    if (saved == true && k.isNotEmpty && context.mounted) {
       final repo = ref.read(projectsRepositoryProvider);
       if (existing == null) {
         await repo.createVariable(
           project.id,
-          key: key.text.trim(),
-          value: value.text,
+          key: k,
+          value: v,
           protected_: protected_,
           masked: masked,
-          environmentScope: scope.text.trim().isEmpty ? '*' : scope.text.trim(),
+          environmentScope: s.isEmpty ? '*' : s,
         );
       } else {
         await repo.updateVariable(
           project.id,
           existing.key,
-          value: value.text,
+          value: v,
           protected_: protected_,
           masked: masked,
-          environmentScope: scope.text.trim(),
+          environmentScope: s,
         );
       }
       ref.invalidate(projectVariablesProvider(project.id));
