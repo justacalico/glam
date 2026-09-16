@@ -14,6 +14,8 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/groups/presentation/groups_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
+import 'package:glam/src/features/labels/presentation/labels_screen.dart';
+import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
 
 /// Group home: header plus tabs for projects, subgroups, members.
@@ -42,7 +44,7 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 3,
+          length: 5,
           child: Column(
             children: [
               _GroupHeader(group: g),
@@ -51,6 +53,8 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Projects'),
                   Tab(text: 'Subgroups'),
                   Tab(text: 'Members'),
+                  Tab(text: 'Milestones'),
+                  Tab(text: 'Labels'),
                 ],
               ),
               Expanded(
@@ -59,6 +63,8 @@ class GroupDetailScreen extends ConsumerWidget {
                     _ProjectsTab(groupId: groupId),
                     _SubgroupsTab(groupId: groupId),
                     MembersList(id: groupId, isProject: false),
+                    MilestonesTab(scope: (id: groupId, isProject: false)),
+                    LabelsTab(scope: (id: groupId, isProject: false)),
                   ],
                 ),
               ),

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 71,
+    "name": "bug",
+    "color": "#d9534f",
+    "text_color": "#FFFFFF",
+    "description": "Something is broken",
+    "open_issues_count": 3,
+    "open_merge_requests_count": 1
+  },
+  {
+    "id": 72,
+    "name": "priority::high",
+    "color": "#428fdc",
+    "text_color": "#FFFFFF"
+  }
+]

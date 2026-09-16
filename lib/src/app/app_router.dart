@@ -14,6 +14,7 @@ import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
+import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/job_detail_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipeline_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
@@ -135,6 +136,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'search',
                         builder: (context, state) => SearchScreen(
                           projectId: state.pathParameters['id']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'milestones/:mid',
+                        builder: (context, state) => MilestoneDetailScreen(
+                          loc: (
+                            projectId: state.pathParameters['id']!,
+                            milestoneId: int.parse(
+                              state.pathParameters['mid']!,
+                            ),
+                          ),
                         ),
                       ),
                       GoRoute(
