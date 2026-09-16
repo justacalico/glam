@@ -1,0 +1,36 @@
+[
+  {
+    "id": 900,
+    "iid": 34,
+    "project_id": 42,
+    "status": "success",
+    "source": "push",
+    "ref": "main",
+    "sha": "6104942438c14ec7bd21c6cd5bd995272b3faff6",
+    "created_at": "2025-07-12T10:00:00.000+00:00",
+    "updated_at": "2025-07-12T10:12:00.000+00:00",
+    "started_at": "2025-07-12T10:00:30.000+00:00",
+    "finished_at": "2025-07-12T10:12:00.000+00:00",
+    "duration": 692.5,
+    "user": {
+      "id": 7,
+      "name": "Jane Doe",
+      "username": "jane",
+      "avatar_url": null,
+      "web_url": "https://gitlab.example.com/jane"
+    },
+    "web_url": "https://gitlab.example.com/calico/glam/-/pipelines/900"
+  },
+  {
+    "id": 901,
+    "iid": 35,
+    "project_id": 42,
+    "status": "running",
+    "source": "merge_request_event",
+    "ref": "feature/files",
+    "sha": "abc123",
+    "created_at": "2025-07-13T08:00:00.000+00:00",
+    "user": null,
+    "web_url": null
+  }
+]
