@@ -1,0 +1,12 @@
+[
+  {
+    "name": "latest",
+    "path": "team/glam:latest",
+    "location": "registry.gitlab.com/team/glam:latest"
+  },
+  {
+    "name": "v1.0.0",
+    "path": "team/glam:v1.0.0",
+    "location": "registry.gitlab.com/team/glam:v1.0.0"
+  }
+]

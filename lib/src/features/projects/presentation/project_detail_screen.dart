@@ -19,6 +19,8 @@ import 'package:glam/src/features/milestones/presentation/milestones_screen.dart
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
+import 'package:glam/src/features/registry/presentation/packages_tab.dart';
+import 'package:glam/src/features/registry/presentation/registry_tab.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
@@ -94,6 +96,14 @@ class _ProjectBody extends ConsumerWidget {
       (
         label: 'Members',
         builder: () => MembersList(id: project.id, isProject: true),
+      ),
+      (
+        label: 'Packages',
+        builder: () => ProjectPackagesTab(projectId: project.id),
+      ),
+      (
+        label: 'Registry',
+        builder: () => ProjectRegistryTab(projectId: project.id),
       ),
       (
         label: 'Snippets',

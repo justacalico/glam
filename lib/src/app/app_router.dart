@@ -12,6 +12,7 @@ import 'package:glam/src/features/groups/presentation/groups_screen.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/environments/presentation/environment_detail_screen.dart';
+import 'package:glam/src/features/registry/presentation/registry_tags_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
@@ -174,6 +175,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                           projectId: state.pathParameters['id']!,
                           jobId: int.parse(state.pathParameters['jid']!),
                         ),
+                      ),
+                      GoRoute(
+                        path: 'registry/:rid',
+                        builder: (context, state) {
+                          final extra =
+                              state.extra as ({Object project, String name})?;
+                          return RegistryTagsScreen(
+                            loc: (
+                              project:
+                                  extra?.project ?? state.pathParameters['id']!,
+                              repoId: int.parse(state.pathParameters['rid']!),
+                            ),
+                            repoName: extra?.name,
+                          );
+                        },
                       ),
                       GoRoute(
                         path: 'environments/:eid',

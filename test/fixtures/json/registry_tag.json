@@ -1,0 +1,10 @@
+{
+  "name": "latest",
+  "path": "team/glam:latest",
+  "location": "registry.gitlab.com/team/glam:latest",
+  "revision": "sha256:abc123",
+  "short_revision": "abc123",
+  "digest": "sha256:def456",
+  "total_size": 52428800,
+  "created_at": "2024-04-10T08:00:00.000Z"
+}
