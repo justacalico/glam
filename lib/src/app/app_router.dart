@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
@@ -5,7 +6,11 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/presentation/login_screen.dart';
 import 'package:glam/src/features/home/presentation/app_shell.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
+import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
+import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
+import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
+import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/settings/presentation/settings_screen.dart';
 
 /// go_router wiring. The shell is a [StatefulShellRoute] so each top
@@ -56,6 +61,42 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.projects,
                 builder: (context, state) => const ProjectsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => ProjectDetailScreen(
+                      projectId: state.pathParameters['id']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'tree',
+                        builder: (context, state) => Scaffold(
+                          appBar: AppBar(title: const Text('Files')),
+                          body: FilesScreen(
+                            projectId: state.pathParameters['id']!,
+                            defaultRef: state.uri.queryParameters['ref'],
+                            path: state.uri.queryParameters['path'],
+                          ),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'blob',
+                        builder: (context, state) => FileViewerScreen(
+                          projectId: state.pathParameters['id']!,
+                          path: state.uri.queryParameters['path'] ?? '',
+                          ref: state.uri.queryParameters['ref'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'commit/:sha',
+                        builder: (context, state) => CommitDetailScreen(
+                          projectId: state.pathParameters['id']!,
+                          sha: state.pathParameters['sha']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

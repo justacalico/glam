@@ -50,8 +50,9 @@ void main() {
 
   test('star/unstar post to the right endpoints', () async {
     final (client, adapter) = testClient();
-    adapter.post('/projects/42/star', fixtureJson('project'));
-    adapter.post('/projects/42/unstar', fixtureJson('project'));
+    adapter
+      ..post('/projects/42/star', fixtureJson('project'))
+      ..post('/projects/42/unstar', fixtureJson('project'));
     final repo = ProjectsRepository(client);
 
     await repo.star(42);
