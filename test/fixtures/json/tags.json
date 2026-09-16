@@ -1,0 +1,29 @@
+[
+  {
+    "name": "v1.2.0",
+    "message": "Version 1.2.0",
+    "target": "269a1aefba04cb5d48f0f82c31eb5d867f5b45c1",
+    "commit": {
+      "id": "269a1aefba04cb5d48f0f82c31eb5d867f5b45c1",
+      "title": "release prep",
+      "committed_date": "2025-07-02T10:00:00.000+00:00"
+    },
+    "release": {
+      "tag_name": "v1.2.0",
+      "name": "1.2.0",
+      "description": "stable"
+    },
+    "protected": false
+  },
+  {
+    "name": "v1.1.0",
+    "message": null,
+    "commit": {
+      "id": "189a1aefba04cb5d48f0f82c31eb5d867f5b45c2",
+      "title": "fix lint",
+      "committed_date": "2025-05-11T08:30:00.000+00:00"
+    },
+    "release": null,
+    "protected": true
+  }
+]

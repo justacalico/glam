@@ -1,0 +1,33 @@
+[
+  {
+    "tag_name": "v1.2.0",
+    "name": "1.2.0",
+    "description": "## Changes\n\n- new file browser\n- fixes",
+    "released_at": "2025-07-02T10:05:00.000+00:00",
+    "created_at": "2025-07-02T09:00:00.000+00:00",
+    "upcoming_release": false,
+    "author": {
+      "id": 7,
+      "name": "Jane Doe",
+      "username": "jane",
+      "avatar_url": null,
+      "web_url": "https://gitlab.example.com/jane"
+    },
+    "commit": {
+      "id": "269a1aefba04cb5d48f0f82c31eb5d867f5b45c1"
+    },
+    "milestones": [],
+    "assets": {
+      "count": 1,
+      "links": [
+        {
+          "id": 11,
+          "name": "glam-linux.tar.gz",
+          "url": "https://gitlab.example.com/calico/glam/-/releases/v1.2.0/downloads/glam-linux.tar.gz",
+          "direct_asset_url": "https://dl.example.com/glam-linux.tar.gz",
+          "link_type": "package"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "id": "6104942438c14ec7bd21c6cd5bd995272b3faff6",
+  "short_id": "61049424",
+  "title": "Sanitize for network graph",
+  "message": "Sanitize for network graph\n\nFixes edge case",
+  "author_name": "Venkatesh Thalluri",
+  "author_email": "venkatesh@example.com",
+  "authored_date": "2025-10-14T12:44:00.000+02:00",
+  "committer_name": "Venkatesh Thalluri",
+  "committer_email": "venkatesh@example.com",
+  "committed_date": "2025-10-14T12:44:00.000+02:00",
+  "created_at": "2025-10-14T12:44:00.000+02:00",
+  "parent_ids": [
+    "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba",
+    "bb2d9fb46aa2b07ee9836d49862ec4e2c46fbbcc"
+  ],
+  "web_url": "https://gitlab.example.com/calico/glam/-/commit/6104942438c14ec7bd21c6cd5bd995272b3faff6",
+  "author_avatar_url": null,
+  "stats": {
+    "additions": 15,
+    "deletions": 10,
+    "total": 25
+  },
+  "status": null
+}
