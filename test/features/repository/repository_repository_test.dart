@@ -168,8 +168,8 @@ void main() {
     test('compare decodes same-ref and timeout flags', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/repository/compare', {
-        'commits': const [],
-        'diffs': const [],
+        'commits': const <Object?>[],
+        'diffs': const <Object?>[],
         'compare_timeout': true,
         'compare_same_ref': true,
       });
