@@ -37,7 +37,6 @@ linter:
     - prefer_single_quotes
     - require_trailing_commas
     - sort_pub_dependencies
-    - tighten_type_of_initialize_list
     - unawaited_futures
     - unnecessary_await_in_return
     - unnecessary_breaks

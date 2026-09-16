@@ -3,7 +3,9 @@ import 'dart:io';
 void main(List<String> args) {
   final file = File('coverage/lcov.info');
   if (!file.existsSync()) {
-    stderr.writeln('coverage/lcov.info not found. Run flutter test --coverage.');
+    stderr.writeln(
+      'coverage/lcov.info not found. Run flutter test --coverage.',
+    );
     exit(1);
   }
 
@@ -44,9 +46,11 @@ void main(List<String> args) {
   }
 
   final overall = totalLines == 0 ? 0.0 : totalHit / totalLines * 100;
-  stdout.writeln('-' * 72);
-  stdout.writeln(
-      'TOTAL: ${overall.toStringAsFixed(2)}% ($totalHit/$totalLines lines)');
+  stdout
+    ..writeln('-' * 72)
+    ..writeln(
+      'TOTAL: ${overall.toStringAsFixed(2)}% ($totalHit/$totalLines lines)',
+    );
   if (overall < 100) {
     exitCode = 2;
   }
