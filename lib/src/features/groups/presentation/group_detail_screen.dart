@@ -27,7 +27,17 @@ class GroupDetailScreen extends ConsumerWidget {
     final group = ref.watch(groupProvider(groupId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Group')),
+      appBar: AppBar(
+        title: const Text('Group'),
+        actions: [
+          IconButton(
+            tooltip: 'Search this group',
+            icon: const Icon(Icons.search, size: 20),
+            onPressed: () =>
+                unawaited(context.push(Routes.groupSearch(groupId))),
+          ),
+        ],
+      ),
       body: AsyncValueWidget<Group>(
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),

@@ -81,6 +81,13 @@ const navDestinations = <NavDestination>[
   ),
   NavDestination(
     branch: 7,
+    path: '/search',
+    icon: Icons.search_outlined,
+    selectedIcon: Icons.search,
+    label: 'Search',
+  ),
+  NavDestination(
+    branch: 8,
     path: '/settings',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,

@@ -19,6 +19,7 @@ import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
 import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
+import 'package:glam/src/features/search/presentation/search_screen.dart';
 import 'package:glam/src/features/settings/presentation/settings_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_detail_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
@@ -127,6 +128,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                       GoRoute(
+                        path: 'search',
+                        builder: (context, state) => SearchScreen(
+                          projectId: state.pathParameters['id']!,
+                        ),
+                      ),
+                      GoRoute(
                         path: 'jobs/:jid',
                         builder: (context, state) => JobDetailScreen(
                           projectId: state.pathParameters['id']!,
@@ -173,6 +180,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: ':id',
                     builder: (context, state) =>
                         GroupDetailScreen(groupId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'search',
+                        builder: (context, state) =>
+                            SearchScreen(groupId: state.pathParameters['id']!),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -194,6 +208,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.search,
+                builder: (context, state) => const SearchScreen(),
               ),
             ],
           ),
