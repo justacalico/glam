@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
 
 /// Repository file browser: folder listing with a breadcrumb and a
 /// branch/ref selector.
@@ -137,6 +138,24 @@ class _PathBar extends ConsumerWidget {
               ],
             ),
           ),
+          if (ref != null)
+            IconButton(
+              tooltip: 'New file',
+              icon: Icon(Icons.add, size: 18, color: colors.inkMuted),
+              onPressed: () async {
+                final committed = await FileEditorScreen.show(
+                  context,
+                  projectId: projectId,
+                  branch: ref!,
+                  pathPrefix: path == null ? '' : '$path/',
+                );
+                if (committed == true) {
+                  refScope.invalidate(
+                    treeProvider((project: projectId, ref: ref, path: path)),
+                  );
+                }
+              },
+            ),
           const SizedBox(width: Insets.sm),
         ],
       ),

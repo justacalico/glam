@@ -9,6 +9,7 @@ import 'package:glam/src/core/widgets/code_viewer.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
 
 /// Full-screen file viewer: rendered markdown for docs, highlighted code
 /// for everything else, with copy/raw actions.
@@ -54,9 +55,41 @@ class FileViewerScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            tooltip: 'Edit file',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: ref == null || file.value == null
+                ? null
+                : () async {
+                    final committed = await FileEditorScreen.show(
+                      context,
+                      projectId: projectId,
+                      branch: ref!,
+                      path: path,
+                      initialContent: file.value!.decodedContent,
+                    );
+                    if (committed == true) {
+                      refScope.invalidate(repoFileProvider(location));
+                    }
+                  },
+          ),
+          IconButton(
             tooltip: 'Copy contents',
             icon: const Icon(Icons.copy_outlined),
             onPressed: () => _copy(context, file.value),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (action) async {
+              if (action == 'delete' && ref != null) {
+                await _delete(context, refScope);
+              }
+            },
+            itemBuilder: (context) => [
+              if (ref != null)
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Text('Delete file'),
+                ),
+            ],
           ),
         ],
       ),
@@ -77,6 +110,40 @@ class FileViewerScreen extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+    }
+  }
+
+  Future<void> _delete(BuildContext context, WidgetRef refScope) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete $path?'),
+        content: const Text('A commit removing this file will be created.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) {
+      return;
+    }
+    await refScope
+        .read(repositoryRepositoryProvider)
+        .deleteFile(
+          projectId,
+          path,
+          branch: ref!,
+          commitMessage: 'Delete $path',
+        );
+    if (context.mounted) {
+      Navigator.pop(context);
     }
   }
 }
