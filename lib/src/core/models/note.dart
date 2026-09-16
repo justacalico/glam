@@ -87,27 +87,20 @@ class NotePosition extends Equatable {
   final int? oldLine;
   final int? newLine;
 
-  /// `path:line` label shown above diff threads.
+  /// `path:line` label shown above diff threads. Old-side comments
+  /// report the old path and line; new-side and context comments the
+  /// new ones.
   String? get label {
-    final path = newPath ?? oldPath;
-    if (path == null) {
-      return null;
+    if (newLine != null) {
+      final path = newPath ?? oldPath;
+      return path == null ? null : '$path:$newLine';
     }
-    final line = newLine ?? oldLine;
-    return line == null ? path : '$path:$line';
+    if (oldLine != null) {
+      final path = oldPath ?? newPath;
+      return path == null ? null : '$path:$oldLine';
+    }
+    return newPath ?? oldPath;
   }
-
-  /// Serialized for the `position[...]` params on create-discussion.
-  Map<String, dynamic> toQuery() => {
-    'position[base_sha]': ?baseSha,
-    'position[start_sha]': ?startSha,
-    'position[head_sha]': ?headSha,
-    'position[position_type]': 'text',
-    'position[old_path]': ?oldPath,
-    'position[new_path]': ?newPath,
-    'position[old_line]': ?oldLine,
-    'position[new_line]': ?newLine,
-  };
 
   @override
   List<Object?> get props => [oldPath, newPath, oldLine, newLine];

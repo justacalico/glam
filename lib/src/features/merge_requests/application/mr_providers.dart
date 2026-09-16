@@ -113,32 +113,6 @@ class MrCommitsNotifier extends PagedListNotifier<Commit> {
   }
 }
 
-final mrNotesProvider =
-    AsyncNotifierProvider.family<MrNotesNotifier, PagedListState<Note>, MrRef>(
-      MrNotesNotifier.new,
-    );
-
-class MrNotesNotifier extends PagedListNotifier<Note> {
-  MrNotesNotifier(this.loc);
-
-  final MrRef loc;
-
-  @override
-  Future<Paginated<Note>> fetchPage(int page) {
-    return ref
-        .watch(mrRepositoryProvider)
-        .notes(loc.project, loc.iid, page: page);
-  }
-
-  Future<Note> addComment(String body) async {
-    final note = await ref
-        .read(mrRepositoryProvider)
-        .addNote(loc.project, loc.iid, body);
-    await refresh();
-    return note;
-  }
-}
-
 /// Threaded discussions (diff comments + threads) for the overview tab.
 final mrDiscussionsProvider =
     AsyncNotifierProvider.family<
@@ -159,43 +133,50 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
         .discussions(loc.project, loc.iid, page: page);
   }
 
-  /// Top-level comment (individual note thread).
+  /// Top-level comment (individual note thread). New threads land at
+  /// the end — GitLab returns discussions oldest-first.
   Future<void> addComment(String body) async {
-    await ref
+    final d = await ref
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body);
-    await refresh();
+    updateItems((items) => [...items, d]);
   }
 
   /// Comment pinned to a diff line.
   Future<void> addDiffComment(String body, NotePosition position) async {
-    await ref
+    final d = await ref
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body, position: position);
-    await refresh();
+    updateItems((items) => [...items, d]);
   }
 
+  /// Replies in a thread, then reloads just that thread so pages
+  /// already loaded stay put.
   Future<void> reply(String discussionId, String body) async {
-    await ref
-        .read(mrRepositoryProvider)
-        .replyToDiscussion(loc.project, loc.iid, discussionId, body);
-    await refresh();
+    final repo = ref.read(mrRepositoryProvider);
+    await repo.replyToDiscussion(loc.project, loc.iid, discussionId, body);
+    final updated = await repo.discussion(loc.project, loc.iid, discussionId);
+    _replace(updated);
   }
 
   Future<void> toggleResolved(Discussion discussion) async {
-    final first = discussion.notes.where((n) => n.resolvable).firstOrNull;
-    if (first == null) {
+    if (!discussion.resolvable) {
       return;
     }
-    await ref
+    final updated = await ref
         .read(mrRepositoryProvider)
-        .resolveDiscussion(
+        .setDiscussionResolved(
           loc.project,
           loc.iid,
           discussion.id,
-          first.id,
           resolved: !discussion.resolved,
         );
-    await refresh();
+    _replace(updated);
+  }
+
+  void _replace(Discussion updated) {
+    updateItems(
+      (items) => [for (final d in items) d.id == updated.id ? updated : d],
+    );
   }
 }

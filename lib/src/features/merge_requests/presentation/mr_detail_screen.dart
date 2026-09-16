@@ -112,65 +112,94 @@ class _OverviewTab extends ConsumerWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: Insets.pagePadding,
-            children: [
-              _MrHeader(mr: mr),
-              const SizedBox(height: Insets.lg),
-              if (mr.isOpen) _MergeBox(mr: mr, loc: loc),
-              if (mr.description?.isNotEmpty ?? false) ...[
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (n) {
+              if (n.metrics.pixels > n.metrics.maxScrollExtent - 400) {
+                unawaited(
+                  ref.read(mrDiscussionsProvider(loc).notifier).loadMore(),
+                );
+              }
+              return false;
+            },
+            child: ListView(
+              padding: Insets.pagePadding,
+              children: [
+                _MrHeader(mr: mr),
                 const SizedBox(height: Insets.lg),
-                Container(
-                  padding: const EdgeInsets.all(Insets.lg),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    borderRadius: Radii.borderMd,
-                    border: Border.all(color: colors.border),
+                if (mr.isOpen) _MergeBox(mr: mr, loc: loc),
+                if (mr.description?.isNotEmpty ?? false) ...[
+                  const SizedBox(height: Insets.lg),
+                  Container(
+                    padding: const EdgeInsets.all(Insets.lg),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: Radii.borderMd,
+                      border: Border.all(color: colors.border),
+                    ),
+                    child: MarkdownViewer(data: mr.description!),
                   ),
-                  child: MarkdownViewer(data: mr.description!),
+                ],
+                const SizedBox(height: Insets.md),
+                ReactionsRow(
+                  loc: (
+                    kind: 'mr',
+                    project: loc.project,
+                    iid: loc.iid,
+                    noteId: null,
+                  ),
                 ),
-              ],
-              const SizedBox(height: Insets.md),
-              ReactionsRow(
-                loc: (
-                  kind: 'mr',
-                  project: loc.project,
-                  iid: loc.iid,
-                  noteId: null,
+                const SizedBox(height: Insets.xl),
+                Text(
+                  'Activity',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-              ),
-              const SizedBox(height: Insets.xl),
-              Text('Activity', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: Insets.sm),
-              threads.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(Insets.xl),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) => ErrorView(error: e),
-                data: (state) {
-                  final visible = state.items
-                      .where((d) => d.notes.any((n) => !n.system))
-                      .toList();
-                  if (visible.isEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.all(Insets.lg),
-                      child: Text(
-                        'No comments yet',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                const SizedBox(height: Insets.sm),
+                threads.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(Insets.xl),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, _) => ErrorView(
+                    error: e,
+                    onRetry: () => ref.invalidate(mrDiscussionsProvider(loc)),
+                  ),
+                  data: (state) {
+                    final visible = state.items
+                        .where((d) => d.notes.any((n) => !n.system))
+                        .toList();
+                    return Column(
+                      children: [
+                        if (visible.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(Insets.lg),
+                            child: Text(
+                              'No comments yet',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        for (final d in visible)
+                          DiscussionCard(discussion: d, loc: loc),
+                        if (state.loadingMore)
+                          const Padding(
+                            padding: EdgeInsets.all(Insets.lg),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else if (state.loadMoreFailed)
+                          Center(
+                            child: TextButton(
+                              onPressed: () => ref
+                                  .read(mrDiscussionsProvider(loc).notifier)
+                                  .loadMore(),
+                              child: const Text('Load more failed. Retry'),
+                            ),
+                          ),
+                      ],
                     );
-                  }
-                  return Column(
-                    children: [
-                      for (final d in visible)
-                        DiscussionCard(discussion: d, loc: loc),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: Insets.xl),
-            ],
+                  },
+                ),
+                const SizedBox(height: Insets.xl),
+              ],
+            ),
           ),
         ),
         if (mr.isOpen)
@@ -731,7 +760,6 @@ class _ChangeCard extends ConsumerWidget {
     DiffLine line,
   ) async {
     final controller = TextEditingController();
-    final refs = diffRefs!;
     final body = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -771,24 +799,46 @@ class _ChangeCard extends ConsumerWidget {
         ),
       ),
     );
+    controller.dispose();
     if (body == null || body.isEmpty || !context.mounted) {
       return;
     }
-    final isOldSide = line.kind == DiffLineKind.removed;
-    await ref
-        .read(mrDiscussionsProvider(loc).notifier)
-        .addDiffComment(
-          body,
-          NotePosition(
-            baseSha: refs.baseSha,
-            startSha: refs.startSha,
-            headSha: refs.headSha,
-            oldPath: entry.oldPath,
-            newPath: entry.newPath,
-            oldLine: isOldSide ? line.oldLine : null,
-            newLine: isOldSide ? null : line.newLine,
-          ),
-        );
+    // Re-read at send time: pushed commits move the diff refs.
+    final refs = ref.read(mrProvider(loc)).value?.diffRefs ?? diffRefs;
+    if (refs?.baseSha == null ||
+        refs?.startSha == null ||
+        refs?.headSha == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Missing diff refs. Refresh the MR and try again.'),
+        ),
+      );
+      return;
+    }
+    // Removed lines anchor on the old side, added on the new, context
+    // on both — GitLab needs the pair to compute the line code.
+    try {
+      await ref
+          .read(mrDiscussionsProvider(loc).notifier)
+          .addDiffComment(
+            body,
+            NotePosition(
+              baseSha: refs!.baseSha,
+              startSha: refs.startSha,
+              headSha: refs.headSha,
+              oldPath: entry.oldPath,
+              newPath: entry.newPath,
+              oldLine: line.kind == DiffLineKind.added ? null : line.oldLine,
+              newLine: line.kind == DiffLineKind.removed ? null : line.newLine,
+            ),
+          );
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 
