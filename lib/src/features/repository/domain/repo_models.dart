@@ -432,6 +432,41 @@ class ReleaseLink extends Equatable {
   List<Object?> get props => [name, url];
 }
 
+/// Result of `/repository/compare`: the commits `to` has that `from`
+/// lacks, plus the full diff between the two refs.
+class CompareResult extends Equatable {
+  const CompareResult({
+    required this.commits,
+    required this.diffs,
+    this.compareTimeout = false,
+    this.compareSameRef = false,
+  });
+
+  factory CompareResult.fromJson(Map<String, dynamic> json) {
+    List<T> list<T>(String key, T Function(Map<String, dynamic>) decode) =>
+        json[key] is List
+        ? (json[key] as List)
+              .whereType<Map<String, dynamic>>()
+              .map(decode)
+              .toList()
+        : const [];
+    return CompareResult(
+      commits: list('commits', Commit.fromJson),
+      diffs: list('diffs', ChangeEntry.fromJson),
+      compareTimeout: json['compare_timeout'] as bool? ?? false,
+      compareSameRef: json['compare_same_ref'] as bool? ?? false,
+    );
+  }
+
+  final List<Commit> commits;
+  final List<ChangeEntry> diffs;
+  final bool compareTimeout;
+  final bool compareSameRef;
+
+  @override
+  List<Object?> get props => [commits, diffs, compareTimeout, compareSameRef];
+}
+
 /// A `git blame` hunk: a commit plus the lines it last touched.
 class BlameHunk extends Equatable {
   const BlameHunk({required this.commit, required this.lines});

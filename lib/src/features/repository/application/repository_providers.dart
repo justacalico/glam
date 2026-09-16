@@ -59,6 +59,15 @@ final repoFileProvider = FutureProvider.family<RepoFile, FileLocation>(
       .file(loc.project, loc.path, ref: loc.ref),
 );
 
+/// (project, from, to) for a ref comparison.
+typedef CompareLocation = ({Object project, String from, String to});
+
+final compareProvider = FutureProvider.family<CompareResult, CompareLocation>(
+  (ref, loc) => ref
+      .watch(repositoryRepositoryProvider)
+      .compare(loc.project, loc.from, loc.to),
+);
+
 /// (project, ref) for commit history.
 typedef CommitsLocation = ({Object project, String? ref});
 
