@@ -1,0 +1,11 @@
+[
+  {"id": 11, "list_type": "backlog", "position": 0, "issues_count": 4},
+  {
+    "id": 12,
+    "list_type": "label",
+    "position": 1,
+    "issues_count": 2,
+    "label": {"id": 71, "name": "bug", "color": "#d9534f"}
+  },
+  {"id": 13, "list_type": "closed", "position": 2, "issues_count": 9}
+]
