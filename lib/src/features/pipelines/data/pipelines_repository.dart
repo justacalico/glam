@@ -173,11 +173,12 @@ class PipelinesRepository {
     return _client.delete('${_p(projectId)}/pipeline_schedules/$id');
   }
 
-  /// Triggers a run outside the schedule. Returns the new pipeline.
-  Future<Pipeline> playSchedule(Object projectId, int id) {
+  /// Triggers a run outside the schedule. GitLab only returns a
+  /// `201 Created` message, so there's nothing to decode.
+  Future<void> playSchedule(Object projectId, int id) {
     return _client.post(
       '${_p(projectId)}/pipeline_schedules/$id/play',
-      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+      decoder: (j) => j,
     );
   }
 
@@ -196,10 +197,11 @@ class PipelinesRepository {
     int id, {
     required String key,
     required String value,
+    String variableType = 'env_var',
   }) {
     return _client.post(
       '${_p(projectId)}/pipeline_schedules/$id/variables',
-      body: {'key': key, 'value': value, 'variable_type': 'env_var'},
+      body: {'key': key, 'value': value, 'variable_type': variableType},
       decoder: (j) => j,
     );
   }
@@ -209,11 +211,12 @@ class PipelinesRepository {
     int id,
     String key, {
     required String value,
+    String variableType = 'env_var',
   }) {
     return _client.put(
       '${_p(projectId)}/pipeline_schedules/$id/variables/'
       '${Uri.encodeComponent(key)}',
-      body: {'value': value, 'variable_type': 'env_var'},
+      body: {'value': value, 'variable_type': variableType},
       decoder: (j) => j,
     );
   }

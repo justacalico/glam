@@ -303,10 +303,11 @@ void main() {
       final state = await container.read(pipelineSchedulesProvider(42).future);
       expect(state.items, hasLength(2));
 
-      final pipeline = await container
-          .read(pipelineSchedulesProvider(42).notifier)
-          .play(31);
-      expect(pipeline.id, 901);
+      await container.read(pipelineSchedulesProvider(42).notifier).play(31);
+      expect(
+        adapter.requestsTo('POST', '/projects/42/pipeline_schedules/31/play'),
+        hasLength(1),
+      );
 
       await container.read(pipelineSchedulesProvider(42).notifier).remove(32);
       final items = container.read(pipelineSchedulesProvider(42)).value!.items;
