@@ -27,6 +27,8 @@ abstract final class Routes {
       _qs('/projects/$id/tree', {'ref': ref, 'path': path});
   static String projectBlob(Object id, {String? ref, String? path}) =>
       _qs('/projects/$id/blob', {'ref': ref, 'path': path});
+  static String projectBlame(Object id, {String? ref, String? path}) =>
+      _qs('/projects/$id/blame', {'ref': ref, 'path': path});
   static String projectCommits(Object id, {String? ref}) =>
       _qs('/projects/$id/commits', {'ref': ref});
   static String projectCommit(Object id, String sha) =>

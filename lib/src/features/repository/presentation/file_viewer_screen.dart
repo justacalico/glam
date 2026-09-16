@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
@@ -79,11 +83,19 @@ class FileViewerScreen extends ConsumerWidget {
           ),
           PopupMenuButton<String>(
             onSelected: (action) async {
+              if (action == 'blame') {
+                unawaited(
+                  context.push(
+                    Routes.projectBlame(projectId, ref: ref, path: path),
+                  ),
+                );
+              }
               if (action == 'delete' && ref != null) {
                 await _delete(context, refScope);
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(value: 'blame', child: Text('View blame')),
               if (ref != null)
                 const PopupMenuItem(
                   value: 'delete',

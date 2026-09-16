@@ -47,6 +47,12 @@ List<TreeEntry> sortTreeEntries(List<TreeEntry> entries) {
 /// (project, path, ref) for file requests.
 typedef FileLocation = ({Object project, String path, String? ref});
 
+final blameProvider = FutureProvider.family<List<BlameHunk>, FileLocation>(
+  (ref, loc) => ref
+      .watch(repositoryRepositoryProvider)
+      .blame(loc.project, loc.path, ref: loc.ref),
+);
+
 final repoFileProvider = FutureProvider.family<RepoFile, FileLocation>(
   (ref, loc) => ref
       .watch(repositoryRepositoryProvider)

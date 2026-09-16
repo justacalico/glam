@@ -122,4 +122,17 @@ void main() {
 
     expect(langs['Dart'], 100.0);
   });
+
+  test('blameProvider loads hunks for a file', () async {
+    adapter.get(
+      '/projects/42/repository/files/lib%2Fmain.dart/blame',
+      fixtureJson('blame'),
+    );
+
+    const loc = (project: 42, path: 'lib/main.dart', ref: 'main');
+    final hunks = await container.read(blameProvider(loc).future);
+
+    expect(hunks, hasLength(2));
+    expect(hunks.last.lines.last, '}');
+  });
 }
