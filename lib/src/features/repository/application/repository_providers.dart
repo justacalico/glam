@@ -68,6 +68,13 @@ final compareProvider = FutureProvider.family<CompareResult, CompareLocation>(
       .compare(loc.project, loc.from, loc.to),
 );
 
+final commitCommentsProvider =
+    FutureProvider.family<List<CommitComment>, ({Object project, String sha})>(
+      (ref, loc) => ref
+          .watch(repositoryRepositoryProvider)
+          .commitComments(loc.project, loc.sha),
+    );
+
 /// (project, ref) for commit history.
 typedef CommitsLocation = ({Object project, String? ref});
 

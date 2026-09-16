@@ -183,6 +183,46 @@ class RepositoryRepository {
     );
   }
 
+  /// Comments on a commit, oldest first.
+  Future<List<CommitComment>> commitComments(Object projectId, String sha) {
+    return _client.getList(
+      '${_p(projectId)}/repository/commits/$sha/comments',
+      decoder: (j) => CommitComment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Post a comment on a commit. Pass `path`/`line`/`lineType` to anchor
+  /// it to a diff line; `lineType` is `old` or `new`.
+  Future<CommitComment> addCommitComment(
+    Object projectId,
+    String sha, {
+    required String note,
+    String? path,
+    int? line,
+    String? lineType,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/repository/commits/$sha/comments',
+      body: {
+        'note': note,
+        'path': ?path,
+        'line': ?line,
+        'line_type': ?lineType,
+      },
+      decoder: (j) => CommitComment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteCommitComment(
+    Object projectId,
+    String sha,
+    int commentId,
+  ) {
+    return _client.delete(
+      '${_p(projectId)}/repository/commits/$sha/comments/$commentId',
+    );
+  }
+
   Future<Paginated<Branch>> branches(
     Object projectId, {
     String? search,
