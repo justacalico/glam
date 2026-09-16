@@ -1,6 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 
 /// `/projects/:id/pipelines` and `/jobs`.
 class PipelinesRepository {
@@ -102,6 +103,125 @@ class PipelinesRepository {
     return _client.post(
       '${_p(projectId)}/jobs/$jobId/play',
       decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Scheduled pipelines (`/pipeline_schedules`).
+  Future<Paginated<PipelineSchedule>> schedules(
+    Object projectId, {
+    int page = 1,
+  }) {
+    return _client.getPage(
+      '${_p(projectId)}/pipeline_schedules',
+      page: page,
+      decoder: (j) => PipelineSchedule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Detail carries the schedule's variables; the list payload doesn't.
+  Future<PipelineSchedule> pipelineSchedule(Object projectId, int id) {
+    return _client.get(
+      '${_p(projectId)}/pipeline_schedules/$id',
+      decoder: (j) => PipelineSchedule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<PipelineSchedule> createSchedule(
+    Object projectId, {
+    required String description,
+    required String ref,
+    required String cron,
+    String? cronTimezone,
+    bool active = true,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/pipeline_schedules',
+      body: {
+        'description': description,
+        'ref': ref,
+        'cron': cron,
+        'cron_timezone': ?cronTimezone,
+        'active': active,
+      },
+      decoder: (j) => PipelineSchedule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<PipelineSchedule> updateSchedule(
+    Object projectId,
+    int id, {
+    String? description,
+    String? ref,
+    String? cron,
+    String? cronTimezone,
+    bool? active,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/pipeline_schedules/$id',
+      body: {
+        'description': ?description,
+        'ref': ?ref,
+        'cron': ?cron,
+        'cron_timezone': ?cronTimezone,
+        'active': ?active,
+      },
+      decoder: (j) => PipelineSchedule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteSchedule(Object projectId, int id) {
+    return _client.delete('${_p(projectId)}/pipeline_schedules/$id');
+  }
+
+  /// Triggers a run outside the schedule. Returns the new pipeline.
+  Future<Pipeline> playSchedule(Object projectId, int id) {
+    return _client.post(
+      '${_p(projectId)}/pipeline_schedules/$id/play',
+      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Claims a schedule owned by someone else.
+  Future<PipelineSchedule> takeScheduleOwnership(Object projectId, int id) {
+    return _client.post(
+      '${_p(projectId)}/pipeline_schedules/$id/take_ownership',
+      decoder: (j) => PipelineSchedule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Schedule variables are their own sub-resource: POST creates, PUT
+  /// updates an existing key.
+  Future<void> createScheduleVariable(
+    Object projectId,
+    int id, {
+    required String key,
+    required String value,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/pipeline_schedules/$id/variables',
+      body: {'key': key, 'value': value, 'variable_type': 'env_var'},
+      decoder: (j) => j,
+    );
+  }
+
+  Future<void> updateScheduleVariable(
+    Object projectId,
+    int id,
+    String key, {
+    required String value,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/pipeline_schedules/$id/variables/'
+      '${Uri.encodeComponent(key)}',
+      body: {'value': value, 'variable_type': 'env_var'},
+      decoder: (j) => j,
+    );
+  }
+
+  Future<void> deleteScheduleVariable(Object projectId, int id, String key) {
+    return _client.delete(
+      '${_p(projectId)}/pipeline_schedules/$id/variables/'
+      '${Uri.encodeComponent(key)}',
     );
   }
 }

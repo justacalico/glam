@@ -4,6 +4,7 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 
 final pipelinesRepositoryProvider = Provider<PipelinesRepository>(
   (ref) => PipelinesRepository(ref.watch(apiClientProvider)),
@@ -66,3 +67,51 @@ final jobTraceProvider = FutureProvider.family<String, JobRef>(
   (ref, loc) =>
       ref.watch(pipelinesRepositoryProvider).jobTrace(loc.project, loc.id),
 );
+
+final pipelineSchedulesProvider =
+    AsyncNotifierProvider.family<
+      PipelineSchedulesNotifier,
+      PagedListState<PipelineSchedule>,
+      Object
+    >(PipelineSchedulesNotifier.new);
+
+class PipelineSchedulesNotifier extends PagedListNotifier<PipelineSchedule> {
+  PipelineSchedulesNotifier(this.project);
+
+  final Object project;
+
+  @override
+  Future<Paginated<PipelineSchedule>> fetchPage(int page) {
+    return ref
+        .watch(pipelinesRepositoryProvider)
+        .schedules(project, page: page);
+  }
+
+  /// Runs the schedule now. A fresh list page picks up `last_pipeline`.
+  Future<Pipeline> play(int id) async {
+    final pipeline = await ref
+        .read(pipelinesRepositoryProvider)
+        .playSchedule(project, id);
+    await refresh();
+    return pipeline;
+  }
+
+  Future<void> takeOwnership(int id) async {
+    final updated = await ref
+        .read(pipelinesRepositoryProvider)
+        .takeScheduleOwnership(project, id);
+    updateItems((items) => [for (final s in items) s.id == id ? updated : s]);
+  }
+
+  Future<void> remove(int id) async {
+    await ref.read(pipelinesRepositoryProvider).deleteSchedule(project, id);
+    updateItems((items) => items.where((s) => s.id != id).toList());
+  }
+}
+
+final scheduleDetailProvider =
+    FutureProvider.family<PipelineSchedule, PipelineRef>(
+      (ref, loc) => ref
+          .watch(pipelinesRepositoryProvider)
+          .pipelineSchedule(loc.project, loc.id),
+    );

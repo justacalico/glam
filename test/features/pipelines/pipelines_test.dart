@@ -151,6 +151,92 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('schedules parses cron, owner and last pipeline', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/pipeline_schedules',
+        fixtureJson('pipeline_schedules'),
+      );
+      final repo = PipelinesRepository(client);
+
+      final page = await repo.schedules(42);
+
+      final s = page.items.first;
+      expect(s.cron, '0 2 * * *');
+      expect(s.cronTimezone, 'UTC');
+      expect(s.active, isTrue);
+      expect(s.owner?.username, 'jane');
+      expect(s.lastPipelineStatus, 'success');
+      expect(s.nextRunAt, isNotNull);
+    });
+
+    test('createSchedule posts the cron fields', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/pipeline_schedules',
+        (fixtureJson('pipeline_schedules') as List).first,
+      );
+      final repo = PipelinesRepository(client);
+
+      final s = await repo.createSchedule(
+        42,
+        description: 'Nightly build',
+        ref: 'main',
+        cron: '0 2 * * *',
+        cronTimezone: 'UTC',
+      );
+
+      expect(s.id, 31);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['cron'], '0 2 * * *');
+      expect(sent['active'], true);
+    });
+
+    test('updateSchedule puts only the given fields', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/pipeline_schedules/31',
+        (fixtureJson('pipeline_schedules') as List).first,
+      );
+      final repo = PipelinesRepository(client);
+
+      await repo.updateSchedule(42, 31, active: false);
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['active'], false);
+      expect(sent.containsKey('cron'), isFalse);
+    });
+
+    test('schedule variables use the sub-resource paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/pipeline_schedules/31/variables', {})
+        ..put('/projects/42/pipeline_schedules/31/variables/NIGHTLY', {})
+        ..delete('/projects/42/pipeline_schedules/31/variables/OLD_KEY');
+      final repo = PipelinesRepository(client);
+
+      await repo.createScheduleVariable(42, 31, key: 'NEW', value: 'x');
+      await repo.updateScheduleVariable(42, 31, 'NIGHTLY', value: 'false');
+      await repo.deleteScheduleVariable(42, 31, 'OLD_KEY');
+
+      expect(
+        adapter.requestsTo(
+          'PUT',
+          '/projects/42/pipeline_schedules/31/variables/NIGHTLY',
+        ),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/pipeline_schedules/31/variables/OLD_KEY',
+        ),
+        hasLength(1),
+      );
+      final sent = adapter.requests.first.data as Map;
+      expect(sent['variable_type'], 'env_var');
+    });
   });
 
   group('providers', () {
@@ -196,6 +282,48 @@ void main() {
       final trace = await container.read(jobTraceProvider(loc).future);
 
       expect(trace, 'build output');
+    });
+
+    test('pipelineSchedulesProvider plays and removes', () async {
+      adapter
+        ..get(
+          '/projects/42/pipeline_schedules',
+          fixtureJson('pipeline_schedules'),
+        )
+        ..post('/projects/42/pipeline_schedules/31/play', {
+          'id': 901,
+          'status': 'created',
+        })
+        ..get(
+          '/projects/42/pipeline_schedules',
+          fixtureJson('pipeline_schedules'),
+        )
+        ..delete('/projects/42/pipeline_schedules/32');
+
+      final state = await container.read(pipelineSchedulesProvider(42).future);
+      expect(state.items, hasLength(2));
+
+      final pipeline = await container
+          .read(pipelineSchedulesProvider(42).notifier)
+          .play(31);
+      expect(pipeline.id, 901);
+
+      await container.read(pipelineSchedulesProvider(42).notifier).remove(32);
+      final items = container.read(pipelineSchedulesProvider(42)).value!.items;
+      expect(items.single.id, 31);
+    });
+
+    test('scheduleDetailProvider loads variables', () async {
+      adapter.get(
+        '/projects/42/pipeline_schedules/31',
+        fixtureJson('pipeline_schedule'),
+      );
+
+      const loc = (project: 42, id: 31);
+      final s = await container.read(scheduleDetailProvider(loc).future);
+
+      expect(s.variables, hasLength(2));
+      expect(s.variables.first.key, 'NIGHTLY');
     });
   });
 }

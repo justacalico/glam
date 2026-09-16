@@ -13,10 +13,54 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/presentation/schedules_tab.dart';
 
-/// Pipeline history for a project — the CI/CD tab.
-class PipelinesScreen extends ConsumerWidget {
+/// Pipeline history + schedules for a project — the CI/CD tab.
+class PipelinesScreen extends ConsumerStatefulWidget {
   const PipelinesScreen({required this.projectId, super.key});
+
+  final Object projectId;
+
+  @override
+  ConsumerState<PipelinesScreen> createState() => _PipelinesScreenState();
+}
+
+class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
+  var _schedules = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SegmentedButton<bool>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(value: false, label: Text('Runs')),
+              ButtonSegment(value: true, label: Text('Schedules')),
+            ],
+            selected: {_schedules},
+            onSelectionChanged: (s) => setState(() => _schedules = s.first),
+          ),
+        ),
+        Expanded(
+          child: _schedules
+              ? PipelineSchedulesTab(projectId: widget.projectId)
+              : _PipelineRuns(projectId: widget.projectId),
+        ),
+      ],
+    );
+  }
+}
+
+class _PipelineRuns extends ConsumerWidget {
+  const _PipelineRuns({required this.projectId});
 
   final Object projectId;
 
