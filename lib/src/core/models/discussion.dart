@@ -30,7 +30,7 @@ class Discussion extends Equatable {
 
   /// True when every resolvable note is resolved.
   bool get resolved =>
-      notes.where((n) => n.resolvable).every((n) => n.resolved);
+      resolvable && notes.where((n) => n.resolvable).every((n) => n.resolved);
 
   bool get resolvable => notes.any((n) => n.resolvable);
 

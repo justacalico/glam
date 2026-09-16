@@ -97,18 +97,6 @@ class NotePosition extends Equatable {
     return line == null ? path : '$path:$line';
   }
 
-  /// Serialized for the `position[...]` params on create-discussion.
-  Map<String, dynamic> toQuery() => {
-    'position[base_sha]': ?baseSha,
-    'position[start_sha]': ?startSha,
-    'position[head_sha]': ?headSha,
-    'position[position_type]': 'text',
-    'position[old_path]': ?oldPath,
-    'position[new_path]': ?newPath,
-    'position[old_line]': ?oldLine,
-    'position[new_line]': ?newLine,
-  };
-
   @override
   List<Object?> get props => [oldPath, newPath, oldLine, newLine];
 }
