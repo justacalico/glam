@@ -1,0 +1,189 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:glam/src/features/issues/data/issues_repository.dart';
+import 'package:glam/src/features/issues/domain/issue.dart';
+
+import '../../helpers/fixtures.dart';
+import '../../helpers/test_client.dart';
+
+void main() {
+  group('issues', () {
+    test('lists issues with scope/state/search params', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/issues', fixtureJson('issues'));
+      final repo = IssuesRepository(client);
+
+      final page = await repo.issues(
+        scope: IssueScope.created,
+        state: 'closed',
+        search: 'slow',
+      );
+
+      expect(page.items, hasLength(2));
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['scope'], 'created_by_me');
+      expect(query['state'], 'closed');
+      expect(query['search'], 'slow');
+    });
+
+    test('defaults to assigned scope', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/issues', const []);
+      final repo = IssuesRepository(client);
+
+      await repo.issues();
+
+      expect(adapter.lastRequest!.queryParameters['scope'], 'assigned_to_me');
+    });
+  });
+
+  group('projectIssues', () {
+    test('hits the project endpoint with filters', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/issues', fixtureJson('issues'));
+      final repo = IssuesRepository(client);
+
+      final page = await repo.projectIssues(
+        42,
+        state: 'opened',
+        labels: 'bug',
+        milestoneId: 5,
+        assigneeId: 8,
+      );
+
+      expect(page.items.first.title, contains('File tree'));
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['labels'], 'bug');
+      expect(query['milestone'], '5');
+      expect(query['assignee_id'], '8');
+    });
+  });
+
+  group('issue', () {
+    test('fetches one issue by iid', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/issues/12',
+        (fixtureJson('issues') as List).first,
+      );
+      final repo = IssuesRepository(client);
+
+      final issue = await repo.issue(42, 12);
+
+      expect(issue.iid, 12);
+      expect(issue.isOpen, isTrue);
+      expect(issue.labels, ['bug', 'frontend']);
+      expect(issue.taskStatus, '1/4');
+      expect(issue.milestone?.title, 'v1.3');
+      expect(issue.assignees.single.username, 'john');
+    });
+  });
+
+  group('create/update', () {
+    test('createIssue posts fields', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/issues',
+        (fixtureJson('issues') as List).first,
+      );
+      final repo = IssuesRepository(client);
+
+      final issue = await repo.createIssue(
+        42,
+        title: 'New bug',
+        description: 'details',
+        labels: ['bug'],
+        assigneeIds: [8],
+        milestoneId: 5,
+        dueDate: '2025-09-01',
+        weight: 3,
+        confidential: true,
+      );
+
+      expect(issue.iid, 12);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['title'], 'New bug');
+      expect(sent['labels'], 'bug');
+      expect(sent['assignee_ids'], [8]);
+      expect(sent['confidential'], true);
+    });
+
+    test('updateIssue sends state_event for close', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/issues/12',
+        (fixtureJson('issues') as List).last,
+      );
+      final repo = IssuesRepository(client);
+
+      final issue = await repo.updateIssue(42, 12, stateEvent: 'close');
+
+      expect(issue.isOpen, isFalse);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['state_event'], 'close');
+    });
+  });
+
+  group('notes', () {
+    test('lists notes oldest first', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/issues/12/notes', fixtureJson('notes'));
+      final repo = IssuesRepository(client);
+
+      final page = await repo.notes(42, 12);
+
+      expect(page.items, hasLength(2));
+      expect(page.items[0].system, isFalse);
+      expect(page.items[1].system, isTrue);
+      expect(adapter.lastRequest!.queryParameters['sort'], 'asc');
+    });
+
+    test('addNote posts the body', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/issues/12/notes',
+        (fixtureJson('notes') as List).first,
+      );
+      final repo = IssuesRepository(client);
+
+      final note = await repo.addNote(42, 12, 'hello');
+
+      expect(note.body, 'Reproduced on Android 15.');
+      expect((adapter.lastRequest!.data as Map)['body'], 'hello');
+    });
+
+    test('updateNote puts and deleteNote deletes', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..put(
+          '/projects/42/issues/12/notes/501',
+          (fixtureJson('notes') as List).first,
+        )
+        ..delete('/projects/42/issues/12/notes/501');
+      final repo = IssuesRepository(client);
+
+      await repo.updateNote(42, 12, 501, 'edited');
+      await repo.deleteNote(42, 12, 501);
+
+      expect(
+        adapter.requestsTo('PUT', '/projects/42/issues/12/notes/501'),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/issues/12/notes/501'),
+        hasLength(1),
+      );
+    });
+  });
+
+  group('Issue model', () {
+    test('closed issue parses closed_by and confidentiality', () {
+      final closed = Issue.fromJson(
+        (fixtureJson('issues') as List).last as Map<String, dynamic>,
+      );
+      expect(closed.isOpen, isFalse);
+      expect(closed.confidential, isTrue);
+      expect(closed.closedBy?.name, 'Jane Doe');
+      expect(closed.references, isNull);
+    });
+  });
+}
