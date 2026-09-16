@@ -50,7 +50,11 @@ class ChangesList extends StatelessWidget {
         ),
         const SizedBox(height: Insets.md),
         for (final (change, diff) in parsed) ...[
-          _FileChangeTile(change: change, diff: diff),
+          _FileChangeTile(
+            key: ValueKey(change.displayPath),
+            change: change,
+            diff: diff,
+          ),
           const SizedBox(height: Insets.md),
         ],
       ],

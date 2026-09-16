@@ -35,22 +35,34 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
   }
 
   @override
+  void didUpdateWidget(CompareScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.from != widget.from || oldWidget.to != widget.to) {
+      _from = widget.from;
+      _to = widget.to;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final branches = ref.watch(branchesProvider(widget.projectId));
-    final items = branches.value?.items ?? const <Branch>[];
-    final names = items.map((b) => b.name);
+    final tags = ref.watch(tagsProvider(widget.projectId));
+    final branchItems = branches.value?.items ?? const <Branch>[];
+    final tagItems = tags.value?.items ?? const <Tag>[];
     // The base defaults to the project's default branch once it loads.
-    if (!_prefilled && names.isNotEmpty) {
+    if (!_prefilled && branchItems.isNotEmpty) {
       _prefilled = true;
-      _from ??= branches.value!.items
-          .firstWhere(
-            (b) => b.isDefault,
-            orElse: () => branches.value!.items.first,
-          )
+      _from ??= branchItems
+          .firstWhere((b) => b.isDefault, orElse: () => branchItems.first)
           .name;
     }
     // A picked tag/sha may be missing from the first branch page.
-    final refs = <String>{...names, ?_from, ?_to}.toList()..sort();
+    final refs = <String>{
+      for (final b in branchItems) b.name,
+      for (final t in tagItems) t.name,
+      ?_from,
+      ?_to,
+    }.toList()..sort();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Compare')),
@@ -76,7 +88,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
                 IconButton(
                   tooltip: 'Swap refs',
                   icon: const Icon(Icons.swap_horiz, size: 18),
-                  onPressed: _from == null && _to == null
+                  onPressed: _from == null || _to == null
                       ? null
                       : () => setState(() {
                           final f = _from;
@@ -115,6 +127,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     return AsyncValueWidget<CompareResult>(
       value: ref.watch(compareProvider(loc)),
       onRetry: () => ref.invalidate(compareProvider(loc)),
+      wrapRefresh: true,
       data: (result) =>
           _CompareResult(result: result, projectId: widget.projectId),
     );
@@ -134,33 +147,78 @@ class _RefPicker extends StatelessWidget {
   final List<String> refs;
   final ValueChanged<String?> onChanged;
 
+  Future<void> _enterCustom(BuildContext context) async {
+    final controller = TextEditingController();
+    final ref = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter a ref'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Branch, tag, or commit SHA',
+          ),
+          onSubmitted: (v) => Navigator.pop(context, v),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Use ref'),
+          ),
+        ],
+      ),
+    );
+    final trimmed = ref?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      onChanged(trimmed);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      initialValue: refs.contains(value) ? value : null,
-      decoration: InputDecoration(
-        labelText: label,
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: Insets.sm,
-          vertical: Insets.sm,
-        ),
-      ),
-      items: [
-        for (final r in refs)
-          DropdownMenuItem(
-            value: r,
-            child: Text(
-              r,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 12,
+    return Row(
+      children: [
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            initialValue: value,
+            isExpanded: true,
+            decoration: InputDecoration(
+              labelText: label,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: Insets.sm,
+                vertical: Insets.sm,
               ),
             ),
+            items: [
+              for (final r in refs)
+                DropdownMenuItem(
+                  value: r,
+                  child: Text(
+                    r,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+            ],
+            onChanged: onChanged,
           ),
+        ),
+        IconButton(
+          tooltip: 'Enter a ref',
+          iconSize: 16,
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: () => _enterCustom(context),
+        ),
       ],
-      onChanged: onChanged,
     );
   }
 }

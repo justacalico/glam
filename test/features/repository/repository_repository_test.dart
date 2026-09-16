@@ -165,6 +165,24 @@ void main() {
       expect(query['to'], 'feature/x');
     });
 
+    test('compare decodes same-ref and timeout flags', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/compare', {
+        'commits': const [],
+        'diffs': const [],
+        'compare_timeout': true,
+        'compare_same_ref': true,
+      });
+      final repo = RepositoryRepository(client);
+
+      final result = await repo.compare(42, 'main', 'main');
+
+      expect(result.compareSameRef, isTrue);
+      expect(result.compareTimeout, isTrue);
+      expect(result.commits, isEmpty);
+      expect(result.diffs, isEmpty);
+    });
+
     test('commitDiff decodes change entries', () async {
       final (client, adapter) = testClient();
       adapter.get(
