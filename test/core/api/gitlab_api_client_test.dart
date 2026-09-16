@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/gitlab_api_client.dart';
@@ -119,19 +118,20 @@ void main() {
 
     test('getAll walks pages until x-next-page is gone', () async {
       final (client, adapter) = testClient();
-      adapter.get(
-        '/labels',
-        [
-          {'id': 1},
-        ],
-        headers: {
-          'x-next-page': ['2'],
-        },
-      );
-      adapter.get('/labels', [
-        {'id': 2},
-        {'id': 3},
-      ]);
+      adapter
+        ..get(
+          '/labels',
+          [
+            {'id': 1},
+          ],
+          headers: {
+            'x-next-page': ['2'],
+          },
+        )
+        ..get('/labels', [
+          {'id': 2},
+          {'id': 3},
+        ]);
 
       final items = await client.getAll(
         '/labels',

@@ -28,11 +28,11 @@ void main() {
       503: ApiErrorKind.server,
       418: ApiErrorKind.unknown,
     };
-    cases.forEach((status, kind) {
+    for (final MapEntry(key: status, value: kind) in cases.entries) {
       test('$status → $kind', () {
         expect(ApiException.fromDio(dioError(status)).kind, kind);
       });
-    });
+    }
 
     test('connection error → network', () {
       expect(ApiException.fromDio(dioError(null)).kind, ApiErrorKind.network);

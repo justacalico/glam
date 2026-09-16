@@ -5,7 +5,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 
 /// Scrollable list wired to a [PagedListState]: triggers `onLoadMore`
 /// near the bottom and renders a footer spinner / retry affordance.
-class PagedListView extends StatelessWidget {
+class PagedListView<T> extends StatelessWidget {
   const PagedListView({
     required this.state,
     required this.itemBuilder,
@@ -17,7 +17,7 @@ class PagedListView extends StatelessWidget {
     super.key,
   });
 
-  final PagedListState<Object?> state;
+  final PagedListState<T> state;
   final Widget Function(BuildContext context, int index) itemBuilder;
   final VoidCallback onLoadMore;
   final Future<void> Function()? onRefresh;

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "a1b2c3",
+    "name": "lib",
+    "type": "tree",
+    "path": "lib",
+    "mode": "040000"
+  },
+  {
+    "id": "d4e5f6",
+    "name": "README.md",
+    "type": "blob",
+    "path": "README.md",
+    "mode": "100644"
+  },
+  {
+    "id": "aabbcc",
+    "name": "vendor",
+    "type": "commit",
+    "path": "vendor",
+    "mode": "160000"
+  }
+]
