@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 
@@ -51,6 +52,103 @@ class ProjectsRepository {
     return _client.post(
       '/projects/${GitLabApiClient.encodeProject(id)}/fork',
       decoder: _decodeOne,
+    );
+  }
+
+  /// General settings: name, description, visibility, topics.
+  Future<Project> updateProject(
+    Object id, {
+    String? name,
+    String? description,
+    String? visibility,
+    List<String>? topics,
+    bool? issuesEnabled,
+    bool? mergeRequestsEnabled,
+    bool? wikiEnabled,
+    bool? snippetsEnabled,
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}',
+      body: {
+        'name': ?name,
+        'description': ?description,
+        'visibility': ?visibility,
+        'topics': ?topics,
+        'issues_enabled': ?issuesEnabled,
+        'merge_requests_enabled': ?mergeRequestsEnabled,
+        'wiki_enabled': ?wikiEnabled,
+        'snippets_enabled': ?snippetsEnabled,
+      },
+      decoder: _decodeOne,
+    );
+  }
+
+  Future<Project> archive(Object id) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/archive',
+      decoder: _decodeOne,
+    );
+  }
+
+  Future<Project> unarchive(Object id) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/unarchive',
+      decoder: _decodeOne,
+    );
+  }
+
+  /// CI/CD variables (`/projects/:id/variables`).
+  Future<List<CiVariable>> variables(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/variables',
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<CiVariable> createVariable(
+    Object id, {
+    required String key,
+    required String value,
+    bool protected_ = false,
+    bool masked = false,
+    String environmentScope = '*',
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/variables',
+      body: {
+        'key': key,
+        'value': value,
+        'protected': protected_,
+        'masked': masked,
+        'environment_scope': environmentScope,
+      },
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<CiVariable> updateVariable(
+    Object id,
+    String key, {
+    required String value,
+    bool? protected_,
+    bool? masked,
+    String? environmentScope,
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/variables/$key',
+      body: {
+        'value': value,
+        'protected': ?protected_,
+        'masked': ?masked,
+        'environment_scope': ?environmentScope,
+      },
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteVariable(Object id, String key) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/variables/$key',
     );
   }
 

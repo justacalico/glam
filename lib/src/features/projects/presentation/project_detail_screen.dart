@@ -269,6 +269,12 @@ class _ProjectHeader extends ConsumerWidget {
                   label: 'Open in browser',
                   onTap: () => launchExternal(project.webUrl!),
                 ),
+              _ActionChip(
+                icon: Icons.settings_outlined,
+                label: 'Settings',
+                onTap: () =>
+                    unawaited(context.push(Routes.projectSettings(project.id))),
+              ),
             ],
           ),
         ],
