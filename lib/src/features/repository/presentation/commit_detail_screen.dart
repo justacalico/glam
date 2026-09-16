@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +29,10 @@ class CommitDetailScreen extends ConsumerWidget {
     final diffs = ref.watch(commitDiffProvider((project: projectId, sha: sha)));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Commit')),
+      appBar: AppBar(
+        title: const Text('Commit'),
+        actions: [_CommitActions(projectId: projectId, sha: sha)],
+      ),
       body: AsyncValueWidget<Commit>(
         value: commit,
         onRetry: () => ref
@@ -55,6 +60,71 @@ class CommitDetailScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CommitActions extends ConsumerWidget {
+  const _CommitActions({required this.projectId, required this.sha});
+
+  final String projectId;
+  final String sha;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return PopupMenuButton<String>(
+      onSelected: (action) async {
+        final repo = ref.read(repositoryRepositoryProvider);
+        switch (action) {
+          case 'cherry' || 'revert':
+            final branch = await _pickBranch(context, ref);
+            if (branch == null) {
+              return;
+            }
+            final commit = action == 'cherry'
+                ? await repo.cherryPick(projectId, sha, branch: branch)
+                : await repo.revert(projectId, sha, branch: branch);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '${action == 'cherry' ? 'Cherry-picked' : 'Reverted'} '
+                    'as ${commit.shortId}',
+                  ),
+                ),
+              );
+            }
+          case 'copy':
+            unawaited(Clipboard.setData(ClipboardData(text: sha)));
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'cherry',
+          child: Text('Cherry-pick to branch'),
+        ),
+        const PopupMenuItem(value: 'revert', child: Text('Revert on branch')),
+        const PopupMenuItem(value: 'copy', child: Text('Copy SHA')),
+      ],
+    );
+  }
+
+  Future<String?> _pickBranch(BuildContext context, WidgetRef ref) {
+    final branches =
+        ref.read(branchesProvider(projectId)).value?.items ?? const [];
+    final names = [for (final b in branches) b.name];
+    return showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Target branch'),
+        children: [
+          for (final name in names)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, name),
+              child: Text(name),
+            ),
+        ],
       ),
     );
   }

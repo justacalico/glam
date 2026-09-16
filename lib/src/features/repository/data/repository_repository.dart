@@ -91,6 +91,19 @@ class RepositoryRepository {
     );
   }
 
+  /// `DELETE` file (creates a commit removing it).
+  Future<void> deleteFile(
+    Object projectId,
+    String path, {
+    required String branch,
+    required String commitMessage,
+  }) {
+    return _client.delete(
+      '${_p(projectId)}/repository/files/${Uri.encodeComponent(path)}',
+      body: {'branch': branch, 'commit_message': commitMessage},
+    );
+  }
+
   /// Line-by-line blame for a file.
   Future<List<BlameHunk>> blame(Object projectId, String path, {String? ref}) {
     return _client.getList(
@@ -134,6 +147,32 @@ class RepositoryRepository {
     return _client.getList(
       '${_p(projectId)}/repository/commits/$sha/diff',
       decoder: (j) => ChangeEntry.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// `POST /repository/commits/:sha/cherry_pick` onto [branch].
+  Future<Commit> cherryPick(
+    Object projectId,
+    String sha, {
+    required String branch,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/repository/commits/$sha/cherry_pick',
+      body: {'branch': branch},
+      decoder: (j) => Commit.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// `POST /repository/commits/:sha/revert` onto [branch].
+  Future<Commit> revert(
+    Object projectId,
+    String sha, {
+    required String branch,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/repository/commits/$sha/revert',
+      body: {'branch': branch},
+      decoder: (j) => Commit.fromJson(j! as Map<String, dynamic>),
     );
   }
 

@@ -197,12 +197,14 @@ class GitLabApiClient {
   Future<T?> delete<T>(
     String path, {
     Map<String, dynamic>? query,
+    Map<String, dynamic>? body,
     T Function(Object? json)? decoder,
   }) async {
     try {
       final response = await _dio.delete<Object?>(
         path,
         queryParameters: _clean(query),
+        data: body == null ? null : _clean(body),
       );
       if (decoder == null) {
         return null;

@@ -21,37 +21,109 @@ class BranchesScreen extends ConsumerWidget {
     final state = ref.watch(branchesProvider(projectId));
     final notifier = ref.read(branchesProvider(projectId).notifier);
 
-    return AsyncValueWidget(
-      value: state,
-      onRetry: notifier.refresh,
-      data: (data) => PagedListView(
-        state: data,
-        onLoadMore: notifier.loadMore,
-        onRefresh: notifier.refresh,
-        separator: Divider(
-          height: 1,
-          color: colors.border,
-          indent: Insets.lg,
-          endIndent: Insets.lg,
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Insets.md,
+              Insets.sm,
+              Insets.md,
+              0,
+            ),
+            child: TextButton.icon(
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('New branch'),
+              onPressed: () => _showCreate(context, ref),
+            ),
+          ),
         ),
-        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-        empty: const EmptyState(
-          icon: Icons.account_tree_outlined,
-          title: 'No branches',
+        Expanded(
+          child: AsyncValueWidget(
+            value: state,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+                endIndent: Insets.lg,
+              ),
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              empty: const EmptyState(
+                icon: Icons.account_tree_outlined,
+                title: 'No branches',
+              ),
+              itemBuilder: (context, index) =>
+                  _BranchTile(branch: data.items[index], projectId: projectId),
+            ),
+          ),
         ),
-        itemBuilder: (context, index) => _BranchTile(branch: data.items[index]),
+      ],
+    );
+  }
+
+  Future<void> _showCreate(BuildContext context, WidgetRef ref) async {
+    final name = TextEditingController();
+    final source = TextEditingController();
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('New branch'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: name,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Branch name'),
+            ),
+            const SizedBox(height: Insets.md),
+            TextField(
+              controller: source,
+              decoration: const InputDecoration(
+                labelText: 'Source ref (branch, tag, or sha)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Create'),
+          ),
+        ],
       ),
     );
+    if (saved == true && name.text.trim().isNotEmpty) {
+      await ref
+          .read(repositoryRepositoryProvider)
+          .createBranch(
+            projectId,
+            branch: name.text.trim(),
+            ref: source.text.trim().isEmpty ? 'HEAD' : source.text.trim(),
+          );
+      ref.invalidate(branchesProvider);
+    }
   }
 }
 
-class _BranchTile extends StatelessWidget {
-  const _BranchTile({required this.branch});
+class _BranchTile extends ConsumerWidget {
+  const _BranchTile({required this.branch, required this.projectId});
 
   final Branch branch;
+  final String projectId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final theme = Theme.of(context);
     return Padding(
@@ -118,6 +190,42 @@ class _BranchTile extends StatelessWidget {
                 ),
             ],
           ),
+          if (!branch.isDefault && !branch.protected)
+            PopupMenuButton<String>(
+              iconSize: 18,
+              onSelected: (action) async {
+                if (action == 'delete') {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Delete ${branch.name}?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    await ref
+                        .read(repositoryRepositoryProvider)
+                        .deleteBranch(projectId, branch.name);
+                    ref.invalidate(branchesProvider);
+                  }
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Text('Delete branch'),
+                ),
+              ],
+            ),
         ],
       ),
     );

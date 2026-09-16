@@ -359,4 +359,152 @@ void main() {
       expect(hunks.single.commit.shortId, '61049424');
     });
   });
+
+  group('write operations', () {
+    test('updateFile puts content with branch and message', () async {
+      final (client, adapter) = testClient();
+      adapter.put('/projects/42/repository/files/lib%2Fmain.dart', {
+        'file_path': 'lib/main.dart',
+        'branch': 'main',
+      });
+      final repo = RepositoryRepository(client);
+
+      final file = await repo.updateFile(
+        42,
+        'lib/main.dart',
+        branch: 'main',
+        content: 'void main() {}',
+        commitMessage: 'tweak',
+      );
+
+      expect(file.path, 'lib/main.dart');
+      expect(adapter.lastRequest!.data, {
+        'branch': 'main',
+        'content': 'void main() {}',
+        'commit_message': 'tweak',
+      });
+    });
+
+    test('createFile posts and deleteFile sends body', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/repository/files/notes.txt', {
+          'file_path': 'notes.txt',
+          'branch': 'main',
+        })
+        ..delete('/projects/42/repository/files/notes.txt');
+      final repo = RepositoryRepository(client);
+
+      await repo.createFile(
+        42,
+        'notes.txt',
+        branch: 'main',
+        content: 'hi',
+        commitMessage: 'add notes',
+      );
+      await repo.deleteFile(
+        42,
+        'notes.txt',
+        branch: 'main',
+        commitMessage: 'remove notes',
+      );
+
+      expect(
+        (adapter
+                .requestsTo('POST', '/projects/42/repository/files/notes.txt')
+                .single
+                .data
+            as Map)['commit_message'],
+        'add notes',
+      );
+      final del = adapter
+          .requestsTo('DELETE', '/projects/42/repository/files/notes.txt')
+          .single;
+      expect(del.data, {'branch': 'main', 'commit_message': 'remove notes'});
+    });
+
+    test('cherryPick and revert post the target branch', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post(
+          '/projects/42/repository/commits/abc/cherry_pick',
+          fixtureJson('commit'),
+        )
+        ..post(
+          '/projects/42/repository/commits/abc/revert',
+          fixtureJson('commit'),
+        );
+      final repo = RepositoryRepository(client);
+
+      final picked = await repo.cherryPick(42, 'abc', branch: 'main');
+      await repo.revert(42, 'abc', branch: 'stable');
+
+      expect(picked.shortId, '61049424');
+      expect(
+        (adapter
+                .requestsTo(
+                  'POST',
+                  '/projects/42/repository/commits/abc/cherry_pick',
+                )
+                .single
+                .data
+            as Map)['branch'],
+        'main',
+      );
+      expect(
+        (adapter
+                .requestsTo(
+                  'POST',
+                  '/projects/42/repository/commits/abc/revert',
+                )
+                .single
+                .data
+            as Map)['branch'],
+        'stable',
+      );
+    });
+
+    test('createTag and deleteTag hit the tags endpoints', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post(
+          '/projects/42/repository/tags',
+          (fixtureJson('tags') as List).first,
+        )
+        ..delete('/projects/42/repository/tags/v1.0');
+      final repo = RepositoryRepository(client);
+
+      await repo.createTag(42, name: 'v1.0', ref: 'main', message: 'release');
+      await repo.deleteTag(42, 'v1.0');
+
+      expect(adapter.lastRequest!.method, 'DELETE');
+      expect(
+        (adapter.requestsTo('POST', '/projects/42/repository/tags').single.data
+            as Map)['tag_name'],
+        'v1.0',
+      );
+    });
+
+    test('createRelease posts tag, name and notes', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/releases',
+        (fixtureJson('releases') as List).first,
+      );
+      final repo = RepositoryRepository(client);
+
+      await repo.createRelease(
+        42,
+        tag: 'v2.0',
+        name: 'Two',
+        description: 'notes',
+      );
+
+      expect(adapter.lastRequest!.data, {
+        'tag_name': 'v2.0',
+        'name': 'Two',
+        'description': 'notes',
+      });
+    });
+  });
 }
