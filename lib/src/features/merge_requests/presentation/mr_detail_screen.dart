@@ -23,6 +23,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
@@ -128,6 +129,15 @@ class _OverviewTab extends ConsumerWidget {
                   child: MarkdownViewer(data: mr.description!),
                 ),
               ],
+              const SizedBox(height: Insets.md),
+              ReactionsRow(
+                loc: (
+                  kind: 'mr',
+                  project: loc.project,
+                  iid: loc.iid,
+                  noteId: null,
+                ),
+              ),
               const SizedBox(height: Insets.xl),
               Text('Activity', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: Insets.sm),
@@ -150,7 +160,18 @@ class _OverviewTab extends ConsumerWidget {
                   }
                   return Column(
                     children: [
-                      for (final note in visible) NoteCard(note: note),
+                      for (final note in visible)
+                        NoteCard(
+                          note: note,
+                          footer: ReactionsRow(
+                            loc: (
+                              kind: 'mr',
+                              project: loc.project,
+                              iid: loc.iid,
+                              noteId: note.id,
+                            ),
+                          ),
+                        ),
                     ],
                   );
                 },
@@ -532,6 +553,13 @@ class _MrActions extends ConsumerWidget {
             ref.invalidate(mrProvider(loc));
           case 'rebase':
             await repo.rebase(loc.project, loc.iid);
+          case 'subscribe':
+            await repo.setSubscribed(
+              loc.project,
+              loc.iid,
+              subscribed: !mr.subscribed,
+            );
+            ref.invalidate(mrProvider(loc));
           case 'edit':
             unawaited(
               MrFormScreen.show(context, projectId: loc.project, mr: mr),
@@ -553,6 +581,10 @@ class _MrActions extends ConsumerWidget {
         ),
         if (mr.isOpen)
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+        PopupMenuItem(
+          value: 'subscribe',
+          child: Text(mr.subscribed ? 'Unsubscribe' : 'Subscribe'),
+        ),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),

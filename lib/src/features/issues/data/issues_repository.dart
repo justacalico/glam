@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 
@@ -173,5 +174,90 @@ class IssuesRepository {
 
   Future<void> deleteNote(Object projectId, int iid, int noteId) {
     return _client.delete('${_p(projectId)}/issues/$iid/notes/$noteId');
+  }
+
+  /// Emoji reactions on the issue itself.
+  Future<List<AwardEmoji>> awardEmojis(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/award_emoji',
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Reactions on a single note inside the issue.
+  Future<List<AwardEmoji>> noteAwardEmojis(
+    Object projectId,
+    int iid,
+    int noteId,
+  ) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/notes/$noteId/award_emoji',
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<AwardEmoji> award(
+    Object projectId,
+    int iid,
+    String name, {
+    int? noteId,
+  }) {
+    final base = noteId == null
+        ? '${_p(projectId)}/issues/$iid/award_emoji'
+        : '${_p(projectId)}/issues/$iid/notes/$noteId/award_emoji';
+    return _client.post(
+      base,
+      body: {'name': name},
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> removeAward(
+    Object projectId,
+    int iid,
+    int awardId, {
+    int? noteId,
+  }) {
+    final base = noteId == null
+        ? '${_p(projectId)}/issues/$iid/award_emoji'
+        : '${_p(projectId)}/issues/$iid/notes/$noteId/award_emoji';
+    return _client.delete('$base/$awardId');
+  }
+
+  /// Toggles the user's subscription on the issue.
+  Future<Issue> setSubscribed(
+    Object projectId,
+    int iid, {
+    required bool subscribed,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/'
+      '${subscribed ? 'subscribe' : 'unsubscribe'}',
+      decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// `2h`, `1d`, ... GitLab duration format.
+  Future<void> setTimeEstimate(Object projectId, int iid, String duration) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/time_estimate',
+      query: {'duration': duration},
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> addTimeSpent(Object projectId, int iid, String duration) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/add_spent_time',
+      query: {'duration': duration},
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> resetTimeSpent(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/reset_spent_time',
+      decoder: (_) {},
+    );
   }
 }

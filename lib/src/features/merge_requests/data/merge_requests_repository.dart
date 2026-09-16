@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -257,6 +258,67 @@ class MergeRequestsRepository {
       '${_p(projectId)}/merge_requests/$iid/notes',
       body: {'body': body},
       decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Emoji reactions on the MR.
+  Future<List<AwardEmoji>> awardEmojis(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/award_emoji',
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Reactions on a single note.
+  Future<List<AwardEmoji>> noteAwardEmojis(
+    Object projectId,
+    int iid,
+    int noteId,
+  ) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/notes/$noteId/award_emoji',
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<AwardEmoji> award(
+    Object projectId,
+    int iid,
+    String name, {
+    int? noteId,
+  }) {
+    final base = noteId == null
+        ? '${_p(projectId)}/merge_requests/$iid/award_emoji'
+        : '${_p(projectId)}/merge_requests/$iid/notes/$noteId/award_emoji';
+    return _client.post(
+      base,
+      body: {'name': name},
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> removeAward(
+    Object projectId,
+    int iid,
+    int awardId, {
+    int? noteId,
+  }) {
+    final base = noteId == null
+        ? '${_p(projectId)}/merge_requests/$iid/award_emoji'
+        : '${_p(projectId)}/merge_requests/$iid/notes/$noteId/award_emoji';
+    return _client.delete('$base/$awardId');
+  }
+
+  /// Toggles the user's subscription on the MR.
+  Future<MergeRequest> setSubscribed(
+    Object projectId,
+    int iid, {
+    required bool subscribed,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/'
+      '${subscribed ? 'subscribe' : 'unsubscribe'}',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
 }
