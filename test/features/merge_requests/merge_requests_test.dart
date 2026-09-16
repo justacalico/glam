@@ -40,6 +40,29 @@ void main() {
       final mr = MergeRequest.fromJson(const {'work_in_progress': true});
       expect(mr.draft, isTrue);
     });
+
+    test('not_approved maps to a readable label', () {
+      final mr = MergeRequest.fromJson(const {
+        'state': 'opened',
+        'detailed_merge_status': 'not_approved',
+      });
+      expect(mr.mergeabilityLabel, 'Needs approval');
+    });
+  });
+
+  group('stripDraftPrefix', () {
+    test('removes colon, bracketed and stacked prefixes', () {
+      expect(stripDraftPrefix('Draft: Add files'), 'Add files');
+      expect(stripDraftPrefix('[Draft] Add files'), 'Add files');
+      expect(stripDraftPrefix('(wip) Add files'), 'Add files');
+      expect(stripDraftPrefix('WIP - Add files'), 'Add files');
+      expect(stripDraftPrefix('Draft: Draft: Add files'), 'Add files');
+    });
+
+    test('leaves non-draft titles and mid-title markers alone', () {
+      expect(stripDraftPrefix('Add files'), 'Add files');
+      expect(stripDraftPrefix('fix draft: handling'), 'fix draft: handling');
+    });
   });
 
   group('MergeRequestsRepository', () {
@@ -145,6 +168,8 @@ void main() {
         'approved': true,
         'approvals_required': 2,
         'approvals_left': 0,
+        'user_has_approved': true,
+        'user_can_approve': false,
         'approved_by': [
           {
             'user': {'id': 8, 'name': 'John Smith', 'username': 'john'},
@@ -157,6 +182,8 @@ void main() {
 
       expect(state.approved, isTrue);
       expect(state.approvedBy.single.name, 'John Smith');
+      expect(state.userHasApproved, isTrue);
+      expect(state.userCanApprove, isFalse);
     });
 
     test('createMergeRequest posts branches and flags', () async {
@@ -180,6 +207,50 @@ void main() {
       final sent = adapter.lastRequest!.data as Map;
       expect(sent['source_branch'], 'feat');
       expect(sent['remove_source_branch'], true);
+    });
+
+    test('createMergeRequest posts assignee and reviewer ids', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/merge_requests',
+        (fixtureJson('mrs') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.createMergeRequest(
+        42,
+        sourceBranch: 'feat',
+        targetBranch: 'main',
+        title: 'New MR',
+        assigneeIds: const [5, 9],
+        reviewerIds: const [12],
+      );
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['assignee_ids'], [5, 9]);
+      expect(sent['reviewer_ids'], [12]);
+    });
+
+    test('updateMergeRequest puts people ids and state event', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/merge_requests/7',
+        (fixtureJson('mrs') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.updateMergeRequest(
+        42,
+        7,
+        title: 'Draft: Renamed',
+        assigneeIds: const [5],
+        reviewerIds: const [],
+      );
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['title'], 'Draft: Renamed');
+      expect(sent['assignee_ids'], [5]);
+      expect(sent['reviewer_ids'], isEmpty);
     });
 
     test('rebase puts to the rebase endpoint', () async {

@@ -22,6 +22,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
@@ -363,16 +364,31 @@ class _People extends StatelessWidget {
 }
 
 /// Merge readiness + the merge button.
-class _MergeBox extends ConsumerWidget {
+class _MergeBox extends ConsumerStatefulWidget {
   const _MergeBox({required this.mr, required this.loc});
 
   final MergeRequest mr;
   final MrRef loc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MergeBox> createState() => _MergeBoxState();
+}
+
+class _MergeBoxState extends ConsumerState<_MergeBox> {
+  var _approving = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final mr = widget.mr;
+    final loc = widget.loc;
     final colors = context.colors;
     final approvals = ref.watch(mrApprovalsProvider(loc)).value;
+    final myId = ref.watch(sessionProvider).value?.user.id;
+    final iApproved =
+        approvals != null &&
+        (approvals.userHasApproved ??
+            (myId != null && approvals.approvedBy.any((u) => u.id == myId)));
+    final canAct = iApproved || (approvals?.userCanApprove ?? true);
     final mergeable =
         mr.detailedMergeStatus == 'mergeable' && !mr.draft && !mr.hasConflicts;
 
@@ -402,12 +418,22 @@ class _MergeBox extends ConsumerWidget {
               ),
             ],
           ),
-          if (approvals != null && approvals.approvalsRequired > 0) ...[
+          if (approvals != null) ...[
             const SizedBox(height: Insets.sm),
-            Text(
-              '${approvals.approvalsRequired - approvals.approvalsLeft}'
-              '/${approvals.approvalsRequired} approvals',
-              style: Theme.of(context).textTheme.bodySmall,
+            Row(
+              children: [
+                if (approvals.approvalsRequired > 0)
+                  Text(
+                    '${approvals.approvalsRequired - approvals.approvalsLeft}'
+                    '/${approvals.approvalsRequired} approvals',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                if (approvals.approvedBy.isNotEmpty) ...[
+                  if (approvals.approvalsRequired > 0)
+                    const SizedBox(width: Insets.sm),
+                  AvatarStack(users: approvals.approvedBy),
+                ],
+              ],
             ),
           ],
           const SizedBox(height: Insets.md),
@@ -421,16 +447,18 @@ class _MergeBox extends ConsumerWidget {
                 label: const Text('Merge'),
               ),
               const SizedBox(width: Insets.sm),
-              if (approvals != null && !approvals.approved)
+              if (approvals != null && canAct)
                 OutlinedButton.icon(
-                  onPressed: () async {
-                    await ref
-                        .read(mrRepositoryProvider)
-                        .approve(loc.project, loc.iid);
-                    ref.invalidate(mrApprovalsProvider(loc));
-                  },
-                  icon: const Icon(Icons.thumb_up_outlined, size: 16),
-                  label: const Text('Approve'),
+                  onPressed: _approving
+                      ? null
+                      : () => unawaited(_toggleApproval(iApproved)),
+                  icon: Icon(
+                    iApproved
+                        ? Icons.thumb_down_outlined
+                        : Icons.thumb_up_outlined,
+                    size: 16,
+                  ),
+                  label: Text(iApproved ? 'Revoke approval' : 'Approve'),
                 ),
             ],
           ),
@@ -445,6 +473,34 @@ class _MergeBox extends ConsumerWidget {
       showDragHandle: true,
       builder: (context) => _MergeSheet(mr: mr, loc: loc),
     );
+  }
+
+  Future<void> _toggleApproval(bool approved) async {
+    setState(() => _approving = true);
+    final repo = ref.read(mrRepositoryProvider);
+    try {
+      if (approved) {
+        await repo.unapprove(widget.loc.project, widget.loc.iid);
+      } else {
+        await repo.approve(widget.loc.project, widget.loc.iid);
+      }
+      if (!mounted) {
+        return;
+      }
+      ref
+        ..invalidate(mrApprovalsProvider(widget.loc))
+        ..invalidate(mrProvider(widget.loc));
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _approving = false);
+      }
+    }
   }
 }
 
@@ -567,35 +623,61 @@ class _MrActions extends ConsumerWidget {
     return PopupMenuButton<String>(
       onSelected: (action) async {
         final repo = ref.read(mrRepositoryProvider);
-        switch (action) {
-          case 'toggle':
-            await repo.updateMergeRequest(
-              loc.project,
-              loc.iid,
-              stateEvent: mr.isOpen ? 'close' : 'reopen',
-            );
-            ref.invalidate(mrProvider(loc));
-          case 'rebase':
-            await repo.rebase(loc.project, loc.iid);
-          case 'subscribe':
-            await repo.setSubscribed(
-              loc.project,
-              loc.iid,
-              subscribed: !mr.subscribed,
-            );
-            ref.invalidate(mrProvider(loc));
-          case 'edit':
-            unawaited(
-              MrFormScreen.show(context, projectId: loc.project, mr: mr),
-            );
-          case 'copy':
-            if (mr.webUrl != null) {
-              unawaited(Clipboard.setData(ClipboardData(text: mr.webUrl!)));
-            }
-          case 'open':
-            if (mr.webUrl != null) {
-              unawaited(launchExternal(mr.webUrl!));
-            }
+        try {
+          switch (action) {
+            case 'toggle':
+              await repo.updateMergeRequest(
+                loc.project,
+                loc.iid,
+                stateEvent: mr.isOpen ? 'close' : 'reopen',
+              );
+            case 'draft':
+              final title = mr.draft
+                  ? stripDraftPrefix(mr.title)
+                  : 'Draft: ${mr.title}';
+              if (title.isEmpty) {
+                return;
+              }
+              await repo.updateMergeRequest(loc.project, loc.iid, title: title);
+            case 'subscribe':
+              await repo.setSubscribed(
+                loc.project,
+                loc.iid,
+                subscribed: !mr.subscribed,
+              );
+            case 'rebase':
+              await repo.rebase(loc.project, loc.iid);
+            case 'edit':
+              if (context.mounted) {
+                unawaited(
+                  MrFormScreen.show(context, projectId: loc.project, mr: mr),
+                );
+              }
+              return;
+            case 'copy':
+              if (mr.webUrl != null) {
+                unawaited(Clipboard.setData(ClipboardData(text: mr.webUrl!)));
+              }
+              return;
+            case 'open':
+              if (mr.webUrl != null) {
+                unawaited(launchExternal(mr.webUrl!));
+              }
+              return;
+          }
+          if (!context.mounted) {
+            return;
+          }
+          ref
+            ..invalidate(mrProvider(loc))
+            ..invalidate(projectMrsProvider)
+            ..invalidate(mergeRequestsProvider);
+        } on ApiException catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e.message)));
+          }
         }
       },
       itemBuilder: (context) => [
@@ -603,8 +685,13 @@ class _MrActions extends ConsumerWidget {
           value: 'toggle',
           child: Text(mr.isOpen ? 'Close MR' : 'Reopen MR'),
         ),
-        if (mr.isOpen)
+        if (mr.isOpen) ...[
+          PopupMenuItem(
+            value: 'draft',
+            child: Text(mr.draft ? 'Mark as ready' : 'Mark as draft'),
+          ),
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+        ],
         PopupMenuItem(
           value: 'subscribe',
           child: Text(mr.subscribed ? 'Unsubscribe' : 'Subscribe'),
