@@ -23,6 +23,11 @@ class DashboardScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            icon: const Icon(Icons.notifications_outlined, size: 20),
+            onPressed: () => context.push(Routes.notifications),
+          ),
           if (user != null)
             Padding(
               padding: const EdgeInsets.only(right: Insets.md),
