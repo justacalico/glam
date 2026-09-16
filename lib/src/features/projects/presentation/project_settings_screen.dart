@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/presentation/project_admin_sections.dart';
 
 /// Project settings: general info, feature toggles, archive, and CI/CD
 /// variables.
@@ -32,6 +33,12 @@ class ProjectSettingsScreen extends ConsumerWidget {
             _FeaturesSection(project: p),
             const SizedBox(height: Insets.xl),
             _VariablesSection(project: p),
+            const SizedBox(height: Insets.xl),
+            WebhooksSection(project: p),
+            const SizedBox(height: Insets.xl),
+            DeployKeysSection(project: p),
+            const SizedBox(height: Insets.xl),
+            ProtectedBranchesSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),

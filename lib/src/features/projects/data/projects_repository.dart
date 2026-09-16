@@ -1,8 +1,11 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
+import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
+import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/webhook.dart';
 
 /// Talks to `/projects` and related endpoints.
 class ProjectsRepository {
@@ -180,6 +183,109 @@ class ProjectsRepository {
           decoder: _decode,
         )
         .then((p) => p.items);
+  }
+
+  /// Webhooks (`/projects/:id/hooks`).
+  Future<List<Webhook>> hooks(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/hooks',
+      decoder: (j) => Webhook.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Webhook> createHook(
+    Object id, {
+    required String url,
+    String? token,
+    Map<String, bool> events = const {},
+    bool enableSslVerification = true,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/hooks',
+      body: {
+        'url': url,
+        'token': ?token,
+        ...events,
+        'enable_ssl_verification': enableSslVerification,
+      },
+      decoder: (j) => Webhook.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Fires a test event. GitLab only supports `push_events` triggers.
+  Future<void> testHook(Object id, int hookId) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/hooks/$hookId/'
+      'test/push_events',
+      decoder: (j) => j,
+    );
+  }
+
+  Future<void> deleteHook(Object id, int hookId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/hooks/$hookId',
+    );
+  }
+
+  /// Deploy keys enabled on the project (`/projects/:id/deploy_keys`).
+  Future<List<DeployKey>> deployKeys(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_keys',
+      decoder: (j) => DeployKey.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<DeployKey> addDeployKey(
+    Object id, {
+    required String title,
+    required String key,
+    bool canPush = false,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_keys',
+      body: {'title': title, 'key': key, 'can_push': canPush},
+      decoder: (j) => DeployKey.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteDeployKey(Object id, int keyId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_keys/$keyId',
+    );
+  }
+
+  /// Protected branch rules (`/projects/:id/protected_branches`).
+  Future<List<ProtectedBranch>> protectedBranches(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_branches',
+      decoder: (j) => ProtectedBranch.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ProtectedBranch> protectBranch(
+    Object id, {
+    required String name,
+    int pushAccessLevel = 40,
+    int mergeAccessLevel = 40,
+    bool allowForcePush = false,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_branches',
+      body: {
+        'name': name,
+        'push_access_level': pushAccessLevel,
+        'merge_access_level': mergeAccessLevel,
+        'allow_force_push': allowForcePush,
+      },
+      decoder: (j) => ProtectedBranch.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> unprotectBranch(Object id, String name) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_branches/'
+      '${Uri.encodeComponent(name)}',
+    );
   }
 
   static Project _decodeOne(Object? json) => _decode(json);
