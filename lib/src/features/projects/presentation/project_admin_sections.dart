@@ -813,31 +813,9 @@ class ProtectedTagsSection extends ConsumerWidget {
                 : Column(
                     children: [
                       for (final t in list)
-                        ListTile(
-                          dense: true,
-                          leading: Icon(
-                            t.isWildcard
-                                ? Icons.star_outline
-                                : Icons.sell_outlined,
-                            size: 18,
-                          ),
-                          title: Text(
-                            t.name,
-                            style: const TextStyle(
-                              fontFamily: 'JetBrains Mono',
-                              fontSize: 12.5,
-                            ),
-                          ),
-                          subtitle: Text(
-                            t.createLevels.isEmpty
-                                ? 'create: —'
-                                : 'create: '
-                                      '${t.createLevels.map(ProtectedBranch.levelLabel).join(', ')}',
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            onPressed: () => _unprotect(context, ref, t),
-                          ),
+                        _ProtectedTagTile(
+                          tag: t,
+                          onDelete: () => _unprotect(context, ref, t),
                         ),
                     ],
                   ),
@@ -933,6 +911,36 @@ class ProtectedTagsSection extends ConsumerWidget {
         _error(context, e.message);
       }
     }
+  }
+}
+
+class _ProtectedTagTile extends StatelessWidget {
+  const _ProtectedTagTile({required this.tag, required this.onDelete});
+
+  final ProtectedTag tag;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final create = tag.createLevels.isEmpty
+        ? '—'
+        : tag.createLevels.map(ProtectedBranch.levelLabel).join(', ');
+    return ListTile(
+      dense: true,
+      leading: Icon(
+        tag.isWildcard ? Icons.star_outline : Icons.sell_outlined,
+        size: 18,
+      ),
+      title: Text(
+        tag.name,
+        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+      ),
+      subtitle: Text('create: $create'),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_outline, size: 18),
+        onPressed: onDelete,
+      ),
+    );
   }
 }
 
