@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/app/theme/theme_controller.dart';
+import 'package:glam/src/features/account/presentation/account_sections.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 
 /// App settings: theme, code viewing, instance info, sign out.
@@ -53,6 +54,9 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+          const SshKeysSection(),
+          const TokensSection(),
+          const NotificationSection(),
           _Section(
             label: 'Session',
             children: [
@@ -102,7 +106,7 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (confirmed ?? false) {
+    if ((confirmed ?? false) && context.mounted) {
       await ref.read(sessionProvider.notifier).signOut();
     }
   }
