@@ -9,7 +9,6 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
-import 'package:glam/src/features/repository/data/repository_repository.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
 /// `git blame` for one file: each hunk gets a commit banner followed by
@@ -41,10 +40,11 @@ class BlameScreen extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             Text(
-              'blame',
+              path,
               style: Theme.of(
                 context,
               ).textTheme.labelSmall?.copyWith(fontFamily: 'JetBrains Mono'),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -66,43 +66,111 @@ class _BlameList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Flatten to rows: one header per hunk, then a numbered line each.
-    final rows = <_Row>[];
-    var lineNo = 1;
-    for (final h in hunks) {
-      rows.add(_Header(h.commit));
-      for (final line in h.lines) {
-        rows.add(_Line(lineNo++, line));
-      }
-    }
-    if (rows.isEmpty) {
+    if (hunks.isEmpty) {
       return const Center(child: Text('Nothing to blame'));
+    }
+    // Line numbers run continuously across hunks.
+    final starts = <int>[];
+    var line = 1;
+    for (final hunk in hunks) {
+      starts.add(line);
+      line += hunk.lines.length;
     }
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: Insets.lg),
-      itemCount: rows.length,
-      itemBuilder: (context, index) => switch (rows[index]) {
-        _Header(:final commit) => _CommitBanner(
-          commit: commit,
-          projectId: projectId,
-        ),
-        _Line(:final no, :final text) => _CodeLine(no: no, text: text),
-      },
+      itemCount: hunks.length,
+      itemBuilder: (context, index) => _HunkView(
+        hunk: hunks[index],
+        projectId: projectId,
+        firstLine: starts[index],
+      ),
     );
   }
 }
 
-sealed class _Row {}
+/// One hunk: a banner for the commit, then its lines. The line-number
+/// gutter stays put while the code scrolls horizontally as one block.
+class _HunkView extends StatelessWidget {
+  const _HunkView({
+    required this.hunk,
+    required this.projectId,
+    required this.firstLine,
+  });
 
-final class _Header extends _Row {
-  _Header(this.commit);
-  final Commit commit;
-}
+  final BlameHunk hunk;
+  final String projectId;
+  final int firstLine;
 
-final class _Line extends _Row {
-  _Line(this.no, this.text);
-  final int no;
-  final String text;
+  static const _rowHeight = 20.0;
+  static const _gutterWidth = 52.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    const codeStyle = TextStyle(
+      fontFamily: 'JetBrains Mono',
+      fontSize: 11.5,
+      height: 1.5,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _CommitBanner(commit: hunk.commit, projectId: projectId),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: _gutterWidth,
+              decoration: BoxDecoration(
+                border: Border(right: BorderSide(color: colors.border)),
+              ),
+              child: Column(
+                children: [
+                  for (var i = 0; i < hunk.lines.length; i++)
+                    SizedBox(
+                      height: _rowHeight,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: Insets.sm),
+                        child: Text(
+                          '${firstLine + i}',
+                          textAlign: TextAlign.right,
+                          style: codeStyle.copyWith(
+                            color: colors.inkMuted,
+                            fontSize: 10.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(left: Insets.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final line in hunk.lines)
+                      SizedBox(
+                        height: _rowHeight,
+                        child: Text(
+                          line.isEmpty ? ' ' : line,
+                          style: codeStyle,
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class _CommitBanner extends StatelessWidget {
@@ -115,6 +183,11 @@ class _CommitBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final theme = Theme.of(context);
+    final meta = [
+      commit.authorName ?? 'unknown',
+      Format.relative(commit.committedAt),
+      commit.title,
+    ].where((s) => s.isNotEmpty).join(' · ');
     return Material(
       color: colors.surface,
       child: InkWell(
@@ -148,9 +221,7 @@ class _CommitBanner extends StatelessWidget {
               const SizedBox(width: Insets.sm),
               Expanded(
                 child: Text(
-                  '${commit.authorName ?? 'unknown'}'
-                  ' · ${Format.relative(commit.committedAt)}'
-                  '${commit.title.isEmpty ? '' : ' · ${commit.title}'}',
+                  meta,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: colors.inkMuted,
                   ),
@@ -161,43 +232,6 @@ class _CommitBanner extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CodeLine extends StatelessWidget {
-  const _CodeLine({required this.no, required this.text});
-
-  final int no;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    const style = TextStyle(
-      fontFamily: 'JetBrains Mono',
-      fontSize: 11.5,
-      height: 1.55,
-    );
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 44,
-          child: Text(
-            '$no',
-            textAlign: TextAlign.right,
-            style: style.copyWith(color: colors.inkMuted, fontSize: 10.5),
-          ),
-        ),
-        const SizedBox(width: Insets.sm),
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Text(text.isEmpty ? ' ' : text, style: style),
-          ),
-        ),
-      ],
     );
   }
 }
