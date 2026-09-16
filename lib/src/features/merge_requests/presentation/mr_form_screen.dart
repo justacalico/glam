@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -430,14 +432,16 @@ class _MembersDialogState extends ConsumerState<_MembersDialog> {
         return NotificationListener<ScrollNotification>(
           onNotification: (n) {
             if (n.metrics.pixels > n.metrics.maxScrollExtent - 200) {
-              ref
-                  .read(
-                    membersProvider((
-                      id: widget.projectId,
-                      isProject: true,
-                    )).notifier,
-                  )
-                  .loadMore();
+              unawaited(
+                ref
+                    .read(
+                      membersProvider((
+                        id: widget.projectId,
+                        isProject: true,
+                      )).notifier,
+                    )
+                    .loadMore(),
+              );
             }
             return false;
           },
