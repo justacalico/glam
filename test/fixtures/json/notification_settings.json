@@ -1,0 +1,9 @@
+{
+  "level": "custom",
+  "notification_email": "me@example.com",
+  "new_note": true,
+  "new_issue": false,
+  "failed_pipeline": true,
+  "success_pipeline": false,
+  "merge_merge_request": true
+}

@@ -1,0 +1,203 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:glam/src/features/account/application/account_providers.dart';
+import 'package:glam/src/features/account/data/account_repository.dart';
+import 'package:glam/src/features/account/domain/account_models.dart';
+
+import '../../helpers/fake_dio_adapter.dart';
+import '../../helpers/fixtures.dart';
+import '../../helpers/test_client.dart';
+
+void main() {
+  group('SshKey', () {
+    test('parses and fingerprints the key material', () {
+      final k = SshKey.fromJson(
+        (fixtureJson('ssh_keys') as List).first as Map<String, dynamic>,
+      );
+
+      expect(k.title, 'Work laptop');
+      expect(k.fingerprint.startsWith('…'), isTrue);
+      expect(k.expiresAt, isNotNull);
+      expect(k.lastUsedAt, isNotNull);
+    });
+
+    test('fingerprint handles irregular spacing', () {
+      const k = SshKey(id: 1, title: 't', key: 'ssh-ed25519  abc');
+      expect(k.fingerprint, 'abc');
+    });
+  });
+
+  group('PersonalAccessToken', () {
+    test('parses scopes, revoked and expiry', () {
+      final list = (fixtureJson('personal_access_tokens') as List)
+          .whereType<Map<String, dynamic>>()
+          .map(PersonalAccessToken.fromJson)
+          .toList();
+
+      expect(list.first.name, 'glam-app');
+      expect(list.first.scopes, ['api', 'read_user']);
+      expect(list.first.active, isTrue);
+      expect(list.first.expired, isFalse);
+      expect(list.last.revoked, isTrue);
+      expect(list.last.expired, isTrue);
+    });
+  });
+
+  group('NotificationSettings', () {
+    test('parses level and known event toggles', () {
+      final s = NotificationSettings.fromJson(
+        fixtureJson('notification_settings') as Map<String, dynamic>,
+      );
+
+      expect(s.level, 'custom');
+      expect(s.notificationEmail, 'me@example.com');
+      expect(s.events['new_note'], isTrue);
+      expect(s.events['failed_pipeline'], isTrue);
+      expect(s.events.containsKey('unknown_key'), isFalse);
+    });
+  });
+
+  group('AccountRepository', () {
+    test('ssh keys list, add, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/user/keys', fixtureJson('ssh_keys'))
+        ..post('/user/keys', (fixtureJson('ssh_keys') as List).first)
+        ..delete('/user/keys/10');
+      final repo = AccountRepository(client);
+
+      final keys = await repo.sshKeys();
+      expect(keys, hasLength(1));
+
+      await repo.addSshKey(title: 'Work laptop', key: 'ssh-ed25519 AAAA');
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['title'], 'Work laptop');
+      expect(sent['key'], 'ssh-ed25519 AAAA');
+
+      await repo.deleteSshKey(10);
+      expect(adapter.requestsTo('DELETE', '/user/keys/10'), hasLength(1));
+    });
+
+    test('addSshKey sends the expiry date as YYYY-MM-DD', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/user/keys', (fixtureJson('ssh_keys') as List).first);
+      final repo = AccountRepository(client);
+
+      await repo.addSshKey(
+        title: 't',
+        key: 'k',
+        expiresAt: DateTime(2026, 5, 1, 13, 30),
+      );
+
+      expect((adapter.lastRequest!.data as Map)['expires_at'], '2026-05-01');
+    });
+
+    test('tokens list filters active by default', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/personal_access_tokens', fixtureJson('personal_access_tokens'))
+        ..get('/personal_access_tokens', fixtureJson('personal_access_tokens'))
+        ..delete('/personal_access_tokens/77');
+      final repo = AccountRepository(client);
+
+      await repo.personalAccessTokens();
+      expect(adapter.lastRequest!.queryParameters['state'], 'active');
+
+      await repo.personalAccessTokens(activeOnly: false);
+      expect(
+        adapter.lastRequest!.queryParameters.containsKey('state'),
+        isFalse,
+      );
+
+      await repo.revokeToken(77);
+      expect(
+        adapter.requestsTo('DELETE', '/personal_access_tokens/77'),
+        hasLength(1),
+      );
+    });
+
+    test('notification settings get and put', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/notification_settings', fixtureJson('notification_settings'))
+        ..put('/notification_settings', fixtureJson('notification_settings'));
+      final repo = AccountRepository(client);
+
+      final s = await repo.notificationSettings();
+      expect(s.level, 'custom');
+
+      await repo.updateNotificationSettings(
+        level: 'watch',
+        events: const {'new_issue': true},
+      );
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['level'], 'watch');
+      expect(sent['new_issue'], true);
+    });
+  });
+
+  group('accountActionsProvider', () {
+    late FakeDioAdapter adapter;
+    late ProviderContainer container;
+
+    setUp(() {
+      final (client, a) = testClient();
+      adapter = a;
+      container = ProviderContainer(
+        overrides: [
+          accountRepositoryProvider.overrideWithValue(
+            AccountRepository(client),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('addSshKey refetches the keys list', () async {
+      adapter
+        ..get('/user/keys', fixtureJson('ssh_keys'))
+        ..post('/user/keys', (fixtureJson('ssh_keys') as List).first)
+        ..get('/user/keys', fixtureJson('ssh_keys'));
+
+      await container.read(sshKeysProvider.future);
+      await container
+          .read(accountActionsProvider)
+          .addSshKey(title: 't', key: 'k');
+      await container.read(sshKeysProvider.future);
+
+      expect(adapter.requestsTo('GET', '/user/keys'), hasLength(2));
+    });
+
+    test('revokeToken refetches the token list', () async {
+      adapter
+        ..get('/personal_access_tokens', fixtureJson('personal_access_tokens'))
+        ..delete('/personal_access_tokens/77')
+        ..get('/personal_access_tokens', fixtureJson('personal_access_tokens'));
+
+      await container.read(personalAccessTokensProvider.future);
+      await container.read(accountActionsProvider).revokeToken(77);
+      await container.read(personalAccessTokensProvider.future);
+
+      expect(
+        adapter.requestsTo('GET', '/personal_access_tokens'),
+        hasLength(2),
+      );
+    });
+
+    test('setNotificationLevel refetches settings', () async {
+      adapter
+        ..get('/notification_settings', fixtureJson('notification_settings'))
+        ..put('/notification_settings', fixtureJson('notification_settings'))
+        ..get('/notification_settings', fixtureJson('notification_settings'));
+
+      await container.read(notificationSettingsProvider.future);
+      await container
+          .read(accountActionsProvider)
+          .setNotificationLevel('watch');
+      await container.read(notificationSettingsProvider.future);
+
+      expect(adapter.requestsTo('GET', '/notification_settings'), hasLength(2));
+    });
+  });
+}
