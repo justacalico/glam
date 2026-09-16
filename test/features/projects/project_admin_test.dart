@@ -204,6 +204,80 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('protected tags list, protect, unprotect', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/protected_tags', fixtureJson('protected_tags'))
+        ..post(
+          '/projects/42/protected_tags',
+          (fixtureJson('protected_tags') as List).first,
+        )
+        ..delete('/projects/42/protected_tags/v*');
+      final repo = ProjectsRepository(client);
+
+      final tags = await repo.protectedTags(42);
+      expect(tags, hasLength(3));
+      expect(tags.first.createLevels, [40]);
+      expect(tags.first.createLabels, ['Maintainers']);
+      expect(tags[1].isWildcard, isFalse);
+      expect(tags.first.isWildcard, isTrue);
+      // Group-scoped rules carry a null level plus a description.
+      expect(tags.last.createLevels, isEmpty);
+      expect(tags.last.createLabels, ['Release managers']);
+
+      await repo.protectTag(42, name: 'v*', createAccessLevel: 0);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['name'], 'v*');
+      expect(sent['create_access_level'], 0);
+
+      await repo.unprotectTag(42, 'v*');
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/protected_tags/v*'),
+        hasLength(1),
+      );
+    });
+
+    test('deploy tokens list, create keeps the secret, revoke', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/deploy_tokens', fixtureJson('deploy_tokens'))
+        ..post('/projects/42/deploy_tokens', {
+          'id': 13,
+          'name': 'pull-bot',
+          'username': 'gitlab+deploy-token-13',
+          'expires_at': '2026-01-01T00:00:00.000Z',
+          'revoked': false,
+          'scopes': ['read_registry'],
+          'token': 'gldt-secret',
+        })
+        ..delete('/projects/42/deploy_tokens/11');
+      final repo = ProjectsRepository(client);
+
+      final tokens = await repo.deployTokens(42);
+      expect(tokens, hasLength(2));
+      expect(tokens.last.revoked, isTrue);
+      expect(tokens.last.expired, isTrue);
+      expect(tokens.first.expired, isFalse);
+
+      final created = await repo.createDeployToken(
+        42,
+        name: 'pull-bot',
+        scopes: const ['read_registry'],
+        expiresAt: DateTime.utc(2026),
+      );
+      expect(created.token, 'gldt-secret');
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['scopes'], ['read_registry']);
+      expect(sent['expires_at'], '2026-01-01');
+      expect(sent.containsKey('username'), isFalse);
+
+      await repo.deleteDeployToken(42, 11);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/deploy_tokens/11'),
+        hasLength(1),
+      );
+    });
   });
 
   group('projectAdminActionsProvider', () {
@@ -278,6 +352,50 @@ void main() {
 
       expect(
         adapter.requestsTo('GET', '/projects/42/deploy_keys'),
+        hasLength(2),
+      );
+    });
+
+    test('unprotectTag invalidates the rules list', () async {
+      adapter
+        ..get('/projects/42/protected_tags', fixtureJson('protected_tags'))
+        ..delete('/projects/42/protected_tags/v*')
+        ..get('/projects/42/protected_tags', fixtureJson('protected_tags'));
+
+      await container.read(projectProtectedTagsProvider(42).future);
+      await container.read(projectAdminActionsProvider).unprotectTag(42, 'v*');
+      await container.read(projectProtectedTagsProvider(42).future);
+
+      expect(
+        adapter.requestsTo('GET', '/projects/42/protected_tags'),
+        hasLength(2),
+      );
+    });
+
+    test('addDeployToken returns the secret and refetches', () async {
+      adapter
+        ..get('/projects/42/deploy_tokens', fixtureJson('deploy_tokens'))
+        ..post('/projects/42/deploy_tokens', {
+          'id': 13,
+          'name': 'pull-bot',
+          'token': 'gldt-secret',
+          'scopes': ['read_registry'],
+        })
+        ..get('/projects/42/deploy_tokens', fixtureJson('deploy_tokens'));
+
+      await container.read(projectDeployTokensProvider(42).future);
+      final token = await container
+          .read(projectAdminActionsProvider)
+          .addDeployToken(
+            42,
+            name: 'pull-bot',
+            scopes: const ['read_registry'],
+          );
+      await container.read(projectDeployTokensProvider(42).future);
+
+      expect(token.token, 'gldt-secret');
+      expect(
+        adapter.requestsTo('GET', '/projects/42/deploy_tokens'),
         hasLength(2),
       );
     });

@@ -2,9 +2,11 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
+import 'package:glam/src/features/projects/domain/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
 
 /// Talks to `/projects` and related endpoints.
@@ -286,6 +288,69 @@ class ProjectsRepository {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/protected_branches/'
       '${Uri.encodeComponent(name)}',
+    );
+  }
+
+  /// Protected tag rules (`/projects/:id/protected_tags`).
+  Future<List<ProtectedTag>> protectedTags(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_tags',
+      decoder: (j) => ProtectedTag.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ProtectedTag> protectTag(
+    Object id, {
+    required String name,
+    int createAccessLevel = 40,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_tags',
+      body: {'name': name, 'create_access_level': createAccessLevel},
+      decoder: (j) => ProtectedTag.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> unprotectTag(Object id, String name) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_tags/'
+      '${Uri.encodeComponent(name)}',
+    );
+  }
+
+  /// Deploy tokens (`/projects/:id/deploy_tokens`).
+  Future<List<DeployToken>> deployTokens(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_tokens',
+      decoder: (j) => DeployToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Creates a deploy token. The response carries `token` — the only
+  /// time GitLab ever returns the secret, so keep the decoder field.
+  Future<DeployToken> createDeployToken(
+    Object id, {
+    required String name,
+    required List<String> scopes,
+    String? username,
+    DateTime? expiresAt,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_tokens',
+      body: {
+        'name': name,
+        'scopes': scopes,
+        'username': ?username,
+        'expires_at': ?expiresAt?.toIso8601String().substring(0, 10),
+      },
+      decoder: (j) => DeployToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Revokes (deletes) a deploy token.
+  Future<void> deleteDeployToken(Object id, int tokenId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/deploy_tokens/$tokenId',
     );
   }
 

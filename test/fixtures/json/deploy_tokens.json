@@ -1,0 +1,22 @@
+[
+  {
+    "id": 11,
+    "name": "registry-pull",
+    "username": "gitlab+deploy-token-11",
+    "expires_at": "2099-01-01T00:00:00.000Z",
+    "revoked": false,
+    "scopes": [
+      "read_registry"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "old-token",
+    "username": "gitlab+deploy-token-12",
+    "expires_at": "2020-01-01T00:00:00.000Z",
+    "revoked": true,
+    "scopes": [
+      "read_repository"
+    ]
+  }
+]
