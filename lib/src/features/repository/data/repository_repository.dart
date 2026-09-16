@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -176,12 +174,12 @@ class RepositoryRepository {
     );
   }
 
-  /// A single unified diff for `old...new` comparisons.
-  Future<String> compare(Object projectId, String from, String to) {
+  /// Compare two refs: commits `to` adds over `from` plus the diff.
+  Future<CompareResult> compare(Object projectId, String from, String to) {
     return _client.get(
       '${_p(projectId)}/repository/compare',
       query: {'from': from, 'to': to},
-      decoder: jsonEncode,
+      decoder: (j) => CompareResult.fromJson(j! as Map<String, dynamic>),
     );
   }
 

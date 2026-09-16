@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
@@ -32,10 +36,21 @@ class BranchesScreen extends ConsumerWidget {
               Insets.md,
               0,
             ),
-            child: TextButton.icon(
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text('New branch'),
-              onPressed: () => _showCreate(context, ref),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.compare_arrows, size: 16),
+                  label: const Text('Compare'),
+                  onPressed: () =>
+                      context.push(Routes.projectCompare(projectId)),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('New branch'),
+                  onPressed: () => _showCreate(context, ref),
+                ),
+              ],
             ),
           ),
         ),
@@ -190,42 +205,50 @@ class _BranchTile extends ConsumerWidget {
                 ),
             ],
           ),
-          if (!branch.isDefault && !branch.protected)
-            PopupMenuButton<String>(
-              iconSize: 18,
-              onSelected: (action) async {
-                if (action == 'delete') {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Delete ${branch.name}?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
-                        ),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Delete'),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirmed == true) {
-                    await ref
-                        .read(repositoryRepositoryProvider)
-                        .deleteBranch(projectId, branch.name);
-                    ref.invalidate(branchesProvider);
-                  }
+          PopupMenuButton<String>(
+            iconSize: 18,
+            onSelected: (action) async {
+              if (action == 'compare') {
+                unawaited(
+                  context.push(
+                    Routes.projectCompare(projectId, to: branch.name),
+                  ),
+                );
+              }
+              if (action == 'delete') {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Delete ${branch.name}?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  await ref
+                      .read(repositoryRepositoryProvider)
+                      .deleteBranch(projectId, branch.name);
+                  ref.invalidate(branchesProvider);
                 }
-              },
-              itemBuilder: (context) => [
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'compare', child: Text('Compare')),
+              if (!branch.isDefault && !branch.protected)
                 const PopupMenuItem(
                   value: 'delete',
                   child: Text('Delete branch'),
                 ),
-              ],
-            ),
+            ],
+          ),
         ],
       ),
     );

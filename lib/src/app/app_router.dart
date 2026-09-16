@@ -24,6 +24,7 @@ import 'package:glam/src/features/projects/presentation/project_settings_screen.
 import 'package:glam/src/features/profile/presentation/profile_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/blame_screen.dart';
+import 'package:glam/src/features/repository/presentation/compare_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
 import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
@@ -114,6 +115,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                           projectId: state.pathParameters['id']!,
                           path: state.uri.queryParameters['path'] ?? '',
                           ref: state.uri.queryParameters['ref'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'compare',
+                        builder: (context, state) => CompareScreen(
+                          projectId: state.pathParameters['id']!,
+                          from: state.uri.queryParameters['from'],
+                          to: state.uri.queryParameters['to'],
                         ),
                       ),
                       GoRoute(
