@@ -27,6 +27,7 @@ import 'package:glam/src/features/settings/presentation/settings_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_detail_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/todos/presentation/todos_screen.dart';
+import 'package:glam/src/features/wiki/presentation/wiki_screen.dart';
 
 /// go_router wiring. The shell is a [StatefulShellRoute] so each top
 /// section keeps its own stack and scroll position.
@@ -134,6 +135,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'search',
                         builder: (context, state) => SearchScreen(
                           projectId: state.pathParameters['id']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'wiki/:slug',
+                        builder: (context, state) => WikiPageScreen(
+                          loc: (
+                            projectId: state.pathParameters['id']!,
+                            slug: Uri.decodeComponent(
+                              state.pathParameters['slug']!,
+                            ),
+                          ),
                         ),
                       ),
                       GoRoute(
