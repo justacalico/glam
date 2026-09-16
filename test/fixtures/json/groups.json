@@ -1,0 +1,26 @@
+[
+  {
+    "id": 9,
+    "name": "calico",
+    "path": "calico",
+    "full_path": "calico",
+    "description": "Personal projects",
+    "visibility": "public",
+    "avatar_url": null,
+    "web_url": "https://gitlab.example.com/calico",
+    "parent_id": null,
+    "statistics": {"project_count": 4, "subgroup_count": 1},
+    "created_at": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "name": "infra",
+    "path": "infra",
+    "full_path": "calico/infra",
+    "description": null,
+    "visibility": "private",
+    "avatar_url": null,
+    "parent_id": 9,
+    "statistics": {"project_count": 2, "subgroup_count": 0}
+  }
+]

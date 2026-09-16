@@ -1,0 +1,21 @@
+[
+  {
+    "id": 7,
+    "username": "jane",
+    "name": "Jane Doe",
+    "avatar_url": null,
+    "access_level": 50,
+    "state": "active",
+    "expires_at": null,
+    "web_url": "https://gitlab.example.com/jane"
+  },
+  {
+    "id": 8,
+    "username": "john",
+    "name": "John Smith",
+    "avatar_url": null,
+    "access_level": 30,
+    "state": "active",
+    "expires_at": "2026-01-01"
+  }
+]

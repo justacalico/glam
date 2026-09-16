@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
@@ -75,6 +76,10 @@ class _ProjectBody extends ConsumerWidget {
       (
         label: 'Pipelines',
         builder: () => PipelinesScreen(projectId: project.id),
+      ),
+      (
+        label: 'Members',
+        builder: () => MembersList(id: project.id, isProject: true),
       ),
       if (!project.emptyRepo)
         (
