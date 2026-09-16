@@ -452,7 +452,12 @@ class DeployKeysSection extends ConsumerWidget {
               child: const Text('Cancel'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () {
+                if (title.text.trim().isEmpty || key.text.trim().isEmpty) {
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
               child: const Text('Add'),
             ),
           ],
@@ -488,6 +493,14 @@ class DeployKeysSection extends ConsumerWidget {
     WidgetRef ref,
     DeployKey k,
   ) async {
+    final ok = await _confirm(
+      context,
+      title: 'Remove deploy key?',
+      body: k.title,
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
     try {
       await ref
           .read(projectAdminActionsProvider)
@@ -647,6 +660,14 @@ class ProtectedBranchesSection extends ConsumerWidget {
     WidgetRef ref,
     ProtectedBranch b,
   ) async {
+    final ok = await _confirm(
+      context,
+      title: 'Unprotect branch?',
+      body: '"${b.name}" will accept pushes again.',
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
     try {
       await ref
           .read(projectAdminActionsProvider)
@@ -748,4 +769,28 @@ class _SectionLabel extends StatelessWidget {
 
 void _error(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+}
+
+Future<bool?> _confirm(
+  BuildContext context, {
+  required String title,
+  required String body,
+}) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(body),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Confirm'),
+        ),
+      ],
+    ),
+  );
 }
