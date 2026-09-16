@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/groups/application/groups_providers.dart';
+import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
@@ -55,6 +58,8 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
   late final TextEditingController _labels;
   String? _source;
   String? _target;
+  Set<int> _assigneeIds = {};
+  Set<int> _reviewerIds = {};
   var _squash = false;
   var _removeSource = false;
   var _saving = false;
@@ -71,6 +76,8 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
     _labels = TextEditingController(text: mr?.labels.join(', ') ?? '');
     _source = mr?.sourceBranch;
     _target = mr?.targetBranch;
+    _assigneeIds = {for (final u in mr?.assignees ?? <GitLabUser>[]) u.id};
+    _reviewerIds = {for (final u in mr?.reviewers ?? <GitLabUser>[]) u.id};
   }
 
   @override
@@ -111,6 +118,8 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           description: _description.text.trim(),
           labels: _labelList(),
           targetBranch: _target,
+          assigneeIds: _assigneeIds.toList(),
+          reviewerIds: _reviewerIds.toList(),
         );
       } else {
         await repo.createMergeRequest(
@@ -120,6 +129,8 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           title: title,
           description: _description.text.trim(),
           labels: _labelList(),
+          assigneeIds: _assigneeIds.toList(),
+          reviewerIds: _reviewerIds.toList(),
           squash: _squash,
           removeSourceBranch: _removeSource,
         );
@@ -211,6 +222,20 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
               border: OutlineInputBorder(),
             ),
           ),
+          const SizedBox(height: Insets.md),
+          _PeoplePicker(
+            projectId: widget.projectId,
+            label: 'Assignees',
+            selected: _assigneeIds,
+            onChanged: (s) => setState(() => _assigneeIds = s),
+          ),
+          const SizedBox(height: Insets.md),
+          _PeoplePicker(
+            projectId: widget.projectId,
+            label: 'Reviewers',
+            selected: _reviewerIds,
+            onChanged: (s) => setState(() => _reviewerIds = s),
+          ),
           if (!_editing) ...[
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -253,6 +278,147 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Multi-select field backed by the project members list.
+class _PeoplePicker extends ConsumerWidget {
+  const _PeoplePicker({
+    required this.projectId,
+    required this.label,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final Object projectId;
+  final String label;
+  final Set<int> selected;
+  final ValueChanged<Set<int>> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final members =
+        ref
+            .watch(membersProvider((id: projectId, isProject: true)))
+            .value
+            ?.items ??
+        const <Member>[];
+    final names = members
+        .where((m) => selected.contains(m.id))
+        .map((m) => m.name)
+        .join(', ');
+
+    return InkWell(
+      borderRadius: Radii.borderMd,
+      onTap: () async {
+        final next = await showDialog<Set<int>>(
+          context: context,
+          builder: (_) => _MembersDialog(
+            title: label,
+            members: members,
+            selected: selected,
+          ),
+        );
+        if (next != null) {
+          onChanged(next);
+        }
+      },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        child: Text(
+          names.isEmpty ? 'Unassigned' : names,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+}
+
+class _MembersDialog extends StatefulWidget {
+  const _MembersDialog({
+    required this.title,
+    required this.members,
+    required this.selected,
+  });
+
+  final String title;
+  final List<Member> members;
+  final Set<int> selected;
+
+  @override
+  State<_MembersDialog> createState() => _MembersDialogState();
+}
+
+class _MembersDialogState extends State<_MembersDialog> {
+  late final Set<int> _selected = {...widget.selected};
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final visible = widget.members
+        .where(
+          (m) =>
+              _query.isEmpty ||
+              m.name.toLowerCase().contains(_query) ||
+              m.username.toLowerCase().contains(_query),
+        )
+        .toList();
+
+    return AlertDialog(
+      title: Text(widget.title),
+      content: SizedBox(
+        width: 420,
+        height: 380,
+        child: Column(
+          children: [
+            TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Search members',
+                prefixIcon: Icon(Icons.search, size: 20),
+                isDense: true,
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) => setState(() => _query = v.toLowerCase()),
+            ),
+            const SizedBox(height: Insets.sm),
+            Expanded(
+              child: visible.isEmpty
+                  ? const Center(child: Text('No members found'))
+                  : ListView(
+                      children: [
+                        for (final m in visible)
+                          CheckboxListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(m.name),
+                            subtitle: Text('@${m.username}'),
+                            value: _selected.contains(m.id),
+                            onChanged: (v) => setState(() {
+                              v! ? _selected.add(m.id) : _selected.remove(m.id);
+                            }),
+                          ),
+                      ],
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _selected),
+          child: const Text('Done'),
+        ),
+      ],
     );
   }
 }

@@ -22,6 +22,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
@@ -373,6 +374,10 @@ class _MergeBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final approvals = ref.watch(mrApprovalsProvider(loc)).value;
+    final myId = ref.watch(sessionProvider).value?.user.id;
+    final iApproved =
+        myId != null &&
+        (approvals?.approvedBy.any((u) => u.id == myId) ?? false);
     final mergeable =
         mr.detailedMergeStatus == 'mergeable' && !mr.draft && !mr.hasConflicts;
 
@@ -402,12 +407,22 @@ class _MergeBox extends ConsumerWidget {
               ),
             ],
           ),
-          if (approvals != null && approvals.approvalsRequired > 0) ...[
+          if (approvals != null) ...[
             const SizedBox(height: Insets.sm),
-            Text(
-              '${approvals.approvalsRequired - approvals.approvalsLeft}'
-              '/${approvals.approvalsRequired} approvals',
-              style: Theme.of(context).textTheme.bodySmall,
+            Row(
+              children: [
+                if (approvals.approvalsRequired > 0)
+                  Text(
+                    '${approvals.approvalsRequired - approvals.approvalsLeft}'
+                    '/${approvals.approvalsRequired} approvals',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                if (approvals.approvedBy.isNotEmpty) ...[
+                  if (approvals.approvalsRequired > 0)
+                    const SizedBox(width: Insets.sm),
+                  AvatarStack(users: approvals.approvedBy),
+                ],
+              ],
             ),
           ],
           const SizedBox(height: Insets.md),
@@ -421,16 +436,17 @@ class _MergeBox extends ConsumerWidget {
                 label: const Text('Merge'),
               ),
               const SizedBox(width: Insets.sm),
-              if (approvals != null && !approvals.approved)
+              if (approvals != null)
                 OutlinedButton.icon(
-                  onPressed: () async {
-                    await ref
-                        .read(mrRepositoryProvider)
-                        .approve(loc.project, loc.iid);
-                    ref.invalidate(mrApprovalsProvider(loc));
-                  },
-                  icon: const Icon(Icons.thumb_up_outlined, size: 16),
-                  label: const Text('Approve'),
+                  onPressed: () =>
+                      unawaited(_toggleApproval(context, ref, iApproved)),
+                  icon: Icon(
+                    iApproved
+                        ? Icons.thumb_down_outlined
+                        : Icons.thumb_up_outlined,
+                    size: 16,
+                  ),
+                  label: Text(iApproved ? 'Revoke approval' : 'Approve'),
                 ),
             ],
           ),
@@ -445,6 +461,28 @@ class _MergeBox extends ConsumerWidget {
       showDragHandle: true,
       builder: (context) => _MergeSheet(mr: mr, loc: loc),
     );
+  }
+
+  Future<void> _toggleApproval(
+    BuildContext context,
+    WidgetRef ref,
+    bool approved,
+  ) async {
+    final repo = ref.read(mrRepositoryProvider);
+    try {
+      if (approved) {
+        await repo.unapprove(loc.project, loc.iid);
+      } else {
+        await repo.approve(loc.project, loc.iid);
+      }
+      ref.invalidate(mrApprovalsProvider(loc));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 
@@ -575,6 +613,13 @@ class _MrActions extends ConsumerWidget {
               stateEvent: mr.isOpen ? 'close' : 'reopen',
             );
             ref.invalidate(mrProvider(loc));
+          case 'draft':
+            await repo.updateMergeRequest(
+              loc.project,
+              loc.iid,
+              title: mr.draft ? _stripDraft(mr.title) : 'Draft: ${mr.title}',
+            );
+            ref.invalidate(mrProvider(loc));
           case 'rebase':
             await repo.rebase(loc.project, loc.iid);
           case 'subscribe':
@@ -603,8 +648,13 @@ class _MrActions extends ConsumerWidget {
           value: 'toggle',
           child: Text(mr.isOpen ? 'Close MR' : 'Reopen MR'),
         ),
-        if (mr.isOpen)
+        if (mr.isOpen) ...[
+          PopupMenuItem(
+            value: 'draft',
+            child: Text(mr.draft ? 'Mark as ready' : 'Mark as draft'),
+          ),
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+        ],
         PopupMenuItem(
           value: 'subscribe',
           child: Text(mr.subscribed ? 'Unsubscribe' : 'Subscribe'),
@@ -616,6 +666,11 @@ class _MrActions extends ConsumerWidget {
     );
   }
 }
+
+String _stripDraft(String title) => title.replaceFirst(
+  RegExp(r'^\s*(draft|wip):\s*', caseSensitive: false),
+  '',
+);
 
 class _ChangesTab extends ConsumerWidget {
   const _ChangesTab({required this.loc});

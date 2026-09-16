@@ -182,6 +182,50 @@ void main() {
       expect(sent['remove_source_branch'], true);
     });
 
+    test('createMergeRequest posts assignee and reviewer ids', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/merge_requests',
+        (fixtureJson('mrs') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.createMergeRequest(
+        42,
+        sourceBranch: 'feat',
+        targetBranch: 'main',
+        title: 'New MR',
+        assigneeIds: const [5, 9],
+        reviewerIds: const [12],
+      );
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['assignee_ids'], [5, 9]);
+      expect(sent['reviewer_ids'], [12]);
+    });
+
+    test('updateMergeRequest puts people ids and state event', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/merge_requests/7',
+        (fixtureJson('mrs') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.updateMergeRequest(
+        42,
+        7,
+        title: 'Draft: Renamed',
+        assigneeIds: const [5],
+        reviewerIds: const [],
+      );
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['title'], 'Draft: Renamed');
+      expect(sent['assignee_ids'], [5]);
+      expect(sent['reviewer_ids'], isEmpty);
+    });
+
     test('rebase puts to the rebase endpoint', () async {
       final (client, adapter) = testClient();
       adapter.put(
