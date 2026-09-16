@@ -1,0 +1,18 @@
+[
+  {
+    "id": 901,
+    "name": "glam-core",
+    "version": "1.4.0",
+    "package_type": "pub",
+    "status": "default",
+    "created_at": "2024-04-02T08:00:00.000Z"
+  },
+  {
+    "id": 902,
+    "name": "glam-ui",
+    "version": "0.9.1",
+    "package_type": "generic",
+    "status": "hidden",
+    "created_at": "2024-04-05T08:00:00.000Z"
+  }
+]
