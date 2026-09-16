@@ -196,6 +196,80 @@ void main() {
       expect(diffs, hasLength(2));
       expect(diffs.first.newPath, 'lib/main.dart');
     });
+
+    test('commitComments decodes plain and anchored comments', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/repository/commits/abc123/comments',
+        fixtureJson('commit_comments'),
+      );
+      final repo = RepositoryRepository(client);
+
+      final comments = await repo.commitComments(42, 'abc123');
+
+      expect(comments, hasLength(2));
+      expect(comments.first.anchor, isNull);
+      expect(comments.last.anchor, 'lib/main.dart:4');
+      expect(comments.last.lineType, 'new');
+      expect(comments.last.author?.name, 'John Smith');
+    });
+
+    test('addCommitComment posts note and anchor fields', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/repository/commits/abc123/comments',
+        (fixtureJson('commit_comments')! as List).last,
+      );
+      final repo = RepositoryRepository(client);
+
+      final comment = await repo.addCommitComment(
+        42,
+        'abc123',
+        note: 'unused import',
+        path: 'lib/main.dart',
+        line: 4,
+        lineType: 'new',
+      );
+
+      expect(comment.id, 502);
+      final body = adapter.lastRequest!.data as Map<String, dynamic>;
+      expect(body['note'], 'unused import');
+      expect(body['path'], 'lib/main.dart');
+      expect(body['line'], 4);
+      expect(body['line_type'], 'new');
+    });
+
+    test('addCommitComment omits anchor fields for plain comments', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/repository/commits/abc123/comments',
+        (fixtureJson('commit_comments')! as List).first,
+      );
+      final repo = RepositoryRepository(client);
+
+      await repo.addCommitComment(42, 'abc123', note: 'looks good');
+
+      final body = adapter.lastRequest!.data as Map<String, dynamic>;
+      expect(body.containsKey('path'), isFalse);
+      expect(body.containsKey('line'), isFalse);
+      expect(body.containsKey('line_type'), isFalse);
+    });
+
+    test('deleteCommitComment DELETEs the comment id', () async {
+      final (client, adapter) = testClient();
+      adapter.delete('/projects/42/repository/commits/abc123/comments/502');
+      final repo = RepositoryRepository(client);
+
+      await repo.deleteCommitComment(42, 'abc123', 502);
+
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/repository/commits/abc123/comments/502',
+        ),
+        hasLength(1),
+      );
+    });
   });
 
   group('branches', () {
