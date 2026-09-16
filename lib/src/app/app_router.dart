@@ -5,6 +5,8 @@ import 'package:glam/src/app/router.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/presentation/login_screen.dart';
 import 'package:glam/src/features/home/presentation/app_shell.dart';
+import 'package:glam/src/features/groups/presentation/group_detail_screen.dart';
+import 'package:glam/src/features/groups/presentation/groups_screen.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
@@ -147,6 +149,21 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.mergeRequests,
                 builder: (context, state) => const MergeRequestsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.groups,
+                builder: (context, state) => const GroupsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) =>
+                        GroupDetailScreen(groupId: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

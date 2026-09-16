@@ -60,6 +60,13 @@ const navDestinations = <NavDestination>[
   ),
   NavDestination(
     branch: 4,
+    path: '/groups',
+    icon: Icons.workspaces_outlined,
+    selectedIcon: Icons.workspaces,
+    label: 'Groups',
+  ),
+  NavDestination(
+    branch: 5,
     path: '/settings',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,
