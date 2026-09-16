@@ -23,6 +23,7 @@ import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/repository/presentation/releases_screen.dart';
 import 'package:glam/src/features/repository/presentation/tags_screen.dart';
+import 'package:glam/src/features/wiki/presentation/wiki_screen.dart';
 
 /// Project home: header card + tabbed content.
 class ProjectDetailScreen extends ConsumerWidget {
@@ -90,6 +91,7 @@ class _ProjectBody extends ConsumerWidget {
         label: 'Snippets',
         builder: () => ProjectSnippetsTab(projectId: project.id),
       ),
+      (label: 'Wiki', builder: () => ProjectWikiTab(projectId: project.id)),
       if (!project.emptyRepo)
         (
           label: 'Files',
