@@ -6,6 +6,8 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/presentation/login_screen.dart';
 import 'package:glam/src/features/home/presentation/app_shell.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
+import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
+import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
@@ -94,9 +96,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                           sha: state.pathParameters['sha']!,
                         ),
                       ),
+                      GoRoute(
+                        path: 'issues/:iid',
+                        builder: (context, state) => IssueDetailScreen(
+                          projectId: state.pathParameters['id']!,
+                          iid: int.parse(state.pathParameters['iid']!),
+                        ),
+                      ),
                     ],
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.issues,
+                builder: (context, state) => const IssuesScreen(),
               ),
             ],
           ),
