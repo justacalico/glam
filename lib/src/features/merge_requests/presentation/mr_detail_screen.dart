@@ -471,7 +471,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => _MergeSheet(mr: mr, loc: loc),
+      builder: (context) => _MergeSheet(mr: widget.mr, loc: widget.loc),
     );
   }
 
