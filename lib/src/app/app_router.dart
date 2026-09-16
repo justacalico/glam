@@ -17,6 +17,7 @@ import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.d
 import 'package:glam/src/features/pipelines/presentation/job_detail_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipeline_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
+import 'package:glam/src/features/profile/presentation/profile_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
 import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
@@ -242,6 +243,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.notifications,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: Routes.profile,
+        builder: (context, state) {
+          final ref = ProviderScope.containerOf(context);
+          final session = ref.read(sessionProvider).value;
+          return ProfileScreen(userId: session?.user.id ?? 0);
+        },
+      ),
+      GoRoute(
+        path: '/users/:id',
+        builder: (context, state) =>
+            ProfileScreen(userId: int.parse(state.pathParameters['id']!)),
       ),
     ],
   );
