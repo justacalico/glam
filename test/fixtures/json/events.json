@@ -1,0 +1,32 @@
+[
+  {
+    "id": 501,
+    "action_name": "pushed to",
+    "target_type": null,
+    "target_title": null,
+    "author": {"id": 7, "username": "jane", "name": "Jane Doe"},
+    "project": {"id": 42, "path_with_namespace": "calico/glam"},
+    "push_data": {"ref": "main", "commit_count": 3, "action": "pushed"},
+    "created_at": "2024-06-02T09:00:00.000Z"
+  },
+  {
+    "id": 502,
+    "action_name": "commented on",
+    "target_type": "MergeRequest",
+    "target_title": "Add feature",
+    "target_iid": 9,
+    "author": {"id": 8, "username": "john", "name": "John Smith"},
+    "project": {"id": 42, "path_with_namespace": "calico/glam"},
+    "note": {"body": "LGTM with a nit"},
+    "created_at": "2024-06-02T10:00:00.000Z"
+  },
+  {
+    "id": 503,
+    "action_name": "closed",
+    "target_type": "Issue",
+    "target_title": "Fix the thing",
+    "target_iid": 5,
+    "author": {"id": 7, "username": "jane", "name": "Jane Doe"},
+    "project": {"id": 42, "path_with_namespace": "calico/glam"}
+  }
+]
