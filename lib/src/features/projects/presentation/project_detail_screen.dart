@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
@@ -219,6 +223,12 @@ class _ProjectHeader extends ConsumerWidget {
           Wrap(
             spacing: Insets.sm,
             children: [
+              _ActionChip(
+                icon: Icons.search,
+                label: 'Search',
+                onTap: () =>
+                    unawaited(context.push(Routes.projectSearch(project.id))),
+              ),
               _ActionChip(
                 icon: Icons.star_outline,
                 label: 'Star',

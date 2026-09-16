@@ -1,0 +1,10 @@
+[
+  {
+    "basename": "main.dart",
+    "data": "void main() {\n  runApp(const GlamApp());\n}",
+    "path": "lib/main.dart",
+    "startline": 1,
+    "ref": "main",
+    "project_id": 42
+  }
+]

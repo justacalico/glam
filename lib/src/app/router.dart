@@ -48,8 +48,10 @@ abstract final class Routes {
   static String projectWiki(Object id) => '/projects/$id/wiki';
   static String projectSnippets(Object id) => '/projects/$id/snippets';
   static String projectBoards(Object id) => '/projects/$id/boards';
+  static String projectSearch(Object id) => '/projects/$id/search';
 
   static String group(int id) => '/groups/$id';
+  static String groupSearch(Object id) => '/groups/$id/search';
 
   static String _qs(String base, Map<String, String?> params) {
     final clean = Map<String, String>.fromEntries(
