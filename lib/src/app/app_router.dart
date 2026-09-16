@@ -22,6 +22,7 @@ import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/settings/presentation/settings_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_detail_screen.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
+import 'package:glam/src/features/todos/presentation/todos_screen.dart';
 
 /// go_router wiring. The shell is a [StatefulShellRoute] so each top
 /// section keeps its own stack and scroll position.
@@ -151,6 +152,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.mergeRequests,
                 builder: (context, state) => const MergeRequestsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.todos,
+                builder: (context, state) => const TodosScreen(),
               ),
             ],
           ),
