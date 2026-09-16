@@ -431,3 +431,23 @@ class ReleaseLink extends Equatable {
   @override
   List<Object?> get props => [name, url];
 }
+
+/// A `git blame` hunk: a commit plus the lines it last touched.
+class BlameHunk extends Equatable {
+  const BlameHunk({required this.commit, required this.lines});
+
+  factory BlameHunk.fromJson(Map<String, dynamic> json) {
+    return BlameHunk(
+      commit: Commit.fromJson(json['commit'] as Map<String, dynamic>? ?? {}),
+      lines: json['lines'] is List
+          ? (json['lines'] as List).map((e) => e.toString()).toList()
+          : const [],
+    );
+  }
+
+  final Commit commit;
+  final List<String> lines;
+
+  @override
+  List<Object?> get props => [commit, lines];
+}

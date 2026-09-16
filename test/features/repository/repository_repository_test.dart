@@ -50,6 +50,23 @@ void main() {
       expect(body, 'void main() {}');
       expect(adapter.lastRequest!.queryParameters['ref'], 'dev');
     });
+
+    test('blame returns hunks with commit and lines', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/repository/files/lib%2Fmain.dart/blame',
+        fixtureJson('blame'),
+      );
+      final repo = RepositoryRepository(client);
+
+      final hunks = await repo.blame(42, 'lib/main.dart', ref: 'main');
+
+      expect(hunks, hasLength(2));
+      expect(hunks.first.commit.shortId, '61049424');
+      expect(hunks.first.lines, hasLength(3));
+      expect(hunks.last.commit.authorName, 'Jane Doe');
+      expect(adapter.lastRequest!.queryParameters['ref'], 'main');
+    });
   });
 
   group('file mutations', () {

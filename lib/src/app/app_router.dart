@@ -23,6 +23,7 @@ import 'package:glam/src/features/projects/presentation/project_detail_screen.da
 import 'package:glam/src/features/projects/presentation/project_settings_screen.dart';
 import 'package:glam/src/features/profile/presentation/profile_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
+import 'package:glam/src/features/repository/presentation/blame_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
 import 'package:glam/src/features/repository/presentation/file_viewer_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
@@ -102,6 +103,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'blob',
                         builder: (context, state) => FileViewerScreen(
+                          projectId: state.pathParameters['id']!,
+                          path: state.uri.queryParameters['path'] ?? '',
+                          ref: state.uri.queryParameters['ref'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'blame',
+                        builder: (context, state) => BlameScreen(
                           projectId: state.pathParameters['id']!,
                           path: state.uri.queryParameters['path'] ?? '',
                           ref: state.uri.queryParameters['ref'],
