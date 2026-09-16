@@ -10,6 +10,8 @@ import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
+import 'package:glam/src/features/pipelines/presentation/job_detail_screen.dart';
+import 'package:glam/src/features/pipelines/presentation/pipeline_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
@@ -110,6 +112,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) => MrDetailScreen(
                           projectId: state.pathParameters['id']!,
                           iid: int.parse(state.pathParameters['iid']!),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'pipelines/:pid',
+                        builder: (context, state) => PipelineDetailScreen(
+                          projectId: state.pathParameters['id']!,
+                          pipelineId: int.parse(state.pathParameters['pid']!),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'jobs/:jid',
+                        builder: (context, state) => JobDetailScreen(
+                          projectId: state.pathParameters['id']!,
+                          jobId: int.parse(state.pathParameters['jid']!),
                         ),
                       ),
                     ],
