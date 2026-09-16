@@ -100,4 +100,54 @@ class GroupsRepository {
       decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),
     );
   }
+
+  String _membersBase(Object id, {required bool isProject}) =>
+      '/${isProject ? 'projects' : 'groups'}'
+      '/${GitLabApiClient.encodeProject(id)}/members';
+
+  /// Adds a member by user id or username.
+  Future<Member> addMember(
+    Object id, {
+    required bool isProject,
+    required int accessLevel,
+    int? userId,
+    String? username,
+    String? expiresAt,
+  }) {
+    return _client.post(
+      _membersBase(id, isProject: isProject),
+      body: {
+        'user_id': ?userId,
+        'username': ?username,
+        'access_level': accessLevel,
+        'expires_at': ?expiresAt,
+      },
+      decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Changes a member's role.
+  Future<Member> updateMember(
+    Object id,
+    int memberId, {
+    required bool isProject,
+    required int accessLevel,
+    String? expiresAt,
+  }) {
+    return _client.put(
+      '${_membersBase(id, isProject: isProject)}/$memberId',
+      body: {'access_level': accessLevel, 'expires_at': ?expiresAt},
+      decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> removeMember(
+    Object id,
+    int memberId, {
+    required bool isProject,
+  }) {
+    return _client.delete(
+      '${_membersBase(id, isProject: isProject)}/$memberId',
+    );
+  }
 }
