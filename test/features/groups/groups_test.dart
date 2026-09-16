@@ -79,6 +79,38 @@ void main() {
       expect(gm.items, hasLength(2));
       expect(pm.items.first.roleLabel, 'Owner');
     });
+
+    test('member management posts to /members', () async {
+      final (client, adapter) = testClient();
+      final member = (fixtureJson('members') as List).first;
+      adapter
+        ..post('/projects/42/members', member)
+        ..put('/projects/42/members/7', member)
+        ..delete('/projects/42/members/7');
+      final repo = GroupsRepository(client);
+
+      final added = await repo.addMember(
+        42,
+        isProject: true,
+        username: 'jane',
+        accessLevel: 30,
+        expiresAt: '2026-01-01',
+      );
+      await repo.updateMember(42, 7, isProject: true, accessLevel: 40);
+      await repo.removeMember(42, 7, isProject: true);
+
+      expect(added.username, 'jane');
+      final post = adapter.requestsTo('POST', '/projects/42/members').single;
+      final body = post.data as Map;
+      expect(body['username'], 'jane');
+      expect(body['access_level'], 30);
+      final put = adapter.requestsTo('PUT', '/projects/42/members/7').single;
+      expect((put.data as Map)['access_level'], 40);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/members/7'),
+        hasLength(1),
+      );
+    });
   });
 
   group('providers', () {
