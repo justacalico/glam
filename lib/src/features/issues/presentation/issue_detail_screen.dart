@@ -5,14 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
-import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
+import 'package:glam/src/core/widgets/comment_composer.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
+import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
@@ -81,7 +82,13 @@ class IssueDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            _Composer(loc: _loc),
+            CommentComposer(
+              onSend: (body) async {
+                await ref
+                    .read(issueNotesProvider(_loc).notifier)
+                    .addComment(body);
+              },
+            ),
           ],
         ),
       ),
@@ -323,166 +330,9 @@ class _NotesList extends ConsumerWidget {
           );
         }
         return Column(
-          children: [for (final note in visible) _NoteCard(note: note)],
+          children: [for (final note in visible) NoteCard(note: note)],
         );
       },
-    );
-  }
-}
-
-class _NoteCard extends StatelessWidget {
-  const _NoteCard({required this.note});
-
-  final Note note;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: Insets.sm),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: Radii.borderMd,
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Insets.md,
-              vertical: Insets.sm,
-            ),
-            decoration: BoxDecoration(
-              color: colors.surfaceMuted,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(Radii.md - 1),
-              ),
-            ),
-            child: Row(
-              children: [
-                if (note.author != null)
-                  UserAvatar(
-                    name: note.author!.name,
-                    avatarUrl: note.author!.avatarUrl,
-                    radius: 9,
-                  ),
-                const SizedBox(width: Insets.sm),
-                Text(
-                  note.author?.name ?? 'deleted user',
-                  style: theme.textTheme.labelLarge,
-                ),
-                const SizedBox(width: Insets.sm),
-                Text(
-                  Format.relative(note.createdAt),
-                  style: theme.textTheme.labelSmall,
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(Insets.md),
-            child: MarkdownViewer(data: note.body),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Composer extends ConsumerStatefulWidget {
-  const _Composer({required this.loc});
-
-  final IssueRef loc;
-
-  @override
-  ConsumerState<_Composer> createState() => _ComposerState();
-}
-
-class _ComposerState extends ConsumerState<_Composer> {
-  final _controller = TextEditingController();
-  var _sending = false;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _send() async {
-    final body = _controller.text.trim();
-    if (body.isEmpty || _sending) {
-      return;
-    }
-    setState(() => _sending = true);
-    try {
-      await ref.read(issueNotesProvider(widget.loc).notifier).addComment(body);
-      _controller.clear();
-    } on Object {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to post comment')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _sending = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Container(
-      padding: EdgeInsets.only(
-        left: Insets.lg,
-        right: Insets.sm,
-        top: Insets.sm,
-        bottom: Insets.sm + MediaQuery.viewPaddingOf(context).bottom,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.border)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              minLines: 1,
-              maxLines: 5,
-              textInputAction: TextInputAction.newline,
-              decoration: InputDecoration(
-                hintText: 'Write a comment',
-                isDense: true,
-                filled: true,
-                fillColor: colors.surfaceMuted,
-                border: OutlineInputBorder(
-                  borderRadius: Radii.borderMd,
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: Insets.md,
-                  vertical: Insets.sm + 2,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: _sending ? null : _send,
-            icon: _sending
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Icon(Icons.send, color: colors.accent, size: 20),
-          ),
-        ],
-      ),
     );
   }
 }
