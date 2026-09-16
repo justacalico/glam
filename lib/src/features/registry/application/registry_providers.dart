@@ -32,7 +32,7 @@ class ProjectPackagesNotifier extends PagedListNotifier<GitLabPackage> {
     await ref
         .read(registryRepositoryProvider)
         .deletePackage(projectId, packageId);
-    await refresh();
+    updateItems((items) => items.where((p) => p.id != packageId).toList());
   }
 }
 
@@ -67,7 +67,7 @@ class ContainerReposNotifier extends PagedListNotifier<ContainerRepo> {
     await ref
         .read(registryRepositoryProvider)
         .deleteContainerRepo(projectId, repoId);
-    await refresh();
+    updateItems((items) => items.where((r) => r.id != repoId).toList());
   }
 }
 
@@ -96,6 +96,18 @@ class RegistryTagsNotifier extends PagedListNotifier<RegistryTag> {
     await ref
         .read(registryRepositoryProvider)
         .deleteTag(loc.project, loc.repoId, tag);
-    await refresh();
+    updateItems((items) => items.where((t) => t.name != tag).toList());
+    // Tag count (and the repo itself, when its last tag is gone) lives on
+    // the repos list behind this screen.
+    ref.invalidate(containerReposProvider(loc.project));
   }
 }
+
+typedef RegistryTagLoc = ({Object project, int repoId, String tag});
+
+final registryTagDetailProvider =
+    FutureProvider.family<RegistryTag, RegistryTagLoc>((ref, loc) {
+      return ref
+          .watch(registryRepositoryProvider)
+          .registryTag(loc.project, loc.repoId, loc.tag);
+    });

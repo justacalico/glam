@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -49,7 +50,8 @@ class ProjectRegistryTab extends ConsumerWidget {
             ),
             subtitle: Text(
               [
-                if (repo.tagsCount != null) '${repo.tagsCount} tags',
+                if (repo.tagsCount != null)
+                  '${repo.tagsCount} ${repo.tagsCount == 1 ? 'tag' : 'tags'}',
                 if (repo.createdAt != null)
                   'created ${Format.date(repo.createdAt!)}',
               ].join(' · '),
@@ -64,8 +66,10 @@ class ProjectRegistryTab extends ConsumerWidget {
                 const Icon(Icons.chevron_right, size: 18),
               ],
             ),
-            onTap: () =>
-                context.push('/projects/$projectId/registry/${repo.id}'),
+            onTap: () => context.push(
+              Routes.projectRegistry(projectId, repo.id),
+              extra: (project: projectId, name: repo.path),
+            ),
           );
         },
       ),

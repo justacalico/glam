@@ -51,6 +51,8 @@ abstract final class Routes {
   static String projectEnvironment(Object id, int envId) =>
       '/projects/$id/environments/$envId';
   static String projectSearch(Object id) => '/projects/$id/search';
+  static String projectRegistry(Object id, int rid) =>
+      '/projects/$id/registry/$rid';
   static String projectSettings(Object id) => '/projects/$id/settings';
 
   static String group(int id) => '/groups/$id';

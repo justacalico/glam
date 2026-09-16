@@ -178,12 +178,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                       ),
                       GoRoute(
                         path: 'registry/:rid',
-                        builder: (context, state) => RegistryTagsScreen(
-                          loc: (
-                            project: state.pathParameters['id']!,
-                            repoId: int.parse(state.pathParameters['rid']!),
-                          ),
-                        ),
+                        builder: (context, state) {
+                          final extra =
+                              state.extra as ({Object project, String name})?;
+                          return RegistryTagsScreen(
+                            loc: (
+                              project:
+                                  extra?.project ?? state.pathParameters['id']!,
+                              repoId: int.parse(state.pathParameters['rid']!),
+                            ),
+                            repoName: extra?.name,
+                          );
+                        },
                       ),
                       GoRoute(
                         path: 'environments/:eid',

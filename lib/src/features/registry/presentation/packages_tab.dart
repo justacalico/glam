@@ -10,6 +10,9 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 
+String _label(GitLabPackage p) =>
+    p.version.isEmpty ? p.name : '${p.name} ${p.version}';
+
 /// Published packages for a project.
 class ProjectPackagesTab extends ConsumerWidget {
   const ProjectPackagesTab({required this.projectId, super.key});
@@ -39,7 +42,7 @@ class ProjectPackagesTab extends ConsumerWidget {
           final p = data.items[index];
           return ListTile(
             leading: const Icon(Icons.inventory_2_outlined, size: 20),
-            title: Text(p.version.isEmpty ? p.name : '${p.name} ${p.version}'),
+            title: Text(_label(p)),
             subtitle: Text(
               [
                 p.packageType,
@@ -51,18 +54,18 @@ class ProjectPackagesTab extends ConsumerWidget {
               icon: const Icon(Icons.delete_outline, size: 18),
               onPressed: () => _delete(context, ref, p),
             ),
-            onTap: () => _files(context, ref, p),
+            onTap: () => _files(context, p),
           );
         },
       ),
     );
   }
 
-  Future<void> _files(BuildContext context, WidgetRef ref, GitLabPackage p) {
+  Future<void> _files(BuildContext context, GitLabPackage p) {
     return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(p.version.isEmpty ? p.name : '${p.name} ${p.version}'),
+        title: Text(_label(p)),
         content: SizedBox(
           width: 460,
           child: _PackageFiles(projectId: projectId, pkg: p),
@@ -86,7 +89,7 @@ class ProjectPackagesTab extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete package?'),
-        content: Text('"${p.name} ${p.version}" is removed permanently.'),
+        content: Text('"${_label(p)}" is removed permanently.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

@@ -12,9 +12,12 @@ import 'package:glam/src/features/registry/domain/registry_models.dart';
 
 /// Tags inside one container repository.
 class RegistryTagsScreen extends ConsumerWidget {
-  const RegistryTagsScreen({required this.loc, super.key});
+  const RegistryTagsScreen({required this.loc, this.repoName, super.key});
 
   final RegistryLoc loc;
+
+  /// Repository path shown in the app bar when navigation passed it along.
+  final String? repoName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +26,7 @@ class RegistryTagsScreen extends ConsumerWidget {
     final notifier = ref.read(registryTagsProvider(loc).notifier);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tags')),
+      appBar: AppBar(title: Text(repoName ?? 'Tags')),
       body: AsyncValueWidget(
         value: state,
         onRetry: notifier.refresh,
@@ -49,13 +52,7 @@ class RegistryTagsScreen extends ConsumerWidget {
                   fontSize: 12.5,
                 ),
               ),
-              subtitle: Text(
-                [
-                  if (t.shortRevision.isNotEmpty) t.shortRevision,
-                  if (t.totalSize != null) Format.bytes(t.totalSize!),
-                  if (t.createdAt != null) Format.date(t.createdAt!),
-                ].join(' · '),
-              ),
+              subtitle: _TagSubtitle(loc: loc, tag: t),
               trailing: IconButton(
                 icon: const Icon(Icons.delete_outline, size: 18),
                 onPressed: () => _delete(context, ref, t),
@@ -101,5 +98,37 @@ class RegistryTagsScreen extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     }
+  }
+}
+
+/// The tags list payload only carries name/path/location; size, revision
+/// and dates come from the per-tag detail endpoint.
+class _TagSubtitle extends ConsumerWidget {
+  const _TagSubtitle({required this.loc, required this.tag});
+
+  final RegistryLoc loc;
+  final RegistryTag tag;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detail = ref
+        .watch(
+          registryTagDetailProvider((
+            project: loc.project,
+            repoId: loc.repoId,
+            tag: tag.name,
+          )),
+        )
+        .value;
+
+    return Text(
+      detail == null
+          ? tag.location
+          : [
+              if (detail.shortRevision.isNotEmpty) detail.shortRevision,
+              if (detail.totalSize != null) Format.bytes(detail.totalSize!),
+              if (detail.createdAt != null) Format.date(detail.createdAt!),
+            ].join(' · '),
+    );
   }
 }

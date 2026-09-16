@@ -19,7 +19,13 @@ class RegistryRepository {
   }) {
     return _client.getPage(
       '${_p(projectId)}/packages',
-      query: {'package_type': ?packageType, 'package_name': ?name},
+      query: {
+        'package_type': ?packageType,
+        'package_name': ?name,
+        'order_by': 'created_at',
+        'sort': 'desc',
+        'include_versionless': true,
+      },
       page: page,
       decoder: (j) => GitLabPackage.fromJson(j! as Map<String, dynamic>),
     );
@@ -56,6 +62,16 @@ class RegistryRepository {
     return _client.getPage(
       '${_p(projectId)}/registry/repositories/$repoId/tags',
       page: page,
+      decoder: (j) => RegistryTag.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Tag detail (`GET .../tags/:tag`) — the list payload only carries
+  /// name/path/location; size, revision and dates live here.
+  Future<RegistryTag> registryTag(Object projectId, int repoId, String tag) {
+    return _client.get(
+      '${_p(projectId)}/registry/repositories/$repoId/tags/'
+      '${Uri.encodeComponent(tag)}',
       decoder: (j) => RegistryTag.fromJson(j! as Map<String, dynamic>),
     );
   }
