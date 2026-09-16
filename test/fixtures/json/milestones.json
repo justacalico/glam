@@ -1,0 +1,19 @@
+[
+  {
+    "id": 61,
+    "iid": 3,
+    "title": "v1.0",
+    "state": "active",
+    "description": "First release",
+    "due_date": "2024-09-01",
+    "start_date": "2024-07-01",
+    "web_url": "https://gitlab.example.com/calico/glam/-/milestones/3"
+  },
+  {
+    "id": 62,
+    "iid": 4,
+    "title": "v1.1",
+    "state": "closed",
+    "due_date": "2024-10-01"
+  }
+]
