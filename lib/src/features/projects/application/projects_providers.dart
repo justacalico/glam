@@ -5,9 +5,11 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
+import 'package:glam/src/features/projects/domain/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
 
 final projectsRepositoryProvider = Provider<ProjectsRepository>(
@@ -73,6 +75,16 @@ final projectDeployKeysProvider =
 final projectProtectedBranchesProvider =
     FutureProvider.family<List<ProtectedBranch>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).protectedBranches(id),
+    );
+
+final projectProtectedTagsProvider =
+    FutureProvider.family<List<ProtectedTag>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).protectedTags(id),
+    );
+
+final projectDeployTokensProvider =
+    FutureProvider.family<List<DeployToken>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).deployTokens(id),
     );
 
 /// Mutations for the admin lists; each refetches its list on success.
@@ -152,6 +164,48 @@ class ProjectAdminActions {
   Future<void> unprotectBranch(Object projectId, String name) async {
     await _repo.unprotectBranch(projectId, name);
     _ref.invalidate(projectProtectedBranchesProvider(projectId));
+  }
+
+  Future<void> protectTag(
+    Object projectId, {
+    required String name,
+    int createLevel = 40,
+  }) async {
+    await _repo.protectTag(
+      projectId,
+      name: name,
+      createAccessLevel: createLevel,
+    );
+    _ref.invalidate(projectProtectedTagsProvider(projectId));
+  }
+
+  Future<void> unprotectTag(Object projectId, String name) async {
+    await _repo.unprotectTag(projectId, name);
+    _ref.invalidate(projectProtectedTagsProvider(projectId));
+  }
+
+  /// Returns the created token — the only time its secret is readable.
+  Future<DeployToken> addDeployToken(
+    Object projectId, {
+    required String name,
+    required List<String> scopes,
+    String? username,
+    DateTime? expiresAt,
+  }) async {
+    final token = await _repo.createDeployToken(
+      projectId,
+      name: name,
+      scopes: scopes,
+      username: username,
+      expiresAt: expiresAt,
+    );
+    _ref.invalidate(projectDeployTokensProvider(projectId));
+    return token;
+  }
+
+  Future<void> deleteDeployToken(Object projectId, int tokenId) async {
+    await _repo.deleteDeployToken(projectId, tokenId);
+    _ref.invalidate(projectDeployTokensProvider(projectId));
   }
 }
 
