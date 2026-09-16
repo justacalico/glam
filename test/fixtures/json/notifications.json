@@ -1,0 +1,17 @@
+[
+  {
+    "id": 301,
+    "reason": "mentioned",
+    "target": {"type": "MergeRequest", "iid": 9, "title": "Add feature"},
+    "project": {"id": 42, "path_with_namespace": "calico/glam"},
+    "created_at": "2024-06-03T08:00:00.000Z",
+    "updated_at": "2024-06-03T08:00:00.000Z"
+  },
+  {
+    "id": 302,
+    "reason": "assigned",
+    "target": {"type": "Issue", "iid": 5, "title": "Fix the thing"},
+    "project": {"id": 42, "path_with_namespace": "calico/glam"},
+    "created_at": "2024-06-03T09:00:00.000Z"
+  }
+]

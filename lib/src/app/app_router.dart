@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
+import 'package:glam/src/features/activity/presentation/activity_screen.dart';
+import 'package:glam/src/features/activity/presentation/notifications_screen.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/presentation/login_screen.dart';
 import 'package:glam/src/features/home/presentation/app_shell.dart';
@@ -173,6 +175,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: Routes.activity,
+                builder: (context, state) => const ActivityScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
                 path: Routes.groups,
                 builder: (context, state) => const GroupsScreen(),
                 routes: [
@@ -228,6 +238,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: Routes.notifications,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );
