@@ -11,6 +11,7 @@ import 'package:glam/src/features/groups/presentation/group_detail_screen.dart';
 import 'package:glam/src/features/groups/presentation/groups_screen.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
+import 'package:glam/src/features/environments/presentation/environment_detail_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
@@ -165,6 +166,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) => JobDetailScreen(
                           projectId: state.pathParameters['id']!,
                           jobId: int.parse(state.pathParameters['jid']!),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'environments/:eid',
+                        builder: (context, state) => EnvironmentDetailScreen(
+                          loc: (
+                            project: state.pathParameters['id']!,
+                            envId: int.parse(state.pathParameters['eid']!),
+                          ),
                         ),
                       ),
                     ],

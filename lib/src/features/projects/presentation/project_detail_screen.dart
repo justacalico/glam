@@ -12,6 +12,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
+import 'package:glam/src/features/environments/presentation/environments_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/labels/presentation/labels_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
@@ -85,6 +86,10 @@ class _ProjectBody extends ConsumerWidget {
       (
         label: 'Pipelines',
         builder: () => PipelinesScreen(projectId: project.id),
+      ),
+      (
+        label: 'Environments',
+        builder: () => EnvironmentsScreen(projectId: project.id),
       ),
       (
         label: 'Members',
