@@ -87,14 +87,19 @@ class NotePosition extends Equatable {
   final int? oldLine;
   final int? newLine;
 
-  /// `path:line` label shown above diff threads.
+  /// `path:line` label shown above diff threads. Old-side comments
+  /// report the old path and line; new-side and context comments the
+  /// new ones.
   String? get label {
-    final path = newPath ?? oldPath;
-    if (path == null) {
-      return null;
+    if (newLine != null) {
+      final path = newPath ?? oldPath;
+      return path == null ? null : '$path:$newLine';
     }
-    final line = newLine ?? oldLine;
-    return line == null ? path : '$path:$line';
+    if (oldLine != null) {
+      final path = oldPath ?? newPath;
+      return path == null ? null : '$path:$oldLine';
+    }
+    return newPath ?? oldPath;
   }
 
   @override

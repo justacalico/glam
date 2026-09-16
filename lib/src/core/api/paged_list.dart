@@ -93,7 +93,6 @@ abstract class PagedListNotifier<T> extends AsyncNotifier<PagedListState<T>> {
   /// Pull-to-refresh: reloads from page 1 while keeping the current
   /// items visible.
   Future<void> refresh() async {
-    _nextPage = 1;
     final result = await fetchPage(1);
     _nextPage = result.nextPage ?? 0;
     state = AsyncData(
@@ -103,5 +102,15 @@ abstract class PagedListNotifier<T> extends AsyncNotifier<PagedListState<T>> {
         total: result.total,
       ),
     );
+  }
+
+  /// Mutates the loaded items without refetching. No-op before the
+  /// first page lands.
+  void updateItems(List<T> Function(List<T> items) update) {
+    final current = state.value;
+    if (current == null) {
+      return;
+    }
+    state = AsyncData(current.copyWith(items: update(current.items)));
   }
 }

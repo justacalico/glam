@@ -257,24 +257,5 @@ void main() {
       expect(mr.sourceBranch, 'feature/files');
       expect(changes, hasLength(2));
     });
-
-    test('mrNotesProvider addComment posts and refreshes', () async {
-      adapter
-        ..get('/projects/42/merge_requests/7/notes', fixtureJson('notes'))
-        ..get('/projects/42/merge_requests/7/notes', fixtureJson('notes'))
-        ..post(
-          '/projects/42/merge_requests/7/notes',
-          (fixtureJson('notes') as List).first,
-        );
-
-      const loc = (project: 42, iid: 7);
-      await container.read(mrNotesProvider(loc).future);
-      await container.read(mrNotesProvider(loc).notifier).addComment('lgtm');
-
-      expect(
-        adapter.requestsTo('POST', '/projects/42/merge_requests/7/notes'),
-        hasLength(1),
-      );
-    });
   });
 }

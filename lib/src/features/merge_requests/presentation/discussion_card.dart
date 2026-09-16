@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
@@ -26,6 +27,7 @@ class DiscussionCard extends ConsumerStatefulWidget {
 class _DiscussionCardState extends ConsumerState<DiscussionCard> {
   final _reply = TextEditingController();
   var _replying = false;
+  var _busy = false;
 
   @override
   void dispose() {
@@ -35,14 +37,44 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
 
   Future<void> _send() async {
     final body = _reply.text.trim();
-    if (body.isEmpty) {
+    if (body.isEmpty || _busy) {
       return;
     }
-    await ref
-        .read(mrDiscussionsProvider(widget.loc).notifier)
-        .reply(widget.discussion.id, body);
-    _reply.clear();
-    setState(() => _replying = false);
+    setState(() => _busy = true);
+    try {
+      await ref
+          .read(mrDiscussionsProvider(widget.loc).notifier)
+          .reply(widget.discussion.id, body);
+      if (mounted) {
+        _reply.clear();
+        setState(() => _replying = false);
+      }
+    } on ApiException catch (e) {
+      _error(e.message);
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _toggleResolved() async {
+    try {
+      await ref
+          .read(mrDiscussionsProvider(widget.loc).notifier)
+          .toggleResolved(widget.discussion);
+    } on ApiException catch (e) {
+      _error(e.message);
+    }
+  }
+
+  void _error(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -102,9 +134,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                             : colors.inkMuted,
                         visualDensity: VisualDensity.compact,
                       ),
-                      onPressed: () => ref
-                          .read(mrDiscussionsProvider(widget.loc).notifier)
-                          .toggleResolved(d),
+                      onPressed: _busy ? null : _toggleResolved,
                     ),
                 ],
               ),

@@ -63,6 +63,15 @@ void main() {
       expect(pos.label, 'lib/b.dart:3');
     });
 
+    test('old-side label keeps the old path on renamed files', () {
+      const pos = NotePosition(
+        oldPath: 'old.dart',
+        newPath: 'new.dart',
+        oldLine: 5,
+      );
+      expect(pos.label, 'old.dart:5');
+    });
+
     test('label is path alone or null without data', () {
       const pathOnly = NotePosition(newPath: 'lib/a.dart');
       expect(pathOnly.label, 'lib/a.dart');
@@ -153,6 +162,61 @@ void main() {
       expect(position.containsKey('old_line'), isFalse);
     });
 
+    test('addDiscussion sends both lines for context comments', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/merge_requests/7/discussions',
+        (fixtureJson('discussions') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.addDiscussion(
+        42,
+        7,
+        'context nit',
+        position: const NotePosition(
+          baseSha: 'b',
+          startSha: 's',
+          headSha: 'h',
+          oldPath: 'lib/a.dart',
+          newPath: 'lib/a.dart',
+          oldLine: 40,
+          newLine: 42,
+        ),
+      );
+
+      final position = (adapter.lastRequest!.data as Map)['position'] as Map;
+      expect(position['old_line'], 40);
+      expect(position['new_line'], 42);
+    });
+
+    test('addDiscussion strips empty strings from the position', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/merge_requests/7/discussions',
+        (fixtureJson('discussions') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.addDiscussion(
+        42,
+        7,
+        'nit',
+        position: const NotePosition(
+          baseSha: 'b',
+          startSha: 's',
+          headSha: 'h',
+          oldPath: '',
+          newPath: 'lib/a.dart',
+          newLine: 9,
+        ),
+      );
+
+      final position = (adapter.lastRequest!.data as Map)['position'] as Map;
+      expect(position.containsKey('old_path'), isFalse);
+      expect(position['new_path'], 'lib/a.dart');
+    });
+
     test('replyToDiscussion posts into the thread', () async {
       final (client, adapter) = testClient();
       adapter.post(
@@ -168,24 +232,44 @@ void main() {
       expect(sent['body'], 'reply');
     });
 
-    test('resolveDiscussion puts the resolved flag', () async {
+    test('setDiscussionResolved puts the resolved flag', () async {
       final (client, adapter) = testClient();
       adapter
         ..put(
-          '/projects/42/merge_requests/7/discussions/abc123/notes/500',
-          const {'id': 500, 'resolved': true},
+          '/projects/42/merge_requests/7/discussions/abc123',
+          (fixtureJson('discussions') as List).first,
         )
         ..put(
-          '/projects/42/merge_requests/7/discussions/abc123/notes/500',
-          const {'id': 500, 'resolved': false},
+          '/projects/42/merge_requests/7/discussions/abc123',
+          (fixtureJson('discussions') as List).first,
         );
       final repo = MergeRequestsRepository(client);
 
-      await repo.resolveDiscussion(42, 7, 'abc123', 500, resolved: true);
+      final d = await repo.setDiscussionResolved(
+        42,
+        7,
+        'abc123',
+        resolved: true,
+      );
+      expect(d.id, 'abc123');
       expect((adapter.lastRequest!.data as Map)['resolved'], isTrue);
 
-      await repo.resolveDiscussion(42, 7, 'abc123', 500, resolved: false);
+      await repo.setDiscussionResolved(42, 7, 'abc123', resolved: false);
       expect((adapter.lastRequest!.data as Map)['resolved'], isFalse);
+    });
+
+    test('discussion fetches one thread', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/discussions/abc123',
+        (fixtureJson('discussions') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final d = await repo.discussion(42, 7, 'abc123');
+
+      expect(d.notes, hasLength(2));
+      expect(d.position?.label, 'lib/a.dart:42');
     });
   });
 
@@ -219,20 +303,19 @@ void main() {
       expect(state.items.first.position?.label, 'lib/a.dart:42');
     });
 
-    test('addComment posts a discussion and refreshes', () async {
+    test('addComment posts a discussion and appends it', () async {
       adapter
         ..get(
           '/projects/42/merge_requests/7/discussions',
           fixtureJson('discussions'),
         )
-        ..get(
-          '/projects/42/merge_requests/7/discussions',
-          fixtureJson('discussions'),
-        )
-        ..post(
-          '/projects/42/merge_requests/7/discussions',
-          (fixtureJson('discussions') as List).last,
-        );
+        ..post('/projects/42/merge_requests/7/discussions', const {
+          'id': 'new1',
+          'individual_note': true,
+          'notes': [
+            {'id': 901, 'body': 'lgtm'},
+          ],
+        });
 
       await container.read(mrDiscussionsProvider(_loc).future);
       await container
@@ -245,14 +328,17 @@ void main() {
       );
       expect(posts, hasLength(1));
       expect((posts.single.data as Map).containsKey('position'), isFalse);
+      // The new thread lands in place — no list refetch.
+      expect(
+        adapter.requestsTo('GET', '/projects/42/merge_requests/7/discussions'),
+        hasLength(1),
+      );
+      final items = container.read(mrDiscussionsProvider(_loc)).value!.items;
+      expect(items.last.id, 'new1');
     });
 
     test('addDiffComment posts with a position', () async {
       adapter
-        ..get(
-          '/projects/42/merge_requests/7/discussions',
-          fixtureJson('discussions'),
-        )
         ..get(
           '/projects/42/merge_requests/7/discussions',
           fixtureJson('discussions'),
@@ -285,12 +371,8 @@ void main() {
       expect(position['new_line'], 9);
     });
 
-    test('reply posts into the thread and refreshes', () async {
+    test('reply posts into the thread and reloads it', () async {
       adapter
-        ..get(
-          '/projects/42/merge_requests/7/discussions',
-          fixtureJson('discussions'),
-        )
         ..get(
           '/projects/42/merge_requests/7/discussions',
           fixtureJson('discussions'),
@@ -298,7 +380,11 @@ void main() {
         ..post('/projects/42/merge_requests/7/discussions/abc123/notes', const {
           'id': 900,
           'body': 'ok',
-        });
+        })
+        ..get(
+          '/projects/42/merge_requests/7/discussions/abc123',
+          (fixtureJson('discussions') as List).first,
+        );
 
       await container.read(mrDiscussionsProvider(_loc).future);
       await container
@@ -312,21 +398,24 @@ void main() {
         ),
         hasLength(1),
       );
+      expect(
+        adapter.requestsTo(
+          'GET',
+          '/projects/42/merge_requests/7/discussions/abc123',
+        ),
+        hasLength(1),
+      );
     });
 
-    test('toggleResolved resolves the first resolvable note', () async {
+    test('toggleResolved resolves the thread', () async {
       adapter
         ..get(
           '/projects/42/merge_requests/7/discussions',
           fixtureJson('discussions'),
         )
-        ..get(
-          '/projects/42/merge_requests/7/discussions',
-          fixtureJson('discussions'),
-        )
         ..put(
-          '/projects/42/merge_requests/7/discussions/abc123/notes/500',
-          const {'id': 500, 'resolved': true},
+          '/projects/42/merge_requests/7/discussions/abc123',
+          (fixtureJson('discussions') as List).first,
         );
 
       await container.read(mrDiscussionsProvider(_loc).future);
@@ -341,7 +430,7 @@ void main() {
 
       final puts = adapter.requestsTo(
         'PUT',
-        '/projects/42/merge_requests/7/discussions/abc123/notes/500',
+        '/projects/42/merge_requests/7/discussions/abc123',
       );
       expect(puts, hasLength(1));
       expect((puts.single.data as Map)['resolved'], isTrue);
@@ -357,13 +446,9 @@ void main() {
           '/projects/42/merge_requests/7/discussions',
           fixtureJson('discussions'),
         )
-        ..get(
-          '/projects/42/merge_requests/7/discussions',
-          fixtureJson('discussions'),
-        )
         ..put(
-          '/projects/42/merge_requests/7/discussions/abc123/notes/500',
-          const {'id': 500, 'resolved': false},
+          '/projects/42/merge_requests/7/discussions/abc123',
+          (fixtureJson('discussions') as List).first,
         );
 
       await container.read(mrDiscussionsProvider(_loc).future);
@@ -373,7 +458,7 @@ void main() {
 
       final puts = adapter.requestsTo(
         'PUT',
-        '/projects/42/merge_requests/7/discussions/abc123/notes/500',
+        '/projects/42/merge_requests/7/discussions/abc123',
       );
       expect((puts.single.data as Map)['resolved'], isFalse);
     });

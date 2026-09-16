@@ -238,30 +238,6 @@ class MergeRequestsRepository {
     );
   }
 
-  /// Notes on the MR (non-system comments), oldest first.
-  Future<Paginated<Note>> notes(
-    Object projectId,
-    int iid, {
-    int page = 1,
-    int perPage = 50,
-  }) {
-    return _client.getPage(
-      '${_p(projectId)}/merge_requests/$iid/notes',
-      query: {'sort': 'asc', 'order_by': 'created_at'},
-      page: page,
-      perPage: perPage,
-      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
-    );
-  }
-
-  Future<Note> addNote(Object projectId, int iid, String body) {
-    return _client.post(
-      '${_p(projectId)}/merge_requests/$iid/notes',
-      body: {'body': body},
-      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
-    );
-  }
-
   /// Threads (diff comments + regular comments), oldest first.
   Future<Paginated<Discussion>> discussions(
     Object projectId,
@@ -277,7 +253,21 @@ class MergeRequestsRepository {
     );
   }
 
+  /// One thread by id.
+  Future<Discussion> discussion(
+    Object projectId,
+    int iid,
+    String discussionId,
+  ) {
+    return _client.get(
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId',
+      decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Starts a new thread; pass [position] for a diff-line comment.
+  /// Empty strings are stripped from the position payload — GitLab
+  /// rejects blank path/sha fields.
   Future<Discussion> addDiscussion(
     Object projectId,
     int iid,
@@ -289,16 +279,16 @@ class MergeRequestsRepository {
       body: {
         'body': body,
         if (position != null)
-          'position': {
-            'base_sha': ?position.baseSha,
-            'start_sha': ?position.startSha,
-            'head_sha': ?position.headSha,
+          'position': <String, Object?>{
+            'base_sha': position.baseSha,
+            'start_sha': position.startSha,
+            'head_sha': position.headSha,
             'position_type': 'text',
-            'old_path': ?position.oldPath,
-            'new_path': ?position.newPath,
-            'old_line': ?position.oldLine,
-            'new_line': ?position.newLine,
-          },
+            'old_path': position.oldPath,
+            'new_path': position.newPath,
+            'old_line': position.oldLine,
+            'new_line': position.newLine,
+          }..removeWhere((_, v) => v == null || (v is String && v.isEmpty)),
       },
       decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
     );
@@ -318,19 +308,17 @@ class MergeRequestsRepository {
     );
   }
 
-  /// Marks the first note of a thread resolved/unresolved.
-  Future<Note> resolveDiscussion(
+  /// Marks a whole thread resolved/unresolved.
+  Future<Discussion> setDiscussionResolved(
     Object projectId,
     int iid,
-    String discussionId,
-    int noteId, {
+    String discussionId, {
     required bool resolved,
   }) {
     return _client.put(
-      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId/'
-      'notes/$noteId',
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId',
       body: {'resolved': resolved},
-      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+      decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
     );
   }
 
