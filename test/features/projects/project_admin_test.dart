@@ -217,10 +217,14 @@ void main() {
       final repo = ProjectsRepository(client);
 
       final tags = await repo.protectedTags(42);
-      expect(tags, hasLength(2));
+      expect(tags, hasLength(3));
       expect(tags.first.createLevels, [40]);
-      expect(tags.last.isWildcard, isFalse);
+      expect(tags.first.createLabels, ['Maintainers']);
+      expect(tags[1].isWildcard, isFalse);
       expect(tags.first.isWildcard, isTrue);
+      // Group-scoped rules carry a null level plus a description.
+      expect(tags.last.createLevels, isEmpty);
+      expect(tags.last.createLabels, ['Release managers']);
 
       await repo.protectTag(42, name: 'v*', createAccessLevel: 0);
       final sent = adapter.lastRequest!.data as Map;
@@ -265,7 +269,7 @@ void main() {
       expect(created.token, 'gldt-secret');
       final sent = adapter.lastRequest!.data as Map;
       expect(sent['scopes'], ['read_registry']);
-      expect(sent['expires_at'], isNotNull);
+      expect(sent['expires_at'], '2026-01-01');
       expect(sent.containsKey('username'), isFalse);
 
       await repo.deleteDeployToken(42, 11);

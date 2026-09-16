@@ -18,5 +18,16 @@
         "access_level_description": "No one"
       }
     ]
+  },
+  {
+    "name": "release-*",
+    "create_access_levels": [
+      {
+        "id": 3,
+        "access_level": null,
+        "group_id": 12,
+        "access_level_description": "Release managers"
+      }
+    ]
   }
 ]

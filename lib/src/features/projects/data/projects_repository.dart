@@ -341,7 +341,7 @@ class ProjectsRepository {
         'name': name,
         'scopes': scopes,
         'username': ?username,
-        'expires_at': ?expiresAt?.toIso8601String(),
+        'expires_at': ?expiresAt?.toIso8601String().substring(0, 10),
       },
       decoder: (j) => DeployToken.fromJson(j! as Map<String, dynamic>),
     );

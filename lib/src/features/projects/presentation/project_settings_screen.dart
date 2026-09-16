@@ -7,7 +7,10 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
-import 'package:glam/src/features/projects/presentation/project_admin_sections.dart';
+import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
+import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
+import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
+import 'package:glam/src/features/projects/presentation/webhooks_section.dart';
 
 /// Project settings: general info, feature toggles, archive, and CI/CD
 /// variables.
