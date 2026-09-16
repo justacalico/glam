@@ -12,6 +12,8 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
+import 'package:glam/src/features/labels/presentation/labels_screen.dart';
+import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
@@ -92,6 +94,14 @@ class _ProjectBody extends ConsumerWidget {
         builder: () => ProjectSnippetsTab(projectId: project.id),
       ),
       (label: 'Wiki', builder: () => ProjectWikiTab(projectId: project.id)),
+      (
+        label: 'Milestones',
+        builder: () => MilestonesTab(scope: (id: project.id, isProject: true)),
+      ),
+      (
+        label: 'Labels',
+        builder: () => LabelsTab(scope: (id: project.id, isProject: true)),
+      ),
       if (!project.emptyRepo)
         (
           label: 'Files',
