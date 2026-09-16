@@ -73,7 +73,7 @@ class _MemberTile extends StatelessWidget {
                 Text(
                   member.expiresAt != null
                       ? '@${member.username} · until '
-                          '${Format.date(member.expiresAt)}'
+                            '${Format.date(member.expiresAt)}'
                       : '@${member.username}',
                   style: theme.textTheme.bodySmall,
                 ),
