@@ -106,7 +106,7 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (confirmed ?? false) {
+    if ((confirmed ?? false) && context.mounted) {
       await ref.read(sessionProvider.notifier).signOut();
     }
   }

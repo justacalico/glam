@@ -15,6 +15,12 @@ final personalAccessTokensProvider = FutureProvider<List<PersonalAccessToken>>(
   (ref) => ref.watch(accountRepositoryProvider).personalAccessTokens(),
 );
 
+/// The token this session authenticates with — revoking it signs
+/// the user out, so the UI needs to know which row it is.
+final currentTokenProvider = FutureProvider<int?>(
+  (ref) async => (await ref.watch(accountRepositoryProvider).currentToken()).id,
+);
+
 final notificationSettingsProvider = FutureProvider<NotificationSettings>(
   (ref) => ref.watch(accountRepositoryProvider).notificationSettings(),
 );

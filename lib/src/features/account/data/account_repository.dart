@@ -46,6 +46,14 @@ class AccountRepository {
     );
   }
 
+  /// The token this session authenticates with.
+  Future<PersonalAccessToken> currentToken() {
+    return _client.get(
+      '/personal_access_tokens/self',
+      decoder: (j) => PersonalAccessToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Revokes a token. GitLab accepts DELETE on `/self` or `/:id`.
   Future<void> revokeToken(int tokenId) {
     return _client.delete('/personal_access_tokens/$tokenId');

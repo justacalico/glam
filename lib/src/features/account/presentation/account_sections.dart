@@ -8,6 +8,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/domain/account_models.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 
 /// SSH keys with add / delete.
 class SshKeysSection extends ConsumerWidget {
@@ -153,6 +154,7 @@ class TokensSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = ref.watch(personalAccessTokensProvider);
+    final currentId = ref.watch(currentTokenProvider).value;
 
     return _Section(
       label: 'Access tokens',
@@ -177,6 +179,7 @@ class TokensSection extends ConsumerWidget {
                         subtitle: Text(
                           [
                             t.scopes.join(', '),
+                            if (t.id == currentId) 'this session',
                             if (t.expiresAt != null)
                               t.expired
                                   ? 'expired ${Format.date(t.expiresAt!)}'
@@ -188,7 +191,8 @@ class TokensSection extends ConsumerWidget {
                         trailing: IconButton(
                           icon: const Icon(Icons.block, size: 18),
                           tooltip: 'Revoke',
-                          onPressed: () => _revoke(context, ref, t),
+                          onPressed: () =>
+                              _revoke(context, ref, t, t.id == currentId),
                         ),
                       ),
                   ],
@@ -202,17 +206,23 @@ class TokensSection extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     PersonalAccessToken t,
+    bool isCurrent,
   ) async {
     final ok = await _confirm(
       context,
       title: 'Revoke token?',
-      body: '"${t.name}" stops working immediately.',
+      body: isCurrent
+          ? '"${t.name}" is this session\'s token — revoking signs you out.'
+          : '"${t.name}" stops working immediately.',
     );
     if (ok != true || !context.mounted) {
       return;
     }
     try {
       await ref.read(accountActionsProvider).revokeToken(t.id);
+      if (isCurrent) {
+        await ref.read(sessionProvider.notifier).signOut();
+      }
     } on ApiException catch (e) {
       if (context.mounted) {
         _error(context, e.message);

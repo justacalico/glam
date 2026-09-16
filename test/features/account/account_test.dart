@@ -41,6 +41,13 @@ void main() {
       expect(list.last.revoked, isTrue);
       expect(list.last.expired, isTrue);
     });
+
+    test('expired flips on the day itself', () {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final t = PersonalAccessToken(id: 1, name: 'x', expiresAt: today);
+      expect(t.expired, isTrue);
+    });
   });
 
   group('NotificationSettings', () {
@@ -54,6 +61,12 @@ void main() {
       expect(s.events['new_note'], isTrue);
       expect(s.events['failed_pipeline'], isTrue);
       expect(s.events.containsKey('unknown_key'), isFalse);
+    });
+
+    test('mention is a valid level', () {
+      final s = NotificationSettings.fromJson(const {'level': 'mention'});
+      expect(s.level, 'mention');
+      expect(NotificationSettings.levelLabels.containsKey('mention'), isTrue);
     });
   });
 
@@ -112,6 +125,23 @@ void main() {
       await repo.revokeToken(77);
       expect(
         adapter.requestsTo('DELETE', '/personal_access_tokens/77'),
+        hasLength(1),
+      );
+    });
+
+    test('currentToken reads /personal_access_tokens/self', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/personal_access_tokens/self',
+        (fixtureJson('personal_access_tokens') as List).first,
+      );
+      final repo = AccountRepository(client);
+
+      final t = await repo.currentToken();
+
+      expect(t.id, 77);
+      expect(
+        adapter.requestsTo('GET', '/personal_access_tokens/self'),
         hasLength(1),
       );
     });
@@ -198,6 +228,24 @@ void main() {
       await container.read(notificationSettingsProvider.future);
 
       expect(adapter.requestsTo('GET', '/notification_settings'), hasLength(2));
+    });
+
+    test('toggleNotificationEvent puts only the event flag', () async {
+      adapter
+        ..get('/notification_settings', fixtureJson('notification_settings'))
+        ..put('/notification_settings', fixtureJson('notification_settings'))
+        ..get('/notification_settings', fixtureJson('notification_settings'));
+
+      await container.read(notificationSettingsProvider.future);
+      await container
+          .read(accountActionsProvider)
+          .toggleNotificationEvent('new_issue', true);
+      await container.read(notificationSettingsProvider.future);
+
+      final puts = adapter.requestsTo('PUT', '/notification_settings');
+      expect(puts, hasLength(1));
+      expect((puts.single.data as Map)['new_issue'], isTrue);
+      expect((puts.single.data as Map).containsKey('level'), isFalse);
     });
   });
 }

@@ -30,9 +30,10 @@ class SshKey extends Equatable {
   /// Trailing chunk of the key material for display.
   String get fingerprint {
     final parts = key.trim().split(RegExp(r'\s+'));
-    final material = parts.length > 1 && parts[1].isNotEmpty
-        ? parts[1]
-        : key.trim();
+    if (parts.length < 2 || parts[1].isEmpty) {
+      return 'unknown';
+    }
+    final material = parts[1];
     return material.length <= 12
         ? material
         : '…${material.substring(material.length - 12)}';
@@ -82,7 +83,18 @@ class PersonalAccessToken extends Equatable {
   final DateTime? lastUsedAt;
   final DateTime? createdAt;
 
-  bool get expired => expiresAt != null && expiresAt!.isBefore(DateTime.now());
+  /// Date-granular expiry: a token is dead once `expires_at` is today
+  /// or earlier (matches GitLab's `expires_at <= Date.current`).
+  bool get expired {
+    final e = expiresAt;
+    if (e == null) {
+      return false;
+    }
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final expiry = DateTime(e.year, e.month, e.day);
+    return !expiry.isAfter(today);
+  }
 
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
@@ -140,11 +152,15 @@ class NotificationSettings extends Equatable {
     'global': 'Global default',
     'watch': 'Watch',
     'participating': 'Participate',
-    'on mention': 'On mention',
+    'mention': 'On mention',
     'disabled': 'Disabled',
     'custom': 'Custom',
   };
 
   @override
-  List<Object?> get props => [level, notificationEmail];
+  List<Object?> get props => [
+    level,
+    notificationEmail,
+    ...events.entries.map((e) => '${e.key}=${e.value}'),
+  ];
 }
