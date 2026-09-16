@@ -64,7 +64,7 @@ class AwardEmojisNotifier extends AsyncNotifier<List<AwardEmoji>> {
 
   /// Adds the reaction, or removes the current user's existing one.
   Future<void> toggle(String name) async {
-    final userId = ref.read(sessionProvider).value?.user.id;
+    final userId = (await ref.read(sessionProvider.future))?.user.id;
     final existing = state.value?.where(
       (a) => a.name == name && a.user?.id == userId,
     );
