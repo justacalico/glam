@@ -146,4 +146,17 @@ void main() {
     expect(result.diffs, hasLength(2));
     expect(result.diffs.first.newPath, 'lib/main.dart');
   });
+
+  test('commitCommentsProvider loads the thread', () async {
+    adapter.get(
+      '/projects/42/repository/commits/abc123/comments',
+      fixtureJson('commit_comments'),
+    );
+
+    const loc = (project: 42, sha: 'abc123');
+    final comments = await container.read(commitCommentsProvider(loc).future);
+
+    expect(comments, hasLength(2));
+    expect(comments.last.anchor, 'lib/main.dart:4');
+  });
 }

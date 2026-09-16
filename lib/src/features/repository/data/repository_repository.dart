@@ -183,6 +183,35 @@ class RepositoryRepository {
     );
   }
 
+  /// Comments on a commit, oldest first. The endpoint paginates, so
+  /// fetch every page (bounded by `getAll`).
+  Future<List<CommitComment>> commitComments(Object projectId, String sha) {
+    return _client.getAll(
+      '${_p(projectId)}/repository/commits/$sha/comments',
+      decoder: (j) => CommitComment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Post a comment on a commit. Pass `anchor` to pin it to a diff line;
+  /// GitLab requires the new-side path plus `line`/`lineType` together.
+  Future<CommitComment> addCommitComment(
+    Object projectId,
+    String sha, {
+    required String note,
+    ({String path, int line, String lineType})? anchor,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/repository/commits/$sha/comments',
+      body: {
+        'note': note,
+        'path': ?anchor?.path,
+        'line': ?anchor?.line,
+        'line_type': ?anchor?.lineType,
+      },
+      decoder: (j) => CommitComment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Paginated<Branch>> branches(
     Object projectId, {
     String? search,

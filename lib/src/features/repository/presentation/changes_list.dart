@@ -8,9 +8,13 @@ import 'package:glam/src/features/repository/domain/repo_models.dart';
 /// A list of changed files with a +/− summary and expandable per-file diffs.
 /// Shared by commit detail and the compare screen.
 class ChangesList extends StatelessWidget {
-  const ChangesList({required this.changes, super.key});
+  const ChangesList({required this.changes, this.onLineTap, super.key});
 
   final List<ChangeEntry> changes;
+
+  /// Called when a diff line is tapped (for line comments). Null hides
+  /// the affordance entirely.
+  final void Function(ChangeEntry change, DiffLine line)? onLineTap;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +58,7 @@ class ChangesList extends StatelessWidget {
             key: ValueKey(change.displayPath),
             change: change,
             diff: diff,
+            onLineTap: onLineTap,
           ),
           const SizedBox(height: Insets.md),
         ],
@@ -63,10 +68,16 @@ class ChangesList extends StatelessWidget {
 }
 
 class _FileChangeTile extends StatefulWidget {
-  const _FileChangeTile({required this.change, required this.diff});
+  const _FileChangeTile({
+    required this.change,
+    required this.diff,
+    this.onLineTap,
+    super.key,
+  });
 
   final ChangeEntry change;
   final FileDiff diff;
+  final void Function(ChangeEntry change, DiffLine line)? onLineTap;
 
   @override
   State<_FileChangeTile> createState() => _FileChangeTileState();
@@ -148,7 +159,12 @@ class _FileChangeTileState extends State<_FileChangeTile> {
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: 1200,
-                    child: DiffViewer(diff: widget.diff),
+                    child: DiffViewer(
+                      diff: widget.diff,
+                      onLineTap: widget.onLineTap == null
+                          ? null
+                          : (line) => widget.onLineTap!(widget.change, line),
+                    ),
                   ),
                 ),
               ),

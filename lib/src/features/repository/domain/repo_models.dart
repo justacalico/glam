@@ -432,6 +432,54 @@ class ReleaseLink extends Equatable {
   List<Object?> get props => [name, url];
 }
 
+/// A comment on a commit, optionally anchored to a diff line
+/// (`/repository/commits/:sha/comments`).
+class CommitComment extends Equatable {
+  const CommitComment({
+    required this.note,
+    this.path,
+    this.line,
+    this.lineType,
+    this.author,
+    this.createdAt,
+  });
+
+  factory CommitComment.fromJson(Map<String, dynamic> json) {
+    return CommitComment(
+      note: json['note'] as String? ?? '',
+      path: json['path'] as String?,
+      line: json['line'] as int?,
+      lineType: json['line_type'] as String?,
+      author: json['author'] is Map<String, dynamic>
+          ? GitLabUser.fromJson(json['author'] as Map<String, dynamic>)
+          : null,
+      createdAt: json['created_at'] is String
+          ? DateTime.tryParse(json['created_at'] as String)?.toLocal()
+          : null,
+    );
+  }
+
+  final String note;
+  final String? path;
+  final int? line;
+
+  /// `old` or `new`: which side of the diff [line] refers to.
+  final String? lineType;
+  final GitLabUser? author;
+  final DateTime? createdAt;
+
+  /// `path` or `path:line` for the comment anchor, when present.
+  String? get anchor {
+    if (path == null) {
+      return null;
+    }
+    return line == null ? path : '$path:$line';
+  }
+
+  @override
+  List<Object?> get props => [note, path, line];
+}
+
 /// Result of `/repository/compare`: the commits `to` has that `from`
 /// lacks, plus the full diff between the two refs.
 class CompareResult extends Equatable {

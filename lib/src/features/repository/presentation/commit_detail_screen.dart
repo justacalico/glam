@@ -5,8 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/utils/diff_parser.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/widgets/comment_composer.dart';
+import 'package:glam/src/core/widgets/markdown_viewer.dart';
+import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -36,7 +41,8 @@ class CommitDetailScreen extends ConsumerWidget {
         value: commit,
         onRetry: () => ref
           ..invalidate(commitProvider((project: projectId, sha: sha)))
-          ..invalidate(commitDiffProvider((project: projectId, sha: sha))),
+          ..invalidate(commitDiffProvider((project: projectId, sha: sha)))
+          ..invalidate(commitCommentsProvider((project: projectId, sha: sha))),
         data: (c) => ListView(
           padding: Insets.pagePadding,
           children: [
@@ -55,12 +61,114 @@ class CommitDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(Insets.lg),
                 child: Text('Could not load the diff: $e'),
               ),
-              data: (changes) => ChangesList(changes: changes),
+              data: (changes) => ChangesList(
+                changes: changes,
+                onLineTap: (change, line) =>
+                    _commentOnLine(context, ref, change, line),
+              ),
             ),
+            const SizedBox(height: Insets.xl),
+            _CommitComments(projectId: projectId, sha: sha),
           ],
         ),
       ),
     );
+  }
+
+  /// Opens a composer anchored to the tapped diff line, then posts the
+  /// comment with `path`/`line`/`line_type` for the commits API. Only
+  /// added/removed lines can anchor; GitLab can't pin context lines.
+  void _commentOnLine(
+    BuildContext context,
+    WidgetRef ref,
+    ChangeEntry change,
+    DiffLine line,
+  ) {
+    final isOld = line.kind == DiffLineKind.removed;
+    final isNew = line.kind == DiffLineKind.added;
+    final lineNo = isOld ? line.oldLine : line.newLine;
+    if ((!isOld && !isNew) || lineNo == null) {
+      return;
+    }
+    unawaited(() async {
+      final controller = TextEditingController();
+      // The API always wants new_path, even for old-side comments.
+      final path = change.newPath;
+      final body = await showModalBottomSheet<String>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) => Padding(
+          padding: EdgeInsets.only(
+            left: Insets.lg,
+            right: Insets.lg,
+            bottom: MediaQuery.viewInsetsOf(context).bottom + Insets.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Comment on $path:$lineNo',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: Insets.sm),
+              TextField(
+                controller: controller,
+                autofocus: true,
+                minLines: 2,
+                maxLines: 5,
+                decoration: const InputDecoration(hintText: 'Write a comment…'),
+              ),
+              const SizedBox(height: Insets.md),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton(
+                  onPressed: () =>
+                      Navigator.pop(context, controller.text.trim()),
+                  child: const Text('Comment'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      controller.dispose();
+      if (body == null || body.isEmpty || !context.mounted) {
+        return;
+      }
+      try {
+        await ref
+            .read(repositoryRepositoryProvider)
+            .addCommitComment(
+              projectId,
+              sha,
+              note: body,
+              anchor: (
+                path: path,
+                line: lineNo,
+                lineType: isOld ? 'old' : 'new',
+              ),
+            );
+        if (context.mounted) {
+          ref.invalidate(
+            commitCommentsProvider((project: projectId, sha: sha)),
+          );
+        }
+      } on ApiException catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(e.message)));
+        }
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not post the comment')),
+          );
+        }
+      }
+    }());
   }
 }
 
@@ -198,6 +306,136 @@ class _Meta extends StatelessWidget {
               style: theme.textTheme.bodySmall,
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// The commit's comment thread plus a composer. Line-anchored comments
+/// show their `path:line` next to the timestamp. The comments API never
+/// returns ids, so comments can't be edited or deleted here.
+class _CommitComments extends ConsumerWidget {
+  const _CommitComments({required this.projectId, required this.sha});
+
+  final String projectId;
+  final String sha;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = (project: projectId as Object, sha: sha);
+    final comments = ref.watch(commitCommentsProvider(loc));
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Comments', style: theme.textTheme.titleMedium),
+        const SizedBox(height: Insets.sm),
+        comments.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, _) => TextButton.icon(
+            icon: const Icon(Icons.refresh, size: 16),
+            label: Text('Could not load comments ($e)'),
+            onPressed: () => ref.invalidate(commitCommentsProvider(loc)),
+          ),
+          data: (list) => Column(
+            children: [for (final c in list) _CommentTile(comment: c)],
+          ),
+        ),
+        const SizedBox(height: Insets.sm),
+        CommentComposer(
+          hint: 'Comment on this commit',
+          onSend: (body) async {
+            await ref
+                .read(repositoryRepositoryProvider)
+                .addCommitComment(projectId, sha, note: body);
+            if (context.mounted) {
+              ref.invalidate(commitCommentsProvider(loc));
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _CommentTile extends StatelessWidget {
+  const _CommentTile({required this.comment});
+
+  final CommitComment comment;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.only(bottom: Insets.sm),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: Radii.borderMd,
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Insets.md,
+              vertical: Insets.sm,
+            ),
+            decoration: BoxDecoration(
+              color: colors.surfaceMuted,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(Radii.md - 1),
+              ),
+            ),
+            child: Row(
+              children: [
+                if (comment.author != null)
+                  UserAvatar(
+                    name: comment.author!.name,
+                    avatarUrl: comment.author!.avatarUrl,
+                    radius: 9,
+                  ),
+                const SizedBox(width: Insets.sm),
+                Flexible(
+                  child: Text(
+                    comment.author?.name ?? 'deleted user',
+                    style: theme.textTheme.labelLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: Insets.sm),
+                Text(
+                  Format.relative(comment.createdAt),
+                  style: theme.textTheme.labelSmall,
+                ),
+                if (comment.anchor != null) ...[
+                  const SizedBox(width: Insets.sm),
+                  Flexible(
+                    child: Text(
+                      comment.anchor!,
+                      style: const TextStyle(
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 10.5,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(Insets.md),
+            child: MarkdownViewer(data: comment.note),
+          ),
         ],
       ),
     );
