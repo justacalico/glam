@@ -3,6 +3,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
+import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 
@@ -49,6 +50,12 @@ class ProjectListNotifier extends PagedListNotifier<Project> {
 final projectProvider = FutureProvider.family<Project, String>(
   (ref, id) => ref.watch(projectsRepositoryProvider).get(id),
 );
+
+/// CI/CD variables for a project.
+final projectVariablesProvider =
+    FutureProvider.family<List<CiVariable>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).variables(id),
+    );
 
 /// Star/unstar actions that keep the list in sync optimistically.
 final projectActionsProvider = Provider<ProjectActions>(ProjectActions.new);

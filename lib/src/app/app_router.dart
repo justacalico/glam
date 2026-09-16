@@ -19,6 +19,7 @@ import 'package:glam/src/features/milestones/presentation/milestones_screen.dart
 import 'package:glam/src/features/pipelines/presentation/job_detail_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipeline_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
+import 'package:glam/src/features/projects/presentation/project_settings_screen.dart';
 import 'package:glam/src/features/profile/presentation/profile_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
 import 'package:glam/src/features/repository/presentation/commit_detail_screen.dart';
@@ -136,6 +137,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'search',
                         builder: (context, state) => SearchScreen(
+                          projectId: state.pathParameters['id']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'settings',
+                        builder: (context, state) => ProjectSettingsScreen(
                           projectId: state.pathParameters['id']!,
                         ),
                       ),
