@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/audit_events_list.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
+import 'package:glam/src/features/boards/presentation/boards_screen.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/webhooks_section.dart';
@@ -91,6 +92,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Subgroups'),
                   Tab(text: 'Members'),
                   Tab(text: 'Milestones'),
+                  Tab(text: 'Boards'),
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
                   Tab(text: 'Variables'),
@@ -107,6 +109,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     _SubgroupsTab(groupId: groupId),
                     MembersList(id: groupId, isProject: false),
                     MilestonesTab(scope: (id: groupId, isProject: false)),
+                    BoardsTab(scope: (id: groupId, isProject: false)),
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
                     _VariablesTab(groupId: groupId),

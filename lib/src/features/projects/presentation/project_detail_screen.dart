@@ -130,7 +130,10 @@ class _ProjectBody extends ConsumerWidget {
         builder: () => ProjectSnippetsTab(projectId: project.id),
       ),
       (label: 'Wiki', builder: () => ProjectWikiTab(projectId: project.id)),
-      (label: 'Boards', builder: () => ProjectBoardsTab(projectId: project.id)),
+      (
+        label: 'Boards',
+        builder: () => BoardsTab(scope: (id: project.id, isProject: true)),
+      ),
       (
         label: 'Milestones',
         builder: () => MilestonesTab(scope: (id: project.id, isProject: true)),
