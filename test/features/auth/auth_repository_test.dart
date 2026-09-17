@@ -139,6 +139,31 @@ void main() {
     expect(counts.todos, 7);
   });
 
+  test('broadcastMessages decodes and dismisses', () async {
+    final (client, adapter) = testClient();
+    adapter
+      ..get('/broadcast_messages', fixtureJson('broadcast_messages'))
+      ..post('/broadcast_messages/1/dismiss', <String, dynamic>{});
+    final repo = AuthRepository(client);
+
+    final messages = await repo.broadcastMessages();
+
+    expect(messages, hasLength(2));
+    expect(messages.first.theme, 'indigo');
+    expect(messages.first.dismissable, isTrue);
+    expect(
+      messages.first.plainText,
+      'Scheduled maintenance Sunday 02:00 UTC.',
+    );
+    expect(messages.last.active, isFalse);
+
+    await repo.dismissBroadcastMessage(1);
+    expect(
+      adapter.requestsTo('POST', '/broadcast_messages/1/dismiss'),
+      hasLength(1),
+    );
+  });
+
   test('fetchUserByUsername throws when nobody matches', () async {
     final (client, adapter) = testClient();
     adapter.get('/users', []);

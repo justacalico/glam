@@ -1,4 +1,5 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
+import 'package:glam/src/features/auth/domain/broadcast_message.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/auth/domain/user_counts.dart';
 import 'package:glam/src/features/profile/domain/membership.dart';
@@ -143,6 +144,23 @@ class AuthRepository {
     return _client.post(
       '/users/$id/unfollow',
       decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Instance announcements (`/broadcast_messages`).
+  Future<List<BroadcastMessage>> broadcastMessages() {
+    return _client.getAll(
+      '/broadcast_messages',
+      decoder: (j) => BroadcastMessage.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Marks a dismissable broadcast dismissed for this user
+  /// (`POST /broadcast_messages/:id/dismiss`).
+  Future<void> dismissBroadcastMessage(int id) {
+    return _client.post(
+      '/broadcast_messages/$id/dismiss',
+      decoder: (_) {},
     );
   }
 }

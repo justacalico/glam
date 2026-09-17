@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "message": "<p>Scheduled maintenance <strong>Sunday 02:00 UTC</strong>.</p>",
+    "theme": "indigo",
+    "broadcast_type": "banner",
+    "active": true,
+    "dismissable": true,
+    "starts_at": "2024-05-01T00:00:00Z",
+    "ends_at": "2024-05-05T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "message": "<p>Old announcement</p>",
+    "theme": "blue",
+    "broadcast_type": "banner",
+    "active": false,
+    "dismissable": false
+  }
+]
