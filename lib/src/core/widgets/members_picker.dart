@@ -26,7 +26,9 @@ class MembersPickerField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final members =
         ref
-            .watch(membersProvider((id: projectId, isProject: true)))
+            .watch(
+              membersProvider((id: projectId, isProject: true, query: null)),
+            )
             .value
             ?.items ??
         const <Member>[];
@@ -91,7 +93,7 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
   @override
   Widget build(BuildContext context) {
     final membersAsync = ref.watch(
-      membersProvider((id: widget.projectId, isProject: true)),
+      membersProvider((id: widget.projectId, isProject: true, query: null)),
     );
     final wide = MediaQuery.sizeOf(context).width >= 840;
 
@@ -136,7 +138,11 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
       error: (e, _) => Center(
         child: TextButton(
           onPressed: () => ref.invalidate(
-            membersProvider((id: widget.projectId, isProject: true)),
+            membersProvider((
+              id: widget.projectId,
+              isProject: true,
+              query: null,
+            )),
           ),
           child: const Text('Could not load members. Retry'),
         ),
@@ -163,6 +169,7 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
                       membersProvider((
                         id: widget.projectId,
                         isProject: true,
+                        query: null,
                       )).notifier,
                     )
                     .loadMore(),

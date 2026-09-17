@@ -178,23 +178,25 @@ final accessRequestsProvider = FutureProvider.family<List<Member>, MemberScope>(
   },
 );
 
+typedef MemberFilter = ({Object id, bool isProject, String? query});
+
 final membersProvider =
     AsyncNotifierProvider.family<
       MembersNotifier,
       PagedListState<Member>,
-      MemberScope
+      MemberFilter
     >(MembersNotifier.new);
 
 class MembersNotifier extends PagedListNotifier<Member> {
-  MembersNotifier(this.scope);
+  MembersNotifier(this.filter);
 
-  final MemberScope scope;
+  final MemberFilter filter;
 
   @override
   Future<Paginated<Member>> fetchPage(int page) {
     final repo = ref.watch(groupsRepositoryProvider);
-    return scope.isProject
-        ? repo.projectMembers(scope.id, page: page)
-        : repo.groupMembers(scope.id, page: page);
+    return filter.isProject
+        ? repo.projectMembers(filter.id, page: page, query: filter.query)
+        : repo.groupMembers(filter.id, page: page, query: filter.query);
   }
 }

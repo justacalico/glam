@@ -255,11 +255,13 @@ class GroupsRepository {
   /// Group members.
   Future<Paginated<Member>> groupMembers(
     Object groupId, {
+    String? query,
     int page = 1,
     int perPage = 50,
   }) {
     return _client.getPage(
       '${_g(groupId)}/members/all',
+      query: {'query': ?query},
       page: page,
       perPage: perPage,
       decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),
@@ -269,11 +271,13 @@ class GroupsRepository {
   /// Project members (direct + inherited).
   Future<Paginated<Member>> projectMembers(
     Object projectId, {
+    String? query,
     int page = 1,
     int perPage = 50,
   }) {
     return _client.getPage(
       '/projects/${GitLabApiClient.encodeProject(projectId)}/members/all',
+      query: {'query': ?query},
       page: page,
       perPage: perPage,
       decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),

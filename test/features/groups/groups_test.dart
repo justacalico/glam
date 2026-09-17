@@ -372,6 +372,16 @@ void main() {
       expect(pm.items.first.roleLabel, 'Owner');
     });
 
+    test('member search forwards the query param', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9/members/all', fixtureJson('members'));
+      final repo = GroupsRepository(client);
+
+      await repo.groupMembers(9, query: 'lin');
+
+      expect(adapter.lastRequest!.queryParameters['query'], 'lin');
+    });
+
     test('member management posts to /members', () async {
       final (client, adapter) = testClient();
       final member = (fixtureJson('members') as List).first;
