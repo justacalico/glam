@@ -252,6 +252,22 @@ void main() {
       expect(mrs.first.iid, greaterThan(0));
     });
 
+    test('commitRefs decodes branches and tags', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/commits/abc123/refs', [
+        {'type': 'branch', 'name': 'main'},
+        {'type': 'tag', 'name': 'v1.0'},
+      ]);
+      final repo = RepositoryRepository(client);
+
+      final refs = await repo.commitRefs(42, 'abc123');
+
+      expect(adapter.lastRequest!.queryParameters['type'], 'all');
+      expect(refs, hasLength(2));
+      expect(refs.first.isTag, isFalse);
+      expect(refs.last.isTag, isTrue);
+    });
+
     test('templates decode name and content per type', () async {
       final (client, adapter) = testClient();
       adapter

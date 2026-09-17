@@ -246,6 +246,28 @@ class Contributor extends Equatable {
   List<Object?> get props => [name, email, commits, additions, deletions];
 }
 
+/// A branch or tag containing a commit (`/commits/:sha/refs`).
+class CommitRef extends Equatable {
+  const CommitRef({required this.name, this.type = 'branch'});
+
+  factory CommitRef.fromJson(Map<String, dynamic> json) {
+    return CommitRef(
+      name: json['name'] as String? ?? '',
+      type: json['type'] as String? ?? 'branch',
+    );
+  }
+
+  final String name;
+
+  /// `branch`, `tag`, or `head`.
+  final String type;
+
+  bool get isTag => type == 'tag';
+
+  @override
+  List<Object?> get props => [name, type];
+}
+
 /// A `.gitlab/` description template (`/templates/:type`). The list
 /// endpoint already returns content.
 class DescriptionTemplate extends Equatable {
