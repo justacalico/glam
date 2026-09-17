@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
@@ -73,6 +74,32 @@ class GroupProjectsNotifier extends PagedListNotifier<Project> {
         .groupProjects(groupId, page: page);
   }
 }
+
+/// Projects shared with the group.
+final sharedProjectsProvider =
+    AsyncNotifierProvider.family<
+      SharedProjectsNotifier,
+      PagedListState<Project>,
+      Object
+    >(SharedProjectsNotifier.new);
+
+class SharedProjectsNotifier extends PagedListNotifier<Project> {
+  SharedProjectsNotifier(this.groupId);
+
+  final Object groupId;
+
+  @override
+  Future<Paginated<Project>> fetchPage(int page) {
+    return ref
+        .watch(groupsRepositoryProvider)
+        .sharedProjects(groupId, page: page);
+  }
+}
+
+/// Group-level CI/CD variables.
+final groupVariablesProvider = FutureProvider.family<List<CiVariable>, Object>(
+  (ref, groupId) => ref.watch(groupsRepositoryProvider).groupVariables(groupId),
+);
 
 /// Iterations defined on the group and its ancestors. Empty on
 /// Free tier / self-hosted CE where the endpoint is absent.

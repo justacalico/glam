@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -86,6 +87,73 @@ class GroupsRepository {
       perPage: perPage,
       decoder: (j) => Project.fromJson(j! as Map<String, dynamic>),
     );
+  }
+
+  /// Projects shared with this group (`/groups/:id/projects/shared`).
+  Future<Paginated<Project>> sharedProjects(
+    Object groupId, {
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '${_g(groupId)}/projects/shared',
+      page: page,
+      perPage: perPage,
+      decoder: (j) => Project.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Group CI/CD variables (`/groups/:id/variables`).
+  Future<List<CiVariable>> groupVariables(Object groupId) {
+    return _client.getAll(
+      '${_g(groupId)}/variables',
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<CiVariable> createGroupVariable(
+    Object groupId, {
+    required String key,
+    required String value,
+    bool protected_ = false,
+    bool masked = false,
+    String environmentScope = '*',
+  }) {
+    return _client.post(
+      '${_g(groupId)}/variables',
+      body: {
+        'key': key,
+        'value': value,
+        'protected': protected_,
+        'masked': masked,
+        'environment_scope': environmentScope,
+      },
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<CiVariable> updateGroupVariable(
+    Object groupId,
+    String key, {
+    required String value,
+    bool? protected_,
+    bool? masked,
+    String? environmentScope,
+  }) {
+    return _client.put(
+      '${_g(groupId)}/variables/$key',
+      body: {
+        'value': value,
+        'protected': ?protected_,
+        'masked': ?masked,
+        'environment_scope': ?environmentScope,
+      },
+      decoder: (j) => CiVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteGroupVariable(Object groupId, String key) {
+    return _client.delete('${_g(groupId)}/variables/$key');
   }
 
   /// Group members.

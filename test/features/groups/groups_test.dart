@@ -86,6 +86,54 @@ void main() {
       expect(adapter.lastRequest!.queryParameters['state'], 'opened');
     });
 
+    test('sharedProjects hits the shared path', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9/projects/shared', [fixtureJson('project')]);
+      final repo = GroupsRepository(client);
+
+      final page = await repo.sharedProjects(9);
+
+      expect(page.items.single.name, 'Glam');
+      expect(
+        adapter.requestsTo('GET', '/groups/9/projects/shared'),
+        hasLength(1),
+      );
+    });
+
+    test('group variables list and mutate', () async {
+      final (client, adapter) = testClient();
+      final variable = (fixtureJson('variables') as List).first;
+      adapter
+        ..get('/groups/9/variables', fixtureJson('variables'))
+        ..post('/groups/9/variables', variable)
+        ..put('/groups/9/variables/API_KEY', variable)
+        ..delete('/groups/9/variables/API_KEY');
+      final repo = GroupsRepository(client);
+
+      final vars = await repo.groupVariables(9);
+      expect(vars, isNotEmpty);
+
+      await repo.createGroupVariable(
+        9,
+        key: 'API_KEY',
+        value: 'secret',
+        masked: true,
+      );
+      await repo.updateGroupVariable(9, 'API_KEY', value: 'v2');
+      await repo.deleteGroupVariable(9, 'API_KEY');
+
+      final post = adapter.requestsTo('POST', '/groups/9/variables').single;
+      expect((post.data as Map)['masked'], isTrue);
+      final put = adapter
+          .requestsTo('PUT', '/groups/9/variables/API_KEY')
+          .single;
+      expect((put.data as Map)['value'], 'v2');
+      expect(
+        adapter.requestsTo('DELETE', '/groups/9/variables/API_KEY'),
+        hasLength(1),
+      );
+    });
+
     test('members work for groups and projects', () async {
       final (client, adapter) = testClient();
       adapter
@@ -186,6 +234,20 @@ void main() {
 
       final items = await container.read(groupIterationsProvider('a/b').future);
       expect(items, hasLength(2));
+    });
+
+    test('sharedProjectsProvider loads shared projects', () async {
+      adapter.get('/groups/9/projects/shared', [fixtureJson('project')]);
+
+      final state = await container.read(sharedProjectsProvider(9).future);
+      expect(state.items.single.name, 'Glam');
+    });
+
+    test('groupVariablesProvider lists variables', () async {
+      adapter.get('/groups/9/variables', fixtureJson('variables'));
+
+      final vars = await container.read(groupVariablesProvider(9).future);
+      expect(vars, isNotEmpty);
     });
   });
 }
