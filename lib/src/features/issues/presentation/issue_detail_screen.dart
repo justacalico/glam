@@ -21,6 +21,7 @@ import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/engagement/application/engagement_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
@@ -611,6 +612,7 @@ class _NotesList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notes = ref.watch(issueNotesProvider(loc));
+    final myId = ref.watch(sessionProvider).value?.user.id;
     return notes.when(
       loading: () => const Padding(
         padding: EdgeInsets.all(Insets.xl),
@@ -633,6 +635,16 @@ class _NotesList extends ConsumerWidget {
             for (final note in visible)
               NoteCard(
                 note: note,
+                onEdit: note.author?.id == myId
+                    ? (body) => ref
+                          .read(issueNotesProvider(loc).notifier)
+                          .editComment(note.id, body)
+                    : null,
+                onDelete: note.author?.id == myId
+                    ? () => ref
+                          .read(issueNotesProvider(loc).notifier)
+                          .deleteComment(note.id)
+                    : null,
                 footer: ReactionsRow(
                   loc: (
                     kind: 'issue',
