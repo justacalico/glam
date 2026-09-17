@@ -79,34 +79,40 @@ class ContainerReposNotifier extends PagedListNotifier<ContainerRepo> {
 }
 
 typedef RegistryLoc = ({Object project, int repoId});
+typedef RegistryTagFilter = ({RegistryLoc loc, String? name});
 
 final registryTagsProvider =
     AsyncNotifierProvider.family<
       RegistryTagsNotifier,
       PagedListState<RegistryTag>,
-      RegistryLoc
+      RegistryTagFilter
     >(RegistryTagsNotifier.new);
 
 class RegistryTagsNotifier extends PagedListNotifier<RegistryTag> {
-  RegistryTagsNotifier(this.loc);
+  RegistryTagsNotifier(this.filter);
 
-  final RegistryLoc loc;
+  final RegistryTagFilter filter;
 
   @override
   Future<Paginated<RegistryTag>> fetchPage(int page) {
     return ref
         .watch(registryRepositoryProvider)
-        .registryTags(loc.project, loc.repoId, page: page);
+        .registryTags(
+          filter.loc.project,
+          filter.loc.repoId,
+          nameRegex: filter.name,
+          page: page,
+        );
   }
 
   Future<void> deleteTag(String tag) async {
     await ref
         .read(registryRepositoryProvider)
-        .deleteTag(loc.project, loc.repoId, tag);
+        .deleteTag(filter.loc.project, filter.loc.repoId, tag);
     updateItems((items) => items.where((t) => t.name != tag).toList());
     // Tag count (and the repo itself, when its last tag is gone) lives on
     // the repos list behind this screen.
-    ref.invalidate(containerReposProvider(loc.project));
+    ref.invalidate(containerReposProvider(filter.loc.project));
   }
 }
 
