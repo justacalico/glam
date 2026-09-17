@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/discussion.dart';
@@ -217,6 +218,8 @@ class MrDraftNotesNotifier extends AsyncNotifier<List<DraftNote>> {
     final d = await ref
         .read(mrRepositoryProvider)
         .createDraftNote(loc.project, loc.iid, note, position: position);
+    // Let the initial fetch settle so it can't clobber the new item.
+    await future;
     state = AsyncData([...state.value ?? const [], d]);
   }
 
@@ -245,7 +248,15 @@ class MrDraftNotesNotifier extends AsyncNotifier<List<DraftNote>> {
   Future<void> publish({DraftNote? only}) async {
     final repo = ref.read(mrRepositoryProvider);
     if (only == null) {
-      await repo.publishAllDraftNotes(loc.project, loc.iid);
+      try {
+        await repo.publishAllDraftNotes(loc.project, loc.iid);
+      } on ApiException catch (e) {
+        // bulk_publish needs GitLab 15.11+; fall back for older instances.
+        if (e.statusCode != 404) rethrow;
+        for (final d in state.value ?? const <DraftNote>[]) {
+          await repo.publishDraftNote(loc.project, loc.iid, d.id);
+        }
+      }
       state = const AsyncData([]);
     } else {
       await repo.publishDraftNote(loc.project, loc.iid, only.id);
@@ -256,6 +267,7 @@ class MrDraftNotesNotifier extends AsyncNotifier<List<DraftNote>> {
     }
     ref
       ..invalidate(mrDiscussionsProvider(loc))
-      ..invalidate(mrParticipantsProvider(loc));
+      ..invalidate(mrParticipantsProvider(loc))
+      ..invalidate(mrProvider(loc));
   }
 }

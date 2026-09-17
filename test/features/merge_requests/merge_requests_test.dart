@@ -353,15 +353,11 @@ void main() {
           'note': 'edited',
         })
         ..delete('/projects/42/merge_requests/7/draft_notes/301')
-        ..post('/projects/42/merge_requests/7/draft_notes/301/publish', {
-          'id': 1,
-          'body': 'x',
-          'author': {
-            'id': 7,
-            'username': 'jane',
-            'name': 'Jane Doe',
-          },
-        })
+        ..put(
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+          null,
+          status: 204,
+        )
         ..post('/projects/42/merge_requests/7/draft_notes/bulk_publish', {});
 
       final repo = MergeRequestsRepository(client);
@@ -394,7 +390,7 @@ void main() {
       );
       expect(
         adapter.requestsTo(
-          'POST',
+          'PUT',
           '/projects/42/merge_requests/7/draft_notes/301/publish',
         ),
         hasLength(1),
@@ -538,14 +534,12 @@ void main() {
         })
         ..delete('/projects/42/merge_requests/7/draft_notes/301')
         ..delete('/projects/42/merge_requests/7/draft_notes/302')
-        ..post(
+        ..put(
           '/projects/42/merge_requests/7/draft_notes/301/publish',
-          {'id': 1, 'body': 'x'},
+          null,
+          status: 204,
         )
-        ..post(
-          '/projects/42/merge_requests/7/draft_notes/bulk_publish',
-          {},
-        );
+        ..post('/projects/42/merge_requests/7/draft_notes/bulk_publish', {});
 
       const loc = (project: 42, iid: 7);
       final notifier = container.read(mrDraftNotesProvider(loc).notifier);
@@ -566,7 +560,7 @@ void main() {
       expect(state, hasLength(2));
       expect(
         adapter.requestsTo(
-          'POST',
+          'PUT',
           '/projects/42/merge_requests/7/draft_notes/301/publish',
         ),
         hasLength(1),
@@ -583,6 +577,51 @@ void main() {
         adapter.requestsTo(
           'POST',
           '/projects/42/merge_requests/7/draft_notes/bulk_publish',
+        ),
+        hasLength(1),
+      );
+    });
+
+    test('publish falls back to per-draft PUT when bulk 404s', () async {
+      final drafts = fixtureJson('draft_notes') as List;
+      adapter
+        ..get('/projects/42/merge_requests/7/draft_notes', drafts)
+        ..get('/projects/42/merge_requests/7/discussions', const [])
+        ..get(
+          '/projects/42/merge_requests/7/participants',
+          fixtureJson('participants'),
+        )
+        ..post('/projects/42/merge_requests/7/draft_notes/bulk_publish', {
+          'message': 'Not Found',
+        }, status: 404)
+        ..put(
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+          null,
+          status: 204,
+        )
+        ..put(
+          '/projects/42/merge_requests/7/draft_notes/302/publish',
+          null,
+          status: 204,
+        );
+
+      const loc = (project: 42, iid: 7);
+      final notifier = container.read(mrDraftNotesProvider(loc).notifier);
+      await container.read(mrDraftNotesProvider(loc).future);
+
+      await notifier.publish();
+      expect(container.read(mrDraftNotesProvider(loc)).value!, isEmpty);
+      expect(
+        adapter.requestsTo(
+          'PUT',
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+        ),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo(
+          'PUT',
+          '/projects/42/merge_requests/7/draft_notes/302/publish',
         ),
         hasLength(1),
       );
