@@ -71,14 +71,31 @@ void main() {
         ..delete('/projects/42/boards/5');
       final repo = BoardsRepository(client);
 
-      await repo.createBoard(42, name: 'Sprint board');
-      await repo.updateBoard(42, 5, name: 'Renamed');
+      await repo.createBoard(
+        42,
+        name: 'Sprint board',
+        milestoneId: 61,
+        labels: const ['bug', 'frontend'],
+      );
+      await repo.updateBoard(
+        42,
+        5,
+        name: 'Renamed',
+        milestoneId: -1,
+        labels: const [],
+        weight: 3,
+      );
       await repo.deleteBoard(42, 5);
 
       final post = adapter.requestsTo('POST', '/projects/42/boards').single;
       expect((post.data as Map)['name'], 'Sprint board');
+      expect((post.data as Map)['milestone_id'], 61);
+      expect((post.data as Map)['labels'], 'bug,frontend');
       final put = adapter.requestsTo('PUT', '/projects/42/boards/5').single;
       expect((put.data as Map)['name'], 'Renamed');
+      expect((put.data as Map)['milestone_id'], -1);
+      expect((put.data as Map)['labels'], '');
+      expect((put.data as Map)['weight'], 3);
       expect(
         adapter.requestsTo('DELETE', '/projects/42/boards/5'),
         hasLength(1),

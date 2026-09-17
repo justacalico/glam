@@ -35,18 +35,44 @@ class BoardsRepository {
   }
 
   /// Creates a board. Multiple boards need a Premium tier on SaaS.
-  Future<Board> createBoard(Object projectId, {required String name}) {
+  Future<Board> createBoard(
+    Object projectId, {
+    required String name,
+    int? milestoneId,
+    List<String>? labels,
+    int? weight,
+  }) {
     return _client.post(
       _base(projectId),
-      body: {'name': name},
+      body: {
+        'name': name,
+        'milestone_id': ?milestoneId,
+        'labels': ?labels?.join(','),
+        'weight': ?weight,
+      },
       decoder: (j) => Board.fromJson(j! as Map<String, dynamic>),
     );
   }
 
-  Future<Board> updateBoard(Object projectId, int boardId, {String? name}) {
+  /// Updates a board. Scope fields only apply when the caller sends
+  /// them; `milestoneId: -1` and an empty `labels` list clear the
+  /// filter, matching what the web UI sends.
+  Future<Board> updateBoard(
+    Object projectId,
+    int boardId, {
+    String? name,
+    int? milestoneId,
+    List<String>? labels,
+    int? weight,
+  }) {
     return _client.put(
       '${_base(projectId)}/$boardId',
-      body: {'name': ?name},
+      body: {
+        'name': ?name,
+        'milestone_id': ?milestoneId,
+        'labels': ?labels?.join(','),
+        'weight': ?weight,
+      },
       decoder: (j) => Board.fromJson(j! as Map<String, dynamic>),
     );
   }
