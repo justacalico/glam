@@ -116,8 +116,9 @@ class RunnersSection extends ConsumerWidget {
             sharedRunnersEnabled: sharedRunnersEnabled,
             groupRunnersEnabled: groupRunnersEnabled,
           );
-      ref.invalidate(projectProvider(project.id.toString()));
-      ref.invalidate(projectRunnersProvider(project.id));
+      ref
+        ..invalidate(projectProvider(project.id.toString()))
+        ..invalidate(projectRunnersProvider(project.id));
     } on ApiException catch (e) {
       if (context.mounted) {
         showAdminError(context, e.message);
