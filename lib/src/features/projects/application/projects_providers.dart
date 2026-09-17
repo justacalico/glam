@@ -8,6 +8,7 @@ import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -122,6 +123,11 @@ final projectProtectedEnvironmentsProvider =
 final projectProtectedTagsProvider =
     FutureProvider.family<List<ProtectedTag>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).protectedTags(id),
+    );
+
+final projectFreezePeriodsProvider =
+    FutureProvider.family<List<FreezePeriod>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).freezePeriods(id),
     );
 
 final projectDeployTokensProvider =
@@ -268,6 +274,37 @@ class ProjectAdminActions {
   Future<void> unprotectEnvironment(Object projectId, String name) async {
     await _repo.unprotectEnvironment(projectId, name);
     _ref.invalidate(projectProtectedEnvironmentsProvider(projectId));
+  }
+
+  Future<void> saveFreezePeriod(
+    Object projectId, {
+    int? periodId,
+    required String freezeStart,
+    required String freezeEnd,
+    required String cronTimezone,
+  }) async {
+    if (periodId == null) {
+      await _repo.createFreezePeriod(
+        projectId,
+        freezeStart: freezeStart,
+        freezeEnd: freezeEnd,
+        cronTimezone: cronTimezone,
+      );
+    } else {
+      await _repo.updateFreezePeriod(
+        projectId,
+        periodId,
+        freezeStart: freezeStart,
+        freezeEnd: freezeEnd,
+        cronTimezone: cronTimezone,
+      );
+    }
+    _ref.invalidate(projectFreezePeriodsProvider(projectId));
+  }
+
+  Future<void> deleteFreezePeriod(Object projectId, int periodId) async {
+    await _repo.deleteFreezePeriod(projectId, periodId);
+    _ref.invalidate(projectFreezePeriodsProvider(projectId));
   }
 
   /// Returns the created token — the only time its secret is readable.

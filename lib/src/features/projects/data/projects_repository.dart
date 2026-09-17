@@ -5,6 +5,7 @@ import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -453,6 +454,55 @@ class ProjectsRepository {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/protected_environments/'
       '${Uri.encodeComponent(name)}',
+    );
+  }
+
+  /// Deploy freeze windows (`/projects/:id/freeze_periods`).
+  Future<List<FreezePeriod>> freezePeriods(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/freeze_periods',
+      decoder: (j) => FreezePeriod.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<FreezePeriod> createFreezePeriod(
+    Object id, {
+    required String freezeStart,
+    required String freezeEnd,
+    required String cronTimezone,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/freeze_periods',
+      body: {
+        'freeze_start': freezeStart,
+        'freeze_end': freezeEnd,
+        'cron_timezone': cronTimezone,
+      },
+      decoder: (j) => FreezePeriod.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<FreezePeriod> updateFreezePeriod(
+    Object id,
+    int periodId, {
+    required String freezeStart,
+    required String freezeEnd,
+    required String cronTimezone,
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/freeze_periods/$periodId',
+      body: {
+        'freeze_start': freezeStart,
+        'freeze_end': freezeEnd,
+        'cron_timezone': cronTimezone,
+      },
+      decoder: (j) => FreezePeriod.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteFreezePeriod(Object id, int periodId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/freeze_periods/$periodId',
     );
   }
 
