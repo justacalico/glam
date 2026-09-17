@@ -9,24 +9,46 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Tag list; tags with attached releases show the release name.
-class TagsScreen extends ConsumerWidget {
+class TagsScreen extends ConsumerStatefulWidget {
   const TagsScreen({required this.projectId, super.key});
 
   final String projectId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TagsScreen> createState() => _TagsScreenState();
+}
+
+class _TagsScreenState extends ConsumerState<TagsScreen> {
+  String? _search;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final state = ref.watch(tagsProvider(projectId));
-    final notifier = ref.read(tagsProvider(projectId).notifier);
+    final projectId = widget.projectId;
+    final filter = (project: projectId, search: _search);
+    final state = ref.watch(tagsProvider(filter));
+    final notifier = ref.read(tagsProvider(filter).notifier);
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search tags',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: Padding(
@@ -119,7 +141,7 @@ class TagsScreen extends ConsumerWidget {
       await ref
           .read(repositoryRepositoryProvider)
           .createTag(
-            projectId,
+            widget.projectId,
             name: name.text.trim(),
             ref: source.text.trim().isEmpty ? 'HEAD' : source.text.trim(),
             message: message.text.trim().isEmpty ? null : message.text.trim(),
