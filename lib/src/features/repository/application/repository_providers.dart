@@ -95,8 +95,9 @@ final commitCommentsProvider =
           .commitComments(loc.project, loc.sha),
     );
 
-/// (project, ref) for commit history.
-typedef CommitsLocation = ({Object project, String? ref});
+/// (project, ref, path) for commit history; `path` narrows to file
+/// history.
+typedef CommitsLocation = ({Object project, String? ref, String? path});
 
 final commitsProvider =
     AsyncNotifierProvider.family<
@@ -114,7 +115,7 @@ class CommitsNotifier extends PagedListNotifier<Commit> {
   Future<Paginated<Commit>> fetchPage(int page) {
     return ref
         .watch(repositoryRepositoryProvider)
-        .commits(loc.project, ref: loc.ref, page: page);
+        .commits(loc.project, ref: loc.ref, path: loc.path, page: page);
   }
 }
 

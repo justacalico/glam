@@ -65,13 +65,24 @@ void main() {
       )
       ..get('/projects/42/repository/commits', [fixtureJson('commit')]);
 
-    const loc = (project: 42, ref: null);
+    const loc = (project: 42, ref: null, path: null);
     await container.read(commitsProvider(loc).future);
     await container.read(commitsProvider(loc).notifier).loadMore();
 
     final state = container.read(commitsProvider(loc)).value!;
     expect(state.items, hasLength(2));
     expect(state.hasMore, isFalse);
+  });
+
+  test('commitsProvider sends the path filter', () async {
+    adapter.get('/projects/42/repository/commits', [fixtureJson('commit')]);
+
+    const loc = (project: 42, ref: 'main', path: 'lib/main.dart');
+    await container.read(commitsProvider(loc).future);
+
+    final sent = adapter.requestsTo('GET', '/projects/42/repository/commits');
+    expect(sent.single.uri.queryParameters['path'], 'lib/main.dart');
+    expect(sent.single.uri.queryParameters['ref_name'], 'main');
   });
 
   test('branchesProvider loads branches', () async {

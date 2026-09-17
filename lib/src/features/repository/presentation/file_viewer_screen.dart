@@ -90,11 +90,22 @@ class FileViewerScreen extends ConsumerWidget {
                   ),
                 );
               }
+              if (action == 'history') {
+                unawaited(
+                  context.push(
+                    Routes.projectCommits(projectId, ref: ref, path: path),
+                  ),
+                );
+              }
               if (action == 'delete' && ref != null) {
                 await _delete(context, refScope);
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'history',
+                child: Text('File history'),
+              ),
               const PopupMenuItem(value: 'blame', child: Text('View blame')),
               if (ref != null)
                 const PopupMenuItem(
