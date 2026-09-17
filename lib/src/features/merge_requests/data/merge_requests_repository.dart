@@ -383,15 +383,10 @@ class MergeRequestsRepository {
     int iid,
     String note, {
     NotePosition? position,
-    bool? resolveDiscussion,
   }) {
     return _client.post(
       '${_p(projectId)}/merge_requests/$iid/draft_notes',
-      body: {
-        'note': note,
-        if (position != null) 'position': position.toBody(),
-        'resolve_discussion': ?resolveDiscussion,
-      },
+      body: {'note': note, if (position != null) 'position': position.toBody()},
       decoder: (j) => DraftNote.fromJson(j! as Map<String, dynamic>),
     );
   }
@@ -416,11 +411,12 @@ class MergeRequestsRepository {
     );
   }
 
-  /// Publishes one pending comment into a real discussion.
-  Future<Note> publishDraftNote(Object projectId, int iid, int draftId) {
-    return _client.post(
+  /// Publishes one pending comment into a real discussion. The
+  /// endpoint is PUT and answers 204.
+  Future<void> publishDraftNote(Object projectId, int iid, int draftId) {
+    return _client.put(
       '${_p(projectId)}/merge_requests/$iid/draft_notes/$draftId/publish',
-      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+      decoder: (_) {},
     );
   }
 

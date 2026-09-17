@@ -94,7 +94,7 @@ class _MrBody extends StatelessWidget {
             child: TabBarView(
               children: [
                 _OverviewTab(mr: mr, loc: loc),
-                _ChangesTab(loc: loc),
+                _ChangesTab(mr: mr, loc: loc),
                 _CommitsTab(loc: loc),
                 MrPipelinesTab(mr: mr, loc: loc),
               ],
@@ -889,8 +889,9 @@ class _MrActions extends ConsumerWidget {
 }
 
 class _ChangesTab extends ConsumerWidget {
-  const _ChangesTab({required this.loc});
+  const _ChangesTab({required this.mr, required this.loc});
 
+  final MergeRequest mr;
   final MrRef loc;
 
   @override
@@ -898,21 +899,23 @@ class _ChangesTab extends ConsumerWidget {
     final changes = ref.watch(mrChangesProvider(loc));
     final diffRefs = ref.watch(mrProvider(loc)).value?.diffRefs;
 
-    return AsyncValueWidget<List<ChangeEntry>>(
-      value: changes,
-      onRetry: () => ref.invalidate(mrChangesProvider(loc)),
-      data: (entries) {
-        if (entries.isEmpty) {
-          return const EmptyState(
-            icon: Icons.difference_outlined,
-            title: 'No changes',
-          );
-        }
-        return Column(
-          children: [
-            _ReviewBanner(loc: loc),
-            Expanded(
-              child: ListView.separated(
+    return Column(
+      children: [
+        // Hoisted above the async section so pending drafts stay
+        // reachable while changes load or when there are none.
+        _ReviewBanner(loc: loc),
+        Expanded(
+          child: AsyncValueWidget<List<ChangeEntry>>(
+            value: changes,
+            onRetry: () => ref.invalidate(mrChangesProvider(loc)),
+            data: (entries) {
+              if (entries.isEmpty) {
+                return const EmptyState(
+                  icon: Icons.difference_outlined,
+                  title: 'No changes',
+                );
+              }
+              return ListView.separated(
                 padding: Insets.pagePadding,
                 itemCount: entries.length,
                 separatorBuilder: (_, _) => const SizedBox(height: Insets.md),
@@ -920,27 +923,35 @@ class _ChangesTab extends ConsumerWidget {
                   entry: entries[index],
                   loc: loc,
                   diffRefs: diffRefs,
+                  isOpen: mr.isOpen,
                 ),
-              ),
-            ),
-          ],
-        );
-      },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
 
 /// Shows while review comments are queued: count plus publish/manage
 /// actions.
-class _ReviewBanner extends ConsumerWidget {
+class _ReviewBanner extends ConsumerStatefulWidget {
   const _ReviewBanner({required this.loc});
 
   final MrRef loc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ReviewBanner> createState() => _ReviewBannerState();
+}
+
+class _ReviewBannerState extends ConsumerState<_ReviewBanner> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final drafts = ref.watch(mrDraftNotesProvider(loc));
+    final drafts = ref.watch(mrDraftNotesProvider(widget.loc));
     final count = drafts.value?.length ?? 0;
     if (count == 0) {
       return const SizedBox.shrink();
@@ -961,19 +972,25 @@ class _ReviewBanner extends ConsumerWidget {
             ),
           ),
           TextButton(
-            onPressed: () => _showDrafts(context, ref),
+            onPressed: _busy ? null : _showDrafts,
             child: const Text('Review'),
           ),
           FilledButton(
-            onPressed: () => _publish(context, ref),
-            child: const Text('Publish'),
+            onPressed: _busy ? null : _publish,
+            child: _busy
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Publish'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _publish(BuildContext context, WidgetRef ref) async {
+  Future<void> _publish() async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -991,39 +1008,57 @@ class _ReviewBanner extends ConsumerWidget {
         ],
       ),
     );
-    if (ok != true || !context.mounted) {
+    if (ok != true || !mounted) {
       return;
     }
+    setState(() => _busy = true);
     try {
-      await ref.read(mrDraftNotesProvider(loc).notifier).publish();
+      await ref.read(mrDraftNotesProvider(widget.loc).notifier).publish();
     } on ApiException catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
-  Future<void> _showDrafts(BuildContext context, WidgetRef ref) {
+  Future<void> _showDrafts() {
     return showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      builder: (context) => _DraftsSheet(loc: loc),
+      builder: (context) => _DraftsSheet(loc: widget.loc),
     );
   }
 }
 
-class _DraftsSheet extends ConsumerWidget {
+class _DraftsSheet extends ConsumerStatefulWidget {
   const _DraftsSheet({required this.loc});
 
   final MrRef loc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final drafts = ref.watch(mrDraftNotesProvider(loc));
+  ConsumerState<_DraftsSheet> createState() => _DraftsSheetState();
+}
+
+class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final drafts = ref.watch(mrDraftNotesProvider(widget.loc));
     final list = drafts.value ?? const [];
 
+    if (list.isEmpty && drafts.hasValue) {
+      return const Padding(
+        padding: Insets.pagePadding,
+        child: Text('No pending comments.'),
+      );
+    }
     return ListView(
       padding: Insets.pagePadding,
       children: [
@@ -1042,7 +1077,8 @@ class _DraftsSheet extends ConsumerWidget {
                     ),
                   ),
             trailing: PopupMenuButton<String>(
-              onSelected: (a) => unawaited(_act(context, ref, d, a)),
+              enabled: !_busy,
+              onSelected: (a) => unawaited(_act(d, a)),
               itemBuilder: (context) => const [
                 PopupMenuItem(value: 'publish', child: Text('Publish')),
                 PopupMenuItem(value: 'edit', child: Text('Edit')),
@@ -1054,13 +1090,12 @@ class _DraftsSheet extends ConsumerWidget {
     );
   }
 
-  Future<void> _act(
-    BuildContext context,
-    WidgetRef ref,
-    DraftNote draft,
-    String action,
-  ) async {
-    final notifier = ref.read(mrDraftNotesProvider(loc).notifier);
+  Future<void> _act(DraftNote draft, String action) async {
+    if (_busy) {
+      return;
+    }
+    setState(() => _busy = true);
+    final notifier = ref.read(mrDraftNotesProvider(widget.loc).notifier);
     try {
       switch (action) {
         case 'publish':
@@ -1068,22 +1103,22 @@ class _DraftsSheet extends ConsumerWidget {
         case 'delete':
           await notifier.remove(draft);
         case 'edit':
-          await _edit(context, ref, draft);
+          await _edit(draft);
       }
     } on ApiException catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
-  Future<void> _edit(
-    BuildContext context,
-    WidgetRef ref,
-    DraftNote draft,
-  ) async {
+  Future<void> _edit(DraftNote draft) async {
     final controller = TextEditingController(text: draft.note);
     final text = await showDialog<String>(
       context: context,
@@ -1109,10 +1144,10 @@ class _DraftsSheet extends ConsumerWidget {
       ),
     );
     controller.dispose();
-    if (text == null || text.isEmpty || !context.mounted) {
+    if (text == null || text.isEmpty || !mounted) {
       return;
     }
-    await ref.read(mrDraftNotesProvider(loc).notifier).edit(draft, text);
+    await ref.read(mrDraftNotesProvider(widget.loc).notifier).edit(draft, text);
   }
 }
 
@@ -1121,11 +1156,13 @@ class _ChangeCard extends ConsumerWidget {
     required this.entry,
     required this.loc,
     required this.diffRefs,
+    required this.isOpen,
   });
 
   final ChangeEntry entry;
   final MrRef loc;
   final DiffRefs? diffRefs;
+  final bool isOpen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1259,11 +1296,12 @@ class _ChangeCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(
-                  onPressed: () =>
-                      Navigator.pop(context, (controller.text.trim(), true)),
-                  child: const Text('Add to review'),
-                ),
+                if (isOpen)
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.pop(context, (controller.text.trim(), true)),
+                    child: const Text('Add to review'),
+                  ),
                 const SizedBox(width: Insets.sm),
                 FilledButton(
                   onPressed: () =>
