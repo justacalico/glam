@@ -979,11 +979,9 @@ class _VersionPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.colors;
-    final sorted = [...versions]
-      ..sort(
-        (a, b) =>
-            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
-      );
+    // Ids are monotonic, so this orders newest first even when
+    // timestamps tie or are missing.
+    final sorted = [...versions]..sort((a, b) => b.id.compareTo(a.id));
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
