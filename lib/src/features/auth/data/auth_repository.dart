@@ -37,4 +37,55 @@ class AuthRepository {
     }
     return users.first;
   }
+
+  /// Edits the signed-in user's profile (`PUT /user`). Only fields the
+  /// caller passes are sent; send an empty string to clear one.
+  Future<GitLabUser> updateProfile({
+    String? name,
+    String? bio,
+    String? location,
+    String? publicEmail,
+    String? websiteUrl,
+    String? pronouns,
+    String? organization,
+    String? jobTitle,
+    String? twitter,
+    String? linkedin,
+  }) {
+    return _client.put(
+      '/user',
+      body: {
+        'name': ?name,
+        'bio': ?bio,
+        'location': ?location,
+        'public_email': ?publicEmail,
+        'website_url': ?websiteUrl,
+        'pronouns': ?pronouns,
+        'organization': ?organization,
+        'job_title': ?jobTitle,
+        'twitter': ?twitter,
+        'linkedin': ?linkedin,
+      },
+      decoder: (json) => GitLabUser.fromJson(json! as Map<String, dynamic>),
+    );
+  }
+
+  /// Sets the emoji status (`PUT /user/status`). Pass empty strings to
+  /// clear it.
+  Future<({String? emoji, String? message})> updateStatus({
+    required String emoji,
+    required String message,
+  }) {
+    return _client.put(
+      '/user/status',
+      body: {'emoji': emoji, 'message': message},
+      decoder: (json) {
+        final map = json! as Map<String, dynamic>;
+        return (
+          emoji: map['emoji'] as String?,
+          message: map['message'] as String?,
+        );
+      },
+    );
+  }
 }

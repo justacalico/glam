@@ -4,6 +4,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/data/auth_repository.dart';
 import 'package:glam/src/features/auth/domain/session.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 
 /// Owns the sign-in lifecycle: restores a stored session on boot,
 /// validates new credentials, and clears everything on sign-out.
@@ -41,6 +42,18 @@ class SessionController extends AsyncNotifier<Session?> {
         .read(sessionStorageProvider)
         .write(StoredSession(baseUrl: normalized, token: token));
     state = AsyncData(session);
+  }
+
+  /// Replaces the cached user after a profile edit so headers and
+  /// comment ownership checks see the new data.
+  void updateUser(GitLabUser user) {
+    final session = state.value;
+    if (session == null) {
+      return;
+    }
+    state = AsyncData(
+      Session(baseUrl: session.baseUrl, token: session.token, user: user),
+    );
   }
 
   Future<void> signOut() async {
