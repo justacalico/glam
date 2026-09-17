@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
@@ -110,6 +111,12 @@ final projectDeployKeysProvider =
 final projectProtectedBranchesProvider =
     FutureProvider.family<List<ProtectedBranch>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).protectedBranches(id),
+    );
+
+final projectProtectedEnvironmentsProvider =
+    FutureProvider.family<List<ProtectedEnvironment>, Object>(
+      (ref, id) =>
+          ref.watch(projectsRepositoryProvider).protectedEnvironments(id),
     );
 
 final projectProtectedTagsProvider =
@@ -243,6 +250,24 @@ class ProjectAdminActions {
   Future<void> unprotectTag(Object projectId, String name) async {
     await _repo.unprotectTag(projectId, name);
     _ref.invalidate(projectProtectedTagsProvider(projectId));
+  }
+
+  Future<void> protectEnvironment(
+    Object projectId, {
+    required String name,
+    int deployLevel = 40,
+  }) async {
+    await _repo.protectEnvironment(
+      projectId,
+      name: name,
+      deployAccessLevel: deployLevel,
+    );
+    _ref.invalidate(projectProtectedEnvironmentsProvider(projectId));
+  }
+
+  Future<void> unprotectEnvironment(Object projectId, String name) async {
+    await _repo.unprotectEnvironment(projectId, name);
+    _ref.invalidate(projectProtectedEnvironmentsProvider(projectId));
   }
 
   /// Returns the created token — the only time its secret is readable.

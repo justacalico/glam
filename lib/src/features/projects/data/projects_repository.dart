@@ -10,6 +10,7 @@ import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
@@ -419,6 +420,38 @@ class ProjectsRepository {
   Future<void> unprotectTag(Object id, String name) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/protected_tags/'
+      '${Uri.encodeComponent(name)}',
+    );
+  }
+
+  /// Protected environment rules (`/protected_environments`).
+  Future<List<ProtectedEnvironment>> protectedEnvironments(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_environments',
+      decoder: (j) => ProtectedEnvironment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ProtectedEnvironment> protectEnvironment(
+    Object id, {
+    required String name,
+    int deployAccessLevel = 40,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_environments',
+      body: {
+        'name': name,
+        'deploy_access_levels': [
+          {'access_level': deployAccessLevel},
+        ],
+      },
+      decoder: (j) => ProtectedEnvironment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> unprotectEnvironment(Object id, String name) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/protected_environments/'
       '${Uri.encodeComponent(name)}',
     );
   }
