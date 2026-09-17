@@ -86,6 +86,7 @@ class _MembersListState extends ConsumerState<MembersList> {
             ),
           ),
         ),
+        _PendingInvitations(scope: scope),
         _AccessRequests(scope: scope),
         if (!widget.isProject) _InvitedGroups(groupId: widget.id),
         Expanded(
@@ -113,6 +114,132 @@ class _MembersListState extends ConsumerState<MembersList> {
         ),
       ],
     );
+  }
+}
+
+/// Pending email invitations with a revoke action. Hidden for
+/// non-maintainers and when there are none.
+class _PendingInvitations extends ConsumerWidget {
+  const _PendingInvitations({required this.scope});
+
+  final MemberScope scope;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pending = ref.watch(invitationsProvider(scope));
+    final list = pending.value ?? const [];
+    if (list.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final colors = context.colors;
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        Insets.lg,
+        Insets.xs,
+        Insets.lg,
+        Insets.xs,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: Radii.borderMd,
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Insets.lg,
+              Insets.md,
+              Insets.lg,
+              Insets.xs,
+            ),
+            child: Text(
+              'Pending invitations',
+              style: theme.textTheme.labelMedium,
+            ),
+          ),
+          for (final i in list)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Insets.lg,
+                Insets.xs,
+                Insets.sm,
+                Insets.xs,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.mail_outline,
+                    size: 18,
+                    color: colors.inkMuted,
+                  ),
+                  const SizedBox(width: Insets.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          i.name ?? i.inviteEmail,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        Text(
+                          [
+                            i.inviteEmail,
+                            switch (i.accessLevel) {
+                              10 => 'Guest',
+                              15 => 'Planner',
+                              20 => 'Reporter',
+                              30 => 'Developer',
+                              40 => 'Maintainer',
+                              50 => 'Owner',
+                              _ => 'Minimal',
+                            },
+                            if (i.expiresAt != null)
+                              'expires ${Format.date(i.expiresAt!)}',
+                          ].join(' · '),
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _revoke(context, ref, i.inviteEmail),
+                    child: Text(
+                      'Revoke',
+                      style: TextStyle(color: colors.danger),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _revoke(
+    BuildContext context,
+    WidgetRef ref,
+    String email,
+  ) async {
+    try {
+      await ref
+          .read(groupsRepositoryProvider)
+          .deleteInvitation(scope.id, email, isProject: scope.isProject);
+      ref.invalidate(invitationsProvider(scope));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 

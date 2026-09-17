@@ -121,3 +121,44 @@ class Member extends Equatable {
   @override
   List<Object?> get props => [id, accessLevel];
 }
+
+/// A pending email invitation (`/:scope/:id/invitations`). Distinct from
+/// `Member`: the invitee may not have an account yet, so there's no
+/// user id — `inviteEmail` is the address, and `username`/`name` fill
+/// in once GitLab can link the invite to a user.
+class Invitation extends Equatable {
+  const Invitation({
+    required this.id,
+    required this.inviteEmail,
+    this.username,
+    this.name,
+    this.accessLevel = 0,
+    this.expiresAt,
+    this.createdAt,
+    this.createdByName,
+  });
+
+  factory Invitation.fromJson(Map<String, dynamic> json) => Invitation(
+    id: json['id'] as int? ?? 0,
+    inviteEmail:
+        json['invite_email'] as String? ?? json['email'] as String? ?? '',
+    username: json['username'] as String?,
+    name: json['user_name'] as String? ?? json['name'] as String?,
+    accessLevel: json['access_level'] as int? ?? 0,
+    expiresAt: Member._date(json['expires_at']),
+    createdAt: Member._date(json['created_at']),
+    createdByName: json['created_by_name'] as String?,
+  );
+
+  final int id;
+  final String inviteEmail;
+  final String? username;
+  final String? name;
+  final int accessLevel;
+  final DateTime? expiresAt;
+  final DateTime? createdAt;
+  final String? createdByName;
+
+  @override
+  List<Object?> get props => [id, inviteEmail];
+}
