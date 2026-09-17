@@ -2,6 +2,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 
 /// `/projects/:id/pipelines` and `/jobs`.
 class PipelinesRepository {
@@ -72,6 +73,22 @@ class PipelinesRepository {
     );
   }
 
+  /// All jobs on the project, optionally filtered by status [scope]
+  /// (e.g. `success`, `failed`, `running`).
+  Future<Paginated<Job>> projectJobs(
+    Object projectId, {
+    int page = 1,
+    String? scope,
+  }) {
+    return _client.getPage(
+      '${_p(projectId)}/jobs',
+      page: page,
+      perPage: 50,
+      query: {'scope': ?scope},
+      decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Job> job(Object projectId, int jobId) {
     return _client.get(
       '${_p(projectId)}/jobs/$jobId',
@@ -103,6 +120,57 @@ class PipelinesRepository {
     return _client.post(
       '${_p(projectId)}/jobs/$jobId/play',
       decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Erases the job's trace and artifacts.
+  Future<Job> eraseJob(Object projectId, int jobId) {
+    return _client.post(
+      '${_p(projectId)}/jobs/$jobId/erase',
+      decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Prevents a successful job's artifacts from expiring.
+  Future<Job> keepArtifacts(Object projectId, int jobId) {
+    return _client.post(
+      '${_p(projectId)}/jobs/$jobId/artifacts/keep',
+      decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Deletes the job's artifacts (must be unlocked first upstream).
+  Future<void> deleteArtifacts(Object projectId, int jobId) {
+    return _client.delete('${_p(projectId)}/jobs/$jobId/artifacts');
+  }
+
+  /// Pipeline trigger tokens (`/projects/:id/triggers`).
+  Future<List<PipelineTrigger>> triggers(Object projectId) {
+    return _client.getAll(
+      '${_p(projectId)}/triggers',
+      decoder: (j) => PipelineTrigger.fromJson(j as Map<String, dynamic>),
+    );
+  }
+
+  /// Creates a trigger. The full token is only in this response.
+  Future<PipelineTrigger> createTrigger(Object projectId, String description) {
+    return _client.post(
+      '${_p(projectId)}/triggers',
+      body: {'description': description},
+      decoder: (j) => PipelineTrigger.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteTrigger(Object projectId, int triggerId) {
+    return _client.delete('${_p(projectId)}/triggers/$triggerId');
+  }
+
+  /// Validates `.gitlab-ci.yml` content (`POST /projects/:id/ci/lint`).
+  Future<CiLintResult> ciLint(Object projectId, String content) {
+    return _client.post(
+      '${_p(projectId)}/ci/lint',
+      body: {'content': content},
+      decoder: (j) => CiLintResult.fromJson(j! as Map<String, dynamic>),
     );
   }
 

@@ -11,6 +11,7 @@ import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart
 import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
+import 'package:glam/src/features/projects/presentation/triggers_section.dart';
 import 'package:glam/src/features/projects/presentation/webhooks_section.dart';
 
 /// Project settings: general info, feature toggles, archive, and CI/CD
@@ -49,6 +50,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             ProtectedTagsSection(project: p),
             const SizedBox(height: Insets.xl),
             RunnersSection(project: p),
+            const SizedBox(height: Insets.xl),
+            TriggersSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),

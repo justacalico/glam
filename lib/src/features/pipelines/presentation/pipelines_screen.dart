@@ -25,8 +25,10 @@ class PipelinesScreen extends ConsumerStatefulWidget {
   ConsumerState<PipelinesScreen> createState() => _PipelinesScreenState();
 }
 
+enum _CicdTab { runs, jobs, schedules }
+
 class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
-  var _schedules = false;
+  var _tab = _CicdTab.runs;
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +41,28 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
             Insets.lg,
             0,
           ),
-          child: SegmentedButton<bool>(
+          child: SegmentedButton<_CicdTab>(
             showSelectedIcon: false,
             segments: const [
-              ButtonSegment(value: false, label: Text('Runs')),
-              ButtonSegment(value: true, label: Text('Schedules')),
+              ButtonSegment(value: _CicdTab.runs, label: Text('Runs')),
+              ButtonSegment(value: _CicdTab.jobs, label: Text('Jobs')),
+              ButtonSegment(
+                value: _CicdTab.schedules,
+                label: Text('Schedules'),
+              ),
             ],
-            selected: {_schedules},
-            onSelectionChanged: (s) => setState(() => _schedules = s.first),
+            selected: {_tab},
+            onSelectionChanged: (s) => setState(() => _tab = s.first),
           ),
         ),
         Expanded(
-          child: _schedules
-              ? PipelineSchedulesTab(projectId: widget.projectId)
-              : _PipelineRuns(projectId: widget.projectId),
+          child: switch (_tab) {
+            _CicdTab.runs => _PipelineRuns(projectId: widget.projectId),
+            _CicdTab.jobs => _ProjectJobs(projectId: widget.projectId),
+            _CicdTab.schedules => PipelineSchedulesTab(
+              projectId: widget.projectId,
+            ),
+          },
         ),
       ],
     );
@@ -86,6 +96,133 @@ class _PipelineRuns extends ConsumerWidget {
         itemBuilder: (context, index) =>
             PipelineTile(pipeline: data.items[index], projectId: projectId),
       ),
+    );
+  }
+}
+
+/// Every job in the project, with an optional status filter.
+class _ProjectJobs extends ConsumerStatefulWidget {
+  const _ProjectJobs({required this.projectId});
+
+  final Object projectId;
+
+  @override
+  ConsumerState<_ProjectJobs> createState() => _ProjectJobsState();
+}
+
+class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
+  String? _scope;
+
+  static const _scopes = [
+    (null, 'All'),
+    ('running', 'Running'),
+    ('pending', 'Pending'),
+    ('success', 'Passed'),
+    ('failed', 'Failed'),
+    ('manual', 'Manual'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final loc = (project: widget.projectId, scope: _scope);
+    final state = ref.watch(projectJobsProvider(loc));
+    final notifier = ref.read(projectJobsProvider(loc).notifier);
+
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: PopupMenuButton<String?>(
+            tooltip: 'Filter jobs',
+            onSelected: (v) => setState(() => _scope = v),
+            itemBuilder: (context) => [
+              for (final (value, label) in _scopes)
+                CheckedPopupMenuItem(
+                  value: value,
+                  checked: _scope == value,
+                  child: Text(label),
+                ),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Insets.lg,
+                vertical: Insets.sm,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    [
+                      for (final (v, label) in _scopes)
+                        if (v == _scope) label,
+                    ].first,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  Icon(Icons.arrow_drop_down, color: colors.inkMuted),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: AsyncValueWidget(
+            value: state,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.only(bottom: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.construction_outlined,
+                title: 'No jobs',
+              ),
+              itemBuilder: (context, index) =>
+                  _JobTile(job: data.items[index], projectId: widget.projectId),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _JobTile extends StatelessWidget {
+  const _JobTile({required this.job, required this.projectId});
+
+  final Job job;
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      dense: true,
+      leading: StateChip.pipeline(job.status),
+      title: Text(job.name, style: theme.textTheme.titleSmall),
+      subtitle: Text(
+        [
+          '#${job.id}',
+          ?job.stage,
+          ?job.ref,
+          if (job.user != null) 'by ${job.user!.name}',
+        ].join(' · '),
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: job.duration == null
+          ? null
+          : Text(
+              Format.duration(job.duration?.toDouble()),
+              style: theme.textTheme.labelSmall,
+            ),
+      onTap: () =>
+          unawaited(context.push(Routes.projectJob(projectId, job.id))),
     );
   }
 }

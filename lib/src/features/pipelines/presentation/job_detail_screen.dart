@@ -65,6 +65,26 @@ class JobDetailScreen extends ConsumerWidget {
                     icon: const Icon(Icons.open_in_new, size: 20),
                     onPressed: () => unawaited(launchExternal(j.webUrl!)),
                   ),
+                PopupMenuButton<String>(
+                  onSelected: (a) => unawaited(_act(context, ref, a)),
+                  itemBuilder: (context) => [
+                    if (j.status == 'success' || j.status == 'failed') ...[
+                      const PopupMenuItem(
+                        value: 'keep_artifacts',
+                        child: Text('Keep artifacts'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete_artifacts',
+                        child: Text('Delete artifacts'),
+                      ),
+                    ],
+                    if (j.status != 'running' && j.status != 'pending')
+                      const PopupMenuItem(
+                        value: 'erase',
+                        child: Text('Erase job'),
+                      ),
+                  ],
+                ),
               ],
             ),
             orElse: () => const SizedBox.shrink(),
@@ -85,11 +105,36 @@ class JobDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _act(BuildContext context, WidgetRef ref, String action) async {
+    if (action == 'erase' || action == 'delete_artifacts') {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(action == 'erase' ? 'Erase job?' : 'Delete artifacts?'),
+          content: const Text('This cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      );
+      if (ok != true || !context.mounted) {
+        return;
+      }
+    }
     final repo = ref.read(pipelinesRepositoryProvider);
     try {
       await switch (action) {
         'cancel' => repo.cancelJob(projectId, jobId),
         'play' => repo.playJob(projectId, jobId),
+        'erase' => repo.eraseJob(projectId, jobId),
+        'keep_artifacts' => repo.keepArtifacts(projectId, jobId),
+        'delete_artifacts' => repo.deleteArtifacts(projectId, jobId),
         _ => repo.retryJob(projectId, jobId),
       };
       ref
