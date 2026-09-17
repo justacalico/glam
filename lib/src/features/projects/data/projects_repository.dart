@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
@@ -74,6 +75,7 @@ class ProjectsRepository {
     bool? snippetsEnabled,
     bool? sharedRunnersEnabled,
     bool? groupRunnersEnabled,
+    int? approvalsBeforeMerge,
   }) {
     return _client.put(
       '/projects/${GitLabApiClient.encodeProject(id)}',
@@ -88,6 +90,7 @@ class ProjectsRepository {
         'snippets_enabled': ?snippetsEnabled,
         'shared_runners_enabled': ?sharedRunnersEnabled,
         'group_runners_enabled': ?groupRunnersEnabled,
+        'approvals_before_merge': ?approvalsBeforeMerge,
       },
       decoder: _decodeOne,
     );
@@ -373,6 +376,55 @@ class ProjectsRepository {
   Future<void> disableRunner(Object id, int runnerId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/runners/$runnerId',
+    );
+  }
+
+  /// Merge-request approval rules configured on the project.
+  Future<List<ApprovalRule>> approvalRules(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/approval_rules',
+      decoder: (j) => ApprovalRule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApprovalRule> createApprovalRule(
+    Object id, {
+    required String name,
+    required int approvalsRequired,
+    List<int> userIds = const [],
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/approval_rules',
+      body: {
+        'name': name,
+        'approvals_required': approvalsRequired,
+        'user_ids': userIds,
+      },
+      decoder: (j) => ApprovalRule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApprovalRule> updateApprovalRule(
+    Object id,
+    int ruleId, {
+    required String name,
+    required int approvalsRequired,
+    List<int> userIds = const [],
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/approval_rules/$ruleId',
+      body: {
+        'name': name,
+        'approvals_required': approvalsRequired,
+        'user_ids': userIds,
+      },
+      decoder: (j) => ApprovalRule.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteApprovalRule(Object id, int ruleId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/approval_rules/$ruleId',
     );
   }
 

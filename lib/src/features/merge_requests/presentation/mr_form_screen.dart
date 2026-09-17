@@ -6,10 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
-import 'package:glam/src/core/api/paged_list.dart';
+import 'package:glam/src/core/widgets/members_picker.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
-import 'package:glam/src/features/groups/application/groups_providers.dart';
-import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
@@ -226,14 +224,14 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
             ),
           ),
           const SizedBox(height: Insets.md),
-          _PeoplePicker(
+          MembersPickerField(
             projectId: widget.projectId,
             label: 'Assignees',
             selected: _assigneeIds,
             onChanged: (s) => setState(() => _assigneeIds = s),
           ),
           const SizedBox(height: Insets.md),
-          _PeoplePicker(
+          MembersPickerField(
             projectId: widget.projectId,
             label: 'Reviewers',
             selected: _reviewerIds,
@@ -281,193 +279,6 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Multi-select field backed by the project members list.
-class _PeoplePicker extends ConsumerWidget {
-  const _PeoplePicker({
-    required this.projectId,
-    required this.label,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final Object projectId;
-  final String label;
-  final Set<int> selected;
-  final ValueChanged<Set<int>> onChanged;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final members =
-        ref
-            .watch(membersProvider((id: projectId, isProject: true)))
-            .value
-            ?.items ??
-        const <Member>[];
-    final names = members
-        .where((m) => selected.contains(m.id))
-        .map((m) => m.name)
-        .join(', ');
-
-    return InkWell(
-      borderRadius: Radii.borderMd,
-      onTap: () async {
-        final next = await showDialog<Set<int>>(
-          context: context,
-          builder: (_) => _MembersDialog(
-            title: label,
-            projectId: projectId,
-            selected: selected,
-          ),
-        );
-        if (next != null) {
-          onChanged(next);
-        }
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        child: Text(
-          names.isEmpty
-              ? (selected.isEmpty ? 'None' : '${selected.length} selected')
-              : names,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }
-}
-
-class _MembersDialog extends ConsumerStatefulWidget {
-  const _MembersDialog({
-    required this.title,
-    required this.projectId,
-    required this.selected,
-  });
-
-  final String title;
-  final Object projectId;
-  final Set<int> selected;
-
-  @override
-  ConsumerState<_MembersDialog> createState() => _MembersDialogState();
-}
-
-class _MembersDialogState extends ConsumerState<_MembersDialog> {
-  late final Set<int> _selected = {...widget.selected};
-  String _query = '';
-
-  @override
-  Widget build(BuildContext context) {
-    final membersAsync = ref.watch(
-      membersProvider((id: widget.projectId, isProject: true)),
-    );
-    final wide = MediaQuery.sizeOf(context).width >= 840;
-
-    return AlertDialog(
-      title: Text(widget.title),
-      content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420, maxHeight: 420),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              autofocus: wide,
-              decoration: const InputDecoration(
-                hintText: 'Search members',
-                prefixIcon: Icon(Icons.search, size: 20),
-                isDense: true,
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (v) => setState(() => _query = v.toLowerCase()),
-            ),
-            const SizedBox(height: Insets.sm),
-            Flexible(child: _memberList(membersAsync)),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, _selected),
-          child: const Text('Done'),
-        ),
-      ],
-    );
-  }
-
-  Widget _memberList(AsyncValue<PagedListState<Member>> membersAsync) {
-    return membersAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: TextButton(
-          onPressed: () => ref.invalidate(
-            membersProvider((id: widget.projectId, isProject: true)),
-          ),
-          child: const Text('Could not load members. Retry'),
-        ),
-      ),
-      data: (state) {
-        final visible = state.items
-            .where(
-              (m) =>
-                  (m.state == null || m.state == 'active') &&
-                  (_query.isEmpty ||
-                      m.name.toLowerCase().contains(_query) ||
-                      m.username.toLowerCase().contains(_query)),
-            )
-            .toList();
-        if (visible.isEmpty) {
-          return const Center(child: Text('No members found'));
-        }
-        return NotificationListener<ScrollNotification>(
-          onNotification: (n) {
-            if (n.metrics.pixels > n.metrics.maxScrollExtent - 200) {
-              unawaited(
-                ref
-                    .read(
-                      membersProvider((
-                        id: widget.projectId,
-                        isProject: true,
-                      )).notifier,
-                    )
-                    .loadMore(),
-              );
-            }
-            return false;
-          },
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              for (final m in visible)
-                CheckboxListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(m.name),
-                  subtitle: Text('@${m.username}'),
-                  value: _selected.contains(m.id),
-                  onChanged: (v) => setState(() {
-                    v! ? _selected.add(m.id) : _selected.remove(m.id);
-                  }),
-                ),
-              if (state.loadingMore)
-                const Padding(
-                  padding: EdgeInsets.all(Insets.sm),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
