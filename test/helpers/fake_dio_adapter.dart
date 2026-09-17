@@ -108,6 +108,13 @@ class FakeDioAdapter implements HttpClientAdapter {
         ),
       );
     }
+    if (stub.body is Uint8List) {
+      return ResponseBody.fromBytes(
+        stub.body! as Uint8List,
+        stub.status,
+        headers: stub.headers,
+      );
+    }
     final isJson = stub.body is! String;
     return ResponseBody.fromString(
       isJson ? jsonEncode(stub.body) : stub.body! as String,

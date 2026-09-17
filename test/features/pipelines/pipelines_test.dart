@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:archive/archive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
+import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 
 import '../../helpers/fake_dio_adapter.dart';
@@ -123,6 +128,37 @@ void main() {
       final trace = await repo.jobTrace(42, 5001);
 
       expect(trace, 'line1\nline2');
+    });
+
+    test('artifact endpoints return raw bytes', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get(
+          '/projects/42/jobs/5001/artifacts',
+          _zipOf({'out/report.txt': 'ok', 'dist/app.bin': '01'}),
+        )
+        ..get(
+          '/projects/42/jobs/5001/artifacts/out/report.txt',
+          Uint8List.fromList('ok'.codeUnits),
+        );
+      final repo = PipelinesRepository(client);
+
+      final zip = await repo.artifactsArchive(42, 5001);
+      expect(listArtifacts(zip).map((e) => e.path), [
+        'dist/app.bin',
+        'out/report.txt',
+      ]);
+
+      final file = await repo.artifactFile(42, 5001, 'out/report.txt');
+      expect(utf8.decode(file), 'ok');
+    });
+
+    test('job decodes artifacts_file for the browse gate', () {
+      final job = Job.fromJson(
+        (fixtureJson('jobs') as List).first as Map<String, dynamic>,
+      );
+      expect(job.artifactsSize, 20480);
+      expect(job.hasArtifacts, isTrue);
     });
 
     test('job actions hit retry/cancel/play', () async {
@@ -393,6 +429,32 @@ void main() {
       expect(trace, 'build output');
     });
 
+    test('jobArtifactsProvider lists the zip contents', () async {
+      adapter.get(
+        '/projects/42/jobs/5001/artifacts',
+        _zipOf({'a.txt': 'x', 'b/c.txt': 'y'}),
+      );
+
+      const loc = (project: 42, id: 5001);
+      final entries = await container.read(jobArtifactsProvider(loc).future);
+
+      expect(entries.map((e) => e.path), ['a.txt', 'b/c.txt']);
+    });
+
+    test('jobArtifactFileProvider fetches one file', () async {
+      adapter.get(
+        '/projects/42/jobs/5001/artifacts/a%20b.txt',
+        Uint8List.fromList('hi'.codeUnits),
+      );
+
+      const loc = (project: 42, id: 5001);
+      final bytes = await container.read(
+        jobArtifactFileProvider((job: loc, path: 'a b.txt')).future,
+      );
+
+      expect(utf8.decode(bytes), 'hi');
+    });
+
     test('pipelineSchedulesProvider plays and removes', () async {
       adapter
         ..get(
@@ -458,4 +520,13 @@ void main() {
       expect(list.last.lastUsedAt, isNull);
     });
   });
+}
+
+Uint8List _zipOf(Map<String, String> files) {
+  final archive = Archive();
+  for (final e in files.entries) {
+    final data = utf8.encode(e.value);
+    archive.addFile(ArchiveFile(e.key, data.length, data));
+  }
+  return Uint8List.fromList(ZipEncoder().encode(archive));
 }

@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
@@ -99,6 +103,30 @@ class PipelinesRepository {
   /// The job's console output (plain text).
   Future<String> jobTrace(Object projectId, int jobId) {
     return _client.getRaw('${_p(projectId)}/jobs/$jobId/trace');
+  }
+
+  /// The job's artifact archive as zip bytes. GitLab has no listing
+  /// endpoint, so the client unpacks it.
+  Future<Uint8List> artifactsArchive(Object projectId, int jobId) {
+    return _bytes('${_p(projectId)}/jobs/$jobId/artifacts');
+  }
+
+  /// One file inside the archive (`GET /jobs/:id/artifacts/*path`).
+  Future<Uint8List> artifactFile(Object projectId, int jobId, String path) {
+    final encoded = path.split('/').map(Uri.encodeComponent).join('/');
+    return _bytes('${_p(projectId)}/jobs/$jobId/artifacts/$encoded');
+  }
+
+  Future<Uint8List> _bytes(String path) async {
+    try {
+      final res = await _client.dio.get<Uint8List>(
+        path,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return res.data ?? Uint8List(0);
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
   }
 
   Future<Job> retryJob(Object projectId, int jobId) {

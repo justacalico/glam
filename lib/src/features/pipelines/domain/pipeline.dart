@@ -87,6 +87,7 @@ class Job extends Equatable {
     this.allowFailure = false,
     this.tagList = const [],
     this.webUrl,
+    this.artifactsSize,
   });
 
   factory Job.fromJson(Map<String, dynamic> json) {
@@ -107,6 +108,9 @@ class Job extends Equatable {
           ? (json['tag_list'] as List).map((e) => e.toString()).toList()
           : const [],
       webUrl: json['web_url'] as String?,
+      artifactsSize: json['artifacts_file'] is Map<String, dynamic>
+          ? (json['artifacts_file'] as Map<String, dynamic>)['size'] as int?
+          : null,
     );
   }
 
@@ -122,6 +126,11 @@ class Job extends Equatable {
   final bool allowFailure;
   final List<String> tagList;
   final String? webUrl;
+
+  /// Size of `artifacts_file`, when the job produced artifacts.
+  final int? artifactsSize;
+
+  bool get hasArtifacts => artifactsSize != null;
 
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
