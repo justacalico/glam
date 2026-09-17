@@ -92,7 +92,6 @@ class IssuesRepository {
     int? milestoneId,
     String? dueDate,
     int? weight,
-    int? iterationId,
     bool confidential = false,
   }) {
     return _client.post(
@@ -105,7 +104,6 @@ class IssuesRepository {
         'milestone_id': ?milestoneId,
         'due_date': ?dueDate,
         'weight': ?weight,
-        'iteration_id': ?iterationId,
         if (confidential) 'confidential': true,
       },
       decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
@@ -124,7 +122,6 @@ class IssuesRepository {
     int? milestoneId,
     String? dueDate,
     int? weight,
-    int? iterationId,
   }) {
     return _client.put(
       '${_p(projectId)}/issues/$iid',
@@ -137,7 +134,6 @@ class IssuesRepository {
         'milestone_id': ?milestoneId,
         'due_date': ?dueDate,
         'weight': ?weight,
-        'iteration_id': ?iterationId,
       },
       decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
     );

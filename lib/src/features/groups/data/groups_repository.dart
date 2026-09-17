@@ -41,7 +41,8 @@ class GroupsRepository {
   }
 
   /// Iterations the group and its ancestors define (GitLab Premium).
-  /// `state` accepts `opened`, `closed`, `current`, `upcoming`, `all`.
+  /// `state` accepts `opened`, `upcoming`, `current`, `closed`,
+  /// `started` (deprecated alias of `current`), or `all`.
   Future<List<Iteration>> iterations(
     Object groupId, {
     String state = 'opened',

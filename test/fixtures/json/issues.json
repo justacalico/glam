@@ -54,7 +54,7 @@
       "iid": 4,
       "group_id": 55,
       "title": "Sprint 12",
-      "state": "opened",
+      "state": 2,
       "start_date": "2026-04-14",
       "due_date": "2026-04-27",
       "web_url": "https://gitlab.com/groups/acme/-/iterations/4"
