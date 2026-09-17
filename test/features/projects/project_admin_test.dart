@@ -238,6 +238,52 @@ void main() {
       );
     });
 
+    test('protected environments list, protect, unprotect', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/protected_environments', [
+          {
+            'name': 'production',
+            'deploy_access_levels': [
+              {'access_level': 40},
+            ],
+          },
+        ])
+        ..post('/projects/42/protected_environments', {
+          'name': 'staging',
+          'deploy_access_levels': [
+            {'access_level': 30},
+          ],
+        })
+        ..delete('/projects/42/protected_environments/production');
+      final repo = ProjectsRepository(client);
+
+      final envs = await repo.protectedEnvironments(42);
+      expect(envs.single.name, 'production');
+      expect(envs.single.deployLevels, [40]);
+
+      final created = await repo.protectEnvironment(
+        42,
+        name: 'staging',
+        deployAccessLevel: 30,
+      );
+      expect(created.name, 'staging');
+      final sent = adapter.lastRequest!.data as Map;
+      expect(
+        (sent['deploy_access_levels'] as List).first['access_level'],
+        30,
+      );
+
+      await repo.unprotectEnvironment(42, 'production');
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/protected_environments/production',
+        ),
+        hasLength(1),
+      );
+    });
+
     test('deploy tokens list, create keeps the secret, revoke', () async {
       final (client, adapter) = testClient();
       adapter

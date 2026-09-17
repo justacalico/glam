@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 
@@ -403,6 +404,182 @@ class ProtectedTagsSection extends ConsumerWidget {
         showAdminError(context, e.message);
       }
     }
+  }
+}
+
+/// Protected environment rules with protect / unprotect.
+class ProtectedEnvironmentsSection extends ConsumerWidget {
+  const ProtectedEnvironmentsSection({required this.project, super.key});
+
+  final Project project;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final envs = ref.watch(projectProtectedEnvironmentsProvider(project.id));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(child: SectionLabel('Protected environments')),
+            TextButton.icon(
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Protect'),
+              onPressed: () => _protect(context, ref),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: Radii.borderMd,
+            border: Border.all(color: colors.border),
+          ),
+          child: envs.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => Padding(
+              padding: const EdgeInsets.all(Insets.lg),
+              child: Text('$e'),
+            ),
+            data: (list) => list.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(Insets.lg),
+                    child: EmptyState(
+                      icon: Icons.cloud_outlined,
+                      title: 'No protected environments',
+                    ),
+                  )
+                : Column(
+                    children: [
+                      for (final e in list)
+                        _ProtectedEnvironmentTile(
+                          env: e,
+                          onDelete: () => _unprotect(context, ref, e),
+                        ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _protect(BuildContext context, WidgetRef ref) async {
+    final name = TextEditingController();
+    var deployLevel = 40;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Protect environment'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: name,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Environment or wildcard',
+                    hintText: 'production or review/*',
+                  ),
+                ),
+                const SizedBox(height: Insets.md),
+                _LevelPicker(
+                  label: 'Allowed to deploy',
+                  value: deployLevel,
+                  onChanged: (v) => setState(() => deployLevel = v),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (name.text.trim().isEmpty) {
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
+              child: const Text('Protect'),
+            ),
+          ],
+        ),
+      ),
+    );
+    final env = name.text.trim();
+    name.dispose();
+    if (ok != true || env.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .protectEnvironment(project.id, name: env, deployLevel: deployLevel);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _unprotect(
+    BuildContext context,
+    WidgetRef ref,
+    ProtectedEnvironment env,
+  ) async {
+    final ok = await confirmAdminAction(
+      context,
+      title: 'Unprotect environment?',
+      body: '"${env.name}" will accept deploys again.',
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .unprotectEnvironment(project.id, env.name);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+}
+
+class _ProtectedEnvironmentTile extends StatelessWidget {
+  const _ProtectedEnvironmentTile({required this.env, required this.onDelete});
+
+  final ProtectedEnvironment env;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final deploy = env.deployLevels.map(ProtectedBranch.levelLabel).join(', ');
+    return ListTile(
+      dense: true,
+      leading: const Icon(Icons.cloud_outlined, size: 18),
+      title: Text(
+        env.name,
+        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+      ),
+      subtitle: Text('deploy: ${deploy.isEmpty ? 'none' : deploy}'),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_outline, size: 18),
+        onPressed: onDelete,
+      ),
+    );
   }
 }
 
