@@ -89,35 +89,57 @@ class ApprovalRulesSection extends ConsumerWidget {
     final controller = TextEditingController(
       text: '${project.approvalsBeforeMerge ?? 0}',
     );
+    var error = false;
+    int? parsed() => int.tryParse(controller.text.trim());
     final value = await showDialog<int>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Required approvals'),
-        content: SizedBox(
-          width: 360,
-          child: TextField(
-            controller: controller,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(
-              labelText: 'Approvals required to merge',
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Required approvals'),
+          content: SizedBox(
+            width: 360,
+            child: TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                labelText: 'Approvals required to merge',
+                errorText: error ? 'Enter a number' : null,
+              ),
+              onChanged: (_) {
+                if (error) {
+                  setState(() => error = false);
+                }
+              },
+              onSubmitted: (_) {
+                final v = parsed();
+                if (v == null) {
+                  setState(() => error = true);
+                  return;
+                }
+                Navigator.pop(context, v);
+              },
             ),
-            onSubmitted: (_) =>
-                Navigator.pop(context, int.tryParse(controller.text.trim())),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final v = parsed();
+                if (v == null) {
+                  setState(() => error = true);
+                  return;
+                }
+                Navigator.pop(context, v);
+              },
+              child: const Text('Save'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(context, int.tryParse(controller.text.trim())),
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
     controller.dispose();
@@ -146,6 +168,7 @@ class ApprovalRulesSection extends ConsumerWidget {
     );
     var userIds = rule?.users.map((u) => u.id).toSet() ?? <int>{};
     var nameError = false;
+    var requiredError = false;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -176,9 +199,15 @@ class ApprovalRulesSection extends ConsumerWidget {
                   controller: required,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Approvals required',
+                    errorText: requiredError ? '0 to 100' : null,
                   ),
+                  onChanged: (_) {
+                    if (requiredError) {
+                      setState(() => requiredError = false);
+                    }
+                  },
                 ),
                 const SizedBox(height: Insets.md),
                 MembersPickerField(
@@ -197,8 +226,14 @@ class ApprovalRulesSection extends ConsumerWidget {
             ),
             FilledButton(
               onPressed: () {
-                if (name.text.trim().isEmpty) {
-                  setState(() => nameError = true);
+                final count = int.tryParse(required.text.trim());
+                final badName = name.text.trim().isEmpty;
+                final badRequired = count == null || count > 100;
+                if (badName || badRequired) {
+                  setState(() {
+                    nameError = badName;
+                    requiredError = badRequired;
+                  });
                   return;
                 }
                 Navigator.pop(context, true);
@@ -321,8 +356,11 @@ class _RuleTile extends StatelessWidget {
       title: Text(rule.name),
       subtitle: Text(
         [
+          if (rule.ruleType != null && rule.ruleType != 'regular')
+            rule.ruleType!.replaceAll('_', ' '),
           '${rule.approvalsRequired} required',
           '${rule.eligibleApproverCount} eligible',
+          if (rule.containsHiddenGroups) 'includes hidden groups',
           if (approvers.isNotEmpty) approvers.join(', '),
         ].join(' · '),
         maxLines: 2,

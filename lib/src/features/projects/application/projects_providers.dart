@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -95,11 +96,19 @@ final projectRunnersProvider = FutureProvider.family<List<Runner>, Object>(
   (ref, id) => ref.watch(projectsRepositoryProvider).projectRunners(id),
 );
 
-/// Merge-request approval rules configured on the project.
+/// Merge-request approval rules configured on the project. Empty on
+/// instances where the endpoint is absent or feature-gated.
 final projectApprovalRulesProvider =
-    FutureProvider.family<List<ApprovalRule>, Object>(
-      (ref, id) => ref.watch(projectsRepositoryProvider).approvalRules(id),
-    );
+    FutureProvider.family<List<ApprovalRule>, Object>((ref, id) async {
+      try {
+        return await ref.watch(projectsRepositoryProvider).approvalRules(id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
 
 /// Mutations for the admin lists; each refetches its list on success.
 final projectAdminActionsProvider = Provider<ProjectAdminActions>(

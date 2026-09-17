@@ -13,6 +13,7 @@ class ApprovalRule extends Equatable {
     this.users = const [],
     this.groups = const [],
     this.eligibleApproverCount = 0,
+    this.containsHiddenGroups = false,
   });
 
   factory ApprovalRule.fromJson(Map<String, dynamic> json) {
@@ -42,6 +43,7 @@ class ApprovalRule extends Equatable {
                 .toList()
           : const [],
       eligibleApproverCount: eligible is List ? eligible.length : 0,
+      containsHiddenGroups: json['contains_hidden_groups'] as bool? ?? false,
     );
   }
 
@@ -52,6 +54,10 @@ class ApprovalRule extends Equatable {
   final List<GitLabUser> users;
   final List<String> groups;
   final int eligibleApproverCount;
+
+  /// True when the rule has groups the caller can't see — the approver
+  /// list is then truncated server-side.
+  final bool containsHiddenGroups;
 
   @override
   List<Object?> get props => [id, name, approvalsRequired];
