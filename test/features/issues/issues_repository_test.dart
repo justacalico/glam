@@ -175,6 +175,66 @@ void main() {
     });
   });
 
+  test('issue links list, link, unlink', () async {
+    final (client, adapter) = testClient();
+    final linkRows = fixtureJson('issue_links') as List;
+    adapter
+      ..get('/projects/42/issues/12/links', linkRows)
+      // POST /links returns {id, link_type, source_issue, target_issue}
+      // — a different shape from the GET list rows.
+      ..post('/projects/42/issues/12/links', {
+        'id': 200,
+        'link_type': 'blocks',
+        'source_issue': linkRows.first,
+        'target_issue': linkRows.last,
+      })
+      ..delete('/projects/42/issues/12/links/100');
+    final repo = IssuesRepository(client);
+
+    final links = await repo.issueLinks(42, 12);
+    expect(links, hasLength(2));
+    expect(links.first.linkType, 'relates_to');
+    expect(links.last.linkType, 'blocks');
+    expect(links.last.typeLabel, 'Blocks');
+    expect(links.first.linkId, 100);
+    expect(links.first.issue.title, isNotEmpty);
+
+    final created = await repo.linkIssue(
+      42,
+      12,
+      targetProject: 'group/other',
+      targetIid: 9,
+      linkType: 'blocks',
+    );
+    expect(created.linkId, 200);
+    expect(created.linkType, 'blocks');
+    expect(created.issue.title, isNotEmpty);
+    final sent = adapter.lastRequest!.data as Map;
+    expect(sent['target_project_id'], 'group/other');
+    expect(sent['target_issue_iid'], 9);
+    expect(sent['link_type'], 'blocks');
+
+    await repo.unlinkIssue(42, 12, 100);
+    expect(
+      adapter.requestsTo('DELETE', '/projects/42/issues/12/links/100'),
+      hasLength(1),
+    );
+  });
+
+  test('related merge requests parse as MRs', () async {
+    final (client, adapter) = testClient();
+    adapter.get(
+      '/projects/42/issues/12/related_merge_requests',
+      fixtureJson('related_mrs'),
+    );
+    final repo = IssuesRepository(client);
+
+    final mrs = await repo.relatedMergeRequests(42, 12);
+    expect(mrs, hasLength(2));
+    expect(mrs.first.iid, greaterThan(0));
+    expect(mrs.first.title, isNotEmpty);
+  });
+
   group('Issue model', () {
     test('closed issue parses closed_by and confidentiality', () {
       final closed = Issue.fromJson(

@@ -5,6 +5,8 @@ import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 final issuesRepositoryProvider = Provider<IssuesRepository>(
   (ref) => IssuesRepository(ref.watch(apiClientProvider)),
@@ -113,3 +115,69 @@ class IssueNotesNotifier extends PagedListNotifier<Note> {
     return note;
   }
 }
+
+/// Links between this issue and others (relates_to / blocks /
+/// is_blocked_by).
+final issueLinksProvider =
+    AsyncNotifierProvider.family<IssueLinksNotifier, List<IssueLink>, IssueRef>(
+      IssueLinksNotifier.new,
+    );
+
+class IssueLinksNotifier extends AsyncNotifier<List<IssueLink>> {
+  IssueLinksNotifier(this.loc);
+
+  final IssueRef loc;
+
+  @override
+  Future<List<IssueLink>> build() {
+    return ref.watch(issuesRepositoryProvider).issueLinks(loc.project, loc.iid);
+  }
+
+  /// Adds a link then refetches without a reload spinner — `link_type`
+  /// like `is_blocked_by` can flip the stored direction, so trusting
+  /// the POST body for an in-place insert would be wrong.
+  Future<IssueLink> link(
+    Object targetProject,
+    int targetIid,
+    String linkType,
+  ) async {
+    final created = await ref
+        .read(issuesRepositoryProvider)
+        .linkIssue(
+          loc.project,
+          loc.iid,
+          targetProject: targetProject,
+          targetIid: targetIid,
+          linkType: linkType,
+        );
+    state = AsyncData(
+      await ref.read(issuesRepositoryProvider).issueLinks(loc.project, loc.iid),
+    );
+    // The link writes a system note ("marked as related to #5").
+    ref.invalidate(issueNotesProvider(loc));
+    return created;
+  }
+
+  /// Removes the link in place so the row disappears without a refetch.
+  Future<void> unlink(int linkId) async {
+    await ref
+        .read(issuesRepositoryProvider)
+        .unlinkIssue(loc.project, loc.iid, linkId);
+    final current = state.value;
+    if (current != null) {
+      state = AsyncData([
+        for (final l in current)
+          if (l.linkId != linkId) l,
+      ]);
+    }
+    ref.invalidate(issueNotesProvider(loc));
+  }
+}
+
+/// Merge requests related to this issue.
+final issueRelatedMrsProvider =
+    FutureProvider.family<List<MergeRequest>, IssueRef>(
+      (ref, loc) => ref
+          .watch(issuesRepositoryProvider)
+          .relatedMergeRequests(loc.project, loc.iid),
+    );

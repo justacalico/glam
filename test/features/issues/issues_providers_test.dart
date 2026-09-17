@@ -87,4 +87,46 @@ void main() {
       hasLength(1),
     );
   });
+
+  test('issueLinksProvider link refreshes, unlink removes in place', () async {
+    adapter
+      ..get('/projects/9/issues/12/links', fixtureJson('issue_links'))
+      ..post(
+        '/projects/9/issues/12/links',
+        (fixtureJson('issue_links') as List).first,
+      )
+      ..get('/projects/9/issues/12/links', fixtureJson('issue_links'))
+      ..delete('/projects/9/issues/12/links/100');
+
+    const loc = (project: 9, iid: 12);
+    final links = await container.read(issueLinksProvider(loc).future);
+    expect(links, hasLength(2));
+
+    await container
+        .read(issueLinksProvider(loc).notifier)
+        .link(9, 5, 'relates_to');
+    expect(
+      adapter.requestsTo('POST', '/projects/9/issues/12/links'),
+      hasLength(1),
+    );
+
+    await container.read(issueLinksProvider(loc).notifier).unlink(100);
+    final remaining = container.read(issueLinksProvider(loc)).value;
+    expect(remaining, hasLength(1));
+    expect(
+      adapter.requestsTo('DELETE', '/projects/9/issues/12/links/100'),
+      hasLength(1),
+    );
+  });
+
+  test('issueRelatedMrsProvider loads related merge requests', () async {
+    adapter.get(
+      '/projects/9/issues/12/related_merge_requests',
+      fixtureJson('related_mrs'),
+    );
+
+    const loc = (project: 9, iid: 12);
+    final mrs = await container.read(issueRelatedMrsProvider(loc).future);
+    expect(mrs, hasLength(2));
+  });
 }

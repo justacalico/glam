@@ -3,6 +3,8 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 /// Issue list filter for the global `/issues` endpoint.
 enum IssueScope { assigned, created, all }
@@ -258,6 +260,58 @@ class IssuesRepository {
     return _client.post(
       '${_p(projectId)}/issues/$iid/reset_spent_time',
       decoder: (_) {},
+    );
+  }
+
+  /// Issues linked to this one, each carrying its link record id and
+  /// type.
+  Future<List<IssueLink>> issueLinks(Object projectId, int iid) {
+    return _client.getList(
+      '${_p(projectId)}/issues/$iid/links',
+      decoder: (j) => IssueLink.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Links this issue to [targetIid]. [targetProject] accepts an id or
+  /// a full path like `group/other`.
+  Future<IssueLink> linkIssue(
+    Object projectId,
+    int iid, {
+    required Object targetProject,
+    required int targetIid,
+    String linkType = 'relates_to',
+  }) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/links',
+      body: {
+        'target_project_id': targetProject,
+        'target_issue_iid': targetIid,
+        'link_type': linkType,
+      },
+      // POST returns {id, link_type, source_issue, target_issue} — a
+      // different shape from the GET list's flat issue rows.
+      decoder: (j) {
+        final m = j! as Map<String, dynamic>;
+        final target = m['target_issue'];
+        return IssueLink(
+          issue: Issue.fromJson(target is Map<String, dynamic> ? target : m),
+          linkId: (m['issue_link_id'] ?? m['id']) as int? ?? 0,
+          linkType: m['link_type'] as String? ?? 'relates_to',
+        );
+      },
+    );
+  }
+
+  Future<void> unlinkIssue(Object projectId, int iid, int linkId) {
+    return _client.delete('${_p(projectId)}/issues/$iid/links/$linkId');
+  }
+
+  /// Merge requests related to this issue (mentioned or closing it).
+  Future<List<MergeRequest>> relatedMergeRequests(Object projectId, int iid) {
+    // Paginated endpoint; a bounded list so fetch every page.
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/related_merge_requests',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
 }
