@@ -118,6 +118,12 @@ final commitStatusesProvider =
           .commitStatuses(loc.project, loc.sha),
     );
 
+/// Commit authors ranked by commit count for a project's default ref.
+final projectContributorsProvider =
+    FutureProvider.family<List<Contributor>, Object>(
+      (ref, id) => ref.watch(repositoryRepositoryProvider).contributors(id),
+    );
+
 final branchesProvider =
     AsyncNotifierProvider.family<
       BranchesNotifier,

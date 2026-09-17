@@ -215,6 +215,29 @@ void main() {
       expect(statuses.last.ref, isNull);
     });
 
+    test('contributors decodes ranked authors and sends ref', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/contributors', [
+        {
+          'name': 'Ada',
+          'email': 'ada@x.io',
+          'commits': 40,
+          'additions': 900,
+          'deletions': 120,
+        },
+        {'name': 'Bo', 'email': 'bo@x.io', 'commits': 5},
+      ]);
+      final repo = RepositoryRepository(client);
+
+      final list = await repo.contributors(42, ref: 'dev');
+
+      expect(adapter.lastRequest!.queryParameters['ref'], 'dev');
+      expect(list, hasLength(2));
+      expect(list.first.name, 'Ada');
+      expect(list.first.commits, 40);
+      expect(list.last.additions, 0);
+    });
+
     test('commitComments decodes plain and anchored comments', () async {
       final (client, adapter) = testClient();
       adapter.get(

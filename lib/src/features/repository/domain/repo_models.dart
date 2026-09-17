@@ -215,6 +215,37 @@ class Tag extends Equatable {
   List<Object?> get props => [name];
 }
 
+/// One commit author in `/repository/contributors`, ordered by
+/// commit count. The payload has no avatar or user link.
+class Contributor extends Equatable {
+  const Contributor({
+    required this.name,
+    this.email = '',
+    this.commits = 0,
+    this.additions = 0,
+    this.deletions = 0,
+  });
+
+  factory Contributor.fromJson(Map<String, dynamic> json) {
+    return Contributor(
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      commits: json['commits'] as int? ?? 0,
+      additions: json['additions'] as int? ?? 0,
+      deletions: json['deletions'] as int? ?? 0,
+    );
+  }
+
+  final String name;
+  final String email;
+  final int commits;
+  final int additions;
+  final int deletions;
+
+  @override
+  List<Object?> get props => [name, email, commits, additions, deletions];
+}
+
 /// An entry in the repository tree (file or directory).
 class TreeEntry extends Equatable {
   const TreeEntry({required this.name, required this.path, required this.type});
