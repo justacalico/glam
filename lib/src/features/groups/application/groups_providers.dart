@@ -178,6 +178,21 @@ final accessRequestsProvider = FutureProvider.family<List<Member>, MemberScope>(
   },
 );
 
+/// Pending email invitations on the scope; empty for non-maintainers.
+final invitationsProvider =
+    FutureProvider.family<List<Invitation>, MemberScope>((ref, scope) async {
+      try {
+        return await ref
+            .watch(groupsRepositoryProvider)
+            .invitations(scope.id, isProject: scope.isProject);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
+
 typedef MemberFilter = ({Object id, bool isProject, String? query});
 
 final membersProvider =

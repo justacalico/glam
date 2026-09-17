@@ -266,6 +266,33 @@ void main() {
       expect(adapter.lastRequest!.path, '/projects/42/access_requests');
     });
 
+    test('invitations list and revoke', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/invitations', [
+          {
+            'id': 4,
+            'invite_email': 'new@example.com',
+            'access_level': 30,
+            'expires_at': '2024-06-01',
+            'created_by_name': 'Owner',
+          },
+        ])
+        ..delete('/groups/9/invitations/new@example.com');
+      final repo = GroupsRepository(client);
+
+      final pending = await repo.invitations(9, isProject: false);
+      expect(pending.single.inviteEmail, 'new@example.com');
+      expect(pending.single.accessLevel, 30);
+      expect(pending.single.createdByName, 'Owner');
+
+      await repo.deleteInvitation(9, 'new@example.com', isProject: false);
+      expect(
+        adapter.requestsTo('DELETE', '/groups/9/invitations/new@example.com'),
+        hasLength(1),
+      );
+    });
+
     test('share and unshare group hit the share paths', () async {
       final (client, adapter) = testClient();
       adapter

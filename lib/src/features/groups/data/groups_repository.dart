@@ -375,6 +375,25 @@ class GroupsRepository {
     );
   }
 
+  /// Pending email invitations (`/:kind/:id/invitations`).
+  Future<List<Invitation>> invitations(Object id, {required bool isProject}) {
+    return _client.getAll(
+      '${_scopeBase(id, isProject: isProject)}/invitations',
+      decoder: (j) => Invitation.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Revokes a pending invitation by email.
+  Future<void> deleteInvitation(
+    Object id,
+    String email, {
+    required bool isProject,
+  }) {
+    return _client.delete(
+      '${_scopeBase(id, isProject: isProject)}/invitations/$email',
+    );
+  }
+
   /// Shares this group with another group (`POST /groups/:id/share`).
   /// Owner role required.
   Future<void> shareGroup(
