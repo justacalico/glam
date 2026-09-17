@@ -16,12 +16,13 @@ class EnvironmentsRepository {
   Future<Paginated<GlEnvironment>> environments(
     Object projectId, {
     String? states,
+    String? search,
     int page = 1,
     int perPage = 20,
   }) {
     return _client.getPage(
       '${_p(projectId)}/environments',
-      query: {'states': ?states},
+      query: {'states': ?states, 'search': ?search},
       page: page,
       perPage: perPage,
       decoder: (j) => GlEnvironment.fromJson(j! as Map<String, dynamic>),
