@@ -330,6 +330,7 @@ void main() {
       expect(result.jobs, ['build', 'test']);
       final sent = adapter.requestsTo('POST', '/projects/42/ci/lint').single;
       expect((sent.data as Map)['content'], contains('script'));
+      expect((sent.data as Map)['include_jobs'], isTrue);
     });
 
     test('ciLint falls back to status when valid is absent', () async {

@@ -27,13 +27,14 @@ class PipelineTrigger extends Equatable {
   final int id;
   final String description;
 
-  /// Only present in the create response; lists expose a masked tail.
+  /// Full for triggers owned by the caller; only the first four
+  /// characters for triggers owned by others.
   final String? token;
   final DateTime? lastUsedAt;
   final String? owner;
 
   @override
-  List<Object?> get props => [id, description];
+  List<Object?> get props => [id, description, token, lastUsedAt, owner];
 }
 
 /// Result of `POST /projects/:id/ci/lint`.
@@ -71,5 +72,5 @@ class CiLintResult extends Equatable {
   final List<String> jobs;
 
   @override
-  List<Object?> get props => [valid, errors, warnings];
+  List<Object?> get props => [valid, errors, warnings, jobs];
 }

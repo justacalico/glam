@@ -119,6 +119,8 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
     ('pending', 'Pending'),
     ('success', 'Passed'),
     ('failed', 'Failed'),
+    ('canceled', 'Canceled'),
+    ('skipped', 'Skipped'),
     ('manual', 'Manual'),
   ];
 
@@ -153,10 +155,8 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    [
-                      for (final (v, label) in _scopes)
-                        if (v == _scope) label,
-                    ].first,
+                    _scopes.where((e) => e.$1 == _scope).firstOrNull?.$2 ??
+                        'All',
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                   Icon(Icons.arrow_drop_down, color: colors.inkMuted),

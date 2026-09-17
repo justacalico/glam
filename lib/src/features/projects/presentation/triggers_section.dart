@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,12 +74,19 @@ class TriggersSection extends ConsumerWidget {
                           ),
                           subtitle: Text(
                             [
-                              if (t.token != null) '…${t.token}',
+                              // Full token for own triggers, first-four
+                              // prefix for everyone else's.
+                              if (t.token != null)
+                                t.token!.length > 4 ? t.token! : '${t.token}…',
                               if (t.lastUsedAt != null)
                                 'last used ${Format.relative(t.lastUsedAt)}'
                               else
                                 'never used',
                             ].join(' · '),
+                            style: const TextStyle(
+                              fontFamily: 'JetBrains Mono',
+                              fontSize: 11.5,
+                            ),
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, size: 18),
@@ -137,8 +146,11 @@ class TriggersSection extends ConsumerWidget {
       final trigger = await ref
           .read(pipelinesRepositoryProvider)
           .createTrigger(project.id, desc);
+      if (!context.mounted) {
+        return;
+      }
       ref.invalidate(pipelineTriggersProvider(project.id));
-      if (context.mounted && trigger.token != null) {
+      if (trigger.token != null) {
         await _showToken(context, trigger);
       }
     } on ApiException catch (e) {
@@ -157,7 +169,7 @@ class TriggersSection extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('This token is shown once. Store it now.'),
+            const Text('Use this token to authenticate trigger requests.'),
             const SizedBox(height: Insets.sm),
             SelectableText(
               t.token!,
@@ -170,7 +182,12 @@ class TriggersSection extends ConsumerWidget {
         ),
         actions: [
           TextButton.icon(
-            onPressed: () => Clipboard.setData(ClipboardData(text: t.token!)),
+            onPressed: () {
+              unawaited(Clipboard.setData(ClipboardData(text: t.token!)));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Token copied')));
+            },
             icon: const Icon(Icons.copy_outlined, size: 18),
             label: const Text('Copy'),
           ),
@@ -200,6 +217,9 @@ class TriggersSection extends ConsumerWidget {
       await ref
           .read(pipelinesRepositoryProvider)
           .deleteTrigger(project.id, t.id);
+      if (!context.mounted) {
+        return;
+      }
       ref.invalidate(pipelineTriggersProvider(project.id));
     } on ApiException catch (e) {
       if (context.mounted) {
@@ -244,8 +264,8 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
 
     return AlertDialog(
       title: const Text('Lint CI config'),
-      content: SizedBox(
-        width: 520,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 520),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -345,15 +365,15 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
           .read(pipelinesRepositoryProvider)
           .ciLint(widget.projectId, text);
       if (mounted) {
-        setState(() {
-          _result = result;
-          _busy = false;
-        });
+        setState(() => _result = result);
       }
     } on ApiException catch (e) {
       if (mounted) {
-        setState(() => _busy = false);
         showAdminError(context, e.message);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
       }
     }
   }
