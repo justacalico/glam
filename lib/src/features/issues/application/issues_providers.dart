@@ -57,7 +57,13 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
 }
 
 /// (project, state) for project-scoped issue lists.
-typedef ProjectIssueFilter = ({Object project, String? state, String? search});
+typedef ProjectIssueFilter = ({
+  Object project,
+  String? state,
+  String? search,
+  String? label,
+  String? milestone,
+});
 
 final projectIssuesProvider =
     AsyncNotifierProvider.family<
@@ -79,6 +85,8 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           filter.project,
           state: filter.state,
           search: filter.search,
+          labels: filter.label,
+          milestone: filter.milestone,
           page: page,
         );
   }
