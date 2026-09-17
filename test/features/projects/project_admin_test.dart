@@ -269,10 +269,7 @@ void main() {
       );
       expect(created.name, 'staging');
       final sent = adapter.lastRequest!.data as Map;
-      expect(
-        (sent['deploy_access_levels'] as List).first['access_level'],
-        30,
-      );
+      expect((sent['deploy_access_levels'] as List).first['access_level'], 30);
 
       await repo.unprotectEnvironment(42, 'production');
       expect(

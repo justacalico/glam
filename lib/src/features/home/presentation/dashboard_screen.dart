@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -102,7 +103,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   String _greeting() {
-    final hour = DateTime.now().hour;
+    final hour = clock.now().hour;
     if (hour < 12) {
       return 'Good morning,';
     }

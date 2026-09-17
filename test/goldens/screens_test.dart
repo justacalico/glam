@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +42,9 @@ void main() {
   });
 
   testWidgets('dashboard', (tester) async {
-    await _shot(tester, 'dashboard', const DashboardScreen(), size: phone);
+    await withClock(Clock.fixed(DateTime(2024, 6, 3, 10)), () async {
+      await _shot(tester, 'dashboard', const DashboardScreen(), size: phone);
+    });
   });
 
   testWidgets('projects', (tester) async {
