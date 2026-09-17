@@ -111,6 +111,13 @@ final commitDiffProvider =
           .commitDiff(loc.project, loc.sha),
     );
 
+final commitStatusesProvider =
+    FutureProvider.family<List<CommitStatus>, ({Object project, String sha})>(
+      (ref, loc) => ref
+          .watch(repositoryRepositoryProvider)
+          .commitStatuses(loc.project, loc.sha),
+    );
+
 final branchesProvider =
     AsyncNotifierProvider.family<
       BranchesNotifier,

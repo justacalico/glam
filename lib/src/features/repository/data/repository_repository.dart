@@ -140,6 +140,15 @@ class RepositoryRepository {
     );
   }
 
+  /// Statuses reported on the commit: its own pipeline plus external
+  /// checks posted through the commit status API.
+  Future<List<CommitStatus>> commitStatuses(Object projectId, String sha) {
+    return _client.getAll(
+      '${_p(projectId)}/repository/commits/$sha/statuses',
+      decoder: (j) => CommitStatus.fromJson(j as Map<String, dynamic>),
+    );
+  }
+
   /// The file-level diffs of a commit.
   Future<List<ChangeEntry>> commitDiff(Object projectId, String sha) {
     return _client.getList(

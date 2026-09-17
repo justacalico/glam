@@ -197,6 +197,24 @@ void main() {
       expect(diffs.first.newPath, 'lib/main.dart');
     });
 
+    test('commitStatuses decodes checks with context fallback', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/repository/commits/abc123/statuses',
+        fixtureJson('commit_statuses'),
+      );
+      final repo = RepositoryRepository(client);
+
+      final statuses = await repo.commitStatuses(42, 'abc123');
+
+      expect(statuses, hasLength(2));
+      expect(statuses.first.name, 'jenkins');
+      expect(statuses.first.authorName, 'Administrator');
+      expect(statuses.first.finishedAt, isNotNull);
+      expect(statuses.last.name, 'coverage');
+      expect(statuses.last.ref, isNull);
+    });
+
     test('commitComments decodes plain and anchored comments', () async {
       final (client, adapter) = testClient();
       adapter.get(
