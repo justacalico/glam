@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/runner_tile.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
@@ -81,7 +82,7 @@ class RunnersSection extends ConsumerWidget {
                 : Column(
                     children: [
                       for (final r in list)
-                        _RunnerTile(
+                        RunnerTile(
                           runner: r,
                           trailing: r.isProjectRunner
                               ? IconButton(
@@ -146,43 +147,5 @@ class RunnersSection extends ConsumerWidget {
         showAdminError(context, e.message);
       }
     }
-  }
-}
-
-class _RunnerTile extends StatelessWidget {
-  const _RunnerTile({required this.runner, this.trailing});
-
-  final Runner runner;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final dotColor = runner.paused
-        ? colors.inkFaint
-        : switch (runner.status) {
-            'online' => colors.success,
-            'offline' || 'stale' => colors.danger,
-            _ => colors.inkFaint,
-          };
-    return ListTile(
-      dense: true,
-      leading: Icon(Icons.circle, size: 10, color: dotColor),
-      title: Text(
-        runner.description.isEmpty
-            ? 'Runner #${runner.id}'
-            : runner.description,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        [
-          runner.statusLabel,
-          runner.typeLabel,
-          if (runner.tagList.isNotEmpty) runner.tagList.join(', '),
-        ].join(' · '),
-      ),
-      trailing: trailing,
-    );
   }
 }

@@ -11,6 +11,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/domain/runner.dart';
 
 final groupsRepositoryProvider = Provider<GroupsRepository>(
   (ref) => GroupsRepository(ref.watch(apiClientProvider)),
@@ -125,6 +126,11 @@ final groupDeployTokensProvider =
       (ref, groupId) =>
           ref.watch(groupsRepositoryProvider).deployTokens(groupId),
     );
+
+/// CI/CD runners available to the group, inherited ones included.
+final groupRunnersProvider = FutureProvider.family<List<Runner>, Object>(
+  (ref, groupId) => ref.watch(groupsRepositoryProvider).groupRunners(groupId),
+);
 
 /// Iterations defined on the group and its ancestors. Empty on
 /// Free tier / self-hosted CE where the endpoint is absent.

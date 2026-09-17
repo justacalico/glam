@@ -214,6 +214,18 @@ void main() {
       );
     });
 
+    test('groupRunners hits /groups/:id/runners', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9/runners', fixtureJson('runners'));
+      final repo = GroupsRepository(client);
+
+      final runners = await repo.groupRunners(9);
+
+      expect(runners, isNotEmpty);
+      expect(runners.first.runnerType, isNotEmpty);
+      expect(adapter.requestsTo('GET', '/groups/9/runners'), hasLength(1));
+    });
+
     test('auditEvents decodes detail fields', () async {
       final (client, adapter) = testClient();
       adapter.get('/groups/9/audit_events', [
