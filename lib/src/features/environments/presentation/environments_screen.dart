@@ -11,6 +11,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/environments/application/environments_providers.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
@@ -27,6 +28,7 @@ class EnvironmentsScreen extends ConsumerStatefulWidget {
 
 class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
   String? _states;
+  String? _search;
 
   static const _stateOptions = [
     (null, 'All'),
@@ -36,13 +38,29 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filter = (project: widget.projectId, states: _states);
+    final filter = (
+      project: widget.projectId,
+      states: _states,
+      search: _search,
+    );
     final list = ref.watch(environmentsProvider(filter));
     final notifier = ref.read(environmentsProvider(filter).notifier);
     final colors = context.colors;
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search environments',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             Insets.md,

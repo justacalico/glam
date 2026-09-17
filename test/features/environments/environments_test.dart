@@ -226,7 +226,7 @@ void main() {
       adapter.get('/projects/42/environments', fixtureJson('environments'));
 
       final state = await container.read(
-        environmentsProvider((project: 42, states: null)).future,
+        environmentsProvider((project: 42, states: null, search: null)).future,
       );
 
       expect(state.items, hasLength(2));
@@ -237,10 +237,24 @@ void main() {
       adapter.get('/projects/42/environments', fixtureJson('environments'));
 
       await container.read(
-        environmentsProvider((project: 42, states: 'stopped')).future,
+        environmentsProvider(
+          (project: 42, states: 'stopped', search: null),
+        ).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['states'], 'stopped');
+    });
+
+    test('environmentsProvider forwards the search filter', () async {
+      adapter.get('/projects/42/environments', fixtureJson('environments'));
+
+      await container.read(
+        environmentsProvider(
+          (project: 42, states: null, search: 'prod'),
+        ).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['search'], 'prod');
     });
 
     test('environmentProvider loads one env', () async {
