@@ -471,6 +471,37 @@ void main() {
       expect(events.single.user?.username, 'jane');
     });
 
+    test('milestoneEvents and labelEvents decode entries', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/merge_requests/7/resource_milestone_events', [
+          {
+            'id': 1,
+            'action': 'add',
+            'milestone': {'id': 8, 'title': 'v1.0'},
+            'user': {'id': 5, 'username': 'jane', 'name': 'Jane'},
+            'created_at': '2024-05-01T10:00:00.000Z',
+          },
+        ])
+        ..get('/projects/42/merge_requests/7/resource_label_events', [
+          {
+            'id': 2,
+            'action': 'add',
+            'label': {'id': 4, 'name': 'urgent', 'color': '#00ff00'},
+            'user': {'id': 6, 'username': 'bob', 'name': 'Bob'},
+            'created_at': '2024-05-02T10:00:00.000Z',
+          },
+        ]);
+      final repo = MergeRequestsRepository(client);
+
+      final milestones = await repo.milestoneEvents(42, 7);
+      final labels = await repo.labelEvents(42, 7);
+
+      expect(milestones.single.milestoneTitle, 'v1.0');
+      expect(labels.single.labelName, 'urgent');
+      expect(labels.single.user?.username, 'bob');
+    });
+
     test('relatedMergeRequests decodes related MRs', () async {
       final (client, adapter) = testClient();
       adapter.get(

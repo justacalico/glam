@@ -355,6 +355,40 @@ void main() {
     expect(events.first.createdAt, isNotNull);
   });
 
+  test('milestoneEvents and labelEvents decode entries', () async {
+    final (client, adapter) = testClient();
+    adapter
+      ..get('/projects/42/issues/12/resource_milestone_events', [
+        {
+          'id': 1,
+          'action': 'add',
+          'milestone': {'id': 8, 'title': 'v1.0'},
+          'user': {'id': 5, 'username': 'jane', 'name': 'Jane'},
+          'created_at': '2024-05-01T10:00:00.000Z',
+        },
+      ])
+      ..get('/projects/42/issues/12/resource_label_events', [
+        {
+          'id': 2,
+          'action': 'remove',
+          'label': {'id': 4, 'name': 'bug', 'color': '#ff0000'},
+          'user': {'id': 6, 'username': 'bob', 'name': 'Bob'},
+          'created_at': '2024-05-02T10:00:00.000Z',
+        },
+      ]);
+    final repo = IssuesRepository(client);
+
+    final milestones = await repo.milestoneEvents(42, 12);
+    final labels = await repo.labelEvents(42, 12);
+
+    expect(milestones.single.action, 'add');
+    expect(milestones.single.milestoneTitle, 'v1.0');
+    expect(milestones.single.user?.username, 'jane');
+    expect(labels.single.action, 'remove');
+    expect(labels.single.labelName, 'bug');
+    expect(labels.single.labelColor, '#ff0000');
+  });
+
   group('Issue model', () {
     test('closed issue parses closed_by and confidentiality', () {
       final closed = Issue.fromJson(

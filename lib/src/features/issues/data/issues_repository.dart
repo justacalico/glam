@@ -2,6 +2,8 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/core/models/resource_label_event.dart';
+import 'package:glam/src/core/models/resource_milestone_event.dart';
 import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
@@ -379,6 +381,26 @@ class IssuesRepository {
     return _client.getAll(
       '${_p(projectId)}/issues/$iid/resource_state_events',
       decoder: (j) => ResourceStateEvent.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Milestone add/remove history (`/issues/:iid/resource_milestone_events`).
+  Future<List<ResourceMilestoneEvent>> milestoneEvents(
+    Object projectId,
+    int iid,
+  ) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/resource_milestone_events',
+      decoder: (j) =>
+          ResourceMilestoneEvent.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Label add/remove history (`/issues/:iid/resource_label_events`).
+  Future<List<ResourceLabelEvent>> labelEvents(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/resource_label_events',
+      decoder: (j) => ResourceLabelEvent.fromJson(j! as Map<String, dynamic>),
     );
   }
 }

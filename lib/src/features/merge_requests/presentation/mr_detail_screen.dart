@@ -167,7 +167,13 @@ class _OverviewTab extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: Insets.sm),
-                StateEventsRow(events: ref.watch(mrStateEventsProvider(loc))),
+                StateEventsRow(
+                  events: ref.watch(mrStateEventsProvider(loc)),
+                  milestoneEvents: ref.watch(
+                    mrMilestoneEventsProvider(loc),
+                  ),
+                  labelEvents: ref.watch(mrLabelEventsProvider(loc)),
+                ),
                 const SizedBox(height: Insets.sm),
                 threads.when(
                   loading: () => const Padding(
