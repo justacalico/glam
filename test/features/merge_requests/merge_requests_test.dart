@@ -414,6 +414,17 @@ void main() {
       expect(issues.first.iid, 12);
     });
 
+    test('rawDiff returns patch text', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/raw_diffs',
+        'diff --git a/x b/x\n+line',
+      );
+      final repo = MergeRequestsRepository(client);
+
+      expect(await repo.rawDiff(42, 7), contains('diff --git'));
+    });
+
     test('draft notes CRUD and publish hit their paths', () async {
       final (client, adapter) = testClient();
       final draft = (fixtureJson('draft_notes') as List).first;

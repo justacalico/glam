@@ -252,6 +252,11 @@ class MergeRequestsRepository {
     );
   }
 
+  /// Plain-text patch for the whole MR (`/raw_diffs`).
+  Future<String> rawDiff(Object projectId, int iid) {
+    return _client.getRaw('${_p(projectId)}/merge_requests/$iid/raw_diffs');
+  }
+
   /// Cancels a scheduled merge-when-pipeline-succeeds.
   Future<void> cancelAutoMerge(Object projectId, int iid) {
     return _client.post(
