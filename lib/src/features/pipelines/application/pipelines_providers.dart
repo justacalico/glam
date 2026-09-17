@@ -58,6 +58,24 @@ final pipelineTestReportProvider =
       }
     });
 
+/// Variables a pipeline ran with; empty when it had none.
+final pipelineVariablesProvider =
+    FutureProvider.family<List<ScheduleVariable>, PipelineRef>((
+      ref,
+      loc,
+    ) async {
+      try {
+        return await ref
+            .watch(pipelinesRepositoryProvider)
+            .pipelineVariables(loc.project, loc.id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
+
 final pipelineJobsProvider =
     AsyncNotifierProvider.family<
       PipelineJobsNotifier,

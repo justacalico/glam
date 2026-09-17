@@ -15,6 +15,7 @@ import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 
 /// Pipeline detail: meta header plus jobs grouped by stage, with
 /// retry/cancel actions. A Tests view appears when the pipeline
@@ -34,7 +35,7 @@ class PipelineDetailScreen extends ConsumerStatefulWidget {
       _PipelineDetailScreenState();
 }
 
-enum _PipelineView { stages, tests }
+enum _PipelineView { stages, tests, variables }
 
 class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
   _PipelineView _view = _PipelineView.stages;
@@ -46,7 +47,14 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
     final pipeline = ref.watch(pipelineProvider(_loc));
     final jobs = ref.watch(pipelineJobsProvider(_loc));
     final report = ref.watch(pipelineTestReportProvider(_loc));
+    final variables = ref.watch(pipelineVariablesProvider(_loc));
     final hasReport = !(report.value?.isEmpty ?? true);
+    final hasVariables = variables.value?.isNotEmpty ?? false;
+    final view = switch (_view) {
+      _PipelineView.tests when !hasReport => _PipelineView.stages,
+      _PipelineView.variables when !hasVariables => _PipelineView.stages,
+      _ => _view,
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -86,7 +94,7 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
         data: (p) => Column(
           children: [
             _PipelineHeader(pipeline: p),
-            if (hasReport)
+            if (hasReport || hasVariables)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   Insets.lg,
@@ -97,26 +105,35 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<_PipelineView>(
-                    segments: const [
-                      ButtonSegment(
+                    segments: [
+                      const ButtonSegment(
                         value: _PipelineView.stages,
                         label: Text('Stages'),
                         icon: Icon(Icons.view_list_outlined, size: 16),
                       ),
-                      ButtonSegment(
-                        value: _PipelineView.tests,
-                        label: Text('Tests'),
-                        icon: Icon(Icons.science_outlined, size: 16),
-                      ),
+                      if (hasReport)
+                        const ButtonSegment(
+                          value: _PipelineView.tests,
+                          label: Text('Tests'),
+                          icon: Icon(Icons.science_outlined, size: 16),
+                        ),
+                      if (hasVariables)
+                        const ButtonSegment(
+                          value: _PipelineView.variables,
+                          label: Text('Variables'),
+                          icon: Icon(Icons.tune, size: 16),
+                        ),
                     ],
-                    selected: {_view},
+                    selected: {view},
                     onSelectionChanged: (s) => setState(() => _view = s.first),
                   ),
                 ),
               ),
             Expanded(
-              child: _view == _PipelineView.tests && hasReport
+              child: view == _PipelineView.tests
                   ? _TestReportView(loc: _loc)
+                  : view == _PipelineView.variables
+                  ? _VariablesView(loc: _loc)
                   : jobs.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
@@ -465,6 +482,70 @@ class _TestReportView extends ConsumerWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Key/value rows for the variables a pipeline ran with.
+class _VariablesView extends ConsumerWidget {
+  const _VariablesView({required this.loc});
+
+  final PipelineRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final variables = ref.watch(pipelineVariablesProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return AsyncValueWidget<List<ScheduleVariable>>(
+      value: variables,
+      onRetry: () => ref.invalidate(pipelineVariablesProvider(loc)),
+      data: (items) => items.isEmpty
+          ? const EmptyState(
+              icon: Icons.tune,
+              title: 'No variables',
+              message: 'This pipeline ran without extra variables.',
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(Insets.lg),
+              itemCount: items.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, i) {
+                final v = items[i];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              v.key,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                            if (v.value.isNotEmpty)
+                              Text(
+                                v.value,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colors.inkFaint,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (v.variableType != 'env_var')
+                        Text(v.variableType, style: theme.textTheme.labelSmall),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }
