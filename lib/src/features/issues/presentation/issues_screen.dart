@@ -208,7 +208,13 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
     final filter = (project: widget.projectId, state: _state, search: null);
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
+    final stats = ref.watch(projectIssueStatsProvider(widget.projectId)).value;
     const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
+    final counts = {
+      'opened': stats?.opened,
+      'closed': stats?.closed,
+      null: stats?.all,
+    };
 
     return Column(
       children: [
@@ -223,7 +229,11 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
             children: [
               for (final e in states.entries) ...[
                 ChoiceChip(
-                  label: Text(e.value),
+                  label: Text(
+                    counts[e.key] != null
+                        ? '${e.value} ${counts[e.key]}'
+                        : e.value,
+                  ),
                   selected: _state == e.key,
                   onSelected: (_) => setState(() => _state = e.key),
                   showCheckmark: false,

@@ -5,6 +5,7 @@ import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/issues/domain/issue_statistics.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 /// Issue list filter for the global `/issues` endpoint.
@@ -73,6 +74,14 @@ class IssuesRepository {
       page: page,
       perPage: perPage,
       decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Open/closed counts for the project (`/issues_statistics`).
+  Future<IssueStatistics> projectIssuesStatistics(Object projectId) {
+    return _client.get(
+      '${_p(projectId)}/issues_statistics',
+      decoder: (j) => IssueStatistics.fromJson(j! as Map<String, dynamic>),
     );
   }
 

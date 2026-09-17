@@ -241,6 +241,52 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
     }
   }
 
+  Future<void> _showEvidence() async {
+    try {
+      final ev = await ref
+          .read(repositoryRepositoryProvider)
+          .releaseEvidence(widget.projectId, widget.release.tagName);
+      if (!mounted) {
+        return;
+      }
+      unawaited(
+        showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Evidence · ${widget.release.tagName}'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('SHA: ${ev.sha ?? '—'}'),
+                const SizedBox(height: Insets.sm),
+                Text('File: ${ev.filepath ?? '—'}'),
+                const SizedBox(height: Insets.sm),
+                Text('Collected: ${Format.dateTime(ev.collectedAt)}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.statusCode == 404 ? 'No evidence collected' : e.message,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -301,11 +347,14 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                     icon: Icon(Icons.more_vert, color: colors.inkFaint),
                     itemBuilder: (context) => const [
                       PopupMenuItem(value: 'edit', child: Text('Edit')),
+                      PopupMenuItem(value: 'evidence', child: Text('Evidence')),
                       PopupMenuItem(value: 'delete', child: Text('Delete')),
                     ],
                     onSelected: (v) {
                       if (v == 'edit') {
                         unawaited(_showEdit());
+                      } else if (v == 'evidence') {
+                        unawaited(_showEvidence());
                       } else if (v == 'delete') {
                         unawaited(_confirmDelete());
                       }

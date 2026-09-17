@@ -634,6 +634,28 @@ class CompareResult extends Equatable {
   List<Object?> get props => [commits, diffs, compareTimeout, compareSameRef];
 }
 
+/// Evidence snapshot collected for a release
+/// (`/releases/:tag/evidence`).
+class ReleaseEvidence extends Equatable {
+  const ReleaseEvidence({this.sha, this.filepath, this.collectedAt});
+
+  factory ReleaseEvidence.fromJson(Map<String, dynamic> json) =>
+      ReleaseEvidence(
+        sha: json['sha'] as String?,
+        filepath: json['filepath'] as String?,
+        collectedAt: json['collected_at'] == null
+            ? null
+            : DateTime.tryParse(json['collected_at'] as String),
+      );
+
+  final String? sha;
+  final String? filepath;
+  final DateTime? collectedAt;
+
+  @override
+  List<Object?> get props => [sha, filepath, collectedAt];
+}
+
 /// A `git blame` hunk: a commit plus the lines it last touched.
 class BlameHunk extends Equatable {
   const BlameHunk({required this.commit, required this.lines});
