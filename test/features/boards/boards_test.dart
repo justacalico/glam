@@ -37,9 +37,9 @@ void main() {
         ..get('/projects/42/boards/5/lists/11/issues', fixtureJson('issues'));
       final repo = BoardsRepository(client);
 
-      final boards = await repo.boards(42);
-      final lists = await repo.lists(42, 5);
-      final issues = await repo.listIssues(42, 5, 11);
+      final boards = await repo.boards(42, isProject: true);
+      final lists = await repo.lists(42, 5, isProject: true);
+      final issues = await repo.listIssues(42, 5, 11, isProject: true);
 
       expect(boards, hasLength(2));
       expect(lists, hasLength(3));
@@ -54,7 +54,7 @@ void main() {
       );
       final repo = BoardsRepository(client);
 
-      await repo.moveIssue(42, 5, 11, 88, toListId: 12);
+      await repo.moveIssue(42, 5, 11, 88, isProject: true, toListId: 12);
 
       final req = adapter
           .requestsTo('PUT', '/projects/42/boards/5/lists/11/issues/88')
@@ -73,6 +73,7 @@ void main() {
 
       await repo.createBoard(
         42,
+        isProject: true,
         name: 'Sprint board',
         milestoneId: 61,
         labels: const ['bug', 'frontend'],
@@ -80,12 +81,13 @@ void main() {
       await repo.updateBoard(
         42,
         5,
+        isProject: true,
         name: 'Renamed',
         milestoneId: -1,
         labels: const [],
         weight: 3,
       );
-      await repo.deleteBoard(42, 5);
+      await repo.deleteBoard(42, 5, isProject: true);
 
       final post = adapter.requestsTo('POST', '/projects/42/boards').single;
       expect((post.data as Map)['name'], 'Sprint board');
@@ -112,8 +114,8 @@ void main() {
         ..delete('/projects/42/boards/5/lists/11');
       final repo = BoardsRepository(client);
 
-      await repo.createList(42, 5, labelId: 9);
-      await repo.deleteList(42, 5, 11);
+      await repo.createList(42, 5, isProject: true, labelId: 9);
+      await repo.deleteList(42, 5, 11, isProject: true);
 
       final post = adapter
           .requestsTo('POST', '/projects/42/boards/5/lists')
@@ -121,6 +123,23 @@ void main() {
       expect((post.data as Map)['label_id'], 9);
       expect(
         adapter.requestsTo('DELETE', '/projects/42/boards/5/lists/11'),
+        hasLength(1),
+      );
+    });
+
+    test('group scope hits the /groups paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/boards', fixtureJson('boards'))
+        ..get('/groups/9/boards/5/lists', fixtureJson('board_lists'));
+      final repo = BoardsRepository(client);
+
+      await repo.boards(9, isProject: false);
+      await repo.lists(9, 5, isProject: false);
+
+      expect(adapter.requestsTo('GET', '/groups/9/boards'), hasLength(1));
+      expect(
+        adapter.requestsTo('GET', '/groups/9/boards/5/lists'),
         hasLength(1),
       );
     });
@@ -139,9 +158,14 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final boards = await container.read(boardsProvider(42).future);
+      final boards = await container.read(
+        boardsProvider((id: 42, isProject: true)).future,
+      );
       final lists = await container.read(
-        boardListsProvider((projectId: 42, boardId: 5)).future,
+        boardListsProvider((
+          scope: (id: 42, isProject: true),
+          boardId: 5,
+        )).future,
       );
 
       expect(boards, hasLength(2));

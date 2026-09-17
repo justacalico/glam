@@ -18,27 +18,27 @@ import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
 
-/// Boards tab inside project detail: a board picker plus a horizontal
-/// Kanban view.
-class ProjectBoardsTab extends ConsumerStatefulWidget {
-  const ProjectBoardsTab({required this.projectId, super.key});
+/// Boards tab inside project or group detail: a board picker plus a
+/// horizontal Kanban view.
+class BoardsTab extends ConsumerStatefulWidget {
+  const BoardsTab({required this.scope, super.key});
 
-  final Object projectId;
+  final ContainerScope scope;
 
   @override
-  ConsumerState<ProjectBoardsTab> createState() => _ProjectBoardsTabState();
+  ConsumerState<BoardsTab> createState() => _BoardsTabState();
 }
 
-class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
+class _BoardsTabState extends ConsumerState<BoardsTab> {
   int? _boardId;
 
   @override
   Widget build(BuildContext context) {
-    final boards = ref.watch(boardsProvider(widget.projectId));
+    final boards = ref.watch(boardsProvider(widget.scope));
 
     return AsyncValueWidget(
       value: boards,
-      onRetry: () => ref.invalidate(boardsProvider(widget.projectId)),
+      onRetry: () => ref.invalidate(boardsProvider(widget.scope)),
       data: (items) {
         if (items.isEmpty) {
           return EmptyState(
@@ -109,9 +109,7 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
               ),
             ),
             Expanded(
-              child: _Kanban(
-                loc: (projectId: widget.projectId, boardId: board.id),
-              ),
+              child: _Kanban(loc: (scope: widget.scope, boardId: board.id)),
             ),
           ],
         );
@@ -122,8 +120,7 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
   Future<void> _editBoard(Board? existing) async {
     final draft = await showDialog<_BoardDraft>(
       context: context,
-      builder: (_) =>
-          _BoardDialog(projectId: widget.projectId, existing: existing),
+      builder: (_) => _BoardDialog(scope: widget.scope, existing: existing),
     );
     if (draft == null || !mounted) {
       return;
@@ -132,22 +129,24 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
       final repo = ref.read(boardsRepositoryProvider);
       final board = existing == null
           ? await repo.createBoard(
-              widget.projectId,
+              widget.scope.id,
+              isProject: widget.scope.isProject,
               name: draft.name,
               milestoneId: draft.milestoneId,
               labels: draft.labels,
               weight: draft.weight,
             )
           : await repo.updateBoard(
-              widget.projectId,
+              widget.scope.id,
               existing.id,
+              isProject: widget.scope.isProject,
               name: draft.name,
               milestoneId: draft.milestoneId,
               labels: draft.labels,
               weight: draft.weight,
             );
       setState(() => _boardId = board.id);
-      ref.invalidate(boardsProvider(widget.projectId));
+      ref.invalidate(boardsProvider(widget.scope));
     } on ApiException catch (e) {
       if (mounted) {
         _error(e.message);
@@ -179,9 +178,13 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
     try {
       await ref
           .read(boardsRepositoryProvider)
-          .deleteBoard(widget.projectId, board.id);
+          .deleteBoard(
+            widget.scope.id,
+            board.id,
+            isProject: widget.scope.isProject,
+          );
       setState(() => _boardId = null);
-      ref.invalidate(boardsProvider(widget.projectId));
+      ref.invalidate(boardsProvider(widget.scope));
     } on ApiException catch (e) {
       if (mounted) {
         _error(e.message);
@@ -240,7 +243,7 @@ class _Kanban extends ConsumerWidget {
               : _Column(
                   list: sorted[index],
                   loc: (
-                    projectId: loc.projectId,
+                    scope: loc.scope,
                     boardId: loc.boardId,
                     listId: sorted[index].id,
                   ),
@@ -266,7 +269,7 @@ class _AddListTile extends ConsumerWidget {
   ) async {
     final label = await showDialog<Label>(
       context: context,
-      builder: (context) => _LabelPicker(projectId: loc.projectId),
+      builder: (context) => _LabelPicker(scope: loc.scope),
     );
     if (label == null || !context.mounted) {
       return;
@@ -274,7 +277,12 @@ class _AddListTile extends ConsumerWidget {
     try {
       await ref
           .read(boardsRepositoryProvider)
-          .createList(loc.projectId, loc.boardId, labelId: label.id);
+          .createList(
+            loc.scope.id,
+            loc.boardId,
+            isProject: loc.scope.isProject,
+            labelId: label.id,
+          );
       ref.invalidate(boardListsProvider(loc));
     } on ApiException catch (e) {
       if (context.mounted) {
@@ -301,13 +309,13 @@ class _AddListTile extends ConsumerWidget {
 }
 
 class _LabelPicker extends ConsumerWidget {
-  const _LabelPicker({required this.projectId});
+  const _LabelPicker({required this.scope});
 
-  final Object projectId;
+  final ContainerScope scope;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final labels = ref.watch(labelsProvider((id: projectId, isProject: true)));
+    final labels = ref.watch(labelsProvider(scope));
     return AlertDialog(
       title: const Text('Add list'),
       content: SizedBox(
@@ -374,17 +382,18 @@ class _Column extends ConsumerWidget {
     await ref
         .read(boardsRepositoryProvider)
         .moveIssue(
-          loc.projectId,
+          loc.scope.id,
           loc.boardId,
           loc.listId,
           issue.id,
+          isProject: loc.scope.isProject,
           toListId: target.id,
         );
     ref
       ..invalidate(boardIssuesProvider(loc))
       ..invalidate(
         boardIssuesProvider((
-          projectId: loc.projectId,
+          scope: loc.scope,
           boardId: loc.boardId,
           listId: target.id,
         )),
@@ -415,9 +424,14 @@ class _Column extends ConsumerWidget {
     try {
       await ref
           .read(boardsRepositoryProvider)
-          .deleteList(loc.projectId, loc.boardId, loc.listId);
+          .deleteList(
+            loc.scope.id,
+            loc.boardId,
+            loc.listId,
+            isProject: loc.scope.isProject,
+          );
       ref.invalidate(
-        boardListsProvider((projectId: loc.projectId, boardId: loc.boardId)),
+        boardListsProvider((scope: loc.scope, boardId: loc.boardId)),
       );
     } on ApiException catch (e) {
       if (context.mounted) {
@@ -634,9 +648,9 @@ typedef _BoardDraft = ({
 /// Board create/edit dialog: name plus the scope filters GitLab
 /// accepts (milestone, labels, weight).
 class _BoardDialog extends ConsumerStatefulWidget {
-  const _BoardDialog({required this.projectId, this.existing});
+  const _BoardDialog({required this.scope, this.existing});
 
-  final Object projectId;
+  final ContainerScope scope;
   final Board? existing;
 
   @override
@@ -671,10 +685,7 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
   Widget build(BuildContext context) {
     final existing = widget.existing;
     final milestones = ref.watch(
-      milestonesProvider((
-        scope: (id: widget.projectId, isProject: true),
-        state: 'active',
-      )),
+      milestonesProvider((scope: widget.scope, state: 'active')),
     );
 
     return AlertDialog(
