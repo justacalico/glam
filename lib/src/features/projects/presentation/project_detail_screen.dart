@@ -11,6 +11,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
+import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
 import 'package:glam/src/features/environments/presentation/environments_screen.dart';
@@ -97,6 +98,10 @@ class _ProjectBody extends ConsumerWidget {
       (
         label: 'Members',
         builder: () => MembersList(id: project.id, isProject: true),
+      ),
+      (
+        label: 'Activity',
+        builder: () => EventList(feed: (kind: 'project', id: project.id)),
       ),
       (
         label: 'Packages',
