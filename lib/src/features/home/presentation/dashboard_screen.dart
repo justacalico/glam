@@ -48,64 +48,68 @@ class DashboardScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: ListView(
-        padding: Insets.pagePadding,
-        children: [
-          const _BroadcastBanner(),
-          if (user != null) ...[
-            Text(
-              _greeting(),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.inkMuted,
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(myCountsProvider.future).then((_) {}),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: Insets.pagePadding,
+          children: [
+            const _BroadcastBanner(),
+            if (user != null) ...[
+              Text(
+                _greeting(),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.inkMuted,
+                ),
               ),
-            ),
-            Text(user.name, style: theme.textTheme.displaySmall),
-            const SizedBox(height: Insets.xl),
-          ],
-          _ShortcutGrid(
-            items: [
-              _Shortcut(
-                icon: Icons.folder_outlined,
-                label: 'Projects',
-                subtitle: 'Browse your work',
-                onTap: () => context.go(Routes.projects),
-              ),
-              _Shortcut(
-                icon: Icons.merge,
-                label: 'Merge requests',
-                subtitle: 'Review and merge',
-                count: counts?.mrBadge,
-                onTap: () => context.go(Routes.mergeRequests),
-              ),
-              _Shortcut(
-                icon: Icons.adjust,
-                label: 'Issues',
-                subtitle: 'Assigned to you',
-                count: counts?.assignedIssues,
-                onTap: () => context.go(Routes.issues),
-              ),
-              _Shortcut(
-                icon: Icons.checklist,
-                label: 'To-dos',
-                subtitle: 'Your task list',
-                count: counts?.todos,
-                onTap: () => context.go(Routes.todos),
-              ),
-              _Shortcut(
-                icon: Icons.search,
-                label: 'Search',
-                subtitle: 'Across the instance',
-                onTap: () => context.go(Routes.search),
-              ),
-              _Shortcut(
-                icon: Icons.history,
-                label: 'Activity',
-                subtitle: 'What happened lately',
-                onTap: () => context.go(Routes.activity),
-              ),
+              Text(user.name, style: theme.textTheme.displaySmall),
+              const SizedBox(height: Insets.xl),
             ],
-          ),
-        ],
+            _ShortcutGrid(
+              items: [
+                _Shortcut(
+                  icon: Icons.folder_outlined,
+                  label: 'Projects',
+                  subtitle: 'Browse your work',
+                  onTap: () => context.go(Routes.projects),
+                ),
+                _Shortcut(
+                  icon: Icons.merge,
+                  label: 'Merge requests',
+                  subtitle: 'Review and merge',
+                  count: counts?.mrBadge,
+                  onTap: () => context.go(Routes.mergeRequests),
+                ),
+                _Shortcut(
+                  icon: Icons.adjust,
+                  label: 'Issues',
+                  subtitle: 'Assigned to you',
+                  count: counts?.assignedIssues,
+                  onTap: () => context.go(Routes.issues),
+                ),
+                _Shortcut(
+                  icon: Icons.checklist,
+                  label: 'To-dos',
+                  subtitle: 'Your task list',
+                  count: counts?.todos,
+                  onTap: () => context.go(Routes.todos),
+                ),
+                _Shortcut(
+                  icon: Icons.search,
+                  label: 'Search',
+                  subtitle: 'Across the instance',
+                  onTap: () => context.go(Routes.search),
+                ),
+                _Shortcut(
+                  icon: Icons.history,
+                  label: 'Activity',
+                  subtitle: 'What happened lately',
+                  onTap: () => context.go(Routes.activity),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -228,80 +232,83 @@ class _ShortcutGrid extends StatelessWidget {
           spacing: Insets.md,
           runSpacing: Insets.md,
           children: [
-            for (final item in items)
-              SizedBox(
-                width:
-                    (constraints.maxWidth - (columns - 1) * Insets.md) /
-                    columns,
-                child: Material(
-                  color: colors.surface,
-                  borderRadius: Radii.borderMd,
-                  child: InkWell(
-                    onTap: item.onTap,
+            for (final (i, item) in items.indexed)
+              _StaggerIn(
+                index: i,
+                child: SizedBox(
+                  width:
+                      (constraints.maxWidth - (columns - 1) * Insets.md) /
+                      columns,
+                  child: Material(
+                    color: colors.surface,
                     borderRadius: Radii.borderMd,
-                    child: Container(
-                      padding: const EdgeInsets.all(Insets.lg),
-                      decoration: BoxDecoration(
-                        borderRadius: Radii.borderMd,
-                        border: Border.all(color: colors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: colors.accentSoft,
-                              borderRadius: Radii.borderMd,
-                            ),
-                            child: Icon(
-                              item.icon,
-                              color: colors.accent,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: Insets.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.label,
-                                  style: theme.textTheme.titleMedium,
-                                ),
-                                Text(
-                                  item.subtitle,
-                                  style: theme.textTheme.bodySmall,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (item.count != null && item.count! > 0)
+                    child: InkWell(
+                      onTap: item.onTap,
+                      borderRadius: Radii.borderMd,
+                      child: Container(
+                        padding: const EdgeInsets.all(Insets.lg),
+                        decoration: BoxDecoration(
+                          borderRadius: Radii.borderMd,
+                          border: Border.all(color: colors.border),
+                        ),
+                        child: Row(
+                          children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Insets.sm,
-                                vertical: 2,
-                              ),
+                              width: 40,
+                              height: 40,
                               decoration: BoxDecoration(
                                 color: colors.accentSoft,
-                                borderRadius: Radii.borderPill,
+                                borderRadius: Radii.borderMd,
                               ),
-                              child: Text(
-                                '${item.count}',
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colors.accent,
-                                ),
+                              child: Icon(
+                                item.icon,
+                                color: colors.accent,
+                                size: 20,
                               ),
                             ),
-                          const SizedBox(width: Insets.xs),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 18,
-                            color: colors.inkFaint,
-                          ),
-                        ],
+                            const SizedBox(width: Insets.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.label,
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    item.subtitle,
+                                    style: theme.textTheme.bodySmall,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (item.count != null && item.count! > 0)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Insets.sm,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.accentSoft,
+                                  borderRadius: Radii.borderPill,
+                                ),
+                                child: Text(
+                                  '${item.count}',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colors.accent,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(width: Insets.xs),
+                            Icon(
+                              Icons.chevron_right,
+                              size: 18,
+                              color: colors.inkFaint,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -310,6 +317,31 @@ class _ShortcutGrid extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Fades and rises a tile in on first load, offset by its grid index.
+class _StaggerIn extends StatelessWidget {
+  const _StaggerIn({required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Motion.medium + Motion.fast * index,
+      curve: Motion.easeOut,
+      child: child,
+      builder: (context, t, child) => Opacity(
+        opacity: t,
+        child: Transform.translate(
+          offset: Offset(0, 10 * (1 - t)),
+          child: child,
+        ),
+      ),
     );
   }
 }

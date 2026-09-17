@@ -21,6 +21,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Commit detail: message, author, stats, and the per-file diffs.
 class CommitDetailScreen extends ConsumerWidget {
@@ -276,7 +277,7 @@ class _Meta extends StatelessWidget {
               child: Text(
                 commit.message!,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                 ),
               ),
             ),
@@ -304,7 +305,7 @@ class _Meta extends StatelessWidget {
                 Text(
                   commit.id,
                   style: const TextStyle(
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: GlamFonts.mono,
                     fontSize: 12,
                   ),
                 ),
@@ -474,7 +475,7 @@ class _CommitRefs extends ConsumerWidget {
                       Text(
                         r.name,
                         style: const TextStyle(
-                          fontFamily: 'JetBrains Mono',
+                          fontFamily: GlamFonts.mono,
                           fontSize: 11,
                         ),
                       ),
@@ -700,7 +701,7 @@ class _CommentTile extends StatelessWidget {
                     child: Text(
                       comment.anchor!,
                       style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                         fontSize: 10.5,
                       ),
                       overflow: TextOverflow.ellipsis,

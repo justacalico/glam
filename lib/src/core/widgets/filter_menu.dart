@@ -42,10 +42,12 @@ class FilterMenu extends StatelessWidget {
             child: Text(labels[o] ?? o),
           ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Insets.sm,
-          vertical: Insets.sm,
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: Insets.md),
+        decoration: BoxDecoration(
+          color: colors.surfaceMuted,
+          borderRadius: Radii.borderMd,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -54,7 +56,8 @@ class FilterMenu extends StatelessWidget {
               labels[current] ?? current ?? title,
               style: Theme.of(context).textTheme.labelLarge,
             ),
-            Icon(Icons.arrow_drop_down, color: colors.inkMuted),
+            const SizedBox(width: Insets.xs),
+            Icon(Icons.expand_more, size: 16, color: colors.inkMuted),
           ],
         ),
       ),

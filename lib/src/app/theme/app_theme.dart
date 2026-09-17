@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
@@ -46,7 +47,9 @@ abstract final class GlamTheme {
         backgroundColor: colors.canvas,
         foregroundColor: colors.ink,
         elevation: 0,
-        scrolledUnderElevation: 0,
+        scrolledUnderElevation: 0.5,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: colors.border,
         centerTitle: false,
         titleTextStyle: textTheme.headlineSmall,
       ),
@@ -176,10 +179,19 @@ abstract final class GlamTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colors.surface,
         indicatorColor: colors.accentSoft,
-        labelTextStyle: WidgetStatePropertyAll(textTheme.labelMedium),
-        iconTheme: WidgetStatePropertyAll(
-          IconThemeData(color: colors.inkMuted),
-        ),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final style = textTheme.labelMedium!;
+          return states.contains(WidgetState.selected)
+              ? style.copyWith(color: colors.ink)
+              : style.copyWith(color: colors.inkMuted);
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          return IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? colors.accent
+                : colors.inkMuted,
+          );
+        }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: colors.surface,
@@ -230,6 +242,27 @@ abstract final class GlamTheme {
             return Colors.transparent;
           }),
         ),
+      ),
+      scrollbarTheme: ScrollbarThemeData(
+        thumbVisibility: const WidgetStatePropertyAll(false),
+        interactive: true,
+        radius: const Radius.circular(Radii.pill),
+        thickness: const WidgetStatePropertyAll(4),
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          return states.contains(WidgetState.hovered) ||
+                  states.contains(WidgetState.dragged)
+              ? colors.inkMuted
+              : colors.inkFaint;
+        }),
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+        },
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
     );

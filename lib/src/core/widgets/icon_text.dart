@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Small `icon + label` row used for metadata (author, dates, counts).
 class IconText extends StatelessWidget {
@@ -24,11 +25,7 @@ class IconText extends StatelessWidget {
     final colors = context.colors;
     final effective = color ?? colors.inkMuted;
     final style = mono
-        ? TextStyle(
-            fontFamily: 'JetBrains Mono',
-            fontSize: 12,
-            color: effective,
-          )
+        ? TextStyle(fontFamily: GlamFonts.mono, fontSize: 12, color: effective)
         : Theme.of(context).textTheme.labelMedium!.copyWith(color: effective);
     return Row(
       mainAxisSize: MainAxisSize.min,

@@ -28,7 +28,10 @@ class ProjectTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProjectAvatar(project: project),
+            Hero(
+              tag: 'project-avatar-${project.id}',
+              child: _ProjectAvatar(project: project),
+            ),
             const SizedBox(width: Insets.md),
             Expanded(
               child: Column(

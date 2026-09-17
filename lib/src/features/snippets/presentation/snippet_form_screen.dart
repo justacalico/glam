@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Create/edit form for a snippet. Dialog on wide screens, sheet on
 /// phones.
@@ -201,7 +202,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
             controller: _content,
             minLines: 8,
             maxLines: 16,
-            style: const TextStyle(fontFamily: 'JetBrains Mono'),
+            style: const TextStyle(fontFamily: GlamFonts.mono),
             decoration: const InputDecoration(
               labelText: 'Content',
               alignLabelWithHint: true,

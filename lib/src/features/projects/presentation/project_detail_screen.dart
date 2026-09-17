@@ -74,6 +74,14 @@ class _ProjectBody extends ConsumerWidget {
       length: tabs.length,
       child: NestedScrollView(
         headerSliverBuilder: (context, _) => [
+          SliverAppBar(
+            pinned: true,
+            title: Text(
+              project.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           SliverToBoxAdapter(child: _ProjectHeader(project: project)),
           SliverPersistentHeader(
             pinned: true,
@@ -218,13 +226,18 @@ class _ProjectHeader extends ConsumerWidget {
     final colors = context.colors;
     final theme = Theme.of(context);
     return Padding(
-      padding: Insets.pagePadding,
+      padding: const EdgeInsets.fromLTRB(
+        Insets.lg,
+        Insets.xs,
+        Insets.lg,
+        Insets.sm,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              _avatar(colors),
+              Hero(tag: 'project-avatar-${project.id}', child: _avatar(colors)),
               const SizedBox(width: Insets.md),
               Expanded(
                 child: Column(
@@ -235,15 +248,25 @@ class _ProjectHeader extends ConsumerWidget {
                         project.namespacePath!,
                         style: theme.textTheme.bodySmall,
                       ),
-                    Text(project.name, style: theme.textTheme.headlineMedium),
+                    Text(
+                      project.name,
+                      style: theme.textTheme.headlineMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
             ],
           ),
           if (project.description?.isNotEmpty ?? false) ...[
-            const SizedBox(height: Insets.md),
-            Text(project.description!, style: theme.textTheme.bodyMedium),
+            const SizedBox(height: Insets.sm),
+            Text(
+              project.description!,
+              style: theme.textTheme.bodyMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
           const SizedBox(height: Insets.md),
           Wrap(
@@ -506,7 +529,23 @@ class _Stat extends StatelessWidget {
         ),
       ],
     );
-    return onTap == null ? row : GestureDetector(onTap: onTap, child: row);
+    if (onTap == null) {
+      return row;
+    }
+    return Tooltip(
+      message: label.isEmpty ? value : label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: Radii.borderSm,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Insets.xs,
+            vertical: Insets.xxs,
+          ),
+          child: row,
+        ),
+      ),
+    );
   }
 }
 
@@ -523,21 +562,31 @@ class _LatestPipelineStat extends ConsumerWidget {
     if (pipeline == null) {
       return const SizedBox.shrink();
     }
-    return GestureDetector(
-      onTap: () => unawaited(
-        context.push(Routes.projectPipeline(projectId, pipeline.id)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.account_tree_outlined,
-            size: 15,
-            color: context.colors.inkMuted,
+    return Tooltip(
+      message: 'Latest pipeline',
+      child: InkWell(
+        onTap: () => unawaited(
+          context.push(Routes.projectPipeline(projectId, pipeline.id)),
+        ),
+        borderRadius: Radii.borderSm,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Insets.xs,
+            vertical: Insets.xxs,
           ),
-          const SizedBox(width: Insets.xs),
-          StateChip.pipeline(pipeline.status),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.account_tree_outlined,
+                size: 15,
+                color: context.colors.inkMuted,
+              ),
+              const SizedBox(width: Insets.xs),
+              StateChip.pipeline(pipeline.status),
+            ],
+          ),
+        ),
       ),
     );
   }

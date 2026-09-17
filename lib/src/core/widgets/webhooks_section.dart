@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Editable fields from the webhook dialog.
 typedef HookDraft = ({
@@ -179,7 +180,7 @@ class _HookTile extends StatelessWidget {
         hook.url,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
       ),
       subtitle: Text(hook.eventLabels.join(', ')),
       trailing: Row(

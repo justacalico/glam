@@ -10,6 +10,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Tags inside one container repository.
 class RegistryTagsScreen extends ConsumerStatefulWidget {
@@ -75,7 +76,7 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
                     title: Text(
                       t.name,
                       style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                         fontSize: 12.5,
                       ),
                     ),

@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Full-screen file viewer: rendered markdown for docs, highlighted code
 /// for everything else, with copy/raw actions.
@@ -52,7 +53,7 @@ class FileViewerScreen extends ConsumerWidget {
               path,
               style: Theme.of(
                 context,
-              ).textTheme.labelSmall?.copyWith(fontFamily: 'JetBrains Mono'),
+              ).textTheme.labelSmall?.copyWith(fontFamily: GlamFonts.mono),
               overflow: TextOverflow.ellipsis,
             ),
           ],

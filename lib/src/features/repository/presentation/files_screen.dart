@@ -14,6 +14,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Repository file browser: folder listing with a breadcrumb and a
 /// branch/ref selector.
@@ -260,7 +261,7 @@ class _RefPicker extends ConsumerWidget {
             Text(
               currentRef ?? '—',
               style: TextStyle(
-                fontFamily: 'JetBrains Mono',
+                fontFamily: GlamFonts.mono,
                 fontSize: 12,
                 color: colors.ink,
               ),
@@ -285,7 +286,7 @@ class _Crumb extends StatelessWidget {
     final colors = context.colors;
     final style = Theme.of(context).textTheme.labelMedium!.copyWith(
       color: last ? colors.ink : colors.inkMuted,
-      fontFamily: 'JetBrains Mono',
+      fontFamily: GlamFonts.mono,
     );
     return Row(
       mainAxisSize: MainAxisSize.min,

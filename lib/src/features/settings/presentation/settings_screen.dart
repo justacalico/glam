@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/app/theme/theme_controller.dart';
+import 'package:glam/src/core/widgets/section_header.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/presentation/account_sections.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -139,25 +140,10 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            Insets.lg,
-            Insets.lg,
-            Insets.lg,
-            Insets.sm,
-          ),
-          child: Text(
-            label.toUpperCase(),
-            style: Theme.of(context).textTheme.labelSmall!.copyWith(
-              color: colors.inkMuted,
-              letterSpacing: 0.9,
-            ),
-          ),
-        ),
+        SectionHeader(title: label),
         ...children,
       ],
     );

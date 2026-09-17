@@ -12,6 +12,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Project access tokens with create / revoke. The secret is shown
 /// once after creation and never returned again.
@@ -250,10 +251,7 @@ class AccessTokensSection extends ConsumerWidget {
             const SizedBox(height: Insets.sm),
             SelectableText(
               token.token ?? '',
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
             ),
           ],
         ),

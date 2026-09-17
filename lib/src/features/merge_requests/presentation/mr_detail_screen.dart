@@ -40,6 +40,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// MR detail with four tabs: overview (desc + activity), changed
 /// files, the commit list, and pipelines. Merge actions live in a
@@ -283,7 +284,7 @@ class _MrHeader extends StatelessWidget {
                 child: Text(
                   mr.sourceBranch,
                   style: const TextStyle(
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: GlamFonts.mono,
                     fontSize: 12.5,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -300,7 +301,7 @@ class _MrHeader extends StatelessWidget {
               Text(
                 mr.targetBranch,
                 style: TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 12.5,
                   color: colors.inkMuted,
                 ),
@@ -697,10 +698,7 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
           const SizedBox(height: Insets.sm),
           Text(
             '${widget.mr.sourceBranch} → ${widget.mr.targetBranch}',
-            style: const TextStyle(
-              fontFamily: 'JetBrains Mono',
-              fontSize: 12.5,
-            ),
+            style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -1240,7 +1238,7 @@ class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
                 : Text(
                     d.position!.label!,
                     style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 11.5,
                     ),
                   ),
@@ -1377,7 +1375,7 @@ class _ChangeCard extends ConsumerWidget {
                   child: Text(
                     entry.displayPath,
                     style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 12,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -1389,7 +1387,7 @@ class _ChangeCard extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 11.5,
                       color: colors.diffAdd,
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                     ),
                   ),
                   const SizedBox(width: Insets.xs),
@@ -1398,7 +1396,7 @@ class _ChangeCard extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 11.5,
                       color: colors.diffRemove,
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                     ),
                   ),
                 ],

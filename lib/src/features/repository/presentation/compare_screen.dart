@@ -12,6 +12,7 @@ import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Compare two refs: the commits `to` adds over `from` plus the diff.
 /// `from`/`to` arrive via route query params; both are editable here.
@@ -211,7 +212,7 @@ class _RefPicker extends StatelessWidget {
                     r,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 12,
                     ),
                   ),
@@ -276,7 +277,7 @@ class _CompareResult extends ConsumerWidget {
                     const TextSpan(text: 'Merge base '),
                     TextSpan(
                       text: mergeBase.shortId,
-                      style: const TextStyle(fontFamily: 'JetBrains Mono'),
+                      style: const TextStyle(fontFamily: GlamFonts.mono),
                     ),
                     if (mergeBase.title.isNotEmpty)
                       TextSpan(text: ' · ${mergeBase.title}'),

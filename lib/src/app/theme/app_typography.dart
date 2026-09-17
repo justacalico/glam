@@ -71,11 +71,13 @@ abstract final class GlamTypography {
       bodyLarge: body.copyWith(
         fontSize: 15,
         height: 1.5,
+        letterSpacing: -0.1,
         color: scheme.onSurface,
       ),
       bodyMedium: body.copyWith(
         fontSize: 14,
         height: 1.45,
+        letterSpacing: -0.1,
         color: scheme.onSurface,
       ),
       bodySmall: body.copyWith(
@@ -86,6 +88,7 @@ abstract final class GlamTypography {
       labelLarge: body.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.1,
         color: scheme.onSurface,
       ),
       labelMedium: body.copyWith(

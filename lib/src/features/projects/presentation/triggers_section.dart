@@ -12,6 +12,7 @@ import 'package:glam/src/features/pipelines/application/pipelines_providers.dart
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Pipeline trigger tokens plus a CI lint runner. A new trigger's full
 /// token is only shown once, straight from the create response.
@@ -84,7 +85,7 @@ class TriggersSection extends ConsumerWidget {
                                 'never used',
                             ].join(' · '),
                             style: const TextStyle(
-                              fontFamily: 'JetBrains Mono',
+                              fontFamily: GlamFonts.mono,
                               fontSize: 11.5,
                             ),
                           ),
@@ -173,10 +174,7 @@ class TriggersSection extends ConsumerWidget {
             const SizedBox(height: Insets.sm),
             SelectableText(
               t.token!,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 13),
             ),
           ],
         ),
@@ -276,7 +274,7 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
                 maxLines: 10,
                 minLines: 6,
                 style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 12.5,
                 ),
                 decoration: const InputDecoration(

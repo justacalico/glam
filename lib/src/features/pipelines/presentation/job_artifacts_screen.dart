@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Browses a job's artifact archive. Newer GitLab versions list
 /// entries from metadata; older ones fall back to unpacking the zip.
@@ -55,7 +56,7 @@ class JobArtifactsScreen extends ConsumerWidget {
                 title: Text(
                   e.path,
                   style: const TextStyle(
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: GlamFonts.mono,
                     fontSize: 12.5,
                   ),
                 ),
@@ -109,7 +110,7 @@ class _ArtifactSheet extends ConsumerWidget {
                   child: Text(
                     entry.path,
                     style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 12,
                     ),
                     maxLines: 1,
@@ -171,7 +172,7 @@ class _ArtifactSheet extends ConsumerWidget {
                     child: SelectableText(
                       text,
                       style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                         fontSize: 11.5,
                         height: 1.5,
                       ),

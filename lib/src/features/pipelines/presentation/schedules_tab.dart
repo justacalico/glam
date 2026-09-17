@@ -17,6 +17,7 @@ import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Scheduled pipelines for a project — the Schedules half of the
 /// Pipelines tab.
@@ -142,6 +143,7 @@ class _ScheduleTile extends ConsumerWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
+                showDragHandle: true,
                 builder: (_) =>
                     _ScheduleRunsSheet(projectId: projectId, schedule: s),
               ),
@@ -480,7 +482,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                       child: Text(
                         _ref!,
                         style: const TextStyle(
-                          fontFamily: 'JetBrains Mono',
+                          fontFamily: GlamFonts.mono,
                           fontSize: 13,
                         ),
                       ),
@@ -491,7 +493,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                       child: Text(
                         b,
                         style: const TextStyle(
-                          fontFamily: 'JetBrains Mono',
+                          fontFamily: GlamFonts.mono,
                           fontSize: 13,
                         ),
                       ),

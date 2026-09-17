@@ -10,6 +10,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Fields collected by the create dialog.
 typedef DeployTokenDraft = ({
@@ -264,10 +265,7 @@ class DeployTokensSection extends StatelessWidget {
             const SizedBox(height: Insets.sm),
             SelectableText(
               pair,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
             ),
           ],
         ),

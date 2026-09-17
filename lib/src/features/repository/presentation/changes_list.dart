@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/diff_parser.dart';
 import 'package:glam/src/core/widgets/diff_viewer.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// A list of changed files with a +/− summary and expandable per-file diffs.
 /// Shared by commit detail and the compare screen.
@@ -124,7 +125,7 @@ class _FileChangeTileState extends State<_FileChangeTile> {
                     child: Text(
                       change.displayPath,
                       style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                         fontSize: 12,
                       ),
                       overflow: TextOverflow.ellipsis,

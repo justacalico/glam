@@ -19,6 +19,7 @@ import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/pipelines/presentation/schedules_tab.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Pipeline history + schedules for a project — the CI/CD tab.
 class PipelinesScreen extends ConsumerStatefulWidget {
@@ -101,28 +102,45 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
   String? _ref;
   String? _username;
 
-  static const _statuses = [
-    (null, 'All'),
-    ('running', 'Running'),
-    ('pending', 'Pending'),
-    ('success', 'Passed'),
-    ('failed', 'Failed'),
-    ('canceled', 'Canceled'),
-    ('skipped', 'Skipped'),
-    ('manual', 'Manual'),
+  static const _statusValues = [
+    'running',
+    'pending',
+    'success',
+    'failed',
+    'canceled',
+    'skipped',
+    'manual',
   ];
+  static const _statusLabels = {
+    'running': 'Running',
+    'pending': 'Pending',
+    'success': 'Passed',
+    'failed': 'Failed',
+    'canceled': 'Canceled',
+    'skipped': 'Skipped',
+    'manual': 'Manual',
+  };
 
-  static const _sources = [
-    (null, 'Any source'),
-    ('push', 'Push'),
-    ('web', 'Web'),
-    ('schedule', 'Schedule'),
-    ('api', 'API'),
-    ('trigger', 'Trigger'),
-    ('merge_request_event', 'Merge request'),
-    ('pipeline', 'Pipeline'),
-    ('chat', 'Chat'),
+  static const _sourceValues = [
+    'push',
+    'web',
+    'schedule',
+    'api',
+    'trigger',
+    'merge_request_event',
+    'pipeline',
+    'chat',
   ];
+  static const _sourceLabels = {
+    'push': 'Push',
+    'web': 'Web',
+    'schedule': 'Schedule',
+    'api': 'API',
+    'trigger': 'Trigger',
+    'merge_request_event': 'Merge request',
+    'pipeline': 'Pipeline',
+    'chat': 'Chat',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -161,34 +179,39 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
           alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.only(right: Insets.lg),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _FilterMenu(
-                  tooltip: 'Filter by source',
-                  options: _sources,
-                  current: _source,
-                  onSelect: (v) => setState(() => _source = v),
-                ),
-                FilterMenu(
-                  title: 'Ref',
-                  current: _ref,
-                  options: [for (final b in branches) b.name],
-                  onSelect: (v) => setState(() => _ref = v),
-                ),
-                FilterMenu(
-                  title: 'User',
-                  current: _username,
-                  options: [for (final m in members) m.username],
-                  onSelect: (v) => setState(() => _username = v),
-                ),
-                _FilterMenu(
-                  tooltip: 'Filter pipelines',
-                  options: _statuses,
-                  current: _status,
-                  onSelect: (v) => setState(() => _status = v),
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FilterMenu(
+                    title: 'Source',
+                    current: _source,
+                    options: _sourceValues,
+                    labels: _sourceLabels,
+                    onSelect: (v) => setState(() => _source = v),
+                  ),
+                  FilterMenu(
+                    title: 'Ref',
+                    current: _ref,
+                    options: [for (final b in branches) b.name],
+                    onSelect: (v) => setState(() => _ref = v),
+                  ),
+                  FilterMenu(
+                    title: 'User',
+                    current: _username,
+                    options: [for (final m in members) m.username],
+                    onSelect: (v) => setState(() => _username = v),
+                  ),
+                  FilterMenu(
+                    title: 'Status',
+                    current: _status,
+                    options: _statusValues,
+                    labels: _statusLabels,
+                    onSelect: (v) => setState(() => _status = v),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -235,16 +258,24 @@ class _ProjectJobs extends ConsumerStatefulWidget {
 class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
   String? _scope;
 
-  static const _scopes = [
-    (null, 'All'),
-    ('running', 'Running'),
-    ('pending', 'Pending'),
-    ('success', 'Passed'),
-    ('failed', 'Failed'),
-    ('canceled', 'Canceled'),
-    ('skipped', 'Skipped'),
-    ('manual', 'Manual'),
+  static const _scopeValues = [
+    'running',
+    'pending',
+    'success',
+    'failed',
+    'canceled',
+    'skipped',
+    'manual',
   ];
+  static const _scopeLabels = {
+    'running': 'Running',
+    'pending': 'Pending',
+    'success': 'Passed',
+    'failed': 'Failed',
+    'canceled': 'Canceled',
+    'skipped': 'Skipped',
+    'manual': 'Manual',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -257,33 +288,14 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
       children: [
         Align(
           alignment: Alignment.centerRight,
-          child: PopupMenuButton<String?>(
-            tooltip: 'Filter jobs',
-            onSelected: (v) => setState(() => _scope = v),
-            itemBuilder: (context) => [
-              for (final (value, label) in _scopes)
-                CheckedPopupMenuItem(
-                  value: value,
-                  checked: _scope == value,
-                  child: Text(label),
-                ),
-            ],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Insets.lg,
-                vertical: Insets.sm,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _scopes.where((e) => e.$1 == _scope).firstOrNull?.$2 ??
-                        'All',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  Icon(Icons.arrow_drop_down, color: colors.inkMuted),
-                ],
-              ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: Insets.lg),
+            child: FilterMenu(
+              title: 'Scope',
+              current: _scope,
+              options: _scopeValues,
+              labels: _scopeLabels,
+              onSelect: (v) => setState(() => _scope = v),
             ),
           ),
         ),
@@ -392,7 +404,7 @@ class PipelineTile extends StatelessWidget {
                         child: Text(
                           pipeline.ref ?? '',
                           style: const TextStyle(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: GlamFonts.mono,
                             fontSize: 12,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -419,7 +431,7 @@ class PipelineTile extends StatelessWidget {
                       ? pipeline.sha!.substring(0, 8)
                       : pipeline.sha!,
                   style: const TextStyle(
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: GlamFonts.mono,
                     fontSize: 11.5,
                   ),
                 ),
@@ -537,10 +549,7 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
             TextField(
               controller: _content,
               maxLines: 8,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
               decoration: const InputDecoration(
                 hintText: 'stages:\n  - build',
                 border: OutlineInputBorder(),
@@ -590,54 +599,6 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
                   child: Text(w, style: theme.textTheme.bodySmall),
                 ),
             ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Compact (value, label) popup for the runs filter row.
-class _FilterMenu extends StatelessWidget {
-  const _FilterMenu({
-    required this.tooltip,
-    required this.options,
-    required this.current,
-    required this.onSelect,
-  });
-
-  final String tooltip;
-  final List<(String?, String)> options;
-  final String? current;
-  final ValueChanged<String?> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<String?>(
-      tooltip: tooltip,
-      onSelected: onSelect,
-      itemBuilder: (context) => [
-        for (final (value, label) in options)
-          CheckedPopupMenuItem(
-            value: value,
-            checked: current == value,
-            child: Text(label),
-          ),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Insets.sm,
-          vertical: Insets.sm,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              options.where((e) => e.$1 == current).firstOrNull?.$2 ??
-                  options.first.$2,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            Icon(Icons.arrow_drop_down, color: context.colors.inkMuted),
           ],
         ),
       ),

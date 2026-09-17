@@ -82,6 +82,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                 child: Row(
                   children: [
                     Expanded(
+                      flex: 2,
                       child: SearchField(
                         hint: 'Search merge requests',
                         onChanged: (v) => _setFilter(
@@ -99,78 +100,98 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                       ),
                     ),
                     const SizedBox(width: Insets.sm),
-                    _StateMenu(
-                      current: filter.state,
-                      onSelect: (s) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: s,
-                          search: f.search,
-                          wip: f.wip,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: Insets.sm),
-                    FilterMenu(
-                      title: 'Draft',
-                      current: filter.wip,
-                      options: const ['yes', 'no'],
-                      labels: const {'yes': 'Drafts', 'no': 'No drafts'},
-                      onSelect: (w) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          wip: w,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    FilterMenu(
-                      title: 'Activity',
-                      current: filter.updatedDays == null
-                          ? null
-                          : '${filter.updatedDays}',
-                      options: const ['1', '7', '30'],
-                      labels: const {
-                        '1': 'Last 24h',
-                        '7': 'Last week',
-                        '30': 'Last month',
-                      },
-                      onSelect: (v) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          wip: f.wip,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: v == null ? null : int.parse(v),
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    SortMenu(
-                      orderBy: filter.orderBy,
-                      sort: filter.sort,
-                      options: SortOptions.mergeRequests,
-                      onSelect: (o) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          wip: f.wip,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: o.orderBy,
-                          sort: o.sort,
+                    Flexible(
+                      flex: 3,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterMenu(
+                              title: 'State',
+                              current: filter.state,
+                              options: const ['opened', 'merged', 'closed'],
+                              labels: const {
+                                'opened': 'Open',
+                                'merged': 'Merged',
+                                'closed': 'Closed',
+                              },
+                              onSelect: (s) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: s,
+                                  search: f.search,
+                                  wip: f.wip,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: Insets.sm),
+                            FilterMenu(
+                              title: 'Draft',
+                              current: filter.wip,
+                              options: const ['yes', 'no'],
+                              labels: const {
+                                'yes': 'Drafts',
+                                'no': 'No drafts',
+                              },
+                              onSelect: (w) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  wip: w,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            FilterMenu(
+                              title: 'Activity',
+                              current: filter.updatedDays == null
+                                  ? null
+                                  : '${filter.updatedDays}',
+                              options: const ['1', '7', '30'],
+                              labels: const {
+                                '1': 'Last 24h',
+                                '7': 'Last week',
+                                '30': 'Last month',
+                              },
+                              onSelect: (v) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  wip: f.wip,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: v == null ? null : int.parse(v),
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            SortMenu(
+                              orderBy: filter.orderBy,
+                              sort: filter.sort,
+                              options: SortOptions.mergeRequests,
+                              onSelect: (o) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  wip: f.wip,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: o.orderBy,
+                                  sort: o.sort,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -208,50 +229,6 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _StateMenu extends StatelessWidget {
-  const _StateMenu({required this.current, required this.onSelect});
-
-  final String? current;
-  final ValueChanged<String?> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    const options = {
-      'opened': 'Open',
-      'merged': 'Merged',
-      'closed': 'Closed',
-      null: 'All',
-    };
-    return PopupMenuButton<String?>(
-      initialValue: current,
-      onSelected: onSelect,
-      itemBuilder: (context) => [
-        for (final e in options.entries)
-          PopupMenuItem(value: e.key, child: Text(e.value)),
-      ],
-      child: Container(
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: Insets.md),
-        decoration: BoxDecoration(
-          color: colors.surfaceMuted,
-          borderRadius: Radii.borderMd,
-        ),
-        child: Row(
-          children: [
-            Text(
-              options[current] ?? 'All',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(width: Insets.xs),
-            Icon(Icons.expand_more, size: 16, color: colors.inkMuted),
-          ],
         ),
       ),
     );
@@ -381,7 +358,8 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
-        Padding(
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(
             Insets.lg,
             Insets.sm,
@@ -400,7 +378,6 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 ),
                 const SizedBox(width: Insets.sm),
               ],
-              const Spacer(),
               FilterMenu(
                 title: 'Scope',
                 current: _scope == MrScope.all ? null : _scopes[_scope],
@@ -525,9 +502,13 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.merge,
                 title: 'No merge requests',
+                actionLabel: 'New merge request',
+                onAction: () => unawaited(
+                  MrFormScreen.show(context, projectId: widget.projectId),
+                ),
               ),
               itemBuilder: (context, index) {
                 final mr = data.items[index];

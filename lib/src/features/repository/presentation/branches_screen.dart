@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Branch list with default/protected indicators.
 class BranchesScreen extends ConsumerStatefulWidget {
@@ -250,7 +251,7 @@ class _BranchTile extends ConsumerWidget {
               Text(
                 branch.shortSha,
                 style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 11.5,
                 ),
               ),

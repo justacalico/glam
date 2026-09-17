@@ -13,6 +13,7 @@ import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Protected branch rules with protect / unprotect.
 class ProtectedBranchesSection extends ConsumerWidget {
@@ -204,7 +205,7 @@ class _ProtectedBranchTile extends StatelessWidget {
       ),
       title: Text(
         branch.name,
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
       subtitle: Text(
         [
@@ -575,7 +576,7 @@ class _ProtectedEnvironmentTile extends StatelessWidget {
       leading: const Icon(Icons.cloud_outlined, size: 18),
       title: Text(
         env.name,
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
       subtitle: Text('deploy: ${deploy.isEmpty ? 'none' : deploy}'),
       trailing: IconButton(
@@ -1002,7 +1003,7 @@ class _RemoteMirrorTile extends StatelessWidget {
         mirror.url,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
       ),
       subtitle: subtitle.isEmpty
           ? null
@@ -1046,7 +1047,7 @@ class _FreezePeriodTile extends StatelessWidget {
       leading: const Icon(Icons.ac_unit_outlined, size: 18),
       title: Text(
         '${period.freezeStart} → ${period.freezeEnd}',
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
       subtitle: Text(period.cronTimezone),
       trailing: Row(
@@ -1083,7 +1084,7 @@ class _ProtectedTagTile extends StatelessWidget {
       ),
       title: Text(
         tag.name,
-        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+        style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
       subtitle: Text('create: $create'),
       trailing: IconButton(
