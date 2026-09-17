@@ -4,6 +4,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
+import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
@@ -108,6 +109,10 @@ class SharedProjectsNotifier extends PagedListNotifier<Project> {
 /// Group-level CI/CD variables.
 final groupVariablesProvider = FutureProvider.family<List<CiVariable>, Object>(
   (ref, groupId) => ref.watch(groupsRepositoryProvider).groupVariables(groupId),
+);
+
+final groupHooksProvider = FutureProvider.family<List<Webhook>, Object>(
+  (ref, groupId) => ref.watch(groupsRepositoryProvider).webhooks(groupId),
 );
 
 /// Iterations defined on the group and its ancestors. Empty on

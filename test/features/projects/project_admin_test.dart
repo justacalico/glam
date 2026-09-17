@@ -4,7 +4,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
-import 'package:glam/src/features/projects/domain/webhook.dart';
+import 'package:glam/src/core/models/webhook.dart';
 
 import '../../helpers/fake_dio_adapter.dart';
 import '../../helpers/fixtures.dart';

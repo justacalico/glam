@@ -18,7 +18,7 @@ import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
-import 'package:glam/src/features/projects/domain/webhook.dart';
+import 'package:glam/src/core/models/webhook.dart';
 
 final projectsRepositoryProvider = Provider<ProjectsRepository>(
   (ref) => ProjectsRepository(ref.watch(apiClientProvider)),

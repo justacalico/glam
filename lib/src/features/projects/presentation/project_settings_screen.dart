@@ -48,7 +48,7 @@ class ProjectSettingsScreen extends ConsumerWidget {
             const SizedBox(height: Insets.xl),
             _VariablesSection(project: p),
             const SizedBox(height: Insets.xl),
-            WebhooksSection(project: p),
+            ProjectWebhooksSection(project: p),
             const SizedBox(height: Insets.xl),
             IntegrationsSection(project: p),
             const SizedBox(height: Insets.xl),

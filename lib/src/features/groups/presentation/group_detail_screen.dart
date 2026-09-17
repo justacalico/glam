@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
+import 'package:glam/src/core/widgets/webhooks_section.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
@@ -77,7 +78,7 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 9,
+          length: 10,
           child: Column(
             children: [
               _GroupHeader(group: g),
@@ -92,6 +93,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
                   Tab(text: 'Variables'),
+                  Tab(text: 'Webhooks'),
                   Tab(text: 'Activity'),
                 ],
               ),
@@ -106,6 +108,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
                     _VariablesTab(groupId: groupId),
+                    _WebhooksTab(groupId: groupId),
                     EventList(feed: (kind: 'group', id: groupId)),
                   ],
                 ),
@@ -321,6 +324,46 @@ class _VariablesTab extends ConsumerWidget {
                 .read(groupsRepositoryProvider)
                 .deleteGroupVariable(groupId, v.key);
             ref.invalidate(groupVariablesProvider(groupId));
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _WebhooksTab extends ConsumerWidget {
+  const _WebhooksTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: Insets.pagePadding,
+      children: [
+        WebhooksSection(
+          hooks: ref.watch(groupHooksProvider(groupId)),
+          isGroup: true,
+          onAdd: (draft) async {
+            await ref
+                .read(groupsRepositoryProvider)
+                .createHook(
+                  groupId,
+                  url: draft.url,
+                  token: draft.token,
+                  events: draft.events,
+                  enableSslVerification: draft.sslVerify,
+                );
+            ref.invalidate(groupHooksProvider(groupId));
+          },
+          onTest: (hook) async {
+            await ref.read(groupsRepositoryProvider).testHook(groupId, hook.id);
+          },
+          onDelete: (hook) async {
+            await ref
+                .read(groupsRepositoryProvider)
+                .deleteHook(groupId, hook.id);
+            ref.invalidate(groupHooksProvider(groupId));
           },
         ),
       ],
