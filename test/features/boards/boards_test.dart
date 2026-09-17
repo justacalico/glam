@@ -61,6 +61,52 @@ void main() {
           .single;
       expect((req.data as Map)['list_id'], 12);
     });
+
+    test('board create, rename, and delete hit the board paths', () async {
+      final (client, adapter) = testClient();
+      final board = (fixtureJson('boards') as List).first;
+      adapter
+        ..post('/projects/42/boards', board)
+        ..put('/projects/42/boards/5', board)
+        ..delete('/projects/42/boards/5');
+      final repo = BoardsRepository(client);
+
+      await repo.createBoard(42, name: 'Sprint board');
+      await repo.updateBoard(42, 5, name: 'Renamed');
+      await repo.deleteBoard(42, 5);
+
+      final post = adapter.requestsTo('POST', '/projects/42/boards').single;
+      expect((post.data as Map)['name'], 'Sprint board');
+      final put = adapter.requestsTo('PUT', '/projects/42/boards/5').single;
+      expect((put.data as Map)['name'], 'Renamed');
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/boards/5'),
+        hasLength(1),
+      );
+    });
+
+    test('list create and delete hit the lists paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post(
+          '/projects/42/boards/5/lists',
+          (fixtureJson('board_lists') as List).last,
+        )
+        ..delete('/projects/42/boards/5/lists/11');
+      final repo = BoardsRepository(client);
+
+      await repo.createList(42, 5, labelId: 9);
+      await repo.deleteList(42, 5, 11);
+
+      final post = adapter
+          .requestsTo('POST', '/projects/42/boards/5/lists')
+          .single;
+      expect((post.data as Map)['label_id'], 9);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/boards/5/lists/11'),
+        hasLength(1),
+      );
+    });
   });
 
   group('providers', () {

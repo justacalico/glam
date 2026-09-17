@@ -34,6 +34,45 @@ class BoardsRepository {
     );
   }
 
+  /// Creates a board. Multiple boards need a Premium tier on SaaS.
+  Future<Board> createBoard(Object projectId, {required String name}) {
+    return _client.post(
+      _base(projectId),
+      body: {'name': name},
+      decoder: (j) => Board.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Board> updateBoard(Object projectId, int boardId, {String? name}) {
+    return _client.put(
+      '${_base(projectId)}/$boardId',
+      body: {'name': ?name},
+      decoder: (j) => Board.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteBoard(Object projectId, int boardId) {
+    return _client.delete('${_base(projectId)}/$boardId');
+  }
+
+  /// Adds a label list to the board.
+  Future<BoardList> createList(
+    Object projectId,
+    int boardId, {
+    required int labelId,
+  }) {
+    return _client.post(
+      '${_base(projectId)}/$boardId/lists',
+      body: {'label_id': labelId},
+      decoder: (j) => BoardList.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Removes a list. System lists (`backlog`, `closed`) can't be removed.
+  Future<void> deleteList(Object projectId, int boardId, int listId) {
+    return _client.delete('${_base(projectId)}/$boardId/lists/$listId');
+  }
+
   Future<Paginated<Issue>> listIssues(
     Object projectId,
     int boardId,
