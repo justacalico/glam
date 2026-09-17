@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
@@ -124,6 +125,54 @@ class _IssueActions extends ConsumerWidget {
         );
   }
 
+  Future<void> _promptWeight(BuildContext context, WidgetRef ref) async {
+    final controller = TextEditingController(
+      text: issue.weight?.toString() ?? '',
+    );
+    final input = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Issue weight'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(hintText: '0 clears the weight'),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (input == null || !context.mounted) {
+      return;
+    }
+    final weight = int.tryParse(input) ?? 0;
+    if (weight < 0) {
+      return;
+    }
+    try {
+      await ref
+          .read(issuesRepositoryProvider)
+          .updateIssue(loc.project, loc.iid, weight: weight);
+      ref.invalidate(issueProvider(loc));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
   Future<void> _promptDuration(
     BuildContext context,
     WidgetRef ref, {
@@ -192,6 +241,8 @@ class _IssueActions extends ConsumerWidget {
           case 'reset':
             await repo.resetTimeSpent(loc.project, loc.iid);
             ref.invalidate(issueProvider(loc));
+          case 'weight':
+            await _promptWeight(context, ref);
           case 'edit':
             unawaited(
               IssueFormScreen.show(
@@ -226,6 +277,7 @@ class _IssueActions extends ConsumerWidget {
         const PopupMenuItem(value: 'spent', child: Text('Add time spent')),
         if ((issue.timeSpent ?? 0) > 0)
           const PopupMenuItem(value: 'reset', child: Text('Reset time spent')),
+        const PopupMenuItem(value: 'weight', child: Text('Set weight')),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),

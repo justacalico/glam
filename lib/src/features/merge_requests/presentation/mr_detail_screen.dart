@@ -391,6 +391,14 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
     final canAct = iApproved || (approvals?.userCanApprove ?? true);
     final mergeable =
         mr.detailedMergeStatus == 'mergeable' && !mr.draft && !mr.hasConflicts;
+    final pipelineRunning = switch (mr.headPipeline?.status) {
+      'created' ||
+      'waiting_for_resource' ||
+      'preparing' ||
+      'pending' ||
+      'running' => true,
+      _ => false,
+    };
 
     return Container(
       padding: const EdgeInsets.all(Insets.lg),
@@ -436,6 +444,16 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
               ],
             ),
           ],
+          if (mr.mergeWhenPipelineSucceeds)
+            Padding(
+              padding: const EdgeInsets.only(top: Insets.sm),
+              child: Text(
+                'Scheduled to merge when the pipeline succeeds',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+              ),
+            ),
           const SizedBox(height: Insets.md),
           Row(
             children: [
@@ -462,17 +480,66 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
                 ),
             ],
           ),
+          if (mr.mergeWhenPipelineSucceeds)
+            Padding(
+              padding: const EdgeInsets.only(top: Insets.sm),
+              child: OutlinedButton.icon(
+                onPressed: _approving
+                    ? null
+                    : () => unawaited(_cancelAutoMerge()),
+                icon: const Icon(Icons.cancel_outlined, size: 16),
+                label: const Text('Cancel auto-merge'),
+              ),
+            )
+          else if (!mergeable && pipelineRunning && mr.isOpen && !mr.draft)
+            Padding(
+              padding: const EdgeInsets.only(top: Insets.sm),
+              child: OutlinedButton.icon(
+                onPressed: () =>
+                    unawaited(_showMergeSheet(context, ref, autoMerge: true)),
+                icon: const Icon(Icons.schedule_outlined, size: 16),
+                label: const Text('Merge when pipeline succeeds'),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Future<void> _showMergeSheet(BuildContext context, WidgetRef ref) {
+  Future<void> _showMergeSheet(
+    BuildContext context,
+    WidgetRef ref, {
+    bool autoMerge = false,
+  }) {
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => _MergeSheet(mr: widget.mr, loc: widget.loc),
+      builder: (context) =>
+          _MergeSheet(mr: widget.mr, loc: widget.loc, autoMerge: autoMerge),
     );
+  }
+
+  Future<void> _cancelAutoMerge() async {
+    setState(() => _approving = true);
+    try {
+      await ref
+          .read(mrRepositoryProvider)
+          .cancelAutoMerge(widget.loc.project, widget.loc.iid);
+      if (!mounted) {
+        return;
+      }
+      ref.invalidate(mrProvider(widget.loc));
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _approving = false);
+      }
+    }
   }
 
   Future<void> _toggleApproval(bool approved) async {
@@ -505,10 +572,17 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
 }
 
 class _MergeSheet extends ConsumerStatefulWidget {
-  const _MergeSheet({required this.mr, required this.loc});
+  const _MergeSheet({
+    required this.mr,
+    required this.loc,
+    this.autoMerge = false,
+  });
 
   final MergeRequest mr;
   final MrRef loc;
+
+  /// Preset by the "Merge when pipeline succeeds" entry point.
+  final bool autoMerge;
 
   @override
   ConsumerState<_MergeSheet> createState() => _MergeSheetState();
@@ -519,6 +593,8 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
   var _removeSource = false;
   var _merging = false;
   String? _error;
+
+  late final bool _autoMerge = widget.autoMerge;
 
   Future<void> _merge() async {
     setState(() {
@@ -534,6 +610,7 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
             squash: _squash,
             removeSourceBranch: _removeSource,
             sha: widget.mr.sha,
+            mergeWhenPipelineSucceeds: _autoMerge,
           );
       ref
         ..invalidate(mrProvider(widget.loc))
@@ -587,6 +664,16 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
             value: _removeSource,
             onChanged: (v) => setState(() => _removeSource = v),
           ),
+          if (_autoMerge)
+            Padding(
+              padding: const EdgeInsets.only(bottom: Insets.sm),
+              child: Text(
+                'Merges automatically once the pipeline succeeds.',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+              ),
+            ),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(bottom: Insets.sm),
@@ -601,7 +688,7 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Merge'),
+                : Text(_autoMerge ? 'Set auto-merge' : 'Merge'),
           ),
           SizedBox(
             height: Insets.lg + MediaQuery.viewPaddingOf(context).bottom,
