@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -26,9 +27,11 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
+import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
+import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 
@@ -724,6 +727,64 @@ class _MrActions extends ConsumerWidget {
   final MergeRequest mr;
   final MrRef loc;
 
+  /// Cherry-picks or reverts the merge/squash commit onto a prompted
+  /// branch, then navigates to the new commit. GitLab only exposes
+  /// commit-level pick/revert, so the merge commit sha is used.
+  Future<void> _pickCommit(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool revert,
+  }) async {
+    final sha = mr.mergeCommitSha ?? mr.squashCommitSha;
+    if (sha == null) {
+      return;
+    }
+    final label = revert ? 'Revert' : 'Cherry-pick';
+    final branch = TextEditingController(text: mr.targetBranch);
+    final target = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('$label !${mr.iid}'),
+        content: TextField(
+          controller: branch,
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Target branch'),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, branch.text.trim()),
+            child: Text(label),
+          ),
+        ],
+      ),
+    );
+    branch.dispose();
+    if (target == null || target.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      final repo = ref.read(repositoryRepositoryProvider);
+      final commit = revert
+          ? await repo.revert(loc.project, sha, branch: target)
+          : await repo.cherryPick(loc.project, sha, branch: target);
+      if (context.mounted) {
+        ref.invalidate(mrDiscussionsProvider(loc));
+        unawaited(context.push(Routes.projectCommit(loc.project, commit.id)));
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<String>(
@@ -753,6 +814,12 @@ class _MrActions extends ConsumerWidget {
               );
             case 'rebase':
               await repo.rebase(loc.project, loc.iid);
+            case 'cherry_pick':
+              await _pickCommit(context, ref, revert: false);
+              return;
+            case 'revert':
+              await _pickCommit(context, ref, revert: true);
+              return;
             case 'edit':
               if (context.mounted) {
                 unawaited(
@@ -797,6 +864,11 @@ class _MrActions extends ConsumerWidget {
             child: Text(mr.draft ? 'Mark as ready' : 'Mark as draft'),
           ),
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+        ],
+        if (mr.isMerged &&
+            (mr.mergeCommitSha != null || mr.squashCommitSha != null)) ...[
+          const PopupMenuItem(value: 'cherry_pick', child: Text('Cherry-pick')),
+          const PopupMenuItem(value: 'revert', child: Text('Revert')),
         ],
         PopupMenuItem(
           value: 'subscribe',
