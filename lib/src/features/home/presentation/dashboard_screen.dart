@@ -7,6 +7,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/features/profile/application/profile_providers.dart';
 
 /// Landing screen: greeting, quick stats, and shortcuts into the main
 /// sections.
@@ -16,6 +17,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionProvider).value;
+    final counts = ref.watch(myCountsProvider).value;
     final colors = context.colors;
     final theme = Theme.of(context);
     final user = session?.user;
@@ -69,18 +71,21 @@ class DashboardScreen extends ConsumerWidget {
                 icon: Icons.merge,
                 label: 'Merge requests',
                 subtitle: 'Review and merge',
+                count: counts?.mrBadge,
                 onTap: () => context.go(Routes.mergeRequests),
               ),
               _Shortcut(
                 icon: Icons.adjust,
                 label: 'Issues',
                 subtitle: 'Assigned to you',
+                count: counts?.assignedIssues,
                 onTap: () => context.go(Routes.issues),
               ),
               _Shortcut(
                 icon: Icons.checklist,
                 label: 'To-dos',
                 subtitle: 'Your task list',
+                count: counts?.todos,
                 onTap: () => context.go(Routes.todos),
               ),
               _Shortcut(
@@ -120,12 +125,16 @@ class _Shortcut {
     required this.label,
     required this.subtitle,
     required this.onTap,
+    this.count,
   });
 
   final IconData icon;
   final String label;
   final String subtitle;
   final VoidCallback onTap;
+
+  /// Badge count from `/user/counts`; hidden when zero or unset.
+  final int? count;
 }
 
 class _ShortcutGrid extends StatelessWidget {
@@ -198,6 +207,24 @@ class _ShortcutGrid extends StatelessWidget {
                               ],
                             ),
                           ),
+                          if (item.count != null && item.count! > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Insets.sm,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.accentSoft,
+                                borderRadius: Radii.borderPill,
+                              ),
+                              child: Text(
+                                '${item.count}',
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: colors.accent,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: Insets.xs),
                           Icon(
                             Icons.chevron_right,
                             size: 18,

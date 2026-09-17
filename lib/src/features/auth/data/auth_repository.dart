@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/auth/domain/user_counts.dart';
 import 'package:glam/src/features/profile/domain/membership.dart';
 
 /// Validates credentials against `GET /user` and fetches the signed-in
@@ -112,6 +113,14 @@ class AuthRepository {
     return _client.getAll(
       '/user/memberships',
       decoder: (j) => Membership.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Queue sizes for the signed-in user (`/user/counts`).
+  Future<UserCounts> userCounts() {
+    return _client.get(
+      '/user/counts',
+      decoder: (j) => UserCounts.fromJson(j! as Map<String, dynamic>),
     );
   }
 
