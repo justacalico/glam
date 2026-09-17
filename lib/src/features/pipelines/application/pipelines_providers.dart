@@ -21,6 +21,7 @@ typedef PipelineFilter = ({
   Object project,
   String? status,
   String? source,
+  String? ref,
 });
 
 final pipelinesProvider =
@@ -44,6 +45,7 @@ class PipelinesNotifier extends PagedListNotifier<Pipeline> {
           page: page,
           status: filter.status,
           source: filter.source,
+          ref: filter.ref,
         );
   }
 }

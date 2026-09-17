@@ -181,7 +181,13 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
           .retryPipeline(widget.projectId, widget.pipelineId);
       ref
         ..invalidate(pipelineProvider(_loc))
-        ..invalidate(pipelineJobsProvider(jobsFilter));
+        ..invalidate(
+          pipelineJobsProvider((
+            project: widget.projectId,
+            id: widget.pipelineId,
+            retried: _retried,
+          )),
+        );
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
