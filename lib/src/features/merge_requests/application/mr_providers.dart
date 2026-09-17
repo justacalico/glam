@@ -113,6 +113,12 @@ final mrApprovalsProvider = FutureProvider.family<ApprovalState, MrRef>(
   (ref, loc) => ref.watch(mrRepositoryProvider).approvals(loc.project, loc.iid),
 );
 
+/// Context-only commits attached to the MR for review.
+final mrContextCommitsProvider = FutureProvider.family<List<Commit>, MrRef>(
+  (ref, loc) =>
+      ref.watch(mrRepositoryProvider).contextCommits(loc.project, loc.iid),
+);
+
 final mrCommitsProvider =
     AsyncNotifierProvider.family<
       MrCommitsNotifier,

@@ -425,6 +425,20 @@ void main() {
       expect(await repo.rawDiff(42, 7), contains('diff --git'));
     });
 
+    test('contextCommits decodes commits', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/context_commits',
+        fixtureList('commit'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final commits = await repo.contextCommits(42, 7);
+
+      expect(commits, isNotEmpty);
+      expect(commits.first.id, isNotEmpty);
+    });
+
     test('draft notes CRUD and publish hit their paths', () async {
       final (client, adapter) = testClient();
       final draft = (fixtureJson('draft_notes') as List).first;

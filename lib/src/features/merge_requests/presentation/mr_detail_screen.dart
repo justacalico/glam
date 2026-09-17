@@ -1561,6 +1561,7 @@ class _CommitsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final commits = ref.watch(mrCommitsProvider(loc));
+    final contextCommits = ref.watch(mrContextCommitsProvider(loc));
     final notifier = ref.read(mrCommitsProvider(loc).notifier);
 
     return AsyncValueWidget(
@@ -1570,6 +1571,12 @@ class _CommitsTab extends ConsumerWidget {
         state: data,
         onLoadMore: notifier.loadMore,
         onRefresh: notifier.refresh,
+        header: contextCommits.maybeWhen(
+          data: (list) => list.isEmpty
+              ? null
+              : _ContextCommitsHeader(commits: list, loc: loc),
+          orElse: () => null,
+        ),
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
         empty: const EmptyState(icon: Icons.commit, title: 'No commits'),
@@ -1577,6 +1584,37 @@ class _CommitsTab extends ConsumerWidget {
           commit: data.items[index],
           projectId: loc.project.toString(),
         ),
+      ),
+    );
+  }
+}
+
+/// Context commits attached for review but not part of the diff.
+class _ContextCommitsHeader extends StatelessWidget {
+  const _ContextCommitsHeader({required this.commits, required this.loc});
+
+  final List<Commit> commits;
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Insets.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: Insets.lg,
+              top: Insets.sm,
+              bottom: Insets.xs,
+            ),
+            child: Text('Context commits', style: theme.textTheme.labelSmall),
+          ),
+          for (final c in commits)
+            CommitTile(commit: c, projectId: loc.project.toString()),
+        ],
       ),
     );
   }
