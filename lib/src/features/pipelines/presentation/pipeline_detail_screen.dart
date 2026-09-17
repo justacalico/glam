@@ -40,13 +40,19 @@ enum _PipelineView { stages, tests, variables, downstream }
 
 class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
   _PipelineView _view = _PipelineView.stages;
+  bool _retried = false;
 
   PipelineRef get _loc => (project: widget.projectId, id: widget.pipelineId);
 
   @override
   Widget build(BuildContext context) {
     final pipeline = ref.watch(pipelineProvider(_loc));
-    final jobs = ref.watch(pipelineJobsProvider(_loc));
+    final jobsFilter = (
+      project: widget.projectId,
+      id: widget.pipelineId,
+      retried: _retried,
+    );
+    final jobs = ref.watch(pipelineJobsProvider(jobsFilter));
     final report = ref.watch(pipelineTestReportProvider(_loc));
     final variables = ref.watch(pipelineVariablesProvider(_loc));
     final bridges = ref.watch(pipelineBridgesProvider(_loc));
@@ -89,6 +95,12 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
               ],
             ),
             orElse: () => const SizedBox.shrink(),
+          ),
+          IconButton(
+            tooltip: _retried ? 'Hide retried jobs' : 'Show retried jobs',
+            isSelected: _retried,
+            icon: const Icon(Icons.replay, size: 20),
+            onPressed: () => setState(() => _retried = !_retried),
           ),
         ],
       ),
@@ -169,7 +181,7 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
           .retryPipeline(widget.projectId, widget.pipelineId);
       ref
         ..invalidate(pipelineProvider(_loc))
-        ..invalidate(pipelineJobsProvider(_loc));
+        ..invalidate(pipelineJobsProvider(jobsFilter));
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(

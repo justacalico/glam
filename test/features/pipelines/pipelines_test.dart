@@ -667,10 +667,22 @@ void main() {
     test('pipelineJobsProvider loads jobs', () async {
       adapter.get('/projects/42/pipelines/900/jobs', fixtureJson('jobs'));
 
-      const loc = (project: 42, id: 900);
+      const loc = (project: 42, id: 900, retried: false);
       final state = await container.read(pipelineJobsProvider(loc).future);
 
       expect(state.items, hasLength(3));
+    });
+
+    test('pipelineJobsProvider forwards include_retried', () async {
+      adapter.get('/projects/42/pipelines/900/jobs', fixtureJson('jobs'));
+
+      const loc = (project: 42, id: 900, retried: true);
+      await container.read(pipelineJobsProvider(loc).future);
+
+      expect(
+        adapter.lastRequest!.queryParameters['include_retried'],
+        true,
+      );
     });
 
     test('pipelineTestReportProvider loads the report', () async {

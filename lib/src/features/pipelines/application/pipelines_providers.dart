@@ -151,23 +151,32 @@ final pipelineVariablesProvider =
       }
     });
 
+/// (project, pipeline, retried) for a pipeline's job list. The
+/// retried flag maps to `include_retried`.
+typedef PipelineJobsFilter = ({Object project, int id, bool retried});
+
 final pipelineJobsProvider =
     AsyncNotifierProvider.family<
       PipelineJobsNotifier,
       PagedListState<Job>,
-      PipelineRef
+      PipelineJobsFilter
     >(PipelineJobsNotifier.new);
 
 class PipelineJobsNotifier extends PagedListNotifier<Job> {
-  PipelineJobsNotifier(this.loc);
+  PipelineJobsNotifier(this.filter);
 
-  final PipelineRef loc;
+  final PipelineJobsFilter filter;
 
   @override
   Future<Paginated<Job>> fetchPage(int page) {
     return ref
         .watch(pipelinesRepositoryProvider)
-        .jobs(loc.project, loc.id, page: page);
+        .jobs(
+          filter.project,
+          filter.id,
+          includeRetried: filter.retried,
+          page: page,
+        );
   }
 }
 
