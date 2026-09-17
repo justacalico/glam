@@ -86,6 +86,13 @@ class ProjectsRepository {
     String? mergeCommitTemplate,
     String? squashCommitTemplate,
     String? suggestionCommitMessage,
+    bool? publicJobs,
+    int? buildTimeout,
+    String? autoCancelPendingPipelines,
+    bool? ciForwardDeploymentEnabled,
+    bool? ciSeparatedCaches,
+    bool? keepLatestArtifact,
+    String? ciConfigPath,
   }) {
     return _client.put(
       '/projects/${GitLabApiClient.encodeProject(id)}',
@@ -112,6 +119,13 @@ class ProjectsRepository {
         'merge_commit_template': ?mergeCommitTemplate,
         'squash_commit_template': ?squashCommitTemplate,
         'suggestion_commit_message': ?suggestionCommitMessage,
+        'public_jobs': ?publicJobs,
+        'build_timeout': ?buildTimeout,
+        'auto_cancel_pending_pipelines': ?autoCancelPendingPipelines,
+        'ci_forward_deployment_enabled': ?ciForwardDeploymentEnabled,
+        'ci_separated_caches': ?ciSeparatedCaches,
+        'keep_latest_artifact': ?keepLatestArtifact,
+        'ci_config_path': ?ciConfigPath,
       },
       decoder: _decodeOne,
     );

@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/access_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
+import 'package:glam/src/features/projects/presentation/ci_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/merge_settings_section.dart';
@@ -54,6 +55,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             ProtectedTagsSection(project: p),
             const SizedBox(height: Insets.xl),
             RunnersSection(project: p),
+            const SizedBox(height: Insets.xl),
+            CiSettingsSection(project: p),
             const SizedBox(height: Insets.xl),
             ApprovalRulesSection(project: p),
             const SizedBox(height: Insets.xl),
