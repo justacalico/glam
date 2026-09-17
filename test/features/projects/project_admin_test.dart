@@ -371,6 +371,37 @@ void main() {
       );
     });
 
+    test('integrations list and update sends active + changed keys', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/services', fixtureJson('integrations'))
+        ..put('/projects/42/services/slack', {
+          'slug': 'slack',
+          'title': 'Slack',
+          'active': false,
+          'properties': {'channel': '#dev'},
+        });
+      final repo = ProjectsRepository(client);
+
+      final list = await repo.integrations(42);
+      expect(list, hasLength(3));
+      expect(list.first.slug, 'slack');
+      expect(list.first.properties['channel'], '#dev');
+      expect(list.last.active, isFalse);
+
+      final updated = await repo.updateIntegration(
+        42,
+        'slack',
+        active: false,
+        properties: {'channel': '#release'},
+      );
+      expect(updated.active, isFalse);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['active'], false);
+      expect(sent['channel'], '#release');
+      expect(sent.containsKey('webhook'), isFalse);
+    });
+
     test('shareGroup posts the share body and unshareGroup deletes', () async {
       final (client, adapter) = testClient();
       adapter

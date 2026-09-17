@@ -8,6 +8,7 @@ import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
@@ -95,6 +96,11 @@ final namespacesProvider = FutureProvider<List<GitlabNamespace>>(
 final projectHooksProvider = FutureProvider.family<List<Webhook>, Object>(
   (ref, id) => ref.watch(projectsRepositoryProvider).hooks(id),
 );
+
+final projectIntegrationsProvider =
+    FutureProvider.family<List<Integration>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).integrations(id),
+    );
 
 final projectDeployKeysProvider =
     FutureProvider.family<List<DeployKey>, Object>(

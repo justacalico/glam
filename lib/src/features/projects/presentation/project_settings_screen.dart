@@ -15,6 +15,7 @@ import 'package:glam/src/features/projects/presentation/approval_rules_section.d
 import 'package:glam/src/features/projects/presentation/ci_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
+import 'package:glam/src/features/projects/presentation/integrations_section.dart';
 import 'package:glam/src/features/projects/presentation/merge_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
@@ -48,6 +49,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             _VariablesSection(project: p),
             const SizedBox(height: Insets.xl),
             WebhooksSection(project: p),
+            const SizedBox(height: Insets.xl),
+            IntegrationsSection(project: p),
             const SizedBox(height: Insets.xl),
             DeployTokensSection(project: p),
             const SizedBox(height: Insets.xl),
