@@ -139,6 +139,32 @@ void main() {
       expect(report.suites.last.skippedCount, 1);
     });
 
+    test('testReportCoverage parses a string percent', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/pipelines/900/test_report_summary', {
+        'total': {'count': 4},
+        'coverage': '81.5',
+      });
+      final repo = PipelinesRepository(client);
+
+      final coverage = await repo.testReportCoverage(42, 900);
+
+      expect(coverage, 81.5);
+    });
+
+    test('schedulePipelines decodes produced pipelines', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/pipeline_schedules/12/pipelines',
+        fixtureJson('pipelines'),
+      );
+      final repo = PipelinesRepository(client);
+
+      final page = await repo.schedulePipelines(42, 12);
+
+      expect(page.items, isNotEmpty);
+    });
+
     test('pipelineVariables decodes key/value rows', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/pipelines/900/variables', [

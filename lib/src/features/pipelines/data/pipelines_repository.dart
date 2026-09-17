@@ -343,6 +343,33 @@ class PipelinesRepository {
     );
   }
 
+  /// Pipelines a schedule produced (`/pipeline_schedules/:id/pipelines`).
+  Future<Paginated<Pipeline>> schedulePipelines(
+    Object projectId,
+    int id, {
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '${_p(projectId)}/pipeline_schedules/$id/pipelines',
+      page: page,
+      perPage: perPage,
+      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Test coverage for the pipeline (`/pipelines/:id/test_report_summary`);
+  /// null when the pipeline reports none.
+  Future<double?> testReportCoverage(Object projectId, int pipelineId) {
+    return _client.get(
+      '${_p(projectId)}/pipelines/$pipelineId/test_report_summary',
+      decoder: (j) {
+        final raw = (j! as Map<String, dynamic>)['coverage'];
+        return raw is num ? raw.toDouble() : double.tryParse('$raw');
+      },
+    );
+  }
+
   /// Schedule variables are their own sub-resource: POST creates, PUT
   /// updates an existing key.
   Future<void> createScheduleVariable(

@@ -15,6 +15,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
+import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 
 /// Scheduled pipelines for a project — the Schedules half of the
@@ -110,6 +111,7 @@ class _ScheduleTile extends ConsumerWidget {
             onSelected: (action) =>
                 unawaited(_action(context, ref, notifier, action, myId)),
             itemBuilder: (context) => [
+              const PopupMenuItem(value: 'runs', child: Text('Recent runs')),
               const PopupMenuItem(value: 'play', child: Text('Run now')),
               if (myId != null && s.owner?.id != myId)
                 const PopupMenuItem(
@@ -134,6 +136,17 @@ class _ScheduleTile extends ConsumerWidget {
   ) async {
     try {
       switch (action) {
+        case 'runs':
+          if (context.mounted) {
+            unawaited(
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) =>
+                    _ScheduleRunsSheet(projectId: projectId, schedule: s),
+              ),
+            );
+          }
         case 'play':
           await notifier.play(s.id);
           if (context.mounted) {
@@ -194,6 +207,55 @@ class _ScheduleTile extends ConsumerWidget {
         ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
       }
     }
+  }
+}
+
+/// Recent pipelines a schedule produced.
+class _ScheduleRunsSheet extends ConsumerWidget {
+  const _ScheduleRunsSheet({required this.projectId, required this.schedule});
+
+  final Object projectId;
+  final PipelineSchedule schedule;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final runs = ref.watch(
+      schedulePipelinesProvider((project: projectId, schedule: schedule.id)),
+    );
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.55,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      builder: (context, controller) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Text(
+              'Recent runs',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          Expanded(
+            child: runs.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (list) => list.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.play_circle_outline,
+                      title: 'No runs yet',
+                    )
+                  : ListView.builder(
+                      controller: controller,
+                      itemCount: list.length,
+                      itemBuilder: (context, i) =>
+                          PipelineTile(pipeline: list[i], projectId: projectId),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
