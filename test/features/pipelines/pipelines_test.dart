@@ -121,6 +121,24 @@ void main() {
       expect(page.items[2].status, 'manual');
     });
 
+    test('testReport decodes totals and suites', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/pipelines/900/test_report',
+        fixtureJson('test_report'),
+      );
+      final repo = PipelinesRepository(client);
+
+      final report = await repo.testReport(42, 900);
+
+      expect(report.totalCount, 4);
+      expect(report.failedCount, 1);
+      expect(report.suites, hasLength(2));
+      expect(report.suites.first.name, 'rspec');
+      expect(report.suites.first.buildIds, [66004]);
+      expect(report.suites.last.skippedCount, 1);
+    });
+
     test('jobTrace returns raw text', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/jobs/5001/trace', 'line1\nline2');
@@ -521,6 +539,34 @@ void main() {
       final state = await container.read(pipelineJobsProvider(loc).future);
 
       expect(state.items, hasLength(3));
+    });
+
+    test('pipelineTestReportProvider loads the report', () async {
+      adapter.get(
+        '/projects/42/pipelines/900/test_report',
+        fixtureJson('test_report'),
+      );
+
+      const loc = (project: 42, id: 900);
+      final report = await container.read(
+        pipelineTestReportProvider(loc).future,
+      );
+
+      expect(report.suites, hasLength(2));
+      expect(report.totalCount, 4);
+    });
+
+    test('pipelineTestReportProvider is empty on 404', () async {
+      adapter.get('/projects/42/pipelines/900/test_report', {
+        'message': '404 Not found',
+      }, status: 404);
+
+      const loc = (project: 42, id: 900);
+      final report = await container.read(
+        pipelineTestReportProvider(loc).future,
+      );
+
+      expect(report.isEmpty, isTrue);
     });
 
     test('jobTraceProvider returns the trace', () async {

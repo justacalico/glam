@@ -17,8 +17,9 @@ import 'package:glam/src/features/pipelines/application/pipelines_providers.dart
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 
 /// Pipeline detail: meta header plus jobs grouped by stage, with
-/// retry/cancel actions.
-class PipelineDetailScreen extends ConsumerWidget {
+/// retry/cancel actions. A Tests view appears when the pipeline
+/// published a test report.
+class PipelineDetailScreen extends ConsumerStatefulWidget {
   const PipelineDetailScreen({
     required this.projectId,
     required this.pipelineId,
@@ -28,16 +29,28 @@ class PipelineDetailScreen extends ConsumerWidget {
   final Object projectId;
   final int pipelineId;
 
-  PipelineRef get _loc => (project: projectId, id: pipelineId);
+  @override
+  ConsumerState<PipelineDetailScreen> createState() =>
+      _PipelineDetailScreenState();
+}
+
+enum _PipelineView { stages, tests }
+
+class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
+  _PipelineView _view = _PipelineView.stages;
+
+  PipelineRef get _loc => (project: widget.projectId, id: widget.pipelineId);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final pipeline = ref.watch(pipelineProvider(_loc));
     final jobs = ref.watch(pipelineJobsProvider(_loc));
+    final report = ref.watch(pipelineTestReportProvider(_loc));
+    final hasReport = (report.value?.totalCount ?? 0) > 0;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pipeline #$pipelineId'),
+        title: Text('Pipeline #${widget.pipelineId}'),
         actions: [
           pipeline.maybeWhen(
             data: (p) => Row(
@@ -73,13 +86,46 @@ class PipelineDetailScreen extends ConsumerWidget {
         data: (p) => Column(
           children: [
             _PipelineHeader(pipeline: p),
-            Expanded(
-              child: jobs.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => ErrorView(error: e),
-                data: (state) =>
-                    _StageList(jobs: state.items, projectId: projectId),
+            if (hasReport)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Insets.lg,
+                  Insets.sm,
+                  Insets.lg,
+                  Insets.xs,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<_PipelineView>(
+                    segments: const [
+                      ButtonSegment(
+                        value: _PipelineView.stages,
+                        label: Text('Stages'),
+                        icon: Icon(Icons.view_list_outlined, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: _PipelineView.tests,
+                        label: Text('Tests'),
+                        icon: Icon(Icons.science_outlined, size: 16),
+                      ),
+                    ],
+                    selected: {_view},
+                    onSelectionChanged: (s) => setState(() => _view = s.first),
+                  ),
+                ),
               ),
+            Expanded(
+              child: _view == _PipelineView.tests && hasReport
+                  ? _TestReportView(loc: _loc)
+                  : jobs.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (e, _) => ErrorView(error: e),
+                      data: (state) => _StageList(
+                        jobs: state.items,
+                        projectId: widget.projectId,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -91,7 +137,7 @@ class PipelineDetailScreen extends ConsumerWidget {
     try {
       await ref
           .read(pipelinesRepositoryProvider)
-          .retryPipeline(projectId, pipelineId);
+          .retryPipeline(widget.projectId, widget.pipelineId);
       ref
         ..invalidate(pipelineProvider(_loc))
         ..invalidate(pipelineJobsProvider(_loc));
@@ -108,7 +154,7 @@ class PipelineDetailScreen extends ConsumerWidget {
     try {
       await ref
           .read(pipelinesRepositoryProvider)
-          .cancelPipeline(projectId, pipelineId);
+          .cancelPipeline(widget.projectId, widget.pipelineId);
       ref.invalidate(pipelineProvider(_loc));
     } on ApiException catch (e) {
       if (context.mounted) {
@@ -312,6 +358,130 @@ class _JobAction extends ConsumerWidget {
       tooltip: tip,
       icon: Icon(icon, size: 18),
       onPressed: () => unawaited(_run(ref, action)),
+    );
+  }
+}
+
+/// The pipeline's aggregated test report: totals plus one card per
+/// suite. REST only exposes suite-level counts.
+class _TestReportView extends ConsumerWidget {
+  const _TestReportView({required this.loc});
+
+  final PipelineRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final report = ref.watch(pipelineTestReportProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return report.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => ErrorView(error: e),
+      data: (r) {
+        if (r.suites.isEmpty) {
+          return const EmptyState(
+            icon: Icons.science_outlined,
+            title: 'No test report',
+          );
+        }
+        return ListView(
+          padding: Insets.pagePadding,
+          children: [
+            Wrap(
+              spacing: Insets.md,
+              runSpacing: Insets.xs,
+              children: [
+                _Count(label: 'Total', value: r.totalCount),
+                _Count(label: 'Passed', value: r.successCount),
+                _Count(
+                  label: 'Failed',
+                  value: r.failedCount,
+                  color: colors.danger,
+                ),
+                _Count(label: 'Skipped', value: r.skippedCount),
+                _Count(
+                  label: 'Errors',
+                  value: r.errorCount,
+                  color: colors.warning,
+                ),
+                Text(
+                  'in ${r.totalTime.toStringAsFixed(1)}s',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: Insets.lg),
+            for (final suite in r.suites) ...[
+              Container(
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: Radii.borderMd,
+                  border: Border.all(color: colors.border),
+                ),
+                padding: const EdgeInsets.all(Insets.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(suite.name, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: Insets.sm),
+                    Wrap(
+                      spacing: Insets.md,
+                      runSpacing: Insets.xs,
+                      children: [
+                        _Count(label: 'Total', value: suite.totalCount),
+                        _Count(label: 'Passed', value: suite.successCount),
+                        _Count(
+                          label: 'Failed',
+                          value: suite.failedCount,
+                          color: colors.danger,
+                        ),
+                        _Count(label: 'Skipped', value: suite.skippedCount),
+                        _Count(
+                          label: 'Errors',
+                          value: suite.errorCount,
+                          color: colors.warning,
+                        ),
+                        Text(
+                          '${suite.totalTime.toStringAsFixed(1)}s',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                    if (suite.suiteError != null) ...[
+                      const SizedBox(height: Insets.sm),
+                      Text(
+                        suite.suiteError!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.danger,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: Insets.md),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _Count extends StatelessWidget {
+  const _Count({required this.label, required this.value, this.color});
+
+  final String label;
+  final int value;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      '$label $value',
+      style: theme.textTheme.bodySmall?.copyWith(color: color),
     );
   }
 }

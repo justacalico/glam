@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -9,6 +10,7 @@ import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
+import 'package:glam/src/features/pipelines/domain/test_report.dart';
 
 final pipelinesRepositoryProvider = Provider<PipelinesRepository>(
   (ref) => PipelinesRepository(ref.watch(apiClientProvider)),
@@ -40,6 +42,21 @@ final pipelineProvider = FutureProvider.family<Pipeline, PipelineRef>(
   (ref, loc) =>
       ref.watch(pipelinesRepositoryProvider).pipeline(loc.project, loc.id),
 );
+
+/// Aggregated test report for a pipeline; empty when none was published.
+final pipelineTestReportProvider =
+    FutureProvider.family<TestReport, PipelineRef>((ref, loc) async {
+      try {
+        return await ref
+            .watch(pipelinesRepositoryProvider)
+            .testReport(loc.project, loc.id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 400) {
+          return const TestReport();
+        }
+        rethrow;
+      }
+    });
 
 final pipelineJobsProvider =
     AsyncNotifierProvider.family<

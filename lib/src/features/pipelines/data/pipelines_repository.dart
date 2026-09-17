@@ -9,6 +9,7 @@ import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
+import 'package:glam/src/features/pipelines/domain/test_report.dart';
 
 /// `/projects/:id/pipelines` and `/jobs`.
 class PipelinesRepository {
@@ -65,6 +66,15 @@ class PipelinesRepository {
       '${_p(projectId)}/pipeline',
       body: {'ref': ref},
       decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Aggregated test report for a pipeline. Pipelines without reports
+  /// return a zeroed payload rather than an error.
+  Future<TestReport> testReport(Object projectId, int id) {
+    return _client.get(
+      '${_p(projectId)}/pipelines/$id/test_report',
+      decoder: (j) => TestReport.fromJson(j! as Map<String, dynamic>),
     );
   }
 
