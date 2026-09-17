@@ -132,7 +132,7 @@ void main() {
 
       expect(versions, hasLength(2));
       expect(versions.first.shortSha, '11be37ce');
-      expect(versions.first.state, 'head');
+      expect(versions.first.state, 'collected');
       expect(versions.last.id, 128);
     });
 

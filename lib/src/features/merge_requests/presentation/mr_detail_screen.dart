@@ -905,12 +905,21 @@ class _ChangesTabState extends ConsumerState<_ChangesTab> {
   @override
   Widget build(BuildContext context) {
     final loc = widget.loc;
-    final versionId = _versionId;
+    final versions = ref.watch(mrVersionsProvider(loc));
+    // Drop the selection if a refetch no longer lists the version:
+    // the dropdown asserts on unmatched values and the diff endpoint
+    // would 404.
+    var versionId = _versionId;
+    final versionList = versions.value;
+    if (versionId != null &&
+        versionList != null &&
+        versionList.every((v) => v.id != versionId)) {
+      versionId = null;
+    }
     final changes = versionId == null
         ? ref.watch(mrChangesProvider(loc))
         : ref.watch(mrVersionDiffsProvider((mr: loc, versionId: versionId)));
     final diffRefs = ref.watch(mrProvider(loc)).value?.diffRefs;
-    final versions = ref.watch(mrVersionsProvider(loc));
 
     return Column(
       children: [
@@ -918,11 +927,11 @@ class _ChangesTabState extends ConsumerState<_ChangesTab> {
         // reachable while changes load or when there are none.
         _ReviewBanner(loc: loc),
         versions.maybeWhen(
-          data: (list) => list.isEmpty
+          data: (list) => list.length < 2
               ? const SizedBox.shrink()
               : _VersionPicker(
                   versions: list,
-                  selected: _versionId,
+                  selected: versionId,
                   onSelected: (v) => setState(() => _versionId = v),
                 ),
           orElse: () => const SizedBox.shrink(),
@@ -950,9 +959,8 @@ class _ChangesTabState extends ConsumerState<_ChangesTab> {
                   entry: entries[index],
                   loc: loc,
                   diffRefs: diffRefs,
-                  // Comments anchor to the MR's head refs, so they're
-                  // disabled while viewing an older version.
-                  isOpen: widget.mr.isOpen && _versionId == null,
+                  isOpen: widget.mr.isOpen,
+                  commentable: versionId == null,
                 ),
               );
             },
@@ -1005,12 +1013,15 @@ class _VersionPicker extends StatelessWidget {
               style: theme.textTheme.bodyMedium,
               items: [
                 const DropdownMenuItem<int?>(child: Text('Latest changes')),
-                for (var i = 0; i < sorted.length; i++)
+                // sorted[0] is the newest version, which shows the same
+                // diff as Latest, so only older versions get entries.
+                for (var i = 1; i < sorted.length; i++)
                   DropdownMenuItem<int?>(
                     value: sorted[i].id,
                     child: Text(
                       'Version ${sorted.length - i} · ${sorted[i].shortSha}'
-                      '${i == 0 ? ' (current)' : ''}',
+                      ' · ${sorted[i].realSize} '
+                      'file${sorted[i].realSize == 1 ? '' : 's'}',
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -1247,12 +1258,17 @@ class _ChangeCard extends ConsumerWidget {
     required this.loc,
     required this.diffRefs,
     required this.isOpen,
+    required this.commentable,
   });
 
   final ChangeEntry entry;
   final MrRef loc;
   final DiffRefs? diffRefs;
   final bool isOpen;
+
+  /// Comments anchor to the MR's head refs, so line taps are only
+  /// offered while viewing the latest diff.
+  final bool commentable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1337,7 +1353,7 @@ class _ChangeCard extends ConsumerWidget {
                 width: 1100,
                 child: DiffViewer(
                   diff: diff,
-                  onLineTap: diffRefs == null
+                  onLineTap: diffRefs == null || !commentable
                       ? null
                       : (line) => _commentOnLine(context, ref, line),
                 ),
