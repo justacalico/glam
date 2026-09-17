@@ -269,6 +269,50 @@ class ApprovalState extends Equatable {
   List<Object?> get props => [approved, approvalsLeft];
 }
 
+/// One entry from `/merge_requests/:iid/versions` — the diff state at
+/// each push, so reviewers can look at changes since an earlier head.
+class MrVersion extends Equatable {
+  const MrVersion({
+    required this.id,
+    required this.headCommitSha,
+    required this.baseCommitSha,
+    required this.startCommitSha,
+    this.createdAt,
+    this.state,
+    this.realSize = 0,
+  });
+
+  factory MrVersion.fromJson(Map<String, dynamic> json) {
+    return MrVersion(
+      id: json['id'] as int? ?? 0,
+      headCommitSha: json['head_commit_sha'] as String? ?? '',
+      baseCommitSha: json['base_commit_sha'] as String? ?? '',
+      startCommitSha: json['start_commit_sha'] as String? ?? '',
+      createdAt: json['created_at'] is String
+          ? DateTime.tryParse(json['created_at'] as String)?.toLocal()
+          : null,
+      state: json['state'] as String?,
+      realSize: json['real_size'] is num
+          ? (json['real_size'] as num).toInt()
+          : int.tryParse('${json['real_size']}') ?? 0,
+    );
+  }
+
+  final int id;
+  final String headCommitSha;
+  final String baseCommitSha;
+  final String startCommitSha;
+  final DateTime? createdAt;
+  final String? state;
+  final int realSize;
+
+  String get shortSha =>
+      headCommitSha.length > 8 ? headCommitSha.substring(0, 8) : headCommitSha;
+
+  @override
+  List<Object?> get props => [id, headCommitSha];
+}
+
 /// Removes a leading `Draft:`/`WIP:` marker, including GitLab's
 /// bracketed spellings (`[Draft]`, `(wip)`). GitLab accepts stacked
 /// prefixes, so the marker is stripped repeatedly.

@@ -115,6 +115,53 @@ class Commit extends Equatable {
   List<Object?> get props => [id, title];
 }
 
+/// A commit status (`/repository/commits/:sha/statuses`) — the commit's
+/// own pipeline plus external checks (Jenkins, status API callers).
+class CommitStatus extends Equatable {
+  const CommitStatus({
+    required this.id,
+    required this.status,
+    required this.name,
+    this.sha,
+    this.ref,
+    this.description,
+    this.targetUrl,
+    this.finishedAt,
+    this.authorName,
+  });
+
+  factory CommitStatus.fromJson(Map<String, dynamic> json) {
+    return CommitStatus(
+      id: json['id'] as int? ?? 0,
+      status: json['status'] as String? ?? 'unknown',
+      name: json['name'] as String? ?? json['context'] as String? ?? '',
+      sha: json['sha'] as String?,
+      ref: json['ref'] as String?,
+      description: json['description'] as String?,
+      targetUrl: json['target_url'] as String?,
+      finishedAt: json['finished_at'] is String
+          ? DateTime.tryParse(json['finished_at'] as String)?.toLocal()
+          : null,
+      authorName: json['author'] is Map<String, dynamic>
+          ? (json['author'] as Map<String, dynamic>)['name'] as String?
+          : null,
+    );
+  }
+
+  final int id;
+  final String status;
+  final String name;
+  final String? sha;
+  final String? ref;
+  final String? description;
+  final String? targetUrl;
+  final DateTime? finishedAt;
+  final String? authorName;
+
+  @override
+  List<Object?> get props => [id, status, name];
+}
+
 /// A tag (`/projects/:id/repository/tags`).
 class Tag extends Equatable {
   const Tag({

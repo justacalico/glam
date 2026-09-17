@@ -888,15 +888,37 @@ class _MrActions extends ConsumerWidget {
   }
 }
 
-class _ChangesTab extends ConsumerWidget {
+class _ChangesTab extends ConsumerStatefulWidget {
   const _ChangesTab({required this.mr, required this.loc});
 
   final MergeRequest mr;
   final MrRef loc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final changes = ref.watch(mrChangesProvider(loc));
+  ConsumerState<_ChangesTab> createState() => _ChangesTabState();
+}
+
+class _ChangesTabState extends ConsumerState<_ChangesTab> {
+  /// Selected diff version, or null for the MR's current head.
+  int? _versionId;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = widget.loc;
+    final versions = ref.watch(mrVersionsProvider(loc));
+    // Drop the selection if a refetch no longer lists the version:
+    // the dropdown asserts on unmatched values and the diff endpoint
+    // would 404.
+    var versionId = _versionId;
+    final versionList = versions.value;
+    if (versionId != null &&
+        versionList != null &&
+        versionList.every((v) => v.id != versionId)) {
+      versionId = null;
+    }
+    final changes = versionId == null
+        ? ref.watch(mrChangesProvider(loc))
+        : ref.watch(mrVersionDiffsProvider((mr: loc, versionId: versionId)));
     final diffRefs = ref.watch(mrProvider(loc)).value?.diffRefs;
 
     return Column(
@@ -904,10 +926,24 @@ class _ChangesTab extends ConsumerWidget {
         // Hoisted above the async section so pending drafts stay
         // reachable while changes load or when there are none.
         _ReviewBanner(loc: loc),
+        versions.maybeWhen(
+          data: (list) => list.length < 2
+              ? const SizedBox.shrink()
+              : _VersionPicker(
+                  versions: list,
+                  selected: versionId,
+                  onSelected: (v) => setState(() => _versionId = v),
+                ),
+          orElse: () => const SizedBox.shrink(),
+        ),
         Expanded(
           child: AsyncValueWidget<List<ChangeEntry>>(
             value: changes,
-            onRetry: () => ref.invalidate(mrChangesProvider(loc)),
+            onRetry: () => versionId == null
+                ? ref.invalidate(mrChangesProvider(loc))
+                : ref.invalidate(
+                    mrVersionDiffsProvider((mr: loc, versionId: versionId)),
+                  ),
             data: (entries) {
               if (entries.isEmpty) {
                 return const EmptyState(
@@ -923,13 +959,78 @@ class _ChangesTab extends ConsumerWidget {
                   entry: entries[index],
                   loc: loc,
                   diffRefs: diffRefs,
-                  isOpen: mr.isOpen,
+                  isOpen: widget.mr.isOpen,
+                  commentable: versionId == null,
                 ),
               );
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Dropdown for picking an older diff version, or the current head.
+class _VersionPicker extends StatelessWidget {
+  const _VersionPicker({
+    required this.versions,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final List<MrVersion> versions;
+  final int? selected;
+  final ValueChanged<int?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = context.colors;
+    // Ids are monotonic, so this orders newest first even when
+    // timestamps tie or are missing.
+    final sorted = [...versions]..sort((a, b) => b.id.compareTo(a.id));
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
+        Insets.lg,
+        Insets.sm,
+        Insets.lg,
+        Insets.xs,
+      ),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colors.border)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.history, size: 16, color: colors.inkMuted),
+          const SizedBox(width: Insets.sm),
+          Expanded(
+            child: DropdownButton<int?>(
+              value: selected,
+              isExpanded: true,
+              underline: const SizedBox.shrink(),
+              style: theme.textTheme.bodyMedium,
+              items: [
+                const DropdownMenuItem<int?>(child: Text('Latest changes')),
+                // sorted[0] is the newest version, which shows the same
+                // diff as Latest, so only older versions get entries.
+                for (var i = 1; i < sorted.length; i++)
+                  DropdownMenuItem<int?>(
+                    value: sorted[i].id,
+                    child: Text(
+                      'Version ${sorted.length - i} · ${sorted[i].shortSha}'
+                      ' · ${sorted[i].realSize} '
+                      'file${sorted[i].realSize == 1 ? '' : 's'}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+              onChanged: onSelected,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1157,12 +1258,17 @@ class _ChangeCard extends ConsumerWidget {
     required this.loc,
     required this.diffRefs,
     required this.isOpen,
+    required this.commentable,
   });
 
   final ChangeEntry entry;
   final MrRef loc;
   final DiffRefs? diffRefs;
   final bool isOpen;
+
+  /// Comments anchor to the MR's head refs, so line taps are only
+  /// offered while viewing the latest diff.
+  final bool commentable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1247,7 +1353,7 @@ class _ChangeCard extends ConsumerWidget {
                 width: 1100,
                 child: DiffViewer(
                   diff: diff,
-                  onLineTap: diffRefs == null
+                  onLineTap: diffRefs == null || !commentable
                       ? null
                       : (line) => _commentOnLine(context, ref, line),
                 ),

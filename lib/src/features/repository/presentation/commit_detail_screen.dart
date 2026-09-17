@@ -8,9 +8,11 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/diff_parser.dart';
 import 'package:glam/src/core/utils/format.dart';
+import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/comment_composer.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
+import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
@@ -49,6 +51,8 @@ class CommitDetailScreen extends ConsumerWidget {
             Text(c.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: Insets.sm),
             _Meta(commit: c),
+            const SizedBox(height: Insets.lg),
+            _CommitStatuses(projectId: projectId, sha: sha),
             const SizedBox(height: Insets.lg),
             diffs.when(
               loading: () => const Center(
@@ -307,6 +311,105 @@ class _Meta extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Pipeline and external checks reported on the commit. Hidden while
+/// loading or when nothing was reported.
+class _CommitStatuses extends ConsumerWidget {
+  const _CommitStatuses({required this.projectId, required this.sha});
+
+  final String projectId;
+  final String sha;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = (project: projectId as Object, sha: sha);
+    final statuses = ref.watch(commitStatusesProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return statuses.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Checks', style: theme.textTheme.titleMedium),
+            const SizedBox(height: Insets.sm),
+            Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: Radii.borderMd,
+                border: Border.all(color: colors.border),
+              ),
+              child: Column(
+                children: [for (final s in list) _StatusTile(status: s)],
+              ),
+            ),
+            const SizedBox(height: Insets.lg),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _StatusTile extends StatelessWidget {
+  const _StatusTile({required this.status});
+
+  final CommitStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = context.colors;
+    final url = status.targetUrl;
+    return InkWell(
+      onTap: url == null ? null : () => unawaited(launchExternal(url)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Insets.md,
+          vertical: Insets.sm + 2,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    status.name,
+                    style: theme.textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (status.ref != null || status.description != null)
+                    Text(
+                      [
+                        status.ref,
+                        status.description,
+                      ].whereType<String>().join(' · '),
+                      style: theme.textTheme.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: Insets.sm),
+            StateChip.pipeline(status.status),
+            if (url != null) ...[
+              const SizedBox(width: Insets.xs),
+              Icon(Icons.open_in_new, size: 14, color: colors.inkFaint),
+            ],
+          ],
+        ),
       ),
     );
   }

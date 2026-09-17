@@ -147,6 +147,19 @@ void main() {
     expect(result.diffs.first.newPath, 'lib/main.dart');
   });
 
+  test('commitStatusesProvider loads checks', () async {
+    adapter.get(
+      '/projects/42/repository/commits/abc123/statuses',
+      fixtureJson('commit_statuses'),
+    );
+
+    const loc = (project: 42, sha: 'abc123');
+    final statuses = await container.read(commitStatusesProvider(loc).future);
+
+    expect(statuses, hasLength(2));
+    expect(statuses.last.name, 'coverage');
+  });
+
   test('commitCommentsProvider loads the thread', () async {
     adapter.get(
       '/projects/42/repository/commits/abc123/comments',
