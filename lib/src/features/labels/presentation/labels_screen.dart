@@ -9,6 +9,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/color_parse.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
@@ -24,19 +25,34 @@ class LabelsTab extends ConsumerStatefulWidget {
 }
 
 class _LabelsTabState extends ConsumerState<LabelsTab> {
+  String? _search;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final labels = ref.watch(labelsProvider(widget.scope));
+    final filter = (scope: widget.scope, search: _search);
+    final labels = ref.watch(labelsProvider(filter));
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search labels',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
               Insets.lg,
-              Insets.sm,
+              Insets.xs,
               Insets.lg,
               Insets.xs,
             ),
@@ -58,7 +74,7 @@ class _LabelsTabState extends ConsumerState<LabelsTab> {
         Expanded(
           child: AsyncValueWidget(
             value: labels,
-            onRetry: () => ref.invalidate(labelsProvider(widget.scope)),
+            onRetry: () => ref.invalidate(labelsProvider(filter)),
             data: (items) => items.isEmpty
                 ? const EmptyState(
                     icon: Icons.label_outline,

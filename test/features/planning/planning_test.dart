@@ -138,17 +138,42 @@ void main() {
         milestonesProvider((
           scope: (id: 42, isProject: true),
           state: null,
+          search: null,
         )).future,
       );
       final group = await container.read(
         milestonesProvider((
           scope: (id: 9, isProject: false),
           state: null,
+          search: null,
         )).future,
       );
 
       expect(proj.items, hasLength(2));
       expect(group.items, isEmpty);
+    });
+
+    test('milestonesProvider forwards the search filter', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/milestones', fixtureJson('milestones'));
+      final container = ProviderContainer(
+        overrides: [
+          milestonesRepositoryProvider.overrideWithValue(
+            MilestonesRepository(client),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(
+        milestonesProvider((
+          scope: (id: 42, isProject: true),
+          state: null,
+          search: 'sprint',
+        )).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['search'], 'sprint');
     });
   });
 }

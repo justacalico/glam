@@ -20,7 +20,11 @@ final labelsRepositoryProvider = Provider<LabelsRepository>(
 /// A project or group container — milestones and labels live in both.
 typedef ContainerScope = ({Object id, bool isProject});
 
-typedef MilestoneFilter = ({ContainerScope scope, String? state});
+typedef MilestoneFilter = ({
+  ContainerScope scope,
+  String? state,
+  String? search,
+});
 
 final milestonesProvider =
     AsyncNotifierProvider.family<
@@ -42,6 +46,7 @@ class MilestonesNotifier extends PagedListNotifier<Milestone> {
           filter.scope.id,
           isProject: filter.scope.isProject,
           state: filter.state,
+          search: filter.search,
           page: page,
         );
   }
@@ -69,8 +74,14 @@ final milestoneMrsProvider =
           .milestoneMrs(loc.projectId, loc.milestoneId),
     );
 
-final labelsProvider = FutureProvider.family<List<Label>, ContainerScope>(
-  (ref, scope) => ref
+typedef LabelFilter = ({ContainerScope scope, String? search});
+
+final labelsProvider = FutureProvider.family<List<Label>, LabelFilter>(
+  (ref, filter) => ref
       .watch(labelsRepositoryProvider)
-      .labels(scope.id, isProject: scope.isProject),
+      .labels(
+        filter.scope.id,
+        isProject: filter.scope.isProject,
+        search: filter.search,
+      ),
 );

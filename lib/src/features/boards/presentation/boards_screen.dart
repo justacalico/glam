@@ -315,7 +315,7 @@ class _LabelPicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final labels = ref.watch(labelsProvider(scope));
+    final labels = ref.watch(labelsProvider((scope: scope, search: null)));
     return AlertDialog(
       title: const Text('Add list'),
       content: SizedBox(
@@ -685,7 +685,11 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
   Widget build(BuildContext context) {
     final existing = widget.existing;
     final milestones = ref.watch(
-      milestonesProvider((scope: widget.scope, state: 'active')),
+      milestonesProvider((
+        scope: widget.scope,
+        state: 'active',
+        search: null,
+      )),
     );
 
     return AlertDialog(
