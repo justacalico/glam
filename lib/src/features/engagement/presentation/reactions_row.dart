@@ -77,12 +77,16 @@ class _ReactionChip extends StatelessWidget {
               horizontal: Insets.sm + 2,
               vertical: Insets.xs - 1,
             ),
-            child: Text(
-              '${awards.first.glyph} ${awards.length}',
-              style: TextStyle(
-                fontSize: 13,
-                color: mine ? colors.accent : colors.inkMuted,
-                fontWeight: FontWeight.w600,
+            child: AnimatedSwitcher(
+              duration: Motion.fast,
+              child: Text(
+                '${awards.first.glyph} ${awards.length}',
+                key: ValueKey(awards.length),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: mine ? colors.accent : colors.inkMuted,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),

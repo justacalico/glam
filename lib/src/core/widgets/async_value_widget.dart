@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
+import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/loading_shimmer.dart';
 
 /// Renders an [AsyncValue] as loading, error, or data.
@@ -28,17 +29,26 @@ class AsyncValueWidget<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final current = value.value;
+    Widget child;
     if (current != null) {
-      final child = data(current);
+      child = data(current);
       final retry = onRetry;
       if (wrapRefresh && retry != null) {
-        return RefreshIndicator(onRefresh: () async => retry(), child: child);
+        child = RefreshIndicator(onRefresh: () async => retry(), child: child);
       }
-      return child;
+    } else if (value.hasError) {
+      child = ErrorView(error: value.error!, onRetry: onRetry);
+    } else {
+      child = loading ?? const ListShimmer();
     }
-    if (value.hasError) {
-      return ErrorView(error: value.error!, onRetry: onRetry);
-    }
-    return loading ?? const ListShimmer();
+    return AnimatedSwitcher(
+      duration: Motion.medium,
+      switchInCurve: Motion.easeOut,
+      switchOutCurve: Motion.easeIn,
+      child: KeyedSubtree(
+        key: ValueKey(Object.hash(current != null, value.hasError)),
+        child: child,
+      ),
+    );
   }
 }

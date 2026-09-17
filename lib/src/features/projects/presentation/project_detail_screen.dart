@@ -237,7 +237,7 @@ class _ProjectHeader extends ConsumerWidget {
         children: [
           Row(
             children: [
-              _avatar(colors),
+              Hero(tag: 'project-avatar-${project.id}', child: _avatar(colors)),
               const SizedBox(width: Insets.md),
               Expanded(
                 child: Column(
