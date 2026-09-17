@@ -56,7 +56,12 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                   ],
                   selected: {filter.scope},
                   onSelectionChanged: (s) => _setFilter(
-                    (f) => (scope: s.first, state: f.state, search: f.search),
+                    (f) => (
+                      scope: s.first,
+                      state: f.state,
+                      search: f.search,
+                      issueType: f.issueType,
+                    ),
                   ),
                   showSelectedIcon: false,
                 ),
@@ -70,7 +75,12 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       child: SearchField(
                         hint: 'Search issues',
                         onChanged: (v) => _setFilter(
-                          (f) => (scope: f.scope, state: f.state, search: v),
+                          (f) => (
+                            scope: f.scope,
+                            state: f.state,
+                            search: v,
+                            issueType: f.issueType,
+                          ),
                         ),
                       ),
                     ),
@@ -78,7 +88,25 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                     _StateMenu(
                       current: filter.state,
                       onSelect: (s) => _setFilter(
-                        (f) => (scope: f.scope, state: s, search: f.search),
+                        (f) => (
+                          scope: f.scope,
+                          state: s,
+                          search: f.search,
+                          issueType: f.issueType,
+                        ),
+                      ),
+                    ),
+                    FilterMenu(
+                      title: 'Type',
+                      current: filter.issueType,
+                      options: const ['issue', 'incident', 'task', 'test_case'],
+                      onSelect: (v) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          issueType: v,
+                        ),
                       ),
                     ),
                   ],
@@ -176,6 +204,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _search;
   String? _label;
   String? _milestone;
+  String? _issueType;
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +215,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       search: _search,
       label: _label,
       milestone: _milestone,
+      issueType: _issueType,
     );
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
@@ -268,6 +298,12 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 current: _milestone,
                 options: [for (final m in milestones) m.title],
                 onSelect: (v) => setState(() => _milestone = v),
+              ),
+              FilterMenu(
+                title: 'Type',
+                current: _issueType,
+                options: const ['issue', 'incident', 'task', 'test_case'],
+                onSelect: (v) => setState(() => _issueType = v),
               ),
               IconButton(
                 tooltip: 'New issue',

@@ -17,12 +17,18 @@ final issuesRepositoryProvider = Provider<IssuesRepository>(
 );
 
 /// Filter state for the global issues list.
-typedef IssueFilter = ({IssueScope scope, String? state, String? search});
+typedef IssueFilter = ({
+  IssueScope scope,
+  String? state,
+  String? search,
+  String? issueType,
+});
 
 const defaultIssueFilter = (
   scope: IssueScope.assigned,
   state: 'opened',
   search: null,
+  issueType: null,
 );
 
 final issueFilterProvider = NotifierProvider<IssueFilterNotifier, IssueFilter>(
@@ -51,6 +57,7 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
           scope: filter.scope,
           state: filter.state,
           search: filter.search,
+          issueType: filter.issueType,
           page: page,
         );
   }
@@ -63,6 +70,7 @@ typedef ProjectIssueFilter = ({
   String? search,
   String? label,
   String? milestone,
+  String? issueType,
 });
 
 final projectIssuesProvider =
@@ -87,6 +95,7 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           search: filter.search,
           labels: filter.label,
           milestone: filter.milestone,
+          issueType: filter.issueType,
           page: page,
         );
   }

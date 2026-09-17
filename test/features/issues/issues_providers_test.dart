@@ -40,12 +40,14 @@ void main() {
       scope: IssueScope.all,
       state: 'closed',
       search: 'x',
+      issueType: 'incident',
     ));
     await container.read(issuesProvider.future);
 
     final query = adapter.lastRequest!.queryParameters;
     expect(query['scope'], 'all');
     expect(query['search'], 'x');
+    expect(query['issue_type'], 'incident');
   });
 
   test('projectIssuesProvider is scoped per filter', () async {
@@ -57,6 +59,7 @@ void main() {
       search: null,
       label: null,
       milestone: null,
+      issueType: null,
     );
     final state = await container.read(projectIssuesProvider(filter).future);
 
@@ -73,6 +76,7 @@ void main() {
       search: null,
       label: 'bug',
       milestone: 'v1',
+      issueType: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
