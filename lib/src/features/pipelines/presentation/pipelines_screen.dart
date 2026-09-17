@@ -97,6 +97,7 @@ class _PipelineRuns extends ConsumerStatefulWidget {
 
 class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
   String? _status;
+  String? _source;
 
   static const _statuses = [
     (null, 'All'),
@@ -109,10 +110,26 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
     ('manual', 'Manual'),
   ];
 
+  static const _sources = [
+    (null, 'Any source'),
+    ('push', 'Push'),
+    ('web', 'Web'),
+    ('schedule', 'Schedule'),
+    ('api', 'API'),
+    ('trigger', 'Trigger'),
+    ('merge_request_event', 'Merge request'),
+    ('pipeline', 'Pipeline'),
+    ('chat', 'Chat'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (project: widget.projectId, status: _status);
+    final filter = (
+      project: widget.projectId,
+      status: _status,
+      source: _source,
+    );
     final state = ref.watch(pipelinesProvider(filter));
     final notifier = ref.read(pipelinesProvider(filter).notifier);
 
@@ -120,33 +137,24 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
       children: [
         Align(
           alignment: Alignment.centerRight,
-          child: PopupMenuButton<String?>(
-            tooltip: 'Filter pipelines',
-            onSelected: (v) => setState(() => _status = v),
-            itemBuilder: (context) => [
-              for (final (value, label) in _statuses)
-                CheckedPopupMenuItem(
-                  value: value,
-                  checked: _status == value,
-                  child: Text(label),
+          child: Padding(
+            padding: const EdgeInsets.only(right: Insets.lg),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _FilterMenu(
+                  tooltip: 'Filter by source',
+                  options: _sources,
+                  current: _source,
+                  onSelect: (v) => setState(() => _source = v),
                 ),
-            ],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Insets.lg,
-                vertical: Insets.sm,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _statuses.where((e) => e.$1 == _status).firstOrNull?.$2 ??
-                        'All',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  Icon(Icons.arrow_drop_down, color: colors.inkMuted),
-                ],
-              ),
+                _FilterMenu(
+                  tooltip: 'Filter pipelines',
+                  options: _statuses,
+                  current: _status,
+                  onSelect: (v) => setState(() => _status = v),
+                ),
+              ],
             ),
           ),
         ),
@@ -553,6 +561,57 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
                   ),
                 ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact (value, label) popup for the runs filter row.
+class _FilterMenu extends StatelessWidget {
+  const _FilterMenu({
+    required this.tooltip,
+    required this.options,
+    required this.current,
+    required this.onSelect,
+  });
+
+  final String tooltip;
+  final List<(String?, String)> options;
+  final String? current;
+  final ValueChanged<String?> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String?>(
+      tooltip: tooltip,
+      onSelected: onSelect,
+      itemBuilder: (context) => [
+        for (final (value, label) in options)
+          CheckedPopupMenuItem(
+            value: value,
+            checked: current == value,
+            child: Text(label),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Insets.sm,
+          vertical: Insets.sm,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              options.where((e) => e.$1 == current).firstOrNull?.$2 ??
+                  options.first.$2,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Icon(
+              Icons.arrow_drop_down,
+              color: context.colors.inkMuted,
+            ),
           ],
         ),
       ),
