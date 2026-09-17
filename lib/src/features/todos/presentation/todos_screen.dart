@@ -70,12 +70,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                 FilterMenu(
                   title: 'type',
                   current: _type,
-                  options: const [
-                    'Issue',
-                    'MergeRequest',
-                    'Commit',
-                    'Epic',
-                  ],
+                  options: const ['Issue', 'MergeRequest', 'Commit', 'Epic'],
                   onSelect: (t) => setState(() => _type = t),
                 ),
               ],

@@ -120,9 +120,7 @@ void main() {
   test('tagsProvider forwards the search filter', () async {
     adapter.get('/projects/7/repository/tags', fixtureJson('tags'));
 
-    await container.read(
-      tagsProvider((project: 7, search: 'v1')).future,
-    );
+    await container.read(tagsProvider((project: 7, search: 'v1')).future);
 
     expect(adapter.lastRequest!.queryParameters['search'], 'v1');
   });

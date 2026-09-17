@@ -940,9 +940,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
 
   Future<void> _syncNow(BuildContext context, WidgetRef ref) async {
     try {
-      await ref
-          .read(projectAdminActionsProvider)
-          .pullMirrorSync(project.id);
+      await ref.read(projectAdminActionsProvider).pullMirrorSync(project.id);
     } on ApiException catch (e) {
       if (context.mounted) {
         showAdminError(context, e.message);

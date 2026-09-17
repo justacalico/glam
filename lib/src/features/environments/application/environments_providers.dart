@@ -23,11 +23,7 @@ final featureFlagUserListsProvider =
           ref.watch(environmentsRepositoryProvider).featureFlagUserLists(id),
     );
 
-typedef EnvironmentFilter = ({
-  Object project,
-  String? states,
-  String? search,
-});
+typedef EnvironmentFilter = ({Object project, String? states, String? search});
 
 final environmentsProvider =
     AsyncNotifierProvider.family<

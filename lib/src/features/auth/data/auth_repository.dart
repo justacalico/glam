@@ -158,9 +158,6 @@ class AuthRepository {
   /// Marks a dismissable broadcast dismissed for this user
   /// (`POST /broadcast_messages/:id/dismiss`).
   Future<void> dismissBroadcastMessage(int id) {
-    return _client.post(
-      '/broadcast_messages/$id/dismiss',
-      decoder: (_) {},
-    );
+    return _client.post('/broadcast_messages/$id/dismiss', decoder: (_) {});
   }
 }

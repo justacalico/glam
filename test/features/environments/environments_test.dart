@@ -237,9 +237,11 @@ void main() {
       adapter.get('/projects/42/environments', fixtureJson('environments'));
 
       await container.read(
-        environmentsProvider(
-          (project: 42, states: 'stopped', search: null),
-        ).future,
+        environmentsProvider((
+          project: 42,
+          states: 'stopped',
+          search: null,
+        )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['states'], 'stopped');
@@ -249,9 +251,11 @@ void main() {
       adapter.get('/projects/42/environments', fixtureJson('environments'));
 
       await container.read(
-        environmentsProvider(
-          (project: 42, states: null, search: 'prod'),
-        ).future,
+        environmentsProvider((
+          project: 42,
+          states: null,
+          search: 'prod',
+        )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['search'], 'prod');
@@ -282,10 +286,7 @@ void main() {
     test('deploymentsProvider forwards the status filter', () async {
       adapter.get('/projects/42/deployments', fixtureJson('deployments'));
 
-      const filter = (
-        env: (project: 42, envId: 9),
-        status: 'failed',
-      );
+      const filter = (env: (project: 42, envId: 9), status: 'failed');
       await container.read(deploymentsProvider(filter).future);
 
       expect(adapter.lastRequest!.queryParameters['status'], 'failed');

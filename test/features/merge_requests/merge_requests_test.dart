@@ -686,6 +686,7 @@ void main() {
         scope: MrScope.all,
         state: 'merged',
         search: 'x',
+        wip: null,
         orderBy: null,
         sort: null,
       ));
@@ -701,6 +702,7 @@ void main() {
         scope: MrScope.assigned,
         state: null,
         search: null,
+        wip: null,
         orderBy: 'title',
         sort: 'asc',
       ));
@@ -709,6 +711,22 @@ void main() {
       final query = adapter.lastRequest!.queryParameters;
       expect(query['order_by'], 'title');
       expect(query['sort'], 'asc');
+    });
+
+    test('filter forwards the wip flag', () async {
+      adapter.get('/merge_requests', fixtureJson('mrs'));
+
+      container.read(mrFilterProvider.notifier).update((
+        scope: MrScope.assigned,
+        state: null,
+        search: null,
+        wip: 'yes',
+        orderBy: null,
+        sort: null,
+      ));
+      await container.read(mergeRequestsProvider.future);
+
+      expect(adapter.lastRequest!.queryParameters['wip'], 'yes');
     });
 
     test('mrProvider and mrChangesProvider fetch detail', () async {

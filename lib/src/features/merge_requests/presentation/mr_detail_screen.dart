@@ -169,9 +169,7 @@ class _OverviewTab extends ConsumerWidget {
                 const SizedBox(height: Insets.sm),
                 StateEventsRow(
                   events: ref.watch(mrStateEventsProvider(loc)),
-                  milestoneEvents: ref.watch(
-                    mrMilestoneEventsProvider(loc),
-                  ),
+                  milestoneEvents: ref.watch(mrMilestoneEventsProvider(loc)),
                   labelEvents: ref.watch(mrLabelEventsProvider(loc)),
                 ),
                 const SizedBox(height: Insets.sm),

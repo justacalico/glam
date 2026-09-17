@@ -151,9 +151,7 @@ class _BroadcastBannerState extends ConsumerState<_BroadcastBanner> {
     final visible = messages
         .where(
           (m) =>
-              m.active &&
-              !_dismissed.contains(m.id) &&
-              m.plainText.isNotEmpty,
+              m.active && !_dismissed.contains(m.id) && m.plainText.isNotEmpty,
         )
         .toList();
     if (visible.isEmpty) {
@@ -182,11 +180,7 @@ class _BroadcastBannerState extends ConsumerState<_BroadcastBanner> {
                 if (m.dismissable)
                   GestureDetector(
                     onTap: () => _dismiss(m.id),
-                    child: Icon(
-                      Icons.close,
-                      size: 16,
-                      color: colors.inkMuted,
-                    ),
+                    child: Icon(Icons.close, size: 16, color: colors.inkMuted),
                   ),
               ],
             ),

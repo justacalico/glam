@@ -46,9 +46,7 @@ class StateEventsRow extends StatelessWidget {
           ),
         for (final e in milestones)
           _EventChip(
-            icon: e.action == 'remove'
-                ? Icons.flag_outlined
-                : Icons.flag,
+            icon: e.action == 'remove' ? Icons.flag_outlined : Icons.flag,
             text:
                 '${e.action == 'remove' ? 'removed' : 'added'} milestone '
                 '${e.milestoneTitle} ${_by(e.user?.username)}'
@@ -75,11 +73,7 @@ extension on DateTime? {
 }
 
 class _EventChip extends StatelessWidget {
-  const _EventChip({
-    required this.icon,
-    required this.text,
-    this.iconColor,
-  });
+  const _EventChip({required this.icon, required this.text, this.iconColor});
 
   final IconData icon;
   final String text;
@@ -93,10 +87,7 @@ class _EventChip extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       side: BorderSide(color: colors.border),
       backgroundColor: colors.surface,
-      label: Text(
-        text.trim(),
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
+      label: Text(text.trim(), style: Theme.of(context).textTheme.bodySmall),
     );
   }
 }

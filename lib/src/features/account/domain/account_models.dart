@@ -246,21 +246,19 @@ class UserPreferences extends Equatable {
     this.projectsView,
   });
 
-  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
-      UserPreferences(
-        viewDiffsFileByFile:
-            json['view_diffs_file_by_file'] as bool? ?? false,
-        showWhitespaceInDiffs:
-            json['show_whitespace_in_diffs'] as bool? ?? true,
-        passUnstagedChangesInDiff:
-            json['pass_unstaged_changes_in_diff'] as bool? ?? false,
-        markdownSurroundSelection:
-            json['markdown_surround_selection'] as bool? ?? true,
-        markdownAutomaticLists:
-            json['markdown_automatic_lists'] as bool? ?? true,
-        layoutWidth: json['layout_width'] as String?,
-        projectsView: json['projects_view'] as String?,
-      );
+  factory UserPreferences.fromJson(
+    Map<String, dynamic> json,
+  ) => UserPreferences(
+    viewDiffsFileByFile: json['view_diffs_file_by_file'] as bool? ?? false,
+    showWhitespaceInDiffs: json['show_whitespace_in_diffs'] as bool? ?? true,
+    passUnstagedChangesInDiff:
+        json['pass_unstaged_changes_in_diff'] as bool? ?? false,
+    markdownSurroundSelection:
+        json['markdown_surround_selection'] as bool? ?? true,
+    markdownAutomaticLists: json['markdown_automatic_lists'] as bool? ?? true,
+    layoutWidth: json['layout_width'] as String?,
+    projectsView: json['projects_view'] as String?,
+  );
 
   final bool viewDiffsFileByFile;
   final bool showWhitespaceInDiffs;
