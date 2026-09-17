@@ -194,6 +194,25 @@ void main() {
       );
     });
 
+    test('rotateCurrentToken returns the cleartext replacement', () async {
+      final (client, adapter) = testClient();
+      final rotated = {
+        ...(fixtureJson('personal_access_tokens') as List).first
+            as Map<String, dynamic>,
+        'token': 'glpat-new-token',
+      };
+      adapter.post('/personal_access_tokens/self/rotate', rotated);
+      final repo = AccountRepository(client);
+
+      final t = await repo.rotateCurrentToken();
+
+      expect(t.token, 'glpat-new-token');
+      expect(
+        adapter.requestsTo('POST', '/personal_access_tokens/self/rotate'),
+        hasLength(1),
+      );
+    });
+
     test('notification settings get and put', () async {
       final (client, adapter) = testClient();
       adapter

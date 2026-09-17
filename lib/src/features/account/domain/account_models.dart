@@ -24,6 +24,7 @@ class SshKey extends Equatable {
   final String title;
   final String key;
   final DateTime? createdAt;
+
   final DateTime? expiresAt;
   final DateTime? lastUsedAt;
 
@@ -79,6 +80,7 @@ class GpgKey extends Equatable {
   final int id;
   final String key;
   final DateTime? createdAt;
+
   final List<String> emails;
   final List<String> subkeyIds;
 
@@ -127,12 +129,14 @@ class PersonalAccessToken extends Equatable {
     this.expiresAt,
     this.lastUsedAt,
     this.createdAt,
+    this.token,
   });
 
   factory PersonalAccessToken.fromJson(Map<String, dynamic> json) =>
       PersonalAccessToken(
         id: json['id'] as int? ?? 0,
         name: json['name'] as String? ?? '',
+        token: json['token'] as String?,
         scopes: json['scopes'] is List
             ? (json['scopes'] as List).whereType<String>().toList()
             : const [],
@@ -151,6 +155,9 @@ class PersonalAccessToken extends Equatable {
   final DateTime? expiresAt;
   final DateTime? lastUsedAt;
   final DateTime? createdAt;
+
+  /// Cleartext token, present only on create/rotate responses.
+  final String? token;
 
   /// Date-granular expiry: a token is dead once `expires_at` is today
   /// or earlier (matches GitLab's `expires_at <= Date.current`).

@@ -95,6 +95,15 @@ class AccountRepository {
     );
   }
 
+  /// Rotates this session's token; the response carries the new
+  /// cleartext token once (`POST /personal_access_tokens/self/rotate`).
+  Future<PersonalAccessToken> rotateCurrentToken() {
+    return _client.post(
+      '/personal_access_tokens/self/rotate',
+      decoder: (j) => PersonalAccessToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Revokes a token. GitLab accepts DELETE on `/self` or `/:id`.
   Future<void> revokeToken(int tokenId) {
     return _client.delete('/personal_access_tokens/$tokenId');

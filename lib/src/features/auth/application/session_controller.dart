@@ -44,6 +44,21 @@ class SessionController extends AsyncNotifier<Session?> {
     state = AsyncData(session);
   }
 
+  /// Swaps the stored token after a rotation so the session stays
+  /// alive under the new credential.
+  Future<void> replaceToken(String token) async {
+    final session = state.value;
+    if (session == null) {
+      return;
+    }
+    await ref
+        .read(sessionStorageProvider)
+        .write(StoredSession(baseUrl: session.baseUrl, token: token));
+    state = AsyncData(
+      Session(baseUrl: session.baseUrl, token: token, user: session.user),
+    );
+  }
+
   /// Replaces the cached user after a profile edit so headers and
   /// comment ownership checks see the new data.
   void updateUser(GitLabUser user) {

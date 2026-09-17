@@ -107,6 +107,16 @@ class AccountActions {
     _ref.invalidate(personalAccessTokensProvider);
   }
 
+  /// Rotates the session token; returns the replacement carrying the
+  /// new cleartext value.
+  Future<PersonalAccessToken> rotateCurrentToken() async {
+    final rotated = await _repo.rotateCurrentToken();
+    _ref
+      ..invalidate(personalAccessTokensProvider)
+      ..invalidate(currentTokenProvider);
+    return rotated;
+  }
+
   Future<void> setNotificationLevel(String level) async {
     await _repo.updateNotificationSettings(level: level);
     _ref.invalidate(notificationSettingsProvider);
