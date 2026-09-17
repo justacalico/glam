@@ -1,6 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
+import 'package:glam/src/features/environments/domain/feature_flag.dart';
 
 /// `/projects/:id/environments` and `/projects/:id/deployments`.
 class EnvironmentsRepository {
@@ -75,6 +76,33 @@ class EnvironmentsRepository {
       page: page,
       perPage: perPage,
       decoder: (j) => Deployment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Feature flags (`/projects/:id/feature_flags`).
+  Future<List<FeatureFlag>> featureFlags(Object projectId) {
+    return _client.getAll(
+      '${_p(projectId)}/feature_flags',
+      decoder: (j) => FeatureFlag.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Toggles a flag on or off for all its scopes.
+  Future<FeatureFlag> updateFeatureFlag(
+    Object projectId,
+    String name, {
+    required bool active,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/feature_flags/${Uri.encodeComponent(name)}',
+      body: {'active': active},
+      decoder: (j) => FeatureFlag.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteFeatureFlag(Object projectId, String name) {
+    return _client.delete(
+      '${_p(projectId)}/feature_flags/${Uri.encodeComponent(name)}',
     );
   }
 }
