@@ -44,6 +44,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     ));
@@ -70,6 +71,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -94,6 +96,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -119,6 +122,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -142,6 +146,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: 'due_date',
       sort: 'asc',
     );
@@ -167,6 +172,7 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -189,6 +195,7 @@ void main() {
       confidential: true,
       dueDate: null,
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -211,6 +218,7 @@ void main() {
       confidential: null,
       dueDate: 'overdue',
       myReactionEmoji: null,
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
@@ -233,12 +241,39 @@ void main() {
       confidential: null,
       dueDate: null,
       myReactionEmoji: 'tada',
+      updatedDays: null,
       orderBy: null,
       sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     expect(adapter.lastRequest!.queryParameters['my_reaction_emoji'], 'tada');
+  });
+
+  test('forwards updated_after from the activity preset', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      authorId: null,
+      confidential: null,
+      dueDate: null,
+      myReactionEmoji: null,
+      updatedDays: 7,
+      orderBy: null,
+      sort: null,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    final sent = DateTime.parse(
+      adapter.lastRequest!.queryParameters['updated_after'] as String,
+    );
+    expect(DateTime.now().difference(sent).inDays, inInclusiveRange(6, 7));
   });
 
   test('issueProvider loads a single issue', () async {

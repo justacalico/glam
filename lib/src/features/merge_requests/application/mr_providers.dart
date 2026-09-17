@@ -26,6 +26,7 @@ typedef MrFilter = ({
   String? search,
   String? wip,
   String? myReactionEmoji,
+  int? updatedDays,
   String? orderBy,
   String? sort,
 });
@@ -36,6 +37,7 @@ const defaultMrFilter = (
   search: null,
   wip: null,
   myReactionEmoji: null,
+  updatedDays: null,
   orderBy: null,
   sort: null,
 );
@@ -68,6 +70,9 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
           search: filter.search,
           wip: filter.wip,
           myReactionEmoji: filter.myReactionEmoji,
+          updatedAfter: filter.updatedDays == null
+              ? null
+              : DateTime.now().subtract(Duration(days: filter.updatedDays!)),
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -87,6 +92,7 @@ typedef ProjectMrFilter = ({
   int? authorId,
   String? wip,
   String? myReactionEmoji,
+  int? updatedDays,
   String? orderBy,
   String? sort,
 });
@@ -119,6 +125,9 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           authorId: filter.authorId,
           wip: filter.wip,
           myReactionEmoji: filter.myReactionEmoji,
+          updatedAfter: filter.updatedDays == null
+              ? null
+              : DateTime.now().subtract(Duration(days: filter.updatedDays!)),
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

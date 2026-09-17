@@ -76,6 +76,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       confidential: null,
                       dueDate: f.dueDate,
                       myReactionEmoji: f.myReactionEmoji,
+                      updatedDays: f.updatedDays,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -100,6 +101,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             confidential: f.confidential,
                             dueDate: f.dueDate,
                             myReactionEmoji: f.myReactionEmoji,
+                            updatedDays: f.updatedDays,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -118,6 +120,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           confidential: f.confidential,
                           dueDate: f.dueDate,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -136,6 +139,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           confidential: f.confidential,
                           dueDate: f.dueDate,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -162,6 +166,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           confidential: v == null ? null : v == 'true',
                           dueDate: f.dueDate,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -193,6 +198,33 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           confidential: f.confidential,
                           dueDate: v,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    FilterMenu(
+                      title: 'Activity',
+                      current: filter.updatedDays == null
+                          ? null
+                          : '${filter.updatedDays}',
+                      options: const ['1', '7', '30'],
+                      labels: const {
+                        '1': 'Last 24h',
+                        '7': 'Last week',
+                        '30': 'Last month',
+                      },
+                      onSelect: (v) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          issueType: f.issueType,
+                          confidential: f.confidential,
+                          dueDate: f.dueDate,
+                          myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: v == null ? null : int.parse(v),
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -211,6 +243,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           confidential: f.confidential,
                           dueDate: f.dueDate,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -315,6 +348,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   bool? _confidential;
   String? _dueDate;
   String? _myReaction;
+  int? _updatedDays;
   int? _assigneeId;
   int? _authorId;
   String? _orderBy;
@@ -333,6 +367,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       confidential: _confidential,
       dueDate: _dueDate,
       myReactionEmoji: _myReaction,
+      updatedDays: _updatedDays,
       assigneeId: _assigneeId,
       authorId: _authorId,
       orderBy: _orderBy,
@@ -509,6 +544,19 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 options: _reactions,
                 labels: _reactionLabels,
                 onSelect: (v) => setState(() => _myReaction = v),
+              ),
+              FilterMenu(
+                title: 'Activity',
+                current: _updatedDays == null ? null : '$_updatedDays',
+                options: const ['1', '7', '30'],
+                labels: const {
+                  '1': 'Last 24h',
+                  '7': 'Last week',
+                  '30': 'Last month',
+                },
+                onSelect: (v) => setState(
+                  () => _updatedDays = v == null ? null : int.parse(v),
+                ),
               ),
               SortMenu(
                 orderBy: _orderBy,
