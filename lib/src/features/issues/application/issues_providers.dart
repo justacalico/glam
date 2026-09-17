@@ -3,6 +3,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
@@ -180,4 +181,11 @@ final issueRelatedMrsProvider =
       (ref, loc) => ref
           .watch(issuesRepositoryProvider)
           .relatedMergeRequests(loc.project, loc.iid),
+    );
+
+final issueParticipantsProvider =
+    FutureProvider.family<List<GitLabUser>, IssueRef>(
+      (ref, loc) => ref
+          .watch(issuesRepositoryProvider)
+          .participants(loc.project, loc.iid),
     );

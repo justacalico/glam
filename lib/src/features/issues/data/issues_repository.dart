@@ -2,6 +2,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
@@ -326,6 +327,14 @@ class IssuesRepository {
       '${_p(projectId)}/issues/$iid/move',
       body: {'to_project_id': toProjectId},
       decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Users who participated in the issue thread.
+  Future<List<GitLabUser>> participants(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/participants',
+      decoder: (j) => GitLabUser.fromJson(j as Map<String, dynamic>),
     );
   }
 

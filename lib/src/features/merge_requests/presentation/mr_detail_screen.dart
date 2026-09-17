@@ -30,6 +30,8 @@ import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
@@ -76,7 +78,7 @@ class _MrBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
         children: [
           const TabBar(
@@ -84,6 +86,7 @@ class _MrBody extends StatelessWidget {
               Tab(text: 'Overview'),
               Tab(text: 'Changes'),
               Tab(text: 'Commits'),
+              Tab(text: 'Pipelines'),
             ],
           ),
           Expanded(
@@ -92,12 +95,80 @@ class _MrBody extends StatelessWidget {
                 _OverviewTab(mr: mr, loc: loc),
                 _ChangesTab(loc: loc),
                 _CommitsTab(loc: loc),
+                _PipelinesTab(loc: loc),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+/// Pipelines that ran for this MR plus a run button.
+class _PipelinesTab extends ConsumerWidget {
+  const _PipelinesTab({required this.loc});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final pipelines = ref.watch(mrPipelinesProvider(loc));
+
+    return AsyncValueWidget<List<Pipeline>>(
+      value: pipelines,
+      onRetry: () => ref.invalidate(mrPipelinesProvider(loc)),
+      data: (list) => ListView(
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.all(Insets.sm),
+              child: TextButton.icon(
+                onPressed: () => _run(context, ref),
+                icon: const Icon(Icons.play_arrow_outlined, size: 18),
+                label: const Text('Run pipeline'),
+              ),
+            ),
+          ),
+          if (list.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(Insets.xl),
+              child: EmptyState(
+                icon: Icons.rocket_launch_outlined,
+                title: 'No pipelines for this MR',
+              ),
+            )
+          else
+            for (final p in list)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PipelineTile(pipeline: p, projectId: loc.project),
+                  Divider(height: 1, color: colors.border, indent: Insets.lg),
+                ],
+              ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _run(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref
+          .read(mrRepositoryProvider)
+          .createMrPipeline(loc.project, loc.iid);
+      if (context.mounted) {
+        ref.invalidate(mrPipelinesProvider(loc));
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 
@@ -127,7 +198,7 @@ class _OverviewTab extends ConsumerWidget {
             child: ListView(
               padding: Insets.pagePadding,
               children: [
-                _MrHeader(mr: mr),
+                _MrHeader(mr: mr, loc: loc),
                 const SizedBox(height: Insets.lg),
                 if (mr.isOpen) _MergeBox(mr: mr, loc: loc),
                 if (mr.description?.isNotEmpty ?? false) ...[
@@ -219,9 +290,10 @@ class _OverviewTab extends ConsumerWidget {
 }
 
 class _MrHeader extends StatelessWidget {
-  const _MrHeader({required this.mr});
+  const _MrHeader({required this.mr, required this.loc});
 
   final MergeRequest mr;
+  final MrRef loc;
 
   @override
   Widget build(BuildContext context) {
@@ -341,7 +413,36 @@ class _MrHeader extends StatelessWidget {
             ],
           ),
         ],
+        const SizedBox(height: Insets.md),
+        _ParticipantsRow(loc: loc),
       ],
+    );
+  }
+}
+
+class _ParticipantsRow extends ConsumerWidget {
+  const _ParticipantsRow({required this.loc});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final participants = ref.watch(mrParticipantsProvider(loc));
+    return participants.maybeWhen(
+      data: (users) => users.isEmpty
+          ? const SizedBox.shrink()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${users.length} participants',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: Insets.xs),
+                AvatarStack(users: users, max: 8),
+              ],
+            ),
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

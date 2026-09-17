@@ -3,7 +3,9 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
 /// MR list filter for the global endpoint.
@@ -377,6 +379,30 @@ class MergeRequestsRepository {
         ? '${_p(projectId)}/merge_requests/$iid/award_emoji'
         : '${_p(projectId)}/merge_requests/$iid/notes/$noteId/award_emoji';
     return _client.delete('$base/$awardId');
+  }
+
+  /// Pipelines run for this MR's head sha.
+  Future<List<Pipeline>> mrPipelines(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/pipelines',
+      decoder: (j) => Pipeline.fromJson(j as Map<String, dynamic>),
+    );
+  }
+
+  /// Runs a new pipeline for the MR's head sha.
+  Future<Pipeline> createMrPipeline(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/pipelines',
+      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Users who participated in the MR thread.
+  Future<List<GitLabUser>> participants(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/participants',
+      decoder: (j) => GitLabUser.fromJson(j as Map<String, dynamic>),
+    );
   }
 
   /// Toggles the user's subscription on the MR.

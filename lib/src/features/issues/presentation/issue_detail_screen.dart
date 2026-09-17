@@ -68,7 +68,7 @@ class IssueDetailScreen extends ConsumerWidget {
               child: ListView(
                 padding: Insets.pagePadding,
                 children: [
-                  _Header(issue: issue),
+                  _Header(issue: issue, loc: _loc),
                   if (issue.description?.isNotEmpty ?? false) ...[
                     const SizedBox(height: Insets.lg),
                     Container(
@@ -399,9 +399,10 @@ class _IssueActions extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.issue});
+  const _Header({required this.issue, required this.loc});
 
   final Issue issue;
+  final IssueRef loc;
 
   @override
   Widget build(BuildContext context) {
@@ -497,7 +498,37 @@ class _Header extends StatelessWidget {
               style: theme.textTheme.bodySmall,
             ),
           ),
+        _ParticipantsLine(loc: loc),
       ],
+    );
+  }
+}
+
+class _ParticipantsLine extends ConsumerWidget {
+  const _ParticipantsLine({required this.loc});
+
+  final IssueRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final participants = ref.watch(issueParticipantsProvider(loc));
+    return participants.maybeWhen(
+      data: (users) => users.isEmpty
+          ? const SizedBox.shrink()
+          : Padding(
+              padding: const EdgeInsets.only(top: Insets.sm),
+              child: Row(
+                children: [
+                  AvatarStack(users: users, max: 8),
+                  const SizedBox(width: Insets.sm),
+                  Text(
+                    '${users.length} participants',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }
