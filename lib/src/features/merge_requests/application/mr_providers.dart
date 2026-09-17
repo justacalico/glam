@@ -4,6 +4,8 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/core/models/resource_label_event.dart';
+import 'package:glam/src/core/models/resource_milestone_event.dart';
 import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
@@ -290,6 +292,39 @@ final mrStateEventsProvider =
         return await ref
             .watch(mrRepositoryProvider)
             .stateEvents(loc.project, loc.iid);
+      } on ApiException catch (e) {
+        if (e.statusCode == 403 || e.statusCode == 404) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
+
+/// Milestone add/remove history. Missing on older instances.
+final mrMilestoneEventsProvider =
+    FutureProvider.family<List<ResourceMilestoneEvent>, MrRef>((
+      ref,
+      loc,
+    ) async {
+      try {
+        return await ref
+            .watch(mrRepositoryProvider)
+            .milestoneEvents(loc.project, loc.iid);
+      } on ApiException catch (e) {
+        if (e.statusCode == 403 || e.statusCode == 404) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
+
+/// Label add/remove history. Missing on older instances.
+final mrLabelEventsProvider =
+    FutureProvider.family<List<ResourceLabelEvent>, MrRef>((ref, loc) async {
+      try {
+        return await ref
+            .watch(mrRepositoryProvider)
+            .labelEvents(loc.project, loc.iid);
       } on ApiException catch (e) {
         if (e.statusCode == 403 || e.statusCode == 404) {
           return const [];
