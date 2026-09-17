@@ -9,6 +9,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
@@ -112,14 +113,22 @@ class _EnvActions extends ConsumerWidget {
   }
 }
 
-class _EnvBody extends StatelessWidget {
+class _EnvBody extends StatefulWidget {
   const _EnvBody({required this.env, required this.loc});
 
   final GlEnvironment env;
   final EnvironmentRef loc;
 
   @override
+  State<_EnvBody> createState() => _EnvBodyState();
+}
+
+class _EnvBodyState extends State<_EnvBody> {
+  String? _status;
+
+  @override
   Widget build(BuildContext context) {
+    final env = widget.env;
     final colors = context.colors;
     final theme = Theme.of(context);
 
@@ -153,25 +162,45 @@ class _EnvBody extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: Insets.md),
-              Text('Deployments', style: theme.textTheme.titleMedium),
+              Row(
+                children: [
+                  Text('Deployments', style: theme.textTheme.titleMedium),
+                  const Spacer(),
+                  FilterMenu(
+                    title: 'Status',
+                    current: _status,
+                    options: const [
+                      'created',
+                      'running',
+                      'success',
+                      'failed',
+                      'canceled',
+                      'blocked',
+                    ],
+                    onSelect: (s) => setState(() => _status = s),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        Expanded(child: _DeploymentsList(loc: loc)),
+        Expanded(
+          child: _DeploymentsList(filter: (env: widget.loc, status: _status)),
+        ),
       ],
     );
   }
 }
 
 class _DeploymentsList extends ConsumerWidget {
-  const _DeploymentsList({required this.loc});
+  const _DeploymentsList({required this.filter});
 
-  final EnvironmentRef loc;
+  final DeploymentFilter filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final list = ref.watch(deploymentsProvider(loc));
-    final notifier = ref.read(deploymentsProvider(loc).notifier);
+    final list = ref.watch(deploymentsProvider(filter));
+    final notifier = ref.read(deploymentsProvider(filter).notifier);
     final colors = context.colors;
 
     return AsyncValueWidget(
