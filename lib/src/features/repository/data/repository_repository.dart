@@ -311,6 +311,12 @@ class RepositoryRepository {
     );
   }
 
+  /// Deletes every branch already merged into the default branch
+  /// (`DELETE /repository/merged_branches`).
+  Future<void> deleteMergedBranches(Object projectId) {
+    return _client.delete('${_p(projectId)}/repository/merged_branches');
+  }
+
   Future<Paginated<Tag>> tags(
     Object projectId, {
     String? search,

@@ -68,6 +68,11 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                       context.push(Routes.projectCompare(projectId)),
                 ),
                 TextButton.icon(
+                  icon: const Icon(Icons.cleaning_services_outlined, size: 16),
+                  label: const Text('Delete merged'),
+                  onPressed: () => _deleteMerged(context, ref),
+                ),
+                TextButton.icon(
                   icon: const Icon(Icons.add, size: 16),
                   label: const Text('New branch'),
                   onPressed: () => _showCreate(context, ref),
@@ -148,6 +153,35 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
             branch: name.text.trim(),
             ref: source.text.trim().isEmpty ? 'HEAD' : source.text.trim(),
           );
+      ref.invalidate(branchesProvider);
+    }
+  }
+
+  Future<void> _deleteMerged(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete merged branches?'),
+        content: const Text(
+          'Every branch already merged into the default branch is '
+          'removed. Protected branches are kept.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref
+          .read(repositoryRepositoryProvider)
+          .deleteMergedBranches(widget.projectId);
       ref.invalidate(branchesProvider);
     }
   }

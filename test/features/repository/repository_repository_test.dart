@@ -412,6 +412,22 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('deleteMergedBranches hits the cleanup endpoint', () async {
+      final (client, adapter) = testClient();
+      adapter.delete('/projects/42/repository/merged_branches');
+      final repo = RepositoryRepository(client);
+
+      await repo.deleteMergedBranches(42);
+
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/repository/merged_branches',
+        ),
+        hasLength(1),
+      );
+    });
   });
 
   group('tags', () {
