@@ -106,6 +106,9 @@ class IssueDetailScreen extends ConsumerWidget {
                     .read(issueNotesProvider(_loc).notifier)
                     .addComment(body);
               },
+              onUpload: (bytes, name) => ref
+                  .read(projectsRepositoryProvider)
+                  .uploadFile(_loc.project, bytes, name),
             ),
           ],
         ),

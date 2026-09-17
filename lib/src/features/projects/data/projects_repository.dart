@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/audit_event.dart';
@@ -791,6 +792,18 @@ class ProjectsRepository {
     return _client.getBytes(
       '/projects/${GitLabApiClient.encodeProject(id)}/export/download',
       maxBytes: 500 * 1024 * 1024,
+    );
+  }
+
+  /// Uploads a file for embedding in markdown (`/projects/:id/uploads`)
+  /// and returns the markdown snippet GitLab generates.
+  Future<String> uploadFile(Object id, Uint8List bytes, String filename) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/uploads',
+      body: FormData.fromMap({
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+      }),
+      decoder: (j) => (j! as Map<String, dynamic>)['markdown'] as String? ?? '',
     );
   }
 

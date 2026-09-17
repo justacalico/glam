@@ -17,6 +17,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -629,6 +630,9 @@ class _CommitComments extends ConsumerWidget {
               ref.invalidate(commitCommentsProvider(loc));
             }
           },
+          onUpload: (bytes, name) => ref
+              .read(projectsRepositoryProvider)
+              .uploadFile(projectId, bytes, name),
         ),
       ],
     );
