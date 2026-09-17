@@ -151,6 +151,23 @@ final groupAuditEventsProvider =
 /// Members of a group or project (depending on `kind`).
 typedef MemberScope = ({Object id, bool isProject});
 
+/// Pending access requests on the scope; empty for non-maintainers
+/// or where the endpoint is absent.
+final accessRequestsProvider = FutureProvider.family<List<Member>, MemberScope>(
+  (ref, scope) async {
+    try {
+      return await ref
+          .watch(groupsRepositoryProvider)
+          .accessRequests(scope.id, isProject: scope.isProject);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404 || e.statusCode == 403) {
+        return const [];
+      }
+      rethrow;
+    }
+  },
+);
+
 final membersProvider =
     AsyncNotifierProvider.family<
       MembersNotifier,
