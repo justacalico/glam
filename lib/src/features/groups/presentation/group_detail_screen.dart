@@ -9,6 +9,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
@@ -46,7 +47,7 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 6,
+          length: 8,
           child: Column(
             children: [
               _GroupHeader(group: g),
@@ -54,22 +55,26 @@ class GroupDetailScreen extends ConsumerWidget {
                 isScrollable: true,
                 tabs: [
                   Tab(text: 'Projects'),
+                  Tab(text: 'Shared'),
                   Tab(text: 'Subgroups'),
                   Tab(text: 'Members'),
                   Tab(text: 'Milestones'),
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
+                  Tab(text: 'Variables'),
                 ],
               ),
               Expanded(
                 child: TabBarView(
                   children: [
                     _ProjectsTab(groupId: groupId),
+                    _SharedProjectsTab(groupId: groupId),
                     _SubgroupsTab(groupId: groupId),
                     MembersList(id: groupId, isProject: false),
                     MilestonesTab(scope: (id: groupId, isProject: false)),
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
+                    _VariablesTab(groupId: groupId),
                   ],
                 ),
               ),
@@ -161,6 +166,89 @@ class _ProjectsTab extends ConsumerWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _SharedProjectsTab extends ConsumerWidget {
+  const _SharedProjectsTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final state = ref.watch(sharedProjectsProvider(groupId));
+    final notifier = ref.read(sharedProjectsProvider(groupId).notifier);
+
+    return AsyncValueWidget(
+      value: state,
+      onRetry: notifier.refresh,
+      data: (data) => PagedListView(
+        state: data,
+        onLoadMore: notifier.loadMore,
+        onRefresh: notifier.refresh,
+        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+        separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
+        empty: const EmptyState(
+          icon: Icons.folder_shared_outlined,
+          title: 'No projects shared with this group',
+        ),
+        itemBuilder: (context, index) {
+          final p = data.items[index];
+          return ProjectTile(
+            project: p,
+            onTap: () => unawaited(context.push(Routes.project(p.id))),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _VariablesTab extends ConsumerWidget {
+  const _VariablesTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: Insets.pagePadding,
+      children: [
+        CiVariablesSection(
+          variables: ref.watch(groupVariablesProvider(groupId)),
+          onSave: (existing, fields) async {
+            final repo = ref.read(groupsRepositoryProvider);
+            if (existing == null) {
+              await repo.createGroupVariable(
+                groupId,
+                key: fields.key,
+                value: fields.value,
+                protected_: fields.protected_,
+                masked: fields.masked,
+                environmentScope: fields.environmentScope,
+              );
+            } else {
+              await repo.updateGroupVariable(
+                groupId,
+                existing.key,
+                value: fields.value,
+                protected_: fields.protected_,
+                masked: fields.masked,
+                environmentScope: fields.environmentScope,
+              );
+            }
+            ref.invalidate(groupVariablesProvider(groupId));
+          },
+          onDelete: (v) async {
+            await ref
+                .read(groupsRepositoryProvider)
+                .deleteGroupVariable(groupId, v.key);
+            ref.invalidate(groupVariablesProvider(groupId));
+          },
+        ),
+      ],
     );
   }
 }

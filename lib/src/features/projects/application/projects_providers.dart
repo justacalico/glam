@@ -5,7 +5,7 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
-import 'package:glam/src/features/projects/domain/ci_variable.dart';
+import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
