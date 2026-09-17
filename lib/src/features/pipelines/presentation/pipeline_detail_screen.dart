@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
+import 'package:glam/src/features/pipelines/domain/bridge.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 
@@ -35,7 +36,7 @@ class PipelineDetailScreen extends ConsumerStatefulWidget {
       _PipelineDetailScreenState();
 }
 
-enum _PipelineView { stages, tests, variables }
+enum _PipelineView { stages, tests, variables, downstream }
 
 class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
   _PipelineView _view = _PipelineView.stages;
@@ -48,11 +49,14 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
     final jobs = ref.watch(pipelineJobsProvider(_loc));
     final report = ref.watch(pipelineTestReportProvider(_loc));
     final variables = ref.watch(pipelineVariablesProvider(_loc));
+    final bridges = ref.watch(pipelineBridgesProvider(_loc));
     final hasReport = !(report.value?.isEmpty ?? true);
     final hasVariables = variables.value?.isNotEmpty ?? false;
+    final hasBridges = bridges.value?.isNotEmpty ?? false;
     final view = switch (_view) {
       _PipelineView.tests when !hasReport => _PipelineView.stages,
       _PipelineView.variables when !hasVariables => _PipelineView.stages,
+      _PipelineView.downstream when !hasBridges => _PipelineView.stages,
       _ => _view,
     };
 
@@ -94,7 +98,7 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
         data: (p) => Column(
           children: [
             _PipelineHeader(pipeline: p),
-            if (hasReport || hasVariables)
+            if (hasReport || hasVariables || hasBridges)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   Insets.lg,
@@ -123,6 +127,12 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
                           label: Text('Variables'),
                           icon: Icon(Icons.tune, size: 16),
                         ),
+                      if (hasBridges)
+                        const ButtonSegment(
+                          value: _PipelineView.downstream,
+                          label: Text('Downstream'),
+                          icon: Icon(Icons.account_tree_outlined, size: 16),
+                        ),
                     ],
                     selected: {view},
                     onSelectionChanged: (s) => setState(() => _view = s.first),
@@ -134,6 +144,8 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
                   ? _TestReportView(loc: _loc)
                   : view == _PipelineView.variables
                   ? _VariablesView(loc: _loc)
+                  : view == _PipelineView.downstream
+                  ? _DownstreamView(loc: _loc, projectId: widget.projectId)
                   : jobs.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
@@ -543,6 +555,71 @@ class _VariablesView extends ConsumerWidget {
                         Text(v.variableType, style: theme.textTheme.labelSmall),
                     ],
                   ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+/// Bridge jobs and the downstream pipelines they triggered.
+class _DownstreamView extends ConsumerWidget {
+  const _DownstreamView({required this.loc, required this.projectId});
+
+  final PipelineRef loc;
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bridges = ref.watch(pipelineBridgesProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return AsyncValueWidget<List<Bridge>>(
+      value: bridges,
+      onRetry: () => ref.invalidate(pipelineBridgesProvider(loc)),
+      data: (items) => items.isEmpty
+          ? const EmptyState(
+              icon: Icons.account_tree_outlined,
+              title: 'No downstream pipelines',
+              message: 'This pipeline did not trigger any child pipelines.',
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(Insets.lg),
+              itemCount: items.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, i) {
+                final b = items[i];
+                final d = b.downstream;
+                return ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: StateChip.pipeline(b.status),
+                  title: Text(b.name, style: theme.textTheme.titleSmall),
+                  subtitle: d == null
+                      ? Text(
+                          b.stage ?? 'not triggered',
+                          style: theme.textTheme.bodySmall,
+                        )
+                      : Text(
+                          [
+                            'pipeline #${d.id}',
+                            ?d.projectName,
+                            ?d.ref,
+                          ].join(' · '),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.inkMuted,
+                          ),
+                        ),
+                  trailing: d == null ? null : StateChip.pipeline(d.status),
+                  onTap: d == null
+                      ? null
+                      : () => context.push(
+                          Routes.projectPipeline(
+                            d.projectId ?? projectId,
+                            d.id,
+                          ),
+                        ),
                 );
               },
             ),

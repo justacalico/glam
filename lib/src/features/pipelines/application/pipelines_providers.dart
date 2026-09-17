@@ -7,6 +7,7 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
 import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
+import 'package:glam/src/features/pipelines/domain/bridge.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
@@ -53,6 +54,22 @@ final pipelineTestReportProvider =
       } on ApiException catch (e) {
         if (e.statusCode == 404 || e.statusCode == 400) {
           return const TestReport();
+        }
+        rethrow;
+      }
+    });
+
+/// Downstream pipelines this pipeline triggered via bridge jobs.
+/// Empty on instances without the endpoint or when there are none.
+final pipelineBridgesProvider =
+    FutureProvider.family<List<Bridge>, PipelineRef>((ref, loc) async {
+      try {
+        return await ref
+            .watch(pipelinesRepositoryProvider)
+            .bridges(loc.project, loc.id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
         }
         rethrow;
       }

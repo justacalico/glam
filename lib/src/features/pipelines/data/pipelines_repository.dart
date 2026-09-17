@@ -6,6 +6,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/pipelines/data/artifact_archive.dart';
 import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
+import 'package:glam/src/features/pipelines/domain/bridge.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
@@ -98,6 +99,15 @@ class PipelinesRepository {
       page: page,
       perPage: perPage,
       decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Bridge jobs that triggered downstream pipelines
+  /// (`/pipelines/:id/bridges`).
+  Future<List<Bridge>> bridges(Object projectId, int pipelineId) {
+    return _client.getAll(
+      '${_p(projectId)}/pipelines/$pipelineId/bridges',
+      decoder: (j) => Bridge.fromJson(j! as Map<String, dynamic>),
     );
   }
 
