@@ -246,6 +246,25 @@ class Contributor extends Equatable {
   List<Object?> get props => [name, email, commits, additions, deletions];
 }
 
+/// A `.gitlab/` description template (`/templates/:type`). The list
+/// endpoint already returns content.
+class DescriptionTemplate extends Equatable {
+  const DescriptionTemplate({required this.name, this.content = ''});
+
+  factory DescriptionTemplate.fromJson(Map<String, dynamic> json) {
+    return DescriptionTemplate(
+      name: json['name'] as String? ?? '',
+      content: json['content'] as String? ?? '',
+    );
+  }
+
+  final String name;
+  final String content;
+
+  @override
+  List<Object?> get props => [name, content];
+}
+
 /// An entry in the repository tree (file or directory).
 class TreeEntry extends Equatable {
   const TreeEntry({required this.name, required this.path, required this.type});

@@ -252,6 +252,28 @@ void main() {
       expect(mrs.first.iid, greaterThan(0));
     });
 
+    test('templates decode name and content per type', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/templates/issues', [
+          {'name': 'bug_report', 'content': '## Steps\n1.'},
+        ])
+        ..get('/projects/42/templates/merge_requests', [
+          {'name': 'default', 'content': '## What'},
+        ]);
+      final repo = RepositoryRepository(client);
+
+      final issues = await repo.templates(42, 'issues');
+      expect(issues.single.name, 'bug_report');
+      expect(issues.single.content, contains('## Steps'));
+
+      await repo.templates(42, 'merge_requests');
+      expect(
+        adapter.lastRequest!.path,
+        '/projects/42/templates/merge_requests',
+      );
+    });
+
     test('commitComments decodes plain and anchored comments', () async {
       final (client, adapter) = testClient();
       adapter.get(

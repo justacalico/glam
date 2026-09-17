@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/widgets/description_template_picker.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 
@@ -187,6 +188,12 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
             ),
           ),
           const SizedBox(height: Insets.md),
+          if (!_editing)
+            DescriptionTemplatePicker(
+              projectId: widget.projectId,
+              type: 'issues',
+              onApply: (content) => setState(() => _description.text = content),
+            ),
           TextField(
             controller: _description,
             minLines: 4,
