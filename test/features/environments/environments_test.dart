@@ -77,6 +77,27 @@ void main() {
       });
     });
 
+    test('updateEnvironment puts name and external_url', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/environments/9',
+        (fixtureJson('environments') as List).first,
+      );
+      final repo = EnvironmentsRepository(client);
+
+      await repo.updateEnvironment(
+        42,
+        9,
+        name: 'staging',
+        externalUrl: 'https://staging.example.com',
+      );
+
+      expect(adapter.lastRequest!.data, {
+        'name': 'staging',
+        'external_url': 'https://staging.example.com',
+      });
+    });
+
     test('stop posts and destroy deletes', () async {
       final (client, adapter) = testClient();
       adapter
