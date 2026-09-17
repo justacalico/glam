@@ -10,8 +10,12 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/code_viewer.dart';
+import 'package:glam/src/core/widgets/comment_composer.dart';
+import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
+import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
@@ -73,39 +77,65 @@ class SnippetDetailScreen extends ConsumerWidget {
       ),
       body: AsyncValueWidget(
         value: snippet,
-        data: (s) => ListView(
-          padding: const EdgeInsets.all(Insets.lg),
+        data: (s) => Column(
           children: [
-            _Header(snippet: s),
-            const SizedBox(height: Insets.sm),
-            ReactionsRow(
-              loc: (
-                kind: 'snippet',
-                project: loc.projectId,
-                iid: loc.id,
-                noteId: null,
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(Insets.lg),
+                children: [
+                  _Header(snippet: s),
+                  const SizedBox(height: Insets.sm),
+                  ReactionsRow(
+                    loc: (
+                      kind: 'snippet',
+                      project: loc.projectId,
+                      iid: loc.id,
+                      noteId: null,
+                    ),
+                  ),
+                  if (s.description != null && s.description!.isNotEmpty) ...[
+                    const SizedBox(height: Insets.md),
+                    MarkdownViewer(data: s.description!),
+                  ],
+                  if (s.files.length > 1) ...[
+                    const SizedBox(height: Insets.md),
+                    Wrap(
+                      spacing: Insets.sm,
+                      runSpacing: Insets.xs,
+                      children: [
+                        for (final f in s.files) Chip(label: Text(f.path)),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: Insets.md),
+                  ClipRRect(
+                    borderRadius: Radii.borderMd,
+                    child: AsyncValueWidget(
+                      value: raw,
+                      data: (code) => CodeViewer(
+                        code: code,
+                        language: _language(s),
+                        wrap: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: Insets.lg),
+                  Text(
+                    'Comments',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: Insets.sm),
+                  _SnippetNotes(loc: loc),
+                  const SizedBox(height: Insets.xl),
+                ],
               ),
             ),
-            if (s.description != null && s.description!.isNotEmpty) ...[
-              const SizedBox(height: Insets.md),
-              MarkdownViewer(data: s.description!),
-            ],
-            if (s.files.length > 1) ...[
-              const SizedBox(height: Insets.md),
-              Wrap(
-                spacing: Insets.sm,
-                runSpacing: Insets.xs,
-                children: [for (final f in s.files) Chip(label: Text(f.path))],
-              ),
-            ],
-            const SizedBox(height: Insets.md),
-            ClipRRect(
-              borderRadius: Radii.borderMd,
-              child: AsyncValueWidget(
-                value: raw,
-                data: (code) =>
-                    CodeViewer(code: code, language: _language(s), wrap: true),
-              ),
+            CommentComposer(
+              onSend: (body) async {
+                await ref
+                    .read(snippetNotesProvider(loc).notifier)
+                    .addComment(body);
+              },
             ),
           ],
         ),
@@ -141,6 +171,63 @@ class SnippetDetailScreen extends ConsumerWidget {
     if (context.mounted) {
       context.pop();
     }
+  }
+}
+
+class _SnippetNotes extends ConsumerWidget {
+  const _SnippetNotes({required this.loc});
+
+  final SnippetRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notes = ref.watch(snippetNotesProvider(loc));
+    final myId = ref.watch(sessionProvider).value?.user.id;
+    return notes.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(Insets.xl),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => ErrorView(error: e),
+      data: (state) {
+        final visible = state.items.where((n) => !n.system).toList();
+        if (visible.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Text(
+              'No comments yet',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          );
+        }
+        return Column(
+          children: [
+            for (final note in visible)
+              NoteCard(
+                note: note,
+                onEdit: note.author?.id == myId
+                    ? (body) => ref
+                          .read(snippetNotesProvider(loc).notifier)
+                          .editComment(note.id, body)
+                    : null,
+                onDelete: note.author?.id == myId
+                    ? () => ref
+                          .read(snippetNotesProvider(loc).notifier)
+                          .deleteComment(note.id)
+                    : null,
+                footer: ReactionsRow(
+                  loc: (
+                    kind: 'snippet',
+                    project: loc.projectId,
+                    iid: loc.id,
+                    noteId: note.id,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
   }
 }
 

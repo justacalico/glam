@@ -128,6 +128,38 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('notes CRUD and note-level emoji hit /notes paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/snippets/21/notes', [
+          {'id': 30, 'body': 'nice', 'author': {'id': 7}},
+        ])
+        ..post('/snippets/21/notes', {'id': 31})
+        ..put('/snippets/21/notes/30', {'id': 30})
+        ..delete('/snippets/21/notes/30')
+        ..get('/snippets/21/notes/30/award_emoji', []);
+      final repo = SnippetsRepository(client);
+
+      final notes = await repo.notes(21);
+      expect(notes.items.single.body, 'nice');
+
+      await repo.addNote(21, 'thanks');
+      expect((adapter.lastRequest!.data as Map)['body'], 'thanks');
+
+      await repo.updateNote(21, 30, 'edited');
+      await repo.deleteNote(21, 30);
+      expect(
+        adapter.requestsTo('DELETE', '/snippets/21/notes/30'),
+        hasLength(1),
+      );
+
+      await repo.awardEmojis(21, noteId: 30);
+      expect(
+        adapter.lastRequest!.path,
+        '/snippets/21/notes/30/award_emoji',
+      );
+    });
   });
 
   group('providers', () {
