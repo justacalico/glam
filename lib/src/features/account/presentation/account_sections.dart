@@ -733,14 +733,10 @@ class PreferencesSection extends ConsumerWidget {
                 p.markdownAutomaticLists,
                 'markdown_automatic_lists',
               ),
-              _choice(
-                context,
-                ref,
-                'Layout width',
-                p.layoutWidth,
-                const {'fixed': 'Fixed', 'fluid': 'Fluid'},
-                'layout_width',
-              ),
+              _choice(context, ref, 'Layout width', p.layoutWidth, const {
+                'fixed': 'Fixed',
+                'fluid': 'Fluid',
+              }, 'layout_width'),
               _choice(
                 context,
                 ref,

@@ -681,9 +681,12 @@ void main() {
       adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
 
       await container.read(
-        pipelinesProvider(
-          (project: 42, status: null, source: null, ref: 'main'),
-        ).future,
+        pipelinesProvider((
+          project: 42,
+          status: null,
+          source: null,
+          ref: 'main',
+        )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['ref'], 'main');

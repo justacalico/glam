@@ -170,11 +170,7 @@ class _PendingInvitations extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.mail_outline,
-                    size: 18,
-                    color: colors.inkMuted,
-                  ),
+                  Icon(Icons.mail_outline, size: 18, color: colors.inkMuted),
                   const SizedBox(width: Insets.sm),
                   Expanded(
                     child: Column(

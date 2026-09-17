@@ -48,10 +48,7 @@ void main() {
 
       await repo.updateAlert(42, 1, status: 'acknowledged');
 
-      expect(
-        (adapter.lastRequest!.data as Map)['status'],
-        'acknowledged',
-      );
+      expect((adapter.lastRequest!.data as Map)['status'], 'acknowledged');
     });
   });
 
@@ -66,27 +63,20 @@ void main() {
         );
       final container = ProviderContainer(
         overrides: [
-          alertsRepositoryProvider.overrideWithValue(
-            AlertsRepository(client),
-          ),
+          alertsRepositoryProvider.overrideWithValue(AlertsRepository(client)),
         ],
       );
       addTearDown(container.dispose);
 
       const filter = (project: 42, status: null);
-      final state = await container.read(
-        projectAlertsProvider(filter).future,
-      );
+      final state = await container.read(projectAlertsProvider(filter).future);
       expect(state.items, hasLength(2));
 
       await container
           .read(projectAlertsProvider(filter).notifier)
           .setStatus(1, 'acknowledged');
 
-      final items = container
-          .read(projectAlertsProvider(filter))
-          .value!
-          .items;
+      final items = container.read(projectAlertsProvider(filter)).value!.items;
       expect(items.first.title, 'Disk space low');
     });
   });

@@ -151,10 +151,7 @@ void main() {
     expect(messages, hasLength(2));
     expect(messages.first.theme, 'indigo');
     expect(messages.first.dismissable, isTrue);
-    expect(
-      messages.first.plainText,
-      'Scheduled maintenance Sunday 02:00 UTC.',
-    );
+    expect(messages.first.plainText, 'Scheduled maintenance Sunday 02:00 UTC.');
     expect(messages.last.active, isFalse);
 
     await repo.dismissBroadcastMessage(1);

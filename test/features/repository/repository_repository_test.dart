@@ -421,10 +421,7 @@ void main() {
       await repo.deleteMergedBranches(42);
 
       expect(
-        adapter.requestsTo(
-          'DELETE',
-          '/projects/42/repository/merged_branches',
-        ),
+        adapter.requestsTo('DELETE', '/projects/42/repository/merged_branches'),
         hasLength(1),
       );
     });

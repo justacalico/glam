@@ -101,9 +101,7 @@ class IssueDetailScreen extends ConsumerWidget {
                     milestoneEvents: ref.watch(
                       issueMilestoneEventsProvider(_loc),
                     ),
-                    labelEvents: ref.watch(
-                      issueLabelEventsProvider(_loc),
-                    ),
+                    labelEvents: ref.watch(issueLabelEventsProvider(_loc)),
                   ),
                   const SizedBox(height: Insets.sm),
                   _NotesList(loc: _loc),

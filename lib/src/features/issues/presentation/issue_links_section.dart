@@ -300,9 +300,8 @@ class RelatedMrsSection extends ConsumerWidget {
           for (final m in closedBy)
             MrTile(
               mr: m,
-              onTap: () => unawaited(
-                context.push(Routes.projectMr(m.projectId, m.iid)),
-              ),
+              onTap: () =>
+                  unawaited(context.push(Routes.projectMr(m.projectId, m.iid))),
             ),
         ],
         const SizedBox(height: Insets.sm),

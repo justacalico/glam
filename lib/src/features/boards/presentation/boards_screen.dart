@@ -685,11 +685,7 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
   Widget build(BuildContext context) {
     final existing = widget.existing;
     final milestones = ref.watch(
-      milestonesProvider((
-        scope: widget.scope,
-        state: 'active',
-        search: null,
-      )),
+      milestonesProvider((scope: widget.scope, state: 'active', search: null)),
     );
 
     return AlertDialog(

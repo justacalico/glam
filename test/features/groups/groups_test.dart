@@ -233,11 +233,7 @@ void main() {
         ..get('/groups/9/merge_requests', fixtureJson('mrs'));
       final repo = GroupsRepository(client);
 
-      final issues = await repo.groupIssues(
-        9,
-        state: 'opened',
-        search: 'fix',
-      );
+      final issues = await repo.groupIssues(9, state: 'opened', search: 'fix');
       final mrs = await repo.groupMergeRequests(9, state: 'merged');
 
       expect(issues.items, isNotEmpty);

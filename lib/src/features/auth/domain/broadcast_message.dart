@@ -41,8 +41,7 @@ class BroadcastMessage extends Equatable {
   final DateTime? startsAt;
   final DateTime? endsAt;
 
-  String get plainText =>
-      message.replaceAll(RegExp('<[^>]*>'), '').trim();
+  String get plainText => message.replaceAll(RegExp('<[^>]*>'), '').trim();
 
   @override
   List<Object?> get props => [id];

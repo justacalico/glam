@@ -407,9 +407,7 @@ class _RunnersTab extends ConsumerWidget {
                     border: Border.all(color: colors.border),
                   ),
                   child: Column(
-                    children: [
-                      for (final r in list) RunnerTile(runner: r),
-                    ],
+                    children: [for (final r in list) RunnerTile(runner: r)],
                   ),
                 ),
               ],
@@ -671,10 +669,7 @@ class _GroupIssuesTabState extends ConsumerState<_GroupIssuesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
-                icon: Icons.task_alt,
-                title: 'No issues',
-              ),
+              empty: const EmptyState(icon: Icons.task_alt, title: 'No issues'),
               itemBuilder: (context, index) {
                 final issue = data.items[index];
                 return IssueTile(
