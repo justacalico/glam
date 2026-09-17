@@ -47,12 +47,19 @@ class MergeRequestsRepository {
     MrScope scope = MrScope.assigned,
     String? state,
     String? search,
+    String? orderBy,
+    String? sort,
     int page = 1,
     int perPage = 20,
   }) {
     // The reviewer scope uses reviewer_id=<self> via `reviewer_username`;
     // 'reviewer_id' alone isn't a scope value, so map it explicitly.
-    final query = <String, Object?>{'state': ?state, 'search': ?search};
+    final query = <String, Object?>{
+      'state': ?state,
+      'search': ?search,
+      'order_by': ?orderBy,
+      'sort': ?sort,
+    };
     if (scope == MrScope.review) {
       query['scope'] = 'all';
       query['reviewer_id'] = 'self';
@@ -79,6 +86,8 @@ class MergeRequestsRepository {
     String? milestone,
     int? milestoneId,
     int? assigneeId,
+    String? orderBy,
+    String? sort,
     int page = 1,
     int perPage = 20,
   }) {
@@ -89,6 +98,8 @@ class MergeRequestsRepository {
       'target_branch': ?targetBranch,
       'milestone': ?milestone ?? milestoneId?.toString(),
       'assignee_id': ?assigneeId?.toString(),
+      'order_by': ?orderBy,
+      'sort': ?sort,
     };
     if (scope == MrScope.review) {
       query['scope'] = 'all';

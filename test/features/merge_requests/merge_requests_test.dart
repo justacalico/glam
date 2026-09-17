@@ -142,10 +142,7 @@ void main() {
 
       await repo.projectMergeRequests(42, scope: MrScope.assigned);
 
-      expect(
-        adapter.lastRequest!.queryParameters['scope'],
-        'assigned_to_me',
-      );
+      expect(adapter.lastRequest!.queryParameters['scope'], 'assigned_to_me');
     });
 
     test('projectMergeRequests forwards assignee_id', () async {
@@ -679,10 +676,29 @@ void main() {
         scope: MrScope.all,
         state: 'merged',
         search: 'x',
+        orderBy: null,
+        sort: null,
       ));
       await container.read(mergeRequestsProvider.future);
 
       expect(adapter.lastRequest!.queryParameters['state'], 'merged');
+    });
+
+    test('filter forwards the sort pair', () async {
+      adapter.get('/merge_requests', fixtureJson('mrs'));
+
+      container.read(mrFilterProvider.notifier).update((
+        scope: MrScope.assigned,
+        state: null,
+        search: null,
+        orderBy: 'title',
+        sort: 'asc',
+      ));
+      await container.read(mergeRequestsProvider.future);
+
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['order_by'], 'title');
+      expect(query['sort'], 'asc');
     });
 
     test('mrProvider and mrChangesProvider fetch detail', () async {

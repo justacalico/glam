@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
+import 'package:glam/src/core/widgets/sort_menu.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
@@ -63,6 +64,8 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       state: f.state,
                       search: f.search,
                       issueType: f.issueType,
+                      orderBy: f.orderBy,
+                      sort: f.sort,
                     ),
                   ),
                   showSelectedIcon: false,
@@ -82,6 +85,8 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             state: f.state,
                             search: v,
                             issueType: f.issueType,
+                            orderBy: f.orderBy,
+                            sort: f.sort,
                           ),
                         ),
                       ),
@@ -95,6 +100,8 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           state: s,
                           search: f.search,
                           issueType: f.issueType,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
                         ),
                       ),
                     ),
@@ -108,6 +115,23 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           state: f.state,
                           search: f.search,
                           issueType: v,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    SortMenu(
+                      orderBy: filter.orderBy,
+                      sort: filter.sort,
+                      options: SortOptions.issues,
+                      onSelect: (o) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          issueType: f.issueType,
+                          orderBy: o.orderBy,
+                          sort: o.sort,
                         ),
                       ),
                     ),
@@ -208,6 +232,8 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _milestone;
   String? _issueType;
   int? _assigneeId;
+  String? _orderBy;
+  String? _sort;
 
   @override
   Widget build(BuildContext context) {
@@ -220,6 +246,8 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       milestone: _milestone,
       issueType: _issueType,
       assigneeId: _assigneeId,
+      orderBy: _orderBy,
+      sort: _sort,
     );
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
@@ -315,10 +343,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 onSelect: (v) => setState(
                   () => _assigneeId = v == null
                       ? null
-                      : members
-                            .where((m) => m.username == v)
-                            .firstOrNull
-                            ?.id,
+                      : members.where((m) => m.username == v).firstOrNull?.id,
                 ),
               ),
               FilterMenu(
@@ -338,6 +363,15 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 current: _issueType,
                 options: const ['issue', 'incident', 'task', 'test_case'],
                 onSelect: (v) => setState(() => _issueType = v),
+              ),
+              SortMenu(
+                orderBy: _orderBy,
+                sort: _sort,
+                options: SortOptions.issues,
+                onSelect: (o) => setState(() {
+                  _orderBy = o.orderBy;
+                  _sort = o.sort;
+                }),
               ),
               IconButton(
                 tooltip: 'New issue',

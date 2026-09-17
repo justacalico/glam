@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
+import 'package:glam/src/core/widgets/sort_menu.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
@@ -61,7 +62,13 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                   ],
                   selected: {filter.scope},
                   onSelectionChanged: (s) => _setFilter(
-                    (f) => (scope: s.first, state: f.state, search: f.search),
+                    (f) => (
+                      scope: s.first,
+                      state: f.state,
+                      search: f.search,
+                      orderBy: f.orderBy,
+                      sort: f.sort,
+                    ),
                   ),
                   showSelectedIcon: false,
                 ),
@@ -75,7 +82,13 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                       child: SearchField(
                         hint: 'Search merge requests',
                         onChanged: (v) => _setFilter(
-                          (f) => (scope: f.scope, state: f.state, search: v),
+                          (f) => (
+                            scope: f.scope,
+                            state: f.state,
+                            search: v,
+                            orderBy: f.orderBy,
+                            sort: f.sort,
+                          ),
                         ),
                       ),
                     ),
@@ -83,7 +96,27 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                     _StateMenu(
                       current: filter.state,
                       onSelect: (s) => _setFilter(
-                        (f) => (scope: f.scope, state: s, search: f.search),
+                        (f) => (
+                          scope: f.scope,
+                          state: s,
+                          search: f.search,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    SortMenu(
+                      orderBy: filter.orderBy,
+                      sort: filter.sort,
+                      options: SortOptions.mergeRequests,
+                      onSelect: (o) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          orderBy: o.orderBy,
+                          sort: o.sort,
+                        ),
                       ),
                     ),
                   ],
@@ -188,6 +221,8 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _milestone;
   String? _targetBranch;
   int? _assigneeId;
+  String? _orderBy;
+  String? _sort;
 
   static const _scopes = {
     MrScope.all: 'All',
@@ -208,6 +243,8 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
       milestone: _milestone,
       targetBranch: _targetBranch,
       assigneeId: _assigneeId,
+      orderBy: _orderBy,
+      sort: _sort,
     );
     final list = ref.watch(projectMrsProvider(filter));
     final notifier = ref.read(projectMrsProvider(filter).notifier);
@@ -320,10 +357,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 onSelect: (v) => setState(
                   () => _assigneeId = v == null
                       ? null
-                      : members
-                            .where((m) => m.username == v)
-                            .firstOrNull
-                            ?.id,
+                      : members.where((m) => m.username == v).firstOrNull?.id,
                 ),
               ),
               FilterMenu(
@@ -343,6 +377,15 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 current: _targetBranch,
                 options: [for (final b in branches) b.name],
                 onSelect: (v) => setState(() => _targetBranch = v),
+              ),
+              SortMenu(
+                orderBy: _orderBy,
+                sort: _sort,
+                options: SortOptions.mergeRequests,
+                onSelect: (o) => setState(() {
+                  _orderBy = o.orderBy;
+                  _sort = o.sort;
+                }),
               ),
               IconButton(
                 tooltip: 'New merge request',

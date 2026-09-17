@@ -24,6 +24,8 @@ typedef IssueFilter = ({
   String? state,
   String? search,
   String? issueType,
+  String? orderBy,
+  String? sort,
 });
 
 const defaultIssueFilter = (
@@ -31,6 +33,8 @@ const defaultIssueFilter = (
   state: 'opened',
   search: null,
   issueType: null,
+  orderBy: null,
+  sort: null,
 );
 
 final issueFilterProvider = NotifierProvider<IssueFilterNotifier, IssueFilter>(
@@ -60,6 +64,8 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
           state: filter.state,
           search: filter.search,
           issueType: filter.issueType,
+          orderBy: filter.orderBy,
+          sort: filter.sort,
           page: page,
         );
   }
@@ -74,6 +80,8 @@ typedef ProjectIssueFilter = ({
   String? milestone,
   String? issueType,
   int? assigneeId,
+  String? orderBy,
+  String? sort,
 });
 
 final projectIssuesProvider =
@@ -100,6 +108,8 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           milestone: filter.milestone,
           issueType: filter.issueType,
           assigneeId: filter.assigneeId,
+          orderBy: filter.orderBy,
+          sort: filter.sort,
           page: page,
         );
   }
