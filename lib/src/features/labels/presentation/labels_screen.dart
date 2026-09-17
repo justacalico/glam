@@ -130,9 +130,20 @@ class _LabelTile extends ConsumerWidget {
             ),
           PopupMenuButton<String>(
             iconSize: 18,
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'edit', child: Text('Edit')),
-              PopupMenuItem(value: 'delete', child: Text('Delete')),
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'edit', child: Text('Edit')),
+              PopupMenuItem(
+                value: 'subscribe',
+                child: Text(
+                  label.subscribed ?? false ? 'Unsubscribe' : 'Subscribe',
+                ),
+              ),
+              if (scope.isProject)
+                const PopupMenuItem(
+                  value: 'promote',
+                  child: Text('Promote to group'),
+                ),
+              const PopupMenuItem(value: 'delete', child: Text('Delete')),
             ],
             onSelected: (v) {
               if (v == 'edit') {
@@ -147,6 +158,10 @@ class _LabelTile extends ConsumerWidget {
                     }
                   }),
                 );
+              } else if (v == 'subscribe') {
+                unawaited(_subscribe(context, ref));
+              } else if (v == 'promote') {
+                unawaited(_promote(context, ref));
               } else {
                 unawaited(_delete(context, ref));
               }
@@ -155,6 +170,46 @@ class _LabelTile extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _subscribe(BuildContext context, WidgetRef ref) async {
+    await ref
+        .read(labelsRepositoryProvider)
+        .setSubscribed(
+          scope.id,
+          isProject: scope.isProject,
+          labelId: label.id,
+          subscribed: !(label.subscribed ?? false),
+        );
+    ref.invalidate(labelsProvider);
+  }
+
+  Future<void> _promote(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Promote ${label.name}?'),
+        content: const Text(
+          'The label moves to the parent group and is replaced on every '
+          'issue and MR that uses it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => context.pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => context.pop(true),
+            child: const Text('Promote'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) {
+      return;
+    }
+    await ref.read(labelsRepositoryProvider).promote(scope.id, label.id);
+    ref.invalidate(labelsProvider);
   }
 
   Future<void> _delete(BuildContext context, WidgetRef ref) async {

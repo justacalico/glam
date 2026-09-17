@@ -71,4 +71,28 @@ class LabelsRepository {
       query: {'name': name},
     );
   }
+
+  /// `POST|DELETE /labels/:label_id/subscribe` — notification subscription.
+  Future<void> setSubscribed(
+    Object id, {
+    required bool isProject,
+    required int labelId,
+    required bool subscribed,
+  }) async {
+    final path = '${_base(id, isProject: isProject)}/$labelId/subscribe';
+    if (subscribed) {
+      await _client.post(path, decoder: _decode);
+    } else {
+      await _client.delete(path);
+    }
+  }
+
+  /// Promotes a project label to its parent group
+  /// (`PUT /projects/:id/labels/:id/promote`). Project scope only.
+  Future<Label> promote(Object id, int labelId) {
+    return _client.put(
+      '${_base(id, isProject: true)}/$labelId/promote',
+      decoder: _decode,
+    );
+  }
 }

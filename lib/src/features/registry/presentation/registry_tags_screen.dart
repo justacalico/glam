@@ -47,7 +47,7 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
             ),
             child: SearchField(
               hint: 'Filter tags (regex)',
-              onChanged: (s) => setState(() => _name = s.isEmpty ? null : s),
+              onChanged: (s) => setState(() => _name = s),
             ),
           ),
           Expanded(
@@ -120,7 +120,9 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
       return;
     }
     try {
-      await ref.read(registryTagsProvider(loc).notifier).deleteTag(tag.name);
+      await ref
+          .read(registryTagsProvider((loc: widget.loc, name: _name)).notifier)
+          .deleteTag(tag.name);
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
