@@ -20,12 +20,20 @@ final mrRepositoryProvider = Provider<MergeRequestsRepository>(
   (ref) => MergeRequestsRepository(ref.watch(apiClientProvider)),
 );
 
-typedef MrFilter = ({MrScope scope, String? state, String? search});
+typedef MrFilter = ({
+  MrScope scope,
+  String? state,
+  String? search,
+  String? orderBy,
+  String? sort,
+});
 
 const defaultMrFilter = (
   scope: MrScope.assigned,
   state: 'opened',
   search: null,
+  orderBy: null,
+  sort: null,
 );
 
 final mrFilterProvider = NotifierProvider<MrFilterNotifier, MrFilter>(
@@ -54,6 +62,8 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
           scope: filter.scope,
           state: filter.state,
           search: filter.search,
+          orderBy: filter.orderBy,
+          sort: filter.sort,
           page: page,
         );
   }
@@ -68,6 +78,8 @@ typedef ProjectMrFilter = ({
   String? milestone,
   String? targetBranch,
   int? assigneeId,
+  String? orderBy,
+  String? sort,
 });
 
 final projectMrsProvider =
@@ -95,6 +107,8 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           milestone: filter.milestone,
           targetBranch: filter.targetBranch,
           assigneeId: filter.assigneeId,
+          orderBy: filter.orderBy,
+          sort: filter.sort,
           page: page,
         );
   }

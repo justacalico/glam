@@ -41,6 +41,8 @@ void main() {
       state: 'closed',
       search: 'x',
       issueType: 'incident',
+      orderBy: null,
+      sort: null,
     ));
     await container.read(issuesProvider.future);
 
@@ -61,6 +63,8 @@ void main() {
       milestone: null,
       issueType: null,
       assigneeId: null,
+      orderBy: null,
+      sort: null,
     );
     final state = await container.read(projectIssuesProvider(filter).future);
 
@@ -79,6 +83,8 @@ void main() {
       milestone: 'v1',
       issueType: null,
       assigneeId: null,
+      orderBy: null,
+      sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
@@ -98,10 +104,33 @@ void main() {
       milestone: null,
       issueType: null,
       assigneeId: 7,
+      orderBy: null,
+      sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     expect(adapter.lastRequest!.queryParameters['assignee_id'], '7');
+  });
+
+  test('projectIssuesProvider forwards the sort pair', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      orderBy: 'due_date',
+      sort: 'asc',
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    final query = adapter.lastRequest!.queryParameters;
+    expect(query['order_by'], 'due_date');
+    expect(query['sort'], 'asc');
   });
 
   test('issueProvider loads a single issue', () async {
