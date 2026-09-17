@@ -2,6 +2,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
+import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -393,6 +394,41 @@ class GroupsRepository {
   Future<void> unshareGroup(Object id, int sharedGroupId) {
     return _client.delete(
       '${_scopeBase(id, isProject: false)}/share/$sharedGroupId',
+    );
+  }
+
+  /// Deploy tokens (`/groups/:id/deploy_tokens`).
+  Future<List<DeployToken>> deployTokens(Object id) {
+    return _client.getAll(
+      '${_scopeBase(id, isProject: false)}/deploy_tokens',
+      decoder: (j) => DeployToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// The create response carries `token` — the only time GitLab ever
+  /// returns the secret.
+  Future<DeployToken> createDeployToken(
+    Object id, {
+    required String name,
+    required List<String> scopes,
+    String? username,
+    DateTime? expiresAt,
+  }) {
+    return _client.post(
+      '${_scopeBase(id, isProject: false)}/deploy_tokens',
+      body: {
+        'name': name,
+        'scopes': scopes,
+        'username': ?username,
+        'expires_at': ?expiresAt?.toIso8601String().substring(0, 10),
+      },
+      decoder: (j) => DeployToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteDeployToken(Object id, int tokenId) {
+    return _client.delete(
+      '${_scopeBase(id, isProject: false)}/deploy_tokens/$tokenId',
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/audit_events_list.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
+import 'package:glam/src/core/widgets/deploy_tokens_section.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
@@ -96,6 +97,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
                   Tab(text: 'Variables'),
+                  Tab(text: 'Tokens'),
                   Tab(text: 'Webhooks'),
                   Tab(text: 'Activity'),
                   Tab(text: 'Audit'),
@@ -113,6 +115,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
                     _VariablesTab(groupId: groupId),
+                    _TokensTab(groupId: groupId),
                     _WebhooksTab(groupId: groupId),
                     EventList(feed: (kind: 'group', id: groupId)),
                     _AuditTab(groupId: groupId),
@@ -331,6 +334,44 @@ class _VariablesTab extends ConsumerWidget {
                 .deleteGroupVariable(groupId, v.key);
             ref.invalidate(groupVariablesProvider(groupId));
           },
+        ),
+      ],
+    );
+  }
+}
+
+class _TokensTab extends ConsumerWidget {
+  const _TokensTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: Insets.pagePadding,
+      children: [
+        DeployTokensSection(
+          tokens: ref.watch(groupDeployTokensProvider(groupId)),
+          onCreate: (draft) async {
+            final token = await ref
+                .read(groupsRepositoryProvider)
+                .createDeployToken(
+                  groupId,
+                  name: draft.name,
+                  scopes: draft.scopes,
+                  username: draft.username,
+                  expiresAt: draft.expiresAt,
+                );
+            ref.invalidate(groupDeployTokensProvider(groupId));
+            return token;
+          },
+          onRevoke: (t) async {
+            await ref
+                .read(groupsRepositoryProvider)
+                .deleteDeployToken(groupId, t.id);
+            ref.invalidate(groupDeployTokensProvider(groupId));
+          },
+          onRetry: () => ref.invalidate(groupDeployTokensProvider(groupId)),
         ),
       ],
     );

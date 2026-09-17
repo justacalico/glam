@@ -170,6 +170,50 @@ void main() {
       expect(adapter.requestsTo('DELETE', '/groups/9/hooks/7'), hasLength(1));
     });
 
+    test('group deploy tokens list, create, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/deploy_tokens', [
+          {
+            'id': 3,
+            'name': 'gitlab-deploy',
+            'username': 'gitlab+deploy-token-3',
+            'scopes': ['read_repository'],
+            'expires_at': '2025-12-31',
+          },
+        ])
+        ..post('/groups/9/deploy_tokens', {
+          'id': 4,
+          'name': 'pull',
+          'scopes': ['read_registry'],
+          'token': 's3cret',
+        })
+        ..delete('/groups/9/deploy_tokens/3');
+      final repo = GroupsRepository(client);
+
+      final tokens = await repo.deployTokens(9);
+      expect(tokens.single.id, 3);
+      expect(tokens.single.username, 'gitlab+deploy-token-3');
+
+      final created = await repo.createDeployToken(
+        9,
+        name: 'pull',
+        scopes: ['read_registry'],
+        username: 'reader',
+        expiresAt: DateTime.utc(2026, 1, 1),
+      );
+      expect(created.token, 's3cret');
+      final body = adapter.requestsTo('POST', '/groups/9/deploy_tokens').single;
+      expect((body.data as Map)['expires_at'], '2026-01-01');
+      expect((body.data as Map)['scopes'], ['read_registry']);
+
+      await repo.deleteDeployToken(9, 3);
+      expect(
+        adapter.requestsTo('DELETE', '/groups/9/deploy_tokens/3'),
+        hasLength(1),
+      );
+    });
+
     test('auditEvents decodes detail fields', () async {
       final (client, adapter) = testClient();
       adapter.get('/groups/9/audit_events', [
