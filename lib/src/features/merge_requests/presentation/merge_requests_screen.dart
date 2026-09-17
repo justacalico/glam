@@ -14,6 +14,8 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
+import 'package:glam/src/features/groups/application/groups_providers.dart';
+import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
@@ -185,6 +187,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _label;
   String? _milestone;
   String? _targetBranch;
+  int? _assigneeId;
 
   static const _scopes = {
     MrScope.all: 'All',
@@ -204,6 +207,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
       label: _label,
       milestone: _milestone,
       targetBranch: _targetBranch,
+      assigneeId: _assigneeId,
     );
     final list = ref.watch(projectMrsProvider(filter));
     final notifier = ref.read(projectMrsProvider(filter).notifier);
@@ -235,6 +239,18 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
             .value
             ?.items ??
         const <Branch>[];
+    final members =
+        ref
+            .watch(
+              membersProvider((
+                id: widget.projectId,
+                isProject: true,
+                query: null,
+              )),
+            )
+            .value
+            ?.items ??
+        const <Member>[];
     const states = {
       'opened': 'Open',
       'merged': 'Merged',
@@ -290,6 +306,24 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                         orElse: () => const MapEntry(MrScope.all, 'All'),
                       )
                       .key,
+                ),
+              ),
+              FilterMenu(
+                title: 'Assignee',
+                current: _assigneeId == null
+                    ? null
+                    : members
+                          .where((m) => m.id == _assigneeId)
+                          .firstOrNull
+                          ?.username,
+                options: [for (final m in members) m.username],
+                onSelect: (v) => setState(
+                  () => _assigneeId = v == null
+                      ? null
+                      : members
+                            .where((m) => m.username == v)
+                            .firstOrNull
+                            ?.id,
                 ),
               ),
               FilterMenu(

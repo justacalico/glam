@@ -65,6 +65,7 @@ typedef ProjectMrFilter = ({
   String? label,
   String? milestone,
   String? targetBranch,
+  int? assigneeId,
 });
 
 final projectMrsProvider =
@@ -91,6 +92,7 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           labels: filter.label,
           milestone: filter.milestone,
           targetBranch: filter.targetBranch,
+          assigneeId: filter.assigneeId,
           page: page,
         );
   }
