@@ -107,6 +107,22 @@ class AccountRepository {
     );
   }
 
+  /// Account preferences (`/user/preferences`).
+  Future<UserPreferences> userPreferences() {
+    return _client.get(
+      '/user/preferences',
+      decoder: (j) => UserPreferences.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<UserPreferences> updateUserPreferences(Map<String, dynamic> fields) {
+    return _client.put(
+      '/user/preferences',
+      body: fields,
+      decoder: (j) => UserPreferences.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<NotificationSettings> updateNotificationSettings({
     String? level,
     String? notificationEmail,

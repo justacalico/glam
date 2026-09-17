@@ -212,6 +212,33 @@ void main() {
       expect(sent['level'], 'watch');
       expect(sent['new_issue'], true);
     });
+
+    test('user preferences get and put', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/user/preferences', {
+          'view_diffs_file_by_file': true,
+          'show_whitespace_in_diffs': false,
+          'layout_width': 'fluid',
+          'projects_view': 'starred',
+        })
+        ..put('/user/preferences', {
+          'show_whitespace_in_diffs': true,
+        });
+      final repo = AccountRepository(client);
+
+      final p = await repo.userPreferences();
+      expect(p.viewDiffsFileByFile, isTrue);
+      expect(p.showWhitespaceInDiffs, isFalse);
+      expect(p.layoutWidth, 'fluid');
+      expect(p.projectsView, 'starred');
+
+      await repo.updateUserPreferences(
+        const {'show_whitespace_in_diffs': true},
+      );
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['show_whitespace_in_diffs'], true);
+    });
   });
 
   group('accountActionsProvider', () {

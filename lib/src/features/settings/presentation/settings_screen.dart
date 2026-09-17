@@ -59,6 +59,7 @@ class SettingsScreen extends ConsumerWidget {
           const EmailsSection(),
           const TokensSection(),
           const NotificationSection(),
+          const PreferencesSection(),
           _Section(
             label: 'Session',
             children: [

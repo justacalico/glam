@@ -33,6 +33,10 @@ final notificationSettingsProvider = FutureProvider<NotificationSettings>(
   (ref) => ref.watch(accountRepositoryProvider).notificationSettings(),
 );
 
+final userPreferencesProvider = FutureProvider<UserPreferences>(
+  (ref) => ref.watch(accountRepositoryProvider).userPreferences(),
+);
+
 /// Per-project notification level and custom events.
 final projectNotificationProvider =
     FutureProvider.family<NotificationSettings, Object>(
@@ -101,6 +105,11 @@ class AccountActions {
   Future<void> setNotificationLevel(String level) async {
     await _repo.updateNotificationSettings(level: level);
     _ref.invalidate(notificationSettingsProvider);
+  }
+
+  Future<void> updateUserPreference(Map<String, dynamic> fields) async {
+    await _repo.updateUserPreferences(fields);
+    _ref.invalidate(userPreferencesProvider);
   }
 
   Future<void> toggleNotificationEvent(String event, bool on) async {
