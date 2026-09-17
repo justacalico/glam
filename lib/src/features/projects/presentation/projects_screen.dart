@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +12,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
+import 'package:glam/src/features/projects/presentation/new_project_dialog.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
 
 /// Projects list: yours / starred / explore / all, with search and sort.
@@ -38,6 +41,13 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
     );
   }
 
+  Future<void> _newProject() async {
+    final project = await NewProjectDialog.show(context);
+    if (project != null && mounted) {
+      unawaited(context.push(Routes.project(project.id)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -60,6 +70,11 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
               )
             : const Text('Projects'),
         actions: [
+          IconButton(
+            tooltip: 'New project',
+            icon: const Icon(Icons.add),
+            onPressed: () => unawaited(_newProject()),
+          ),
           IconButton(
             tooltip: _searching ? 'Close search' : 'Search',
             icon: Icon(_searching ? Icons.close : Icons.search),

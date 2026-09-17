@@ -48,6 +48,46 @@ void main() {
     expect(adapter.lastRequest!.path, '/projects/group%2Fsub');
   });
 
+  test('namespaces lists creatable namespaces', () async {
+    final (client, adapter) = testClient();
+    adapter.get('/namespaces', fixtureJson('namespaces'));
+
+    final items = await ProjectsRepository(client).namespaces();
+
+    expect(items, hasLength(2));
+    expect(items.first.kind, 'user');
+    expect(items.last.label, 'platform');
+  });
+
+  test('createProject posts name and optional fields', () async {
+    final (client, adapter) = testClient();
+    adapter.post('/projects', fixtureJson('project'));
+
+    final project = await ProjectsRepository(client).createProject(
+      name: 'Glam',
+      namespaceId: 9,
+      visibility: 'internal',
+      initializeWithReadme: true,
+    );
+
+    expect(project.id, 42);
+    final sent = adapter.lastRequest!.data as Map;
+    expect(sent['name'], 'Glam');
+    expect(sent['namespace_id'], 9);
+    expect(sent['visibility'], 'internal');
+    expect(sent['initialize_with_readme'], true);
+    expect(sent.containsKey('path'), isFalse);
+  });
+
+  test('deleteProject deletes the project path', () async {
+    final (client, adapter) = testClient();
+    adapter.delete('/projects/42');
+
+    await ProjectsRepository(client).deleteProject(42);
+
+    expect(adapter.requestsTo('DELETE', '/projects/42'), hasLength(1));
+  });
+
   test('star/unstar post to the right endpoints', () async {
     final (client, adapter) = testClient();
     adapter

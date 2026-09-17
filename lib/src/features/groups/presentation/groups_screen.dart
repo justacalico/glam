@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/features/groups/presentation/new_group_dialog.dart';
 
 /// Top-level groups list with search.
 class GroupsScreen extends ConsumerStatefulWidget {
@@ -34,6 +35,13 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
     super.dispose();
   }
 
+  Future<void> _newGroup() async {
+    final group = await NewGroupDialog.show(context);
+    if (group != null && mounted) {
+      unawaited(context.push(Routes.group(group.id)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -41,7 +49,16 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
     final notifier = ref.read(groupsProvider(_query).notifier);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Groups')),
+      appBar: AppBar(
+        title: const Text('Groups'),
+        actions: [
+          IconButton(
+            tooltip: 'New group',
+            icon: const Icon(Icons.add),
+            onPressed: () => unawaited(_newGroup()),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
