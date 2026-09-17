@@ -533,22 +533,35 @@ class Release extends Equatable {
 
 /// A downloadable release link.
 class ReleaseLink extends Equatable {
-  const ReleaseLink({required this.name, required this.url, this.linkType});
+  const ReleaseLink({
+    this.id,
+    required this.name,
+    required this.url,
+    this.linkType,
+    this.filepath,
+    this.external = true,
+  });
 
   factory ReleaseLink.fromJson(Map<String, dynamic> json) {
     return ReleaseLink(
+      id: json['id'] as int?,
       name: json['name'] as String? ?? 'link',
       url: json['direct_asset_url'] as String? ?? json['url'] as String? ?? '',
       linkType: json['link_type'] as String?,
+      filepath: json['filepath'] as String?,
+      external: json['external'] as bool? ?? true,
     );
   }
 
+  final int? id;
   final String name;
   final String url;
   final String? linkType;
+  final String? filepath;
+  final bool external;
 
   @override
-  List<Object?> get props => [name, url];
+  List<Object?> get props => [id, name, url];
 }
 
 /// A comment on a commit, optionally anchored to a diff line
