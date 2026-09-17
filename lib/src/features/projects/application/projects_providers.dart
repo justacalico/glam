@@ -9,7 +9,7 @@ import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
-import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
