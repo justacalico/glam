@@ -43,6 +43,7 @@ void main() {
       issueType: 'incident',
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     ));
@@ -68,6 +69,7 @@ void main() {
       authorId: null,
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
@@ -91,6 +93,7 @@ void main() {
       authorId: null,
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
@@ -115,6 +118,7 @@ void main() {
       authorId: null,
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
@@ -137,6 +141,7 @@ void main() {
       authorId: null,
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: 'due_date',
       sort: 'asc',
     );
@@ -161,6 +166,7 @@ void main() {
       authorId: 4,
       confidential: null,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
@@ -182,6 +188,7 @@ void main() {
       authorId: null,
       confidential: true,
       dueDate: null,
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
@@ -203,12 +210,35 @@ void main() {
       authorId: null,
       confidential: null,
       dueDate: 'overdue',
+      myReactionEmoji: null,
       orderBy: null,
       sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     expect(adapter.lastRequest!.queryParameters['due_date'], 'overdue');
+  });
+
+  test('forwards my_reaction_emoji', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      authorId: null,
+      confidential: null,
+      dueDate: null,
+      myReactionEmoji: 'tada',
+      orderBy: null,
+      sort: null,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    expect(adapter.lastRequest!.queryParameters['my_reaction_emoji'], 'tada');
   });
 
   test('issueProvider loads a single issue', () async {
