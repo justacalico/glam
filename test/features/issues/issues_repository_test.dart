@@ -121,6 +121,18 @@ void main() {
       final sent = adapter.lastRequest!.data as Map;
       expect(sent['state_event'], 'close');
     });
+
+    test('updateIssue sends weight', () async {
+      final (client, adapter) = testClient();
+      adapter.put(
+        '/projects/42/issues/12',
+        (fixtureJson('issues') as List).last,
+      );
+      final repo = IssuesRepository(client);
+
+      await repo.updateIssue(42, 12, weight: 3);
+      expect((adapter.lastRequest!.data as Map)['weight'], 3);
+    });
   });
 
   group('notes', () {

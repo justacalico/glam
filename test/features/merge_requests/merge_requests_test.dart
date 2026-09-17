@@ -142,6 +142,35 @@ void main() {
       expect(sent['sha'], 'abc');
     });
 
+    test('merge with mergeWhenPipelineSucceeds and its cancel', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..put(
+          '/projects/42/merge_requests/7/merge',
+          (fixtureJson('mrs') as List).last,
+        )
+        ..post(
+          '/projects/42/merge_requests/7/cancel_merge_when_pipeline_succeeds',
+          {},
+        );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.merge(42, 7, mergeWhenPipelineSucceeds: true);
+      expect(
+        (adapter.lastRequest!.data as Map)['merge_when_pipeline_succeeds'],
+        true,
+      );
+
+      await repo.cancelAutoMerge(42, 7);
+      expect(
+        adapter.requestsTo(
+          'POST',
+          '/projects/42/merge_requests/7/cancel_merge_when_pipeline_succeeds',
+        ),
+        hasLength(1),
+      );
+    });
+
     test('approve and unapprove post to the right paths', () async {
       final (client, adapter) = testClient();
       adapter
