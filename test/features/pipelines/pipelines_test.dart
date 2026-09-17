@@ -612,10 +612,22 @@ void main() {
     test('pipelinesProvider loads pages', () async {
       adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
 
-      final state = await container.read(pipelinesProvider(42).future);
+      final state = await container.read(
+        pipelinesProvider((project: 42, status: null)).future,
+      );
 
       expect(state.items, hasLength(2));
       expect(state.items.first.status, 'success');
+    });
+
+    test('pipelinesProvider forwards the status filter', () async {
+      adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
+
+      await container.read(
+        pipelinesProvider((project: 42, status: 'failed')).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['status'], 'failed');
     });
 
     test('pipelineJobsProvider loads jobs', () async {
