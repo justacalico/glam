@@ -419,6 +419,11 @@ class ProjectAdminActions {
     _ref.invalidate(projectRemoteMirrorsProvider(projectId));
   }
 
+  Future<void> pullMirrorSync(Object projectId) async {
+    await _repo.pullMirrorSync(projectId);
+    _ref.invalidate(projectRemoteMirrorsProvider(projectId));
+  }
+
   /// Returns the created token — the only time its secret is readable.
   Future<DeployToken> addDeployToken(
     Object projectId, {

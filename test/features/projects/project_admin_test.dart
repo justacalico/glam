@@ -393,6 +393,19 @@ void main() {
       );
     });
 
+    test('pullMirrorSync posts to the pull endpoint', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/mirror/pull', <String, dynamic>{});
+      final repo = ProjectsRepository(client);
+
+      await repo.pullMirrorSync(42);
+
+      expect(
+        adapter.requestsTo('POST', '/projects/42/mirror/pull'),
+        hasLength(1),
+      );
+    });
+
     test('starrers decodes the users list', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/starrers', [
