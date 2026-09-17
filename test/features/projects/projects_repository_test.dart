@@ -86,6 +86,9 @@ void main() {
         sharedRunnersEnabled: false,
         groupRunnersEnabled: true,
         approvalsBeforeMerge: 2,
+        mergeMethod: 'ff',
+        onlyAllowMergeIfPipelineSucceeds: true,
+        onlyAllowMergeIfAllDiscussionsAreResolved: true,
       );
 
       expect(adapter.lastRequest!.data, {
@@ -96,6 +99,9 @@ void main() {
         'shared_runners_enabled': false,
         'group_runners_enabled': true,
         'approvals_before_merge': 2,
+        'merge_method': 'ff',
+        'only_allow_merge_if_pipeline_succeeds': true,
+        'only_allow_merge_if_all_discussions_are_resolved': true,
       });
     });
 

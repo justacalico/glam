@@ -76,6 +76,15 @@ class ProjectsRepository {
     bool? sharedRunnersEnabled,
     bool? groupRunnersEnabled,
     int? approvalsBeforeMerge,
+    String? mergeMethod,
+    String? squashOption,
+    bool? onlyAllowMergeIfPipelineSucceeds,
+    bool? allowMergeOnSkippedPipeline,
+    bool? onlyAllowMergeIfAllDiscussionsAreResolved,
+    bool? removeSourceBranchAfterMerge,
+    String? mergeCommitTemplate,
+    String? squashCommitTemplate,
+    String? suggestionCommitMessage,
   }) {
     return _client.put(
       '/projects/${GitLabApiClient.encodeProject(id)}',
@@ -91,6 +100,17 @@ class ProjectsRepository {
         'shared_runners_enabled': ?sharedRunnersEnabled,
         'group_runners_enabled': ?groupRunnersEnabled,
         'approvals_before_merge': ?approvalsBeforeMerge,
+        'merge_method': ?mergeMethod,
+        'squash_option': ?squashOption,
+        'only_allow_merge_if_pipeline_succeeds':
+            ?onlyAllowMergeIfPipelineSucceeds,
+        'allow_merge_on_skipped_pipeline': ?allowMergeOnSkippedPipeline,
+        'only_allow_merge_if_all_discussions_are_resolved':
+            ?onlyAllowMergeIfAllDiscussionsAreResolved,
+        'remove_source_branch_after_merge': ?removeSourceBranchAfterMerge,
+        'merge_commit_template': ?mergeCommitTemplate,
+        'squash_commit_template': ?squashCommitTemplate,
+        'suggestion_commit_message': ?suggestionCommitMessage,
       },
       decoder: _decodeOne,
     );

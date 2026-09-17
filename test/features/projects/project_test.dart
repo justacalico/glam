@@ -22,6 +22,13 @@ void main() {
       expect(project.archived, isFalse);
       expect(project.emptyRepo, isFalse);
       expect(project.lastActivityAt, isNotNull);
+      expect(project.approvalsBeforeMerge, 2);
+      expect(project.mergeMethod, 'rebase_merge');
+      expect(project.squashOption, 'default_on');
+      expect(project.onlyAllowMergeIfPipelineSucceeds, isTrue);
+      expect(project.onlyAllowMergeIfAllDiscussionsAreResolved, isTrue);
+      expect(project.removeSourceBranchAfterMerge, isTrue);
+      expect(project.mergeCommitTemplate, contains('source_branch'));
     });
 
     test('tolerates a minimal payload', () {

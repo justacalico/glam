@@ -38,6 +38,15 @@ class Project extends Equatable {
     this.sharedRunnersEnabled = true,
     this.groupRunnersEnabled = true,
     this.approvalsBeforeMerge,
+    this.mergeMethod,
+    this.squashOption,
+    this.onlyAllowMergeIfPipelineSucceeds,
+    this.allowMergeOnSkippedPipeline,
+    this.onlyAllowMergeIfAllDiscussionsAreResolved,
+    this.removeSourceBranchAfterMerge,
+    this.mergeCommitTemplate,
+    this.squashCommitTemplate,
+    this.suggestionCommitMessage,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -90,6 +99,19 @@ class Project extends Equatable {
       sharedRunnersEnabled: json['shared_runners_enabled'] as bool? ?? true,
       groupRunnersEnabled: json['group_runners_enabled'] as bool? ?? true,
       approvalsBeforeMerge: json['approvals_before_merge'] as int?,
+      mergeMethod: json['merge_method'] as String?,
+      squashOption: json['squash_option'] as String?,
+      onlyAllowMergeIfPipelineSucceeds:
+          json['only_allow_merge_if_pipeline_succeeds'] as bool?,
+      allowMergeOnSkippedPipeline:
+          json['allow_merge_on_skipped_pipeline'] as bool?,
+      onlyAllowMergeIfAllDiscussionsAreResolved:
+          json['only_allow_merge_if_all_discussions_are_resolved'] as bool?,
+      removeSourceBranchAfterMerge:
+          json['remove_source_branch_after_merge'] as bool?,
+      mergeCommitTemplate: json['merge_commit_template'] as String?,
+      squashCommitTemplate: json['squash_commit_template'] as String?,
+      suggestionCommitMessage: json['suggestion_commit_message'] as String?,
     );
   }
 
@@ -129,6 +151,19 @@ class Project extends Equatable {
 
   /// Required approvals for a merge request, or null when unset.
   final int? approvalsBeforeMerge;
+
+  /// `merge`, `rebase_merge` or `ff`.
+  final String? mergeMethod;
+
+  /// `never`, `always`, `default_on` or `default_off`.
+  final String? squashOption;
+  final bool? onlyAllowMergeIfPipelineSucceeds;
+  final bool? allowMergeOnSkippedPipeline;
+  final bool? onlyAllowMergeIfAllDiscussionsAreResolved;
+  final bool? removeSourceBranchAfterMerge;
+  final String? mergeCommitTemplate;
+  final String? squashCommitTemplate;
+  final String? suggestionCommitMessage;
 
   /// Display name: `namespace / project`.
   String get displayName => nameWithNamespace ?? pathWithNamespace;

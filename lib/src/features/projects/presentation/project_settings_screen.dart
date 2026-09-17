@@ -10,6 +10,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
+import 'package:glam/src/features/projects/presentation/merge_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
 import 'package:glam/src/features/projects/presentation/triggers_section.dart';
@@ -53,6 +54,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             RunnersSection(project: p),
             const SizedBox(height: Insets.xl),
             ApprovalRulesSection(project: p),
+            const SizedBox(height: Insets.xl),
+            MergeSettingsSection(project: p),
             const SizedBox(height: Insets.xl),
             TriggersSection(project: p),
             const SizedBox(height: Insets.xl),
