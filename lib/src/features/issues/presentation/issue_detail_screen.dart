@@ -522,8 +522,9 @@ class _ParticipantsLine extends ConsumerWidget {
                   AvatarStack(users: users, max: 8),
                   const SizedBox(width: Insets.sm),
                   Text(
-                    '${users.length} participants',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    '${users.length} '
+                    'participant${users.length == 1 ? '' : 's'}',
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),

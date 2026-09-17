@@ -30,14 +30,14 @@ import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
-import 'package:glam/src/features/pipelines/domain/pipeline.dart';
-import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
+import 'package:glam/src/features/merge_requests/presentation/mr_pipelines_tab.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 
-/// MR detail with three tabs: overview (desc + activity), changed
-/// files, and the commit list. Merge actions live in a bottom sheet.
+/// MR detail with four tabs: overview (desc + activity), changed
+/// files, the commit list, and pipelines. Merge actions live in a
+/// bottom sheet.
 class MrDetailScreen extends ConsumerWidget {
   const MrDetailScreen({required this.projectId, required this.iid, super.key});
 
@@ -95,80 +95,13 @@ class _MrBody extends StatelessWidget {
                 _OverviewTab(mr: mr, loc: loc),
                 _ChangesTab(loc: loc),
                 _CommitsTab(loc: loc),
-                _PipelinesTab(loc: loc),
+                MrPipelinesTab(mr: mr, loc: loc),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-/// Pipelines that ran for this MR plus a run button.
-class _PipelinesTab extends ConsumerWidget {
-  const _PipelinesTab({required this.loc});
-
-  final MrRef loc;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    final pipelines = ref.watch(mrPipelinesProvider(loc));
-
-    return AsyncValueWidget<List<Pipeline>>(
-      value: pipelines,
-      onRetry: () => ref.invalidate(mrPipelinesProvider(loc)),
-      data: (list) => ListView(
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.all(Insets.sm),
-              child: TextButton.icon(
-                onPressed: () => _run(context, ref),
-                icon: const Icon(Icons.play_arrow_outlined, size: 18),
-                label: const Text('Run pipeline'),
-              ),
-            ),
-          ),
-          if (list.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(Insets.xl),
-              child: EmptyState(
-                icon: Icons.rocket_launch_outlined,
-                title: 'No pipelines for this MR',
-              ),
-            )
-          else
-            for (final p in list)
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PipelineTile(pipeline: p, projectId: loc.project),
-                  Divider(height: 1, color: colors.border, indent: Insets.lg),
-                ],
-              ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _run(BuildContext context, WidgetRef ref) async {
-    try {
-      await ref
-          .read(mrRepositoryProvider)
-          .createMrPipeline(loc.project, loc.iid);
-      if (context.mounted) {
-        ref.invalidate(mrPipelinesProvider(loc));
-      }
-    } on ApiException catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
-      }
-    }
   }
 }
 
@@ -413,36 +346,8 @@ class _MrHeader extends StatelessWidget {
             ],
           ),
         ],
-        const SizedBox(height: Insets.md),
-        _ParticipantsRow(loc: loc),
+        MrParticipantsRow(loc: loc),
       ],
-    );
-  }
-}
-
-class _ParticipantsRow extends ConsumerWidget {
-  const _ParticipantsRow({required this.loc});
-
-  final MrRef loc;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final participants = ref.watch(mrParticipantsProvider(loc));
-    return participants.maybeWhen(
-      data: (users) => users.isEmpty
-          ? const SizedBox.shrink()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${users.length} participants',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                const SizedBox(height: Insets.xs),
-                AvatarStack(users: users, max: 8),
-              ],
-            ),
-      orElse: () => const SizedBox.shrink(),
     );
   }
 }

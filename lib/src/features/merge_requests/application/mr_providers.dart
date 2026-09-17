@@ -142,6 +142,7 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body);
     updateItems((items) => [...items, d]);
+    ref.invalidate(mrParticipantsProvider(loc));
   }
 
   /// Comment pinned to a diff line.
@@ -150,6 +151,7 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body, position: position);
     updateItems((items) => [...items, d]);
+    ref.invalidate(mrParticipantsProvider(loc));
   }
 
   /// Replies in a thread, then reloads just that thread so pages

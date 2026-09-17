@@ -381,11 +381,11 @@ class MergeRequestsRepository {
     return _client.delete('$base/$awardId');
   }
 
-  /// Pipelines run for this MR's head sha.
+  /// All pipelines attached to this MR, newest first.
   Future<List<Pipeline>> mrPipelines(Object projectId, int iid) {
     return _client.getAll(
       '${_p(projectId)}/merge_requests/$iid/pipelines',
-      decoder: (j) => Pipeline.fromJson(j as Map<String, dynamic>),
+      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
     );
   }
 
@@ -401,7 +401,7 @@ class MergeRequestsRepository {
   Future<List<GitLabUser>> participants(Object projectId, int iid) {
     return _client.getAll(
       '${_p(projectId)}/merge_requests/$iid/participants',
-      decoder: (j) => GitLabUser.fromJson(j as Map<String, dynamic>),
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
     );
   }
 

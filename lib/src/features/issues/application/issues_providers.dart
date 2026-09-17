@@ -113,6 +113,7 @@ class IssueNotesNotifier extends PagedListNotifier<Note> {
         .read(issuesRepositoryProvider)
         .addNote(loc.project, loc.iid, body);
     await refresh();
+    ref.invalidate(issueParticipantsProvider(loc));
     return note;
   }
 }

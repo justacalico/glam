@@ -303,20 +303,21 @@ void main() {
       adapter
         ..get(
           '/projects/42/merge_requests/7/pipelines',
-          fixtureJson('pipelines'),
+          fixtureJson('mr_pipelines'),
         )
         ..post(
           '/projects/42/merge_requests/7/pipelines',
-          (fixtureJson('pipelines') as List).first,
+          (fixtureJson('mr_pipelines') as List).first,
         );
       final repo = MergeRequestsRepository(client);
 
       final list = await repo.mrPipelines(42, 7);
       expect(list, hasLength(2));
-      expect(list.first.id, 900);
+      expect(list.first.id, 901);
+      expect(list.first.source, 'merge_request_event');
 
       final created = await repo.createMrPipeline(42, 7);
-      expect(created.id, 900);
+      expect(created.id, 901);
       expect(
         adapter.requestsTo('POST', '/projects/42/merge_requests/7/pipelines'),
         hasLength(1),
@@ -327,14 +328,14 @@ void main() {
       final (client, adapter) = testClient();
       adapter.get(
         '/projects/42/merge_requests/7/participants',
-        fixtureJson('members'),
+        fixtureJson('participants'),
       );
       final repo = MergeRequestsRepository(client);
 
       final users = await repo.participants(42, 7);
 
-      expect(users, isNotEmpty);
-      expect(users.first.name, isNotEmpty);
+      expect(users, hasLength(2));
+      expect(users.first.username, 'jane');
     });
   });
 
@@ -395,6 +396,25 @@ void main() {
 
       expect(mr.sourceBranch, 'feature/files');
       expect(changes, hasLength(2));
+    });
+
+    test('mrPipelinesProvider and mrParticipantsProvider load', () async {
+      adapter
+        ..get(
+          '/projects/42/merge_requests/7/pipelines',
+          fixtureJson('mr_pipelines'),
+        )
+        ..get(
+          '/projects/42/merge_requests/7/participants',
+          fixtureJson('participants'),
+        );
+
+      const loc = (project: 42, iid: 7);
+      final pipelines = await container.read(mrPipelinesProvider(loc).future);
+      final people = await container.read(mrParticipantsProvider(loc).future);
+
+      expect(pipelines, hasLength(2));
+      expect(people, hasLength(2));
     });
   });
 }

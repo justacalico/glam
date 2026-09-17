@@ -334,7 +334,7 @@ class IssuesRepository {
   Future<List<GitLabUser>> participants(Object projectId, int iid) {
     return _client.getAll(
       '${_p(projectId)}/issues/$iid/participants',
-      decoder: (j) => GitLabUser.fromJson(j as Map<String, dynamic>),
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
     );
   }
 

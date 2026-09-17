@@ -1,0 +1,26 @@
+[
+  {
+    "id": 901,
+    "iid": 44,
+    "project_id": 42,
+    "sha": "b83d6e391c22777fca1ed3012fce84f633d7fed0",
+    "ref": "refs/merge-requests/7/head",
+    "status": "success",
+    "source": "merge_request_event",
+    "created_at": "2024-03-01T10:00:00.000Z",
+    "updated_at": "2024-03-01T10:11:00.000Z",
+    "web_url": "https://gitlab.example.com/g/p/-/pipelines/901"
+  },
+  {
+    "id": 899,
+    "iid": 43,
+    "project_id": 42,
+    "sha": "1111111111111111111111111111111111111111",
+    "ref": "refs/merge-requests/7/head",
+    "status": "running",
+    "source": "merge_request_event",
+    "created_at": "2024-03-01T09:00:00.000Z",
+    "updated_at": "2024-03-01T09:05:00.000Z",
+    "web_url": "https://gitlab.example.com/g/p/-/pipelines/899"
+  }
+]
