@@ -231,6 +231,16 @@ class RepositoryRepository {
     );
   }
 
+  /// The common ancestor commit for a set of refs
+  /// (`/repository/merge_base`).
+  Future<Commit> mergeBase(Object projectId, List<String> refs) {
+    return _client.get(
+      '${_p(projectId)}/repository/merge_base',
+      query: {'refs[]': refs},
+      decoder: (j) => Commit.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Comments on a commit, oldest first. The endpoint paginates, so
   /// fetch every page (bounded by `getAll`).
   Future<List<CommitComment>> commitComments(Object projectId, String sha) {

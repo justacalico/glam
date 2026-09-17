@@ -16,6 +16,7 @@ import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_export.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
+import 'package:glam/src/features/projects/domain/project_statistics.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
@@ -804,6 +805,29 @@ class ProjectsRepository {
         'file': MultipartFile.fromBytes(bytes, filename: filename),
       }),
       decoder: (j) => (j! as Map<String, dynamic>)['markdown'] as String? ?? '',
+    );
+  }
+
+  /// Storage usage for the project (`/projects/:id?statistics=true`);
+  /// requires maintainer access.
+  Future<ProjectStatistics> statistics(Object id) {
+    return _client.get(
+      '/projects/${GitLabApiClient.encodeProject(id)}',
+      query: {'statistics': true},
+      decoder: (j) => ProjectStatistics.fromJson(
+        (j! as Map<String, dynamic>)['statistics'] as Map<String, dynamic>? ??
+            const {},
+      ),
+    );
+  }
+
+  /// Triggers git housekeeping on the repository
+  /// (`POST /projects/:id/housekeeping`).
+  Future<void> housekeeping(Object id, {String? task}) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/housekeeping',
+      body: {'task': ?task},
+      decoder: (j) => j,
     );
   }
 

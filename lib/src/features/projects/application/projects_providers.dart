@@ -17,6 +17,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_export.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
+import 'package:glam/src/features/projects/domain/project_statistics.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
@@ -203,6 +204,19 @@ final projectAccessTokensProvider =
     FutureProvider.family<List<ProjectAccessToken>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).accessTokens(id),
     );
+
+/// Storage usage; null when the caller can't read statistics.
+final projectStatisticsProvider =
+    FutureProvider.family<ProjectStatistics?, Object>((ref, id) async {
+      try {
+        return await ref.watch(projectsRepositoryProvider).statistics(id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return null;
+        }
+        rethrow;
+      }
+    });
 
 /// Mutations for the admin lists; each refetches its list on success.
 final projectAdminActionsProvider = Provider<ProjectAdminActions>(

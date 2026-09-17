@@ -70,6 +70,24 @@ final compareProvider = FutureProvider.family<CompareResult, CompareLocation>(
       .compare(loc.project, loc.from, loc.to),
 );
 
+/// Common ancestor of the compared refs; null when unrelated.
+final mergeBaseProvider = FutureProvider.family<Commit?, CompareLocation>((
+  ref,
+  loc,
+) async {
+  try {
+    return await ref.watch(repositoryRepositoryProvider).mergeBase(
+      loc.project,
+      [loc.from, loc.to],
+    );
+  } on ApiException catch (e) {
+    if (e.statusCode == 404 || e.statusCode == 400) {
+      return null;
+    }
+    rethrow;
+  }
+});
+
 final commitCommentsProvider =
     FutureProvider.family<List<CommitComment>, ({Object project, String sha})>(
       (ref, loc) => ref

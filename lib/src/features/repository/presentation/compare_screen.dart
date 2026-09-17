@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
@@ -8,6 +11,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
+import 'package:go_router/go_router.dart';
 
 /// Compare two refs: the commits `to` adds over `from` plus the diff.
 /// `from`/`to` arrive via route query params; both are editable here.
@@ -129,7 +133,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
       onRetry: () => ref.invalidate(compareProvider(loc)),
       wrapRefresh: true,
       data: (result) =>
-          _CompareResult(result: result, projectId: widget.projectId),
+          _CompareResult(result: result, projectId: widget.projectId, loc: loc),
     );
   }
 }
@@ -223,16 +227,22 @@ class _RefPicker extends StatelessWidget {
   }
 }
 
-class _CompareResult extends StatelessWidget {
-  const _CompareResult({required this.result, required this.projectId});
+class _CompareResult extends ConsumerWidget {
+  const _CompareResult({
+    required this.result,
+    required this.projectId,
+    required this.loc,
+  });
 
   final CompareResult result;
   final String projectId;
+  final CompareLocation loc;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final theme = Theme.of(context);
+    final mergeBase = ref.watch(mergeBaseProvider(loc)).value;
     return ListView(
       padding: Insets.pagePadding,
       children: [
@@ -247,6 +257,30 @@ class _CompareResult extends StatelessWidget {
             icon: Icons.timer_outlined,
             text: 'Comparison timed out; results may be incomplete',
             color: colors.warning,
+          ),
+        if (mergeBase != null && !result.compareSameRef)
+          InkWell(
+            borderRadius: Radii.borderMd,
+            onTap: () => unawaited(
+              context.push(Routes.projectCommit(projectId, mergeBase.id)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: Insets.md),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(text: 'Merge base '),
+                    TextSpan(
+                      text: mergeBase.shortId,
+                      style: const TextStyle(fontFamily: 'JetBrains Mono'),
+                    ),
+                    if (mergeBase.title.isNotEmpty)
+                      TextSpan(text: ' · ${mergeBase.title}'),
+                  ],
+                ),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
           ),
         Text(
           '${result.commits.length} '
