@@ -107,6 +107,51 @@ void main() {
       expect(page.items, hasLength(2));
       expect(adapter.lastRequest!.queryParameters['environment'], '9');
     });
+
+    test('feature flags list, toggle, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/feature_flags', [
+          {
+            'id': 1,
+            'name': 'new_checkout',
+            'description': 'Checkout v2',
+            'active': true,
+            'version': 2,
+            'scopes': [
+              {'id': 7, 'environment_scope': 'production', 'active': true},
+            ],
+          },
+          {'id': 2, 'name': 'beta_nav', 'active': false, 'version': 1},
+        ])
+        ..put('/projects/42/feature_flags/beta_nav', {
+          'id': 2,
+          'name': 'beta_nav',
+          'active': true,
+          'version': 1,
+        })
+        ..delete('/projects/42/feature_flags/beta_nav');
+      final repo = EnvironmentsRepository(client);
+
+      final flags = await repo.featureFlags(42);
+      expect(flags, hasLength(2));
+      expect(flags.first.scopes.single.environmentScope, 'production');
+      expect(flags.last.active, isFalse);
+
+      final updated = await repo.updateFeatureFlag(
+        42,
+        'beta_nav',
+        active: true,
+      );
+      expect(updated.active, isTrue);
+      expect((adapter.lastRequest!.data as Map)['active'], true);
+
+      await repo.deleteFeatureFlag(42, 'beta_nav');
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/feature_flags/beta_nav'),
+        hasLength(1),
+      );
+    });
   });
 
   group('environments providers', () {

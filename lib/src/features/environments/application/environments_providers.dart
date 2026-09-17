@@ -4,9 +4,15 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/environments/data/environments_repository.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
+import 'package:glam/src/features/environments/domain/feature_flag.dart';
 
 final environmentsRepositoryProvider = Provider<EnvironmentsRepository>(
   (ref) => EnvironmentsRepository(ref.watch(apiClientProvider)),
+);
+
+/// Feature flags for a project.
+final featureFlagsProvider = FutureProvider.family<List<FeatureFlag>, Object>(
+  (ref, id) => ref.watch(environmentsRepositoryProvider).featureFlags(id),
 );
 
 final environmentsProvider =
