@@ -36,6 +36,43 @@ void main() {
     expect(adapter.lastRequest!.queryParameters['username'], 'calico');
   });
 
+  test('updateProfile puts the editable fields', () async {
+    final (client, adapter) = testClient();
+    adapter.put('/user', fixtureJson('user'));
+
+    final user = await AuthRepository(client).updateProfile(
+      name: 'Calico Cat',
+      bio: 'Building things',
+      pronouns: 'she/her',
+      jobTitle: 'Engineer',
+    );
+
+    expect(user.pronouns, 'she/her');
+    expect(user.jobTitle, 'Engineer');
+    final sent = adapter.lastRequest!.data as Map;
+    expect(sent['name'], 'Calico Cat');
+    expect(sent['job_title'], 'Engineer');
+    expect(sent.containsKey('website_url'), isFalse);
+  });
+
+  test('updateStatus puts emoji and message', () async {
+    final (client, adapter) = testClient();
+    adapter.put(
+      '/user/status',
+      const {'emoji': '🌴', 'message': 'On vacation'},
+    );
+
+    final status = await AuthRepository(
+      client,
+    ).updateStatus(emoji: '🌴', message: 'On vacation');
+
+    expect(status.emoji, '🌴');
+    expect(status.message, 'On vacation');
+    final sent = adapter.lastRequest!.data as Map;
+    expect(sent['emoji'], '🌴');
+    expect(sent['message'], 'On vacation');
+  });
+
   test('fetchUserByUsername throws when nobody matches', () async {
     final (client, adapter) = testClient();
     adapter.get('/users', []);

@@ -20,6 +20,12 @@ class GitLabUser extends Equatable {
     this.statusEmoji,
     this.isAdmin,
     this.bot,
+    this.websiteUrl,
+    this.pronouns,
+    this.organization,
+    this.jobTitle,
+    this.twitter,
+    this.linkedin,
   });
 
   factory GitLabUser.fromJson(Map<String, dynamic> json) {
@@ -47,6 +53,12 @@ class GitLabUser extends Equatable {
       statusMessage: message,
       isAdmin: json['is_admin'] as bool?,
       bot: json['bot'] as bool?,
+      websiteUrl: json['website_url'] as String?,
+      pronouns: json['pronouns'] as String?,
+      organization: json['organization'] as String?,
+      jobTitle: json['job_title'] as String?,
+      twitter: json['twitter'] as String?,
+      linkedin: json['linkedin'] as String?,
     );
   }
 
@@ -66,6 +78,12 @@ class GitLabUser extends Equatable {
   final String? statusEmoji;
   final bool? isAdmin;
   final bool? bot;
+  final String? websiteUrl;
+  final String? pronouns;
+  final String? organization;
+  final String? jobTitle;
+  final String? twitter;
+  final String? linkedin;
 
   Map<String, dynamic> toJson() => {
     'id': id,
