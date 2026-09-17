@@ -328,21 +328,25 @@ class _RuleTile extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, size: 16),
-            tooltip: 'Edit',
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, size: 16),
-            tooltip: 'Delete',
-            onPressed: onDelete,
-          ),
-        ],
-      ),
+      // code_owner rules are managed through the CODEOWNERS file, not
+      // this endpoint — editing them here would only produce a 400.
+      trailing: rule.ruleType == 'regular' || rule.ruleType == null
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  tooltip: 'Edit',
+                  onPressed: onEdit,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 16),
+                  tooltip: 'Delete',
+                  onPressed: onDelete,
+                ),
+              ],
+            )
+          : null,
     );
   }
 }
