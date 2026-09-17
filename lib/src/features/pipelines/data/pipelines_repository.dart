@@ -1,9 +1,11 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/features/pipelines/data/artifact_archive.dart';
+import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
@@ -11,6 +13,10 @@ import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 /// `/projects/:id/pipelines` and `/jobs`.
 class PipelinesRepository {
   const PipelinesRepository(this._client);
+
+  /// Cap on anything fully buffered in memory — archives can reach
+  /// hundreds of MB.
+  static const _maxBufferedBytes = 256 * 1024 * 1024;
 
   final GitLabApiClient _client;
 
@@ -105,28 +111,51 @@ class PipelinesRepository {
     return _client.getRaw('${_p(projectId)}/jobs/$jobId/trace');
   }
 
-  /// The job's artifact archive as zip bytes. GitLab has no listing
-  /// endpoint, so the client unpacks it.
-  Future<Uint8List> artifactsArchive(Object projectId, int jobId) {
-    return _bytes('${_p(projectId)}/jobs/$jobId/artifacts');
+  /// Files inside the job's artifact archive.
+  ///
+  /// Newer GitLab versions expose `artifacts/tree`, which lists entries
+  /// from metadata without downloading the zip. Instances that 404 it
+  /// fall back to fetching the whole archive and unpacking it in
+  /// memory.
+  Future<List<ArtifactEntry>> artifactEntries(
+    Object projectId,
+    int jobId,
+  ) async {
+    try {
+      final rows = await _client.getAll(
+        '${_p(projectId)}/jobs/$jobId/artifacts/tree',
+        query: {'recursive': true},
+        decoder: (j) => j as Map<String, dynamic>,
+      );
+      return [
+        for (final r in rows)
+          if (r['type'] != 'tree') ArtifactEntry.fromJson(r),
+      ]..sort((a, b) => a.path.compareTo(b.path));
+    } on ApiException catch (e) {
+      if (e.kind != ApiErrorKind.notFound) {
+        rethrow;
+      }
+    }
+    final zip = await artifactsArchive(projectId, jobId);
+    return Isolate.run(() => decodeArtifactEntries(zip));
   }
 
-  /// One file inside the archive (`GET /jobs/:id/artifacts/*path`).
+  /// The job's artifact archive as zip bytes.
+  Future<Uint8List> artifactsArchive(Object projectId, int jobId) {
+    return _client.getBytes(
+      '${_p(projectId)}/jobs/$jobId/artifacts',
+      maxBytes: _maxBufferedBytes,
+    );
+  }
+
+  /// One file inside the archive
+  /// (`GET /projects/:id/jobs/:job_id/artifacts/*artifact_path`).
   Future<Uint8List> artifactFile(Object projectId, int jobId, String path) {
     final encoded = path.split('/').map(Uri.encodeComponent).join('/');
-    return _bytes('${_p(projectId)}/jobs/$jobId/artifacts/$encoded');
-  }
-
-  Future<Uint8List> _bytes(String path) async {
-    try {
-      final res = await _client.dio.get<Uint8List>(
-        path,
-        options: Options(responseType: ResponseType.bytes),
-      );
-      return res.data ?? Uint8List(0);
-    } on DioException catch (e) {
-      throw ApiException.fromDio(e);
-    }
+    return _client.getBytes(
+      '${_p(projectId)}/jobs/$jobId/artifacts/$encoded',
+      maxBytes: _maxBufferedBytes,
+    );
   }
 
   Future<Job> retryJob(Object projectId, int jobId) {

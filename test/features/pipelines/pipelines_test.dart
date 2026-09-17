@@ -4,9 +4,10 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
+import 'package:glam/src/features/pipelines/data/artifact_archive.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
-import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 
 import '../../helpers/fake_dio_adapter.dart';
@@ -144,13 +145,115 @@ void main() {
       final repo = PipelinesRepository(client);
 
       final zip = await repo.artifactsArchive(42, 5001);
-      expect(listArtifacts(zip).map((e) => e.path), [
+      expect(decodeArtifactEntries(zip).map((e) => e.path), [
         'dist/app.bin',
         'out/report.txt',
       ]);
 
       final file = await repo.artifactFile(42, 5001, 'out/report.txt');
       expect(utf8.decode(file), 'ok');
+    });
+
+    test('artifactEntries lists files via the tree endpoint', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/jobs/5001/artifacts/tree', [
+        {
+          'id': 'a1',
+          'name': 'out',
+          'path': 'out',
+          'type': 'tree',
+          'mode': '040000',
+        },
+        {
+          'id': 'a2',
+          'name': 'report.txt',
+          'path': 'out/report.txt',
+          'type': 'blob',
+          'mode': '100644',
+          'size': 42,
+        },
+      ]);
+      final repo = PipelinesRepository(client);
+
+      final entries = await repo.artifactEntries(42, 5001);
+
+      expect(entries.single.path, 'out/report.txt');
+      expect(entries.single.size, 42);
+      final req = adapter
+          .requestsTo('GET', '/projects/42/jobs/5001/artifacts/tree')
+          .single;
+      expect(req.queryParameters['recursive'], true);
+    });
+
+    test('artifactEntries falls back to the zip on older instances', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..fail('/projects/42/jobs/5001/artifacts/tree', status: 404)
+        ..get(
+          '/projects/42/jobs/5001/artifacts',
+          _zipOf({'a.txt': 'x', 'b/c.txt': 'y'}),
+        );
+      final repo = PipelinesRepository(client);
+
+      final entries = await repo.artifactEntries(42, 5001);
+
+      expect(entries.map((e) => e.path), ['a.txt', 'b/c.txt']);
+    });
+
+    test(
+      'artifactEntries surfaces real errors from the tree endpoint',
+      () async {
+        final (client, adapter) = testClient();
+        adapter.fail('/projects/42/jobs/5001/artifacts/tree', status: 403);
+        final repo = PipelinesRepository(client);
+
+        expect(
+          () => repo.artifactEntries(42, 5001),
+          throwsA(
+            isA<ApiException>().having(
+              (e) => e.kind,
+              'kind',
+              ApiErrorKind.forbidden,
+            ),
+          ),
+        );
+      },
+    );
+
+    test('decodeArtifactEntries rejects non-zip bytes', () {
+      expect(
+        () => decodeArtifactEntries(utf8.encode('<html>oops</html>')),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.kind,
+            'kind',
+            ApiErrorKind.unknown,
+          ),
+        ),
+      );
+    });
+
+    test('artifact downloads strip the token on off-host redirects', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get(
+          '/projects/42/jobs/5001/artifacts',
+          '',
+          status: 302,
+          headers: {
+            'location': ['https://storage.example.com/signed/abc.zip'],
+          },
+        )
+        ..get('https://storage.example.com/signed/abc.zip', _zipOf({'x': '1'}));
+      final repo = PipelinesRepository(client);
+
+      final zip = await repo.artifactsArchive(42, 5001);
+
+      expect(decodeArtifactEntries(zip).single.path, 'x');
+      final redirect = adapter.requests.firstWhere(
+        (r) => r.path.contains('storage.example.com'),
+      );
+      expect(redirect.headers['PRIVATE-TOKEN'], isNull);
     });
 
     test('job decodes artifacts_file for the browse gate', () {
@@ -429,11 +532,11 @@ void main() {
       expect(trace, 'build output');
     });
 
-    test('jobArtifactsProvider lists the zip contents', () async {
-      adapter.get(
-        '/projects/42/jobs/5001/artifacts',
-        _zipOf({'a.txt': 'x', 'b/c.txt': 'y'}),
-      );
+    test('jobArtifactsProvider lists the archive contents', () async {
+      adapter.get('/projects/42/jobs/5001/artifacts/tree', [
+        {'name': 'a.txt', 'path': 'a.txt', 'type': 'blob', 'size': 1},
+        {'name': 'c.txt', 'path': 'b/c.txt', 'type': 'blob', 'size': 1},
+      ]);
 
       const loc = (project: 42, id: 5001);
       final entries = await container.read(jobArtifactsProvider(loc).future);

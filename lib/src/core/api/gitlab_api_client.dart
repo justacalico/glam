@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
@@ -222,15 +224,99 @@ class GitLabApiClient {
     String? ref,
   }) async {
     try {
-      final response = await _dio.get<String>(
+      final response = await _getFollowingRedirects<String>(
         path,
-        queryParameters: _clean({...?query, 'ref': ?ref}),
-        options: Options(responseType: ResponseType.plain),
+        query: _clean({...?query, 'ref': ?ref}),
+        responseType: ResponseType.plain,
       );
       return response.data ?? '';
     } on DioException catch (e) {
       throw ApiException.fromDio(e);
     }
+  }
+
+  /// GET binary data (artifact archives and files). [maxBytes] rejects
+  /// oversized downloads before they exhaust memory — the whole body is
+  /// buffered.
+  Future<Uint8List> getBytes(
+    String path, {
+    Map<String, dynamic>? query,
+    int? maxBytes,
+  }) async {
+    try {
+      final response = await _getFollowingRedirects<Uint8List>(
+        path,
+        query: _clean(query),
+        responseType: ResponseType.bytes,
+      );
+      final declared = int.tryParse(
+        response.headers.value(Headers.contentLengthHeader) ?? '',
+      );
+      final size = declared ?? response.data?.length ?? 0;
+      if (maxBytes != null && size > maxBytes) {
+        throw const ApiException(
+          kind: ApiErrorKind.unknown,
+          message: 'File is too large to show in the app',
+        );
+      }
+      return response.data ?? Uint8List(0);
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
+  }
+
+  /// Follows redirects manually so the PRIVATE-TOKEN header only goes to
+  /// this instance — downloads like artifacts 302 to presigned object
+  /// storage URLs that must not receive it.
+  Future<Response<T>> _getFollowingRedirects<T>(
+    String path, {
+    Map<String, dynamic>? query,
+    required ResponseType responseType,
+  }) async {
+    var response = await _rawGet<T>(
+      path,
+      query: query,
+      responseType: responseType,
+      authed: true,
+    );
+    var hops = 0;
+    while (response.isRedirect && hops++ < 5) {
+      final location = response.headers.value('location');
+      if (location == null) {
+        break;
+      }
+      final uri = Uri.parse(location);
+      response = await _rawGet<T>(
+        uri.toString(),
+        responseType: responseType,
+        authed: uri.host == Uri.parse(_baseUrl).host,
+      );
+    }
+    if (response.isRedirect) {
+      throw const ApiException(
+        kind: ApiErrorKind.unknown,
+        message: 'Too many redirects',
+      );
+    }
+    return response;
+  }
+
+  Future<Response<T>> _rawGet<T>(
+    String path, {
+    Map<String, dynamic>? query,
+    required ResponseType responseType,
+    required bool authed,
+  }) {
+    return _dio.get<T>(
+      path,
+      queryParameters: query,
+      options: Options(
+        responseType: responseType,
+        followRedirects: false,
+        validateStatus: (s) => s != null && s < 400,
+        headers: authed ? null : {'PRIVATE-TOKEN': null},
+      ),
+    );
   }
 
   Map<String, dynamic>? _clean(Map<String, dynamic>? query) {

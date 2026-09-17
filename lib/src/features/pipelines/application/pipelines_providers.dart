@@ -72,21 +72,20 @@ final jobTraceProvider = FutureProvider.family<String, JobRef>(
       ref.watch(pipelinesRepositoryProvider).jobTrace(loc.project, loc.id),
 );
 
-/// Files inside the job's artifact zip, listed client-side.
+/// Files inside the job's artifact archive.
 final jobArtifactsProvider = FutureProvider.family<List<ArtifactEntry>, JobRef>(
-  (ref, loc) async {
-    final bytes = await ref
-        .watch(pipelinesRepositoryProvider)
-        .artifactsArchive(loc.project, loc.id);
-    return listArtifacts(bytes);
-  },
+  (ref, loc) => ref
+      .watch(pipelinesRepositoryProvider)
+      .artifactEntries(loc.project, loc.id),
 );
 
 /// (job ref, path inside the zip) for fetching one artifact file.
 typedef ArtifactFileRef = ({JobRef job, String path});
 
-final jobArtifactFileProvider =
-    FutureProvider.family<Uint8List, ArtifactFileRef>(
+/// File bytes are cached per entry tap and released when the sheet
+/// closes — artifact files can be large.
+final jobArtifactFileProvider = FutureProvider.autoDispose
+    .family<Uint8List, ArtifactFileRef>(
       (ref, loc) => ref
           .watch(pipelinesRepositoryProvider)
           .artifactFile(loc.job.project, loc.job.id, loc.path),

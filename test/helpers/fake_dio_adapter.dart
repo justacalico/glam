@@ -108,11 +108,13 @@ class FakeDioAdapter implements HttpClientAdapter {
         ),
       );
     }
+    final isRedirect = stub.status >= 300 && stub.status < 400;
     if (stub.body is Uint8List) {
       return ResponseBody.fromBytes(
         stub.body! as Uint8List,
         stub.status,
         headers: stub.headers,
+        isRedirect: isRedirect,
       );
     }
     final isJson = stub.body is! String;
@@ -123,6 +125,7 @@ class FakeDioAdapter implements HttpClientAdapter {
         if (isJson) Headers.contentTypeHeader: ['application/json'],
         ...stub.headers,
       },
+      isRedirect: isRedirect,
     );
   }
 

@@ -13,8 +13,8 @@ import 'package:glam/src/features/pipelines/application/pipelines_providers.dart
 import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Browses a job's artifact zip — GitLab has no listing endpoint, so
-/// the archive is downloaded and unpacked in memory.
+/// Browses a job's artifact archive. Newer GitLab versions list
+/// entries from metadata; older ones fall back to unpacking the zip.
 class JobArtifactsScreen extends ConsumerWidget {
   const JobArtifactsScreen({
     required this.projectId,
@@ -68,6 +68,7 @@ class JobArtifactsScreen extends ConsumerWidget {
                     context: context,
                     isScrollControlled: true,
                     showDragHandle: true,
+                    useSafeArea: true,
                     builder: (context) => _ArtifactSheet(loc: loc, entry: e),
                   ),
                 ),
@@ -116,13 +117,24 @@ class _ArtifactSheet extends ConsumerWidget {
                   ),
                 ),
                 file.maybeWhen(
-                  data: (bytes) => IconButton(
-                    tooltip: 'Share',
-                    icon: const Icon(Icons.ios_share, size: 18),
-                    onPressed: () => unawaited(
-                      SharePlus.instance.share(
-                        ShareParams(files: [XFile.fromData(bytes, name: name)]),
-                      ),
+                  data: (bytes) => Builder(
+                    builder: (buttonContext) => IconButton(
+                      tooltip: 'Share',
+                      icon: const Icon(Icons.ios_share, size: 18),
+                      onPressed: () {
+                        // iPad requires an anchor rect for the share sheet.
+                        final box =
+                            buttonContext.findRenderObject()! as RenderBox;
+                        unawaited(
+                          SharePlus.instance.share(
+                            ShareParams(
+                              files: [XFile.fromData(bytes, name: name)],
+                              sharePositionOrigin:
+                                  box.localToGlobal(Offset.zero) & box.size,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   orElse: () => const SizedBox.shrink(),
@@ -175,9 +187,20 @@ class _ArtifactSheet extends ConsumerWidget {
     );
   }
 
+  /// Decodes the first 256 KB as text, or null for binary files.
+  /// Large logs stay truncated instead of stalling the UI.
   static String? _asText(Uint8List bytes) {
+    const cap = 256 * 1024;
+    final truncated = bytes.length > cap;
+    final chunk = truncated ? bytes.sublist(0, cap) : bytes;
+    if (chunk.contains(0)) {
+      return null;
+    }
     try {
-      return utf8.decode(bytes);
+      final text = utf8.decode(chunk, allowMalformed: truncated);
+      return truncated
+          ? '$text\n\n[truncated — use Share for the full file]'
+          : text;
     } on FormatException {
       return null;
     }

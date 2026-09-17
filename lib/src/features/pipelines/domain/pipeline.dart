@@ -88,6 +88,7 @@ class Job extends Equatable {
     this.tagList = const [],
     this.webUrl,
     this.artifactsSize,
+    this.hasArtifacts = false,
   });
 
   factory Job.fromJson(Map<String, dynamic> json) {
@@ -108,9 +109,9 @@ class Job extends Equatable {
           ? (json['tag_list'] as List).map((e) => e.toString()).toList()
           : const [],
       webUrl: json['web_url'] as String?,
-      artifactsSize: json['artifacts_file'] is Map<String, dynamic>
-          ? (json['artifacts_file'] as Map<String, dynamic>)['size'] as int?
-          : null,
+      artifactsSize: ((json['artifacts_file'] as Map?)?['size'] as num?)
+          ?.toInt(),
+      hasArtifacts: json['artifacts_file'] is Map,
     );
   }
 
@@ -127,14 +128,17 @@ class Job extends Equatable {
   final List<String> tagList;
   final String? webUrl;
 
-  /// Size of `artifacts_file`, when the job produced artifacts.
+  /// Size of `artifacts_file`, when the job produced artifacts. Null
+  /// when the instance reports the file without a size.
   final int? artifactsSize;
 
-  bool get hasArtifacts => artifactsSize != null;
+  /// Whether `artifacts_file` was present in the payload — the archive
+  /// can exist even when the size is missing.
+  final bool hasArtifacts;
 
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
   @override
-  List<Object?> get props => [id, status];
+  List<Object?> get props => [id, status, artifactsSize, hasArtifacts];
 }

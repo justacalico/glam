@@ -56,6 +56,11 @@ dev_dependencies:
     sdk: flutter
   golden_toolkit: ^0.15.0
   mocktail: ^1.0.5
+dependency_overrides:
+  # material_ui 1.3.0 / cupertino_ui 1.1.0 use @awaitNotRequired, which
+  # package:flutter/foundation.dart does not re-export on this SDK.
+  cupertino_ui: 1.0.2
+  material_ui: 1.2.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
