@@ -331,4 +331,42 @@ class GroupsRepository {
       '${_membersBase(id, isProject: isProject)}/$memberId',
     );
   }
+
+  String _scopeBase(Object id, {required bool isProject}) =>
+      '/${isProject ? 'projects' : 'groups'}'
+      '/${GitLabApiClient.encodeProject(id)}';
+
+  /// Pending access requests (`/:kind/:id/access_requests`); needs a
+  /// maintainer role upstream.
+  Future<List<Member>> accessRequests(Object id, {required bool isProject}) {
+    return _client.getAll(
+      '${_scopeBase(id, isProject: isProject)}/access_requests',
+      decoder: (j) => Member.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Approves a request, optionally at a specific level.
+  Future<void> approveAccessRequest(
+    Object id,
+    int userId, {
+    required bool isProject,
+    int? accessLevel,
+  }) {
+    return _client.put(
+      '${_scopeBase(id, isProject: isProject)}'
+      '/access_requests/$userId/approve',
+      body: {'access_level': ?accessLevel},
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> denyAccessRequest(
+    Object id,
+    int userId, {
+    required bool isProject,
+  }) {
+    return _client.delete(
+      '${_scopeBase(id, isProject: isProject)}/access_requests/$userId',
+    );
+  }
 }

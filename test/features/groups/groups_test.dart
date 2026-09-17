@@ -193,6 +193,35 @@ void main() {
       expect(events.single.entityType, 'Group');
     });
 
+    test('access requests list, approve and deny', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/access_requests', [
+          {'id': 7, 'username': 'ada', 'name': 'Ada', 'access_level': 30},
+        ])
+        ..get('/projects/42/access_requests', [])
+        ..put('/groups/9/access_requests/7/approve', {})
+        ..delete('/groups/9/access_requests/7');
+      final repo = GroupsRepository(client);
+
+      final pending = await repo.accessRequests(9, isProject: false);
+      expect(pending.single.username, 'ada');
+      expect(pending.single.accessLevel, 30);
+
+      await repo.approveAccessRequest(9, 7, isProject: false, accessLevel: 30);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['access_level'], 30);
+
+      await repo.denyAccessRequest(9, 7, isProject: false);
+      expect(
+        adapter.requestsTo('DELETE', '/groups/9/access_requests/7'),
+        hasLength(1),
+      );
+
+      await repo.accessRequests(42, isProject: true);
+      expect(adapter.lastRequest!.path, '/projects/42/access_requests');
+    });
+
     test('create and delete groups hit the /groups paths', () async {
       final (client, adapter) = testClient();
       adapter
@@ -391,6 +420,28 @@ void main() {
       final events = await container.read(groupAuditEventsProvider(9).future);
 
       expect(events, isEmpty);
+    });
+
+    test('accessRequestsProvider lists pending requests', () async {
+      adapter.get('/groups/9/access_requests', [
+        {'id': 7, 'username': 'ada', 'name': 'Ada'},
+      ]);
+
+      final pending = await container.read(
+        accessRequestsProvider((id: 9, isProject: false)).future,
+      );
+
+      expect(pending.single.name, 'Ada');
+    });
+
+    test('accessRequestsProvider is empty for non-maintainers', () async {
+      adapter.fail('/groups/9/access_requests', status: 403);
+
+      final pending = await container.read(
+        accessRequestsProvider((id: 9, isProject: false)).future,
+      );
+
+      expect(pending, isEmpty);
     });
   });
 }

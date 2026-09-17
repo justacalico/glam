@@ -63,6 +63,7 @@ class MembersList extends ConsumerWidget {
             ),
           ),
         ),
+        _AccessRequests(scope: scope),
         Expanded(
           child: AsyncValueWidget(
             value: state,
@@ -88,6 +89,116 @@ class MembersList extends ConsumerWidget {
         ),
       ],
     );
+  }
+}
+
+/// Pending access requests with approve/deny actions. Hidden for
+/// non-maintainers and when there are no requests.
+class _AccessRequests extends ConsumerWidget {
+  const _AccessRequests({required this.scope});
+
+  final MemberScope scope;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final requests = ref.watch(accessRequestsProvider(scope));
+    final list = requests.value ?? const [];
+    if (list.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final colors = context.colors;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        Insets.lg,
+        Insets.xs,
+        Insets.lg,
+        Insets.xs,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: Radii.borderMd,
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Insets.lg,
+              Insets.md,
+              Insets.lg,
+              Insets.xs,
+            ),
+            child: Text(
+              'Access requests',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          for (final m in list)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Insets.lg,
+                Insets.xs,
+                Insets.sm,
+                Insets.xs,
+              ),
+              child: Row(
+                children: [
+                  UserAvatar(name: m.name, avatarUrl: m.avatarUrl, radius: 13),
+                  const SizedBox(width: Insets.sm),
+                  Expanded(
+                    child: Text(
+                      '${m.name} @${m.username}',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _approve(context, ref, m.id),
+                    child: const Text('Approve'),
+                  ),
+                  TextButton(
+                    onPressed: () => _deny(context, ref, m.id),
+                    child: Text('Deny', style: TextStyle(color: colors.danger)),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _approve(BuildContext context, WidgetRef ref, int userId) async {
+    try {
+      await ref
+          .read(groupsRepositoryProvider)
+          .approveAccessRequest(scope.id, userId, isProject: scope.isProject);
+      ref
+        ..invalidate(accessRequestsProvider(scope))
+        ..invalidate(membersProvider);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _deny(BuildContext context, WidgetRef ref, int userId) async {
+    try {
+      await ref
+          .read(groupsRepositoryProvider)
+          .denyAccessRequest(scope.id, userId, isProject: scope.isProject);
+      ref.invalidate(accessRequestsProvider(scope));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 
