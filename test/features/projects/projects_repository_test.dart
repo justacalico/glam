@@ -89,6 +89,13 @@ void main() {
         mergeMethod: 'ff',
         onlyAllowMergeIfPipelineSucceeds: true,
         onlyAllowMergeIfAllDiscussionsAreResolved: true,
+        publicJobs: true,
+        buildTimeout: 7200,
+        autoCancelPendingPipelines: 'disabled',
+        ciForwardDeploymentEnabled: true,
+        ciSeparatedCaches: true,
+        keepLatestArtifact: false,
+        ciConfigPath: 'ci/main.yml',
       );
 
       expect(adapter.lastRequest!.data, {
@@ -102,6 +109,13 @@ void main() {
         'merge_method': 'ff',
         'only_allow_merge_if_pipeline_succeeds': true,
         'only_allow_merge_if_all_discussions_are_resolved': true,
+        'public_jobs': true,
+        'build_timeout': 7200,
+        'auto_cancel_pending_pipelines': 'disabled',
+        'ci_forward_deployment_enabled': true,
+        'ci_separated_caches': true,
+        'keep_latest_artifact': false,
+        'ci_config_path': 'ci/main.yml',
       });
     });
 

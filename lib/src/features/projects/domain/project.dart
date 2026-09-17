@@ -48,6 +48,13 @@ class Project extends Equatable {
     this.squashCommitTemplate,
     this.suggestionCommitMessage,
     this.sharedWithGroups = const [],
+    this.publicJobs,
+    this.buildTimeout,
+    this.autoCancelPendingPipelines,
+    this.ciForwardDeploymentEnabled,
+    this.ciSeparatedCaches,
+    this.keepLatestArtifact,
+    this.ciConfigPath,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -114,6 +121,15 @@ class Project extends Equatable {
       squashCommitTemplate: json['squash_commit_template'] as String?,
       suggestionCommitMessage: json['suggestion_commit_message'] as String?,
       sharedWithGroups: _sharedWithGroups(json['shared_with_groups']),
+      publicJobs: json['public_jobs'] as bool?,
+      buildTimeout: json['build_timeout'] as int?,
+      autoCancelPendingPipelines:
+          json['auto_cancel_pending_pipelines'] as String?,
+      ciForwardDeploymentEnabled:
+          json['ci_forward_deployment_enabled'] as bool?,
+      ciSeparatedCaches: json['ci_separated_caches'] as bool?,
+      keepLatestArtifact: json['keep_latest_artifact'] as bool?,
+      ciConfigPath: json['ci_config_path'] as String?,
     );
   }
 
@@ -169,6 +185,21 @@ class Project extends Equatable {
 
   /// Groups this project is shared with (`shared_with_groups`).
   final List<SharedGroup> sharedWithGroups;
+
+  /// Pipelines visible to everyone, including logged-out users.
+  final bool? publicJobs;
+
+  /// Job timeout in seconds.
+  final int? buildTimeout;
+
+  /// `enabled` or `disabled`.
+  final String? autoCancelPendingPipelines;
+  final bool? ciForwardDeploymentEnabled;
+  final bool? ciSeparatedCaches;
+  final bool? keepLatestArtifact;
+
+  /// Path to the `.gitlab-ci.yml` file when it isn't the default.
+  final String? ciConfigPath;
 
   /// Display name: `namespace / project`.
   String get displayName => nameWithNamespace ?? pathWithNamespace;

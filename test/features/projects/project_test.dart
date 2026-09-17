@@ -31,6 +31,13 @@ void main() {
       expect(project.mergeCommitTemplate, contains('source_branch'));
       expect(project.sharedWithGroups.single.displayName, 'platform');
       expect(project.sharedWithGroups.single.roleLabel, 'Developer');
+      expect(project.publicJobs, isTrue);
+      expect(project.buildTimeout, 3600);
+      expect(project.autoCancelPendingPipelines, 'enabled');
+      expect(project.ciForwardDeploymentEnabled, isTrue);
+      expect(project.ciSeparatedCaches, isFalse);
+      expect(project.keepLatestArtifact, isTrue);
+      expect(project.ciConfigPath, 'ci/.gitlab-ci.yml');
     });
 
     test('tolerates a minimal payload', () {
