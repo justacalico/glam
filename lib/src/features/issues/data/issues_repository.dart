@@ -3,6 +3,8 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 /// Issue list filter for the global `/issues` endpoint.
 enum IssueScope { assigned, created, all }
@@ -258,6 +260,47 @@ class IssuesRepository {
     return _client.post(
       '${_p(projectId)}/issues/$iid/reset_spent_time',
       decoder: (_) {},
+    );
+  }
+
+  /// Issues linked to this one, each carrying its link record id and
+  /// type.
+  Future<List<IssueLink>> issueLinks(Object projectId, int iid) {
+    return _client.getList(
+      '${_p(projectId)}/issues/$iid/links',
+      decoder: (j) => IssueLink.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Links this issue to [targetIid]. [targetProject] defaults to the
+  /// issue's own project; accepts an id or URL-encoded full path.
+  Future<IssueLink> linkIssue(
+    Object projectId,
+    int iid, {
+    required Object targetProject,
+    required int targetIid,
+    String linkType = 'relates_to',
+  }) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/links',
+      body: {
+        'target_project_id': targetProject,
+        'target_issue_iid': targetIid,
+        'link_type': linkType,
+      },
+      decoder: (j) => IssueLink.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> unlinkIssue(Object projectId, int iid, int linkId) {
+    return _client.delete('${_p(projectId)}/issues/$iid/links/$linkId');
+  }
+
+  /// Merge requests related to this issue (mentioned or closing it).
+  Future<List<MergeRequest>> relatedMergeRequests(Object projectId, int iid) {
+    return _client.getList(
+      '${_p(projectId)}/issues/$iid/related_merge_requests',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
 }

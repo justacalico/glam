@@ -5,6 +5,8 @@ import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 final issuesRepositoryProvider = Provider<IssuesRepository>(
   (ref) => IssuesRepository(ref.watch(apiClientProvider)),
@@ -113,3 +115,61 @@ class IssueNotesNotifier extends PagedListNotifier<Note> {
     return note;
   }
 }
+
+/// Links between this issue and others (relates_to / blocks /
+/// is_blocked_by).
+final issueLinksProvider =
+    AsyncNotifierProvider.family<IssueLinksNotifier, List<IssueLink>, IssueRef>(
+      IssueLinksNotifier.new,
+    );
+
+class IssueLinksNotifier extends AsyncNotifier<List<IssueLink>> {
+  IssueLinksNotifier(this.loc);
+
+  final IssueRef loc;
+
+  @override
+  Future<List<IssueLink>> build() {
+    return ref.watch(issuesRepositoryProvider).issueLinks(loc.project, loc.iid);
+  }
+
+  /// Adds a link then refreshes. Returns the created link.
+  Future<IssueLink> link(
+    Object targetProject,
+    int targetIid,
+    String linkType,
+  ) async {
+    final created = await ref
+        .read(issuesRepositoryProvider)
+        .linkIssue(
+          loc.project,
+          loc.iid,
+          targetProject: targetProject,
+          targetIid: targetIid,
+          linkType: linkType,
+        );
+    ref.invalidateSelf();
+    return created;
+  }
+
+  /// Removes the link in place so the row disappears without a refetch.
+  Future<void> unlink(int linkId) async {
+    await ref
+        .read(issuesRepositoryProvider)
+        .unlinkIssue(loc.project, loc.iid, linkId);
+    state = state.value == null
+        ? state
+        : AsyncData([
+            for (final l in state.value!)
+              if (l.linkId != linkId) l,
+          ]);
+  }
+}
+
+/// Merge requests related to this issue.
+final issueRelatedMrsProvider = FutureProvider.family
+    .autoDispose<List<MergeRequest>, IssueRef>(
+      (ref, loc) => ref
+          .watch(issuesRepositoryProvider)
+          .relatedMergeRequests(loc.project, loc.iid),
+    );

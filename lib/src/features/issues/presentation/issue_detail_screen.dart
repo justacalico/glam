@@ -21,6 +21,7 @@ import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
+import 'package:glam/src/features/issues/presentation/issue_links_section.dart';
 
 /// Issue detail: metadata, description, and the comment thread with a
 /// composer docked at the bottom.
@@ -78,6 +79,10 @@ class IssueDetailScreen extends ConsumerWidget {
                   ],
                   const SizedBox(height: Insets.md),
                   ReactionsRow(loc: _awardable),
+                  const SizedBox(height: Insets.xl),
+                  IssueLinksSection(loc: _loc),
+                  const SizedBox(height: Insets.xl),
+                  RelatedMrsSection(loc: _loc),
                   const SizedBox(height: Insets.xl),
                   Text(
                     'Activity',
