@@ -414,6 +414,7 @@ class _TestReportView extends ConsumerWidget {
             title: 'No test report',
           );
         }
+        final coverage = ref.watch(pipelineCoverageProvider(loc)).value;
         return ListView(
           padding: Insets.pagePadding,
           children: [
@@ -434,6 +435,12 @@ class _TestReportView extends ConsumerWidget {
                   value: r.errorCount,
                   color: colors.warning,
                 ),
+                if (coverage != null)
+                  _Count(
+                    label: 'Coverage',
+                    value: coverage.round(),
+                    suffix: '%',
+                  ),
                 Text(
                   'in ${r.totalTime.toStringAsFixed(1)}s',
                   style: theme.textTheme.bodySmall,
@@ -628,17 +635,23 @@ class _DownstreamView extends ConsumerWidget {
 }
 
 class _Count extends StatelessWidget {
-  const _Count({required this.label, required this.value, this.color});
+  const _Count({
+    required this.label,
+    required this.value,
+    this.color,
+    this.suffix = '',
+  });
 
   final String label;
   final int value;
   final Color? color;
+  final String suffix;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Text(
-      '$label $value',
+      '$label $value$suffix',
       style: theme.textTheme.bodySmall?.copyWith(color: color),
     );
   }

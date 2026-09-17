@@ -75,6 +75,36 @@ final pipelineBridgesProvider =
       }
     });
 
+/// Test coverage percent for the pipeline; null when the endpoint
+/// reports none or is absent.
+final pipelineCoverageProvider = FutureProvider.family<double?, PipelineRef>((
+  ref,
+  loc,
+) async {
+  try {
+    return await ref
+        .watch(pipelinesRepositoryProvider)
+        .testReportCoverage(loc.project, loc.id);
+  } on ApiException catch (e) {
+    if (e.statusCode == 404 || e.statusCode == 400 || e.statusCode == 403) {
+      return null;
+    }
+    rethrow;
+  }
+});
+
+/// Pipelines produced by one schedule.
+final schedulePipelinesProvider =
+    FutureProvider.family<List<Pipeline>, ({Object project, int schedule})>((
+      ref,
+      loc,
+    ) async {
+      final page = await ref
+          .watch(pipelinesRepositoryProvider)
+          .schedulePipelines(loc.project, loc.schedule);
+      return page.items;
+    });
+
 /// Variables a pipeline ran with; empty when it had none.
 final pipelineVariablesProvider =
     FutureProvider.family<List<ScheduleVariable>, PipelineRef>((
