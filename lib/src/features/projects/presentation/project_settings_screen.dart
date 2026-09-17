@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
-import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
-import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/access_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
@@ -315,236 +314,37 @@ class _VariablesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    final vars = ref.watch(projectVariablesProvider(project.id));
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Expanded(child: _SectionTitle('CI/CD variables')),
-            TextButton.icon(
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
-              onPressed: () => _editVariable(context, ref, null),
-            ),
-          ],
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: Radii.borderMd,
-            border: Border.all(color: colors.border),
-          ),
-          child: vars.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.all(Insets.lg),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (e, _) => Padding(
-              padding: const EdgeInsets.all(Insets.lg),
-              child: Text('$e'),
-            ),
-            data: (list) => list.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(Insets.lg),
-                    child: EmptyState(
-                      icon: Icons.key_outlined,
-                      title: 'No variables',
-                    ),
-                  )
-                : Column(
-                    children: [
-                      for (final v in list)
-                        _VariableTile(
-                          variable: v,
-                          onEdit: () => _editVariable(context, ref, v),
-                          onDelete: () => _deleteVariable(context, ref, v),
-                        ),
-                    ],
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _editVariable(
-    BuildContext context,
-    WidgetRef ref,
-    CiVariable? existing,
-  ) async {
-    final key = TextEditingController(text: existing?.key ?? '');
-    final value = TextEditingController(text: existing?.value ?? '');
-    final scope = TextEditingController(
-      text: existing?.environmentScope ?? '*',
-    );
-    var protected_ = existing?.protected_ ?? false;
-    var masked = existing?.masked ?? false;
-
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(existing == null ? 'Add variable' : 'Edit variable'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: key,
-                enabled: existing == null,
-                decoration: const InputDecoration(labelText: 'Key'),
-              ),
-              const SizedBox(height: Insets.md),
-              TextField(
-                controller: value,
-                decoration: const InputDecoration(labelText: 'Value'),
-              ),
-              const SizedBox(height: Insets.md),
-              TextField(
-                controller: scope,
-                decoration: const InputDecoration(
-                  labelText: 'Environment scope',
-                ),
-              ),
-              CheckboxListTile(
-                title: const Text('Protected'),
-                value: protected_,
-                onChanged: (v) => setState(() => protected_ = v!),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-              CheckboxListTile(
-                title: const Text('Masked'),
-                value: masked,
-                onChanged: (v) => setState(() => masked = v!),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Save'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    final k = key.text.trim();
-    final v = value.text;
-    final s = scope.text.trim();
-    key.dispose();
-    value.dispose();
-    scope.dispose();
-
-    if (saved == true && k.isNotEmpty && context.mounted) {
-      final repo = ref.read(projectsRepositoryProvider);
-      if (existing == null) {
-        await repo.createVariable(
-          project.id,
-          key: k,
-          value: v,
-          protected_: protected_,
-          masked: masked,
-          environmentScope: s.isEmpty ? '*' : s,
-        );
-      } else {
-        await repo.updateVariable(
-          project.id,
-          existing.key,
-          value: v,
-          protected_: protected_,
-          masked: masked,
-          environmentScope: s,
-        );
-      }
-      ref.invalidate(projectVariablesProvider(project.id));
-    }
-  }
-
-  Future<void> _deleteVariable(
-    BuildContext context,
-    WidgetRef ref,
-    CiVariable variable,
-  ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Delete ${variable.key}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await ref
-          .read(projectsRepositoryProvider)
-          .deleteVariable(project.id, variable.key);
-      ref.invalidate(projectVariablesProvider(project.id));
-    }
-  }
-}
-
-class _VariableTile extends StatelessWidget {
-  const _VariableTile({
-    required this.variable,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
-  final CiVariable variable;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final theme = Theme.of(context);
-    return ListTile(
-      title: Text(
-        variable.key,
-        style: theme.textTheme.titleSmall?.copyWith(
-          fontFamily: 'JetBrains Mono',
-        ),
-      ),
-      subtitle: Text(
-        [
-          if (variable.protected_) 'protected',
-          if (variable.masked) 'masked',
-          if (variable.environmentScope != '*')
-            'env: ${variable.environmentScope}',
-          if (variable.variableType == 'file') 'file',
-        ].join(' · '),
-        style: theme.textTheme.labelSmall,
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: Icon(Icons.edit_outlined, size: 18, color: colors.inkMuted),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete_outline, size: 18, color: colors.danger),
-            onPressed: onDelete,
-          ),
-        ],
-      ),
+    return CiVariablesSection(
+      variables: ref.watch(projectVariablesProvider(project.id)),
+      onSave: (existing, fields) async {
+        final repo = ref.read(projectsRepositoryProvider);
+        if (existing == null) {
+          await repo.createVariable(
+            project.id,
+            key: fields.key,
+            value: fields.value,
+            protected_: fields.protected_,
+            masked: fields.masked,
+            environmentScope: fields.environmentScope,
+          );
+        } else {
+          await repo.updateVariable(
+            project.id,
+            existing.key,
+            value: fields.value,
+            protected_: fields.protected_,
+            masked: fields.masked,
+            environmentScope: fields.environmentScope,
+          );
+        }
+        ref.invalidate(projectVariablesProvider(project.id));
+      },
+      onDelete: (v) async {
+        await ref
+            .read(projectsRepositoryProvider)
+            .deleteVariable(project.id, v.key);
+        ref.invalidate(projectVariablesProvider(project.id));
+      },
     );
   }
 }
