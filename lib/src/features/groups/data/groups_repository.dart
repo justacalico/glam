@@ -41,6 +41,32 @@ class GroupsRepository {
     );
   }
 
+  /// Creates a group, optionally nested under [parentId].
+  Future<Group> createGroup({
+    required String name,
+    required String path,
+    int? parentId,
+    String? description,
+    String? visibility,
+  }) {
+    return _client.post(
+      '/groups',
+      body: {
+        'name': name,
+        'path': path,
+        'parent_id': ?parentId,
+        'description': ?description,
+        'visibility': ?visibility,
+      },
+      decoder: (j) => Group.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Deletes a group and everything inside it.
+  Future<void> deleteGroup(Object groupId) {
+    return _client.delete(_g(groupId));
+  }
+
   /// Iterations the group and its ancestors define (GitLab Premium).
   /// `state` accepts `opened`, `upcoming`, `current`, `closed`,
   /// `started` (deprecated alias of `current`), or `all`.

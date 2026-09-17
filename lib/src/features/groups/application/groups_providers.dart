@@ -37,6 +37,15 @@ final groupProvider = FutureProvider.family<Group, Object>(
   (ref, id) => ref.watch(groupsRepositoryProvider).group(id),
 );
 
+/// Groups the user owns — used as the parent picker when creating groups.
+final ownedGroupsProvider = FutureProvider<List<Group>>(
+  (ref) async =>
+      (await ref
+              .watch(groupsRepositoryProvider)
+              .groups(ownedOnly: true, perPage: 100))
+          .items,
+);
+
 final subgroupsProvider =
     AsyncNotifierProvider.family<
       SubgroupsNotifier,

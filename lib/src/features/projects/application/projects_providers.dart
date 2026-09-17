@@ -8,6 +8,7 @@ import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
@@ -65,6 +66,11 @@ final projectVariablesProvider =
     FutureProvider.family<List<CiVariable>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).variables(id),
     );
+
+/// Namespaces the user can create projects in.
+final namespacesProvider = FutureProvider<List<GitlabNamespace>>(
+  (ref) => ref.watch(projectsRepositoryProvider).namespaces(),
+);
 
 /// Project admin surfaces on the settings screen.
 final projectHooksProvider = FutureProvider.family<List<Webhook>, Object>(

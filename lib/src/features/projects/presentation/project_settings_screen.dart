@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
@@ -368,32 +371,90 @@ class _DangerSection extends ConsumerWidget {
             borderRadius: Radii.borderMd,
             border: Border.all(color: colors.danger.withValues(alpha: 0.4)),
           ),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: Text(
-                  project.archived
-                      ? 'This project is archived.'
-                      : 'Archiving makes the project read-only.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      project.archived
+                          ? 'This project is archived.'
+                          : 'Archiving makes the project read-only.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () async {
+                      final repo = ref.read(projectsRepositoryProvider);
+                      if (project.archived) {
+                        await repo.unarchive(project.id);
+                      } else {
+                        await repo.archive(project.id);
+                      }
+                      ref.invalidate(projectProvider(project.id.toString()));
+                    },
+                    child: Text(project.archived ? 'Unarchive' : 'Archive'),
+                  ),
+                ],
               ),
-              OutlinedButton(
-                onPressed: () async {
-                  final repo = ref.read(projectsRepositoryProvider);
-                  if (project.archived) {
-                    await repo.unarchive(project.id);
-                  } else {
-                    await repo.archive(project.id);
-                  }
-                  ref.invalidate(projectProvider(project.id.toString()));
-                },
-                child: Text(project.archived ? 'Unarchive' : 'Archive'),
+              const SizedBox(height: Insets.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Deleting removes the project and its repository.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () => _deleteProject(context, ref),
+                    child: const Text('Delete'),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _deleteProject(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete ${project.pathWithNamespace}?'),
+        content: const Text(
+          'This deletes the project and its repository. On gitlab.com '
+          'deletion is delayed; on self-managed it may be immediate.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete project'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(projectsRepositoryProvider).deleteProject(project.id);
+      ref.invalidate(projectsListProvider);
+      if (context.mounted) {
+        context.go(Routes.projects);
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }

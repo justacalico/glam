@@ -134,6 +134,31 @@ void main() {
       );
     });
 
+    test('create and delete groups hit the /groups paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/groups', (fixtureJson('groups') as List).first)
+        ..delete('/groups/9');
+      final repo = GroupsRepository(client);
+
+      final g = await repo.createGroup(
+        name: 'Platform',
+        path: 'platform',
+        parentId: 9,
+        visibility: 'private',
+      );
+      await repo.deleteGroup(9);
+
+      expect(g.fullPath, 'calico');
+      final sent = adapter.requestsTo('POST', '/groups').single;
+      final body = sent.data as Map;
+      expect(body['name'], 'Platform');
+      expect(body['path'], 'platform');
+      expect(body['parent_id'], 9);
+      expect(body['visibility'], 'private');
+      expect(adapter.requestsTo('DELETE', '/groups/9'), hasLength(1));
+    });
+
     test('members work for groups and projects', () async {
       final (client, adapter) = testClient();
       adapter

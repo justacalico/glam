@@ -5,6 +5,7 @@ import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
@@ -31,6 +32,42 @@ class ProjectsRepository {
       perPage: perPage,
       decoder: _decode,
     );
+  }
+
+  /// Namespaces the user can create projects in (`/namespaces`).
+  Future<List<GitlabNamespace>> namespaces() {
+    return _client.getAll(
+      '/namespaces',
+      decoder: (j) => GitlabNamespace.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Creates a project under [namespaceId] (or the user's own namespace).
+  Future<Project> createProject({
+    required String name,
+    String? path,
+    int? namespaceId,
+    String? description,
+    String? visibility,
+    bool initializeWithReadme = false,
+  }) {
+    return _client.post(
+      '/projects',
+      body: {
+        'name': name,
+        'path': ?path,
+        'namespace_id': ?namespaceId,
+        'description': ?description,
+        'visibility': ?visibility,
+        if (initializeWithReadme) 'initialize_with_readme': true,
+      },
+      decoder: _decodeOne,
+    );
+  }
+
+  /// Deletes a project. On SaaS this schedules delayed deletion.
+  Future<void> deleteProject(Object id) {
+    return _client.delete('/projects/${GitLabApiClient.encodeProject(id)}');
   }
 
   Future<Project> get(Object id) {

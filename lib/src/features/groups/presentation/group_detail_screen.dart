@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
@@ -52,6 +53,18 @@ class GroupDetailScreen extends ConsumerWidget {
             onPressed: () =>
                 unawaited(context.push(Routes.groupSearch(groupId))),
           ),
+          PopupMenuButton<String>(
+            tooltip: 'Group actions',
+            iconSize: 20,
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'delete', child: Text('Delete group')),
+            ],
+            onSelected: (v) {
+              if (v == 'delete') {
+                unawaited(_deleteGroup(context, ref, groupId));
+              }
+            },
+          ),
         ],
       ),
       body: AsyncValueWidget<Group>(
@@ -94,6 +107,49 @@ class GroupDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _deleteGroup(
+  BuildContext context,
+  WidgetRef ref,
+  Object groupId,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Delete group?'),
+      content: const Text(
+        'This deletes the group and all of its subgroups and content. '
+        'This cannot be undone.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Delete group'),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true || !context.mounted) {
+    return;
+  }
+  try {
+    await ref.read(groupsRepositoryProvider).deleteGroup(groupId);
+    ref.invalidate(groupsProvider(null));
+    if (context.mounted) {
+      context.go(Routes.groups);
+    }
+  } on ApiException catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 }
 

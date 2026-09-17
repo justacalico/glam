@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "calico",
+    "path": "calico",
+    "kind": "user",
+    "full_path": "calico"
+  },
+  {
+    "id": 9,
+    "name": "Platform",
+    "path": "platform",
+    "kind": "group",
+    "full_path": "platform"
+  }
+]
