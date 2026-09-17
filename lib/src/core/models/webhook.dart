@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// A project webhook (`/projects/:id/hooks`).
+/// A project or group webhook (`/projects/:id/hooks`, `/groups/:id/hooks`).
 class Webhook extends Equatable {
   const Webhook({
     required this.id,
@@ -15,6 +15,7 @@ class Webhook extends Equatable {
     this.tagPushEvents = false,
     this.noteEvents = false,
     this.jobEvents = false,
+    this.subgroupEvents = false,
     this.enableSslVerification = true,
     this.createdAt,
   });
@@ -32,6 +33,7 @@ class Webhook extends Equatable {
     tagPushEvents: json['tag_push_events'] as bool? ?? false,
     noteEvents: json['note_events'] as bool? ?? false,
     jobEvents: json['job_events'] as bool? ?? false,
+    subgroupEvents: json['subgroup_events'] as bool? ?? false,
     enableSslVerification: json['enable_ssl_verification'] as bool? ?? true,
     createdAt: json['created_at'] is String
         ? DateTime.tryParse(json['created_at'] as String)?.toLocal()
@@ -50,6 +52,7 @@ class Webhook extends Equatable {
   final bool tagPushEvents;
   final bool noteEvents;
   final bool jobEvents;
+  final bool subgroupEvents;
   final bool enableSslVerification;
   final DateTime? createdAt;
 
@@ -62,6 +65,7 @@ class Webhook extends Equatable {
     if (mergeRequestsEvents) 'merge requests',
     if (pipelineEvents) 'pipeline',
     if (jobEvents) 'job',
+    if (subgroupEvents) 'subgroup',
     if (wikiPageEvents) 'wiki',
     if (deploymentEvents) 'deployment',
     if (releasesEvents) 'releases',

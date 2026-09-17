@@ -134,6 +134,45 @@ void main() {
       );
     });
 
+    test('group webhooks list, create, test, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/hooks', [
+          {
+            'id': 7,
+            'url': 'https://example.com/hook',
+            'push_events': true,
+            'subgroup_events': true,
+          },
+        ])
+        ..post('/groups/9/hooks', {'id': 8, 'url': 'https://x.test/h'})
+        ..post('/groups/9/hooks/7/test/push_events', {})
+        ..delete('/groups/9/hooks/7');
+      final repo = GroupsRepository(client);
+
+      final hooks = await repo.webhooks(9);
+      expect(hooks.single.url, 'https://example.com/hook');
+      expect(hooks.single.subgroupEvents, isTrue);
+
+      await repo.createHook(
+        9,
+        url: 'https://x.test/h',
+        events: {'subgroup_events': true},
+        enableSslVerification: false,
+      );
+      final sent = adapter.requestsTo('POST', '/groups/9/hooks').single;
+      final body = sent.data as Map;
+      expect(body['subgroup_events'], isTrue);
+      expect(body['enable_ssl_verification'], isFalse);
+
+      await repo.testHook(9, 7);
+      await repo.deleteHook(9, 7);
+      expect(
+        adapter.requestsTo('DELETE', '/groups/9/hooks/7'),
+        hasLength(1),
+      );
+    });
+
     test('create and delete groups hit the /groups paths', () async {
       final (client, adapter) = testClient();
       adapter

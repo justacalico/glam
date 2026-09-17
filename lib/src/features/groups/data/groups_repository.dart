@@ -4,6 +4,7 @@ import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/core/models/webhook.dart';
 
 /// `/groups` plus members endpoints for both groups and projects.
 class GroupsRepository {
@@ -201,6 +202,44 @@ class GroupsRepository {
 
   Future<void> deleteGroupVariable(Object groupId, String key) {
     return _client.delete('${_g(groupId)}/variables/$key');
+  }
+
+  /// Group webhooks (`/groups/:id/hooks`).
+  Future<List<Webhook>> webhooks(Object groupId) {
+    return _client.getAll(
+      '${_g(groupId)}/hooks',
+      decoder: (j) => Webhook.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Webhook> createHook(
+    Object groupId, {
+    required String url,
+    String? token,
+    Map<String, bool> events = const {},
+    bool enableSslVerification = true,
+  }) {
+    return _client.post(
+      '${_g(groupId)}/hooks',
+      body: {
+        'url': url,
+        'token': ?token,
+        ...events,
+        'enable_ssl_verification': enableSslVerification,
+      },
+      decoder: (j) => Webhook.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> testHook(Object groupId, int hookId) {
+    return _client.post(
+      '${_g(groupId)}/hooks/$hookId/test/push_events',
+      decoder: (j) => j,
+    );
+  }
+
+  Future<void> deleteHook(Object groupId, int hookId) {
+    return _client.delete('${_g(groupId)}/hooks/$hookId');
   }
 
   /// Group members.
