@@ -258,11 +258,23 @@ void main() {
     test('deploymentsProvider scopes by environment', () async {
       adapter.get('/projects/42/deployments', fixtureJson('deployments'));
 
-      const loc = (project: 42, envId: 9);
-      final state = await container.read(deploymentsProvider(loc).future);
+      const filter = (env: (project: 42, envId: 9), status: null);
+      final state = await container.read(deploymentsProvider(filter).future);
 
       expect(state.items, hasLength(2));
       expect(adapter.lastRequest!.queryParameters['environment'], '9');
+    });
+
+    test('deploymentsProvider forwards the status filter', () async {
+      adapter.get('/projects/42/deployments', fixtureJson('deployments'));
+
+      const filter = (
+        env: (project: 42, envId: 9),
+        status: 'failed',
+      );
+      await container.read(deploymentsProvider(filter).future);
+
+      expect(adapter.lastRequest!.queryParameters['status'], 'failed');
     });
   });
 }

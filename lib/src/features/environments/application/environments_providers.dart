@@ -55,22 +55,29 @@ final environmentProvider =
           .environment(loc.project, loc.envId),
     );
 
+typedef DeploymentFilter = ({EnvironmentRef env, String? status});
+
 final deploymentsProvider =
     AsyncNotifierProvider.family<
       DeploymentsNotifier,
       PagedListState<Deployment>,
-      EnvironmentRef
+      DeploymentFilter
     >(DeploymentsNotifier.new);
 
 class DeploymentsNotifier extends PagedListNotifier<Deployment> {
-  DeploymentsNotifier(this.loc);
+  DeploymentsNotifier(this.filter);
 
-  final EnvironmentRef loc;
+  final DeploymentFilter filter;
 
   @override
   Future<Paginated<Deployment>> fetchPage(int page) {
     return ref
         .watch(environmentsRepositoryProvider)
-        .deployments(loc.project, environmentId: loc.envId, page: page);
+        .deployments(
+          filter.env.project,
+          environmentId: filter.env.envId,
+          status: filter.status,
+          page: page,
+        );
   }
 }
