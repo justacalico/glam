@@ -5,6 +5,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/environments/data/environments_repository.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
 import 'package:glam/src/features/environments/domain/feature_flag.dart';
+import 'package:glam/src/features/environments/domain/feature_flag_user_list.dart';
 
 final environmentsRepositoryProvider = Provider<EnvironmentsRepository>(
   (ref) => EnvironmentsRepository(ref.watch(apiClientProvider)),
@@ -14,6 +15,13 @@ final environmentsRepositoryProvider = Provider<EnvironmentsRepository>(
 final featureFlagsProvider = FutureProvider.family<List<FeatureFlag>, Object>(
   (ref, id) => ref.watch(environmentsRepositoryProvider).featureFlags(id),
 );
+
+/// Named user sets flags can target.
+final featureFlagUserListsProvider =
+    FutureProvider.family<List<FeatureFlagUserList>, Object>(
+      (ref, id) =>
+          ref.watch(environmentsRepositoryProvider).featureFlagUserLists(id),
+    );
 
 final environmentsProvider =
     AsyncNotifierProvider.family<

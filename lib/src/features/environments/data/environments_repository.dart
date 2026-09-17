@@ -2,6 +2,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
 import 'package:glam/src/features/environments/domain/feature_flag.dart';
+import 'package:glam/src/features/environments/domain/feature_flag_user_list.dart';
 
 /// `/projects/:id/environments` and `/projects/:id/deployments`.
 class EnvironmentsRepository {
@@ -104,5 +105,44 @@ class EnvironmentsRepository {
     return _client.delete(
       '${_p(projectId)}/feature_flags/${Uri.encodeComponent(name)}',
     );
+  }
+
+  /// User lists flags can target (`/feature_flags_user_lists`).
+  Future<List<FeatureFlagUserList>> featureFlagUserLists(Object projectId) {
+    return _client.getAll(
+      '${_p(projectId)}/feature_flags_user_lists',
+      decoder: (j) => FeatureFlagUserList.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// `userXids` is a comma-separated string of user IDs, matching the
+  /// Unleash payload the API expects verbatim.
+  Future<FeatureFlagUserList> createFeatureFlagUserList(
+    Object projectId, {
+    required String name,
+    required String userXids,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/feature_flags_user_lists',
+      body: {'name': name, 'user_xids': userXids},
+      decoder: (j) => FeatureFlagUserList.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<FeatureFlagUserList> updateFeatureFlagUserList(
+    Object projectId,
+    int iid, {
+    String? name,
+    String? userXids,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/feature_flags_user_lists/$iid',
+      body: {'name': ?name, 'user_xids': ?userXids},
+      decoder: (j) => FeatureFlagUserList.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteFeatureFlagUserList(Object projectId, int iid) {
+    return _client.delete('${_p(projectId)}/feature_flags_user_lists/$iid');
   }
 }
