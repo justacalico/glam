@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
+import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
@@ -68,6 +71,25 @@ final jobTraceProvider = FutureProvider.family<String, JobRef>(
   (ref, loc) =>
       ref.watch(pipelinesRepositoryProvider).jobTrace(loc.project, loc.id),
 );
+
+/// Files inside the job's artifact archive.
+final jobArtifactsProvider = FutureProvider.family<List<ArtifactEntry>, JobRef>(
+  (ref, loc) => ref
+      .watch(pipelinesRepositoryProvider)
+      .artifactEntries(loc.project, loc.id),
+);
+
+/// (job ref, path inside the zip) for fetching one artifact file.
+typedef ArtifactFileRef = ({JobRef job, String path});
+
+/// File bytes are cached per entry tap and released when the sheet
+/// closes — artifact files can be large.
+final jobArtifactFileProvider = FutureProvider.autoDispose
+    .family<Uint8List, ArtifactFileRef>(
+      (ref, loc) => ref
+          .watch(pipelinesRepositoryProvider)
+          .artifactFile(loc.job.project, loc.job.id, loc.path),
+    );
 
 typedef ProjectJobsFilter = ({Object project, String? scope});
 

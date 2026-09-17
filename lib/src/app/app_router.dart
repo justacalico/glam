@@ -17,6 +17,7 @@ import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
+import 'package:glam/src/features/pipelines/presentation/job_artifacts_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/job_detail_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipeline_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
@@ -193,6 +194,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                           projectId: state.pathParameters['id']!,
                           jobId: int.parse(state.pathParameters['jid']!),
                         ),
+                        routes: [
+                          GoRoute(
+                            path: 'artifacts',
+                            builder: (context, state) => JobArtifactsScreen(
+                              projectId: state.pathParameters['id']!,
+                              jobId: int.parse(state.pathParameters['jid']!),
+                            ),
+                          ),
+                        ],
                       ),
                       GoRoute(
                         path: 'registry/:rid',

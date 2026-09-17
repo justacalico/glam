@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -89,6 +91,10 @@ class JobDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _act(BuildContext context, WidgetRef ref, String action) async {
+    if (action == 'artifacts') {
+      unawaited(context.push(Routes.projectJobArtifacts(projectId, jobId)));
+      return;
+    }
     if (action == 'erase' || action == 'delete_artifacts') {
       final erase = action == 'erase';
       final ok = await showDialog<bool>(
@@ -156,6 +162,11 @@ class _JobMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <PopupMenuEntry<String>>[
+      if (job.hasArtifacts)
+        const PopupMenuItem(
+          value: 'artifacts',
+          child: Text('Browse artifacts'),
+        ),
       if (job.status == 'success' || job.status == 'failed') ...[
         const PopupMenuItem(
           value: 'keep_artifacts',
