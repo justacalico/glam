@@ -117,6 +117,43 @@ void main() {
       final del = adapter.requestsTo('DELETE', '/projects/42/labels').single;
       expect(del.queryParameters['name'], 'bug');
     });
+
+    test('subscribe, unsubscribe, and promote', () async {
+      final (client, adapter) = testClient();
+      final label = (fixtureJson('labels') as List).first;
+      adapter
+        ..post('/projects/42/labels/3/subscribe', label)
+        ..delete('/projects/42/labels/3/subscribe')
+        ..put('/projects/42/labels/3/promote', label);
+      final repo = LabelsRepository(client);
+
+      await repo.setSubscribed(
+        42,
+        isProject: true,
+        labelId: 3,
+        subscribed: true,
+      );
+      await repo.setSubscribed(
+        42,
+        isProject: true,
+        labelId: 3,
+        subscribed: false,
+      );
+      await repo.promote(42, 3);
+
+      expect(
+        adapter.requestsTo('POST', '/projects/42/labels/3/subscribe'),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/labels/3/subscribe'),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo('PUT', '/projects/42/labels/3/promote'),
+        hasLength(1),
+      );
+    });
   });
 
   group('providers', () {
