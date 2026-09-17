@@ -8,6 +8,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
+import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/access_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
@@ -402,6 +403,21 @@ class _DangerSection extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
+                      'Move the project to another namespace.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () => _transfer(context, ref),
+                    child: const Text('Transfer'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Insets.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
                       'Deleting removes the project and its repository.',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
@@ -417,6 +433,76 @@ class _DangerSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _transfer(BuildContext context, WidgetRef ref) async {
+    GitlabNamespace? picked;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final namespaces = ref.watch(namespacesProvider);
+          return AlertDialog(
+            title: Text('Transfer ${project.name}?'),
+            content: SizedBox(
+              width: 360,
+              child: namespaces.when(
+                loading: () => const Padding(
+                  padding: EdgeInsets.all(Insets.lg),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (e, _) => Text('$e'),
+                data: (items) => DropdownButtonFormField<GitlabNamespace>(
+                  decoration: const InputDecoration(
+                    labelText: 'New namespace',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    for (final n in items)
+                      DropdownMenuItem(
+                        value: n,
+                        child: Text(n.fullPath ?? n.path),
+                      ),
+                  ],
+                  onChanged: (v) => picked = v,
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Transfer'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    final target = picked;
+    if (confirmed != true || target == null || !context.mounted) {
+      return;
+    }
+    try {
+      final moved = await ref
+          .read(projectsRepositoryProvider)
+          .transfer(project.id, namespace: target.id);
+      ref
+        ..invalidate(projectsListProvider)
+        ..invalidate(projectProvider);
+      if (context.mounted) {
+        context.go(Routes.project(moved.id));
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 
   Future<void> _deleteProject(BuildContext context, WidgetRef ref) async {

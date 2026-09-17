@@ -235,13 +235,15 @@ class GroupsRepository {
       '/${isProject ? 'projects' : 'groups'}'
       '/${GitLabApiClient.encodeProject(id)}/members';
 
-  /// Adds a member by user id or username.
+  /// Adds a member by user id, username, or email. Emails the person
+  /// an invite when the address isn't tied to an account yet.
   Future<Member> addMember(
     Object id, {
     required bool isProject,
     required int accessLevel,
     int? userId,
     String? username,
+    String? email,
     String? expiresAt,
   }) {
     return _client.post(
@@ -249,6 +251,7 @@ class GroupsRepository {
       body: {
         'user_id': ?userId,
         'username': ?username,
+        'email': ?email,
         'access_level': accessLevel,
         'expires_at': ?expiresAt,
       },

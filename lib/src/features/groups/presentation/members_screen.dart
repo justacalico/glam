@@ -269,7 +269,9 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     final raw = _user.text.trim();
     if (raw.isEmpty || _saving) {
       setState(
-        () => _error = raw.isEmpty ? 'Username or user id is required' : null,
+        () => _error = raw.isEmpty
+            ? 'Username, user id, or email is required'
+            : null,
       );
       return;
     }
@@ -285,7 +287,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             widget.scope.id,
             isProject: widget.scope.isProject,
             userId: asId,
-            username: asId == null ? raw : null,
+            username: asId == null && !raw.contains('@') ? raw : null,
+            email: asId == null && raw.contains('@') ? raw : null,
             accessLevel: _level,
             expiresAt: _expires?.toIso8601String().substring(0, 10),
           );
@@ -338,8 +341,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             controller: _user,
             autofocus: true,
             decoration: const InputDecoration(
-              labelText: 'Username or user id',
-              hintText: 'jane or 42',
+              labelText: 'Username, user id, or email',
+              hintText: 'jane, 42, or jane@example.com',
               border: OutlineInputBorder(),
             ),
           ),
