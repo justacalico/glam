@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/domain/project_export.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
@@ -156,6 +157,21 @@ final projectAuditEventsProvider =
         rethrow;
       }
     });
+
+/// Export status for the project; `none` when never exported.
+final projectExportProvider = FutureProvider.family<ProjectExport, Object>((
+  ref,
+  id,
+) async {
+  try {
+    return await ref.watch(projectsRepositoryProvider).exportStatus(id);
+  } on ApiException catch (e) {
+    if (e.statusCode == 404) {
+      return const ProjectExport(status: 'none');
+    }
+    rethrow;
+  }
+});
 
 final projectDeployTokensProvider =
     FutureProvider.family<List<DeployToken>, Object>(
