@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Tag list; tags with attached releases show the release name.
 class TagsScreen extends ConsumerWidget {
@@ -195,6 +199,43 @@ class _TagTile extends ConsumerWidget {
           PopupMenuButton<String>(
             iconSize: 18,
             onSelected: (action) async {
+              if (action == 'download') {
+                try {
+                  final bytes = await ref
+                      .read(repositoryRepositoryProvider)
+                      .archive(projectId, tag.name);
+                  if (!context.mounted) {
+                    return;
+                  }
+                  final box = context.findRenderObject()! as RenderBox;
+                  unawaited(
+                    SharePlus.instance.share(
+                      ShareParams(
+                        files: [
+                          XFile.fromData(
+                            bytes,
+                            name: '${tag.name.replaceAll('/', '-')}.tar.gz',
+                            mimeType: 'application/gzip',
+                          ),
+                        ],
+                        sharePositionOrigin:
+                            box.localToGlobal(Offset.zero) & box.size,
+                      ),
+                    ),
+                  );
+                } on ApiException catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.message)));
+                  }
+                }
+                return;
+              }
+              if (action == 'changelog') {
+                await _showChangelog(context, ref, tag);
+                return;
+              }
               if (action == 'delete') {
                 final confirmed = await showDialog<bool>(
                   context: context,
@@ -221,6 +262,14 @@ class _TagTile extends ConsumerWidget {
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'download',
+                child: Text('Download archive'),
+              ),
+              const PopupMenuItem(
+                value: 'changelog',
+                child: Text('Generate changelog'),
+              ),
               const PopupMenuItem(value: 'delete', child: Text('Delete tag')),
             ],
           ),
@@ -228,4 +277,133 @@ class _TagTile extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _showChangelog(
+    BuildContext context,
+    WidgetRef ref,
+    Tag tag,
+  ) async {
+    final version = TextEditingController(text: tag.name);
+    final from = TextEditingController();
+    final to = TextEditingController();
+    var preview = '';
+    var busy = false;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialog) => AlertDialog(
+          title: const Text('Generate changelog'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: version,
+                  decoration: const InputDecoration(labelText: 'Version'),
+                ),
+                const SizedBox(height: Insets.md),
+                TextField(
+                  controller: from,
+                  decoration: const InputDecoration(
+                    labelText: 'From ref (optional)',
+                  ),
+                ),
+                const SizedBox(height: Insets.md),
+                TextField(
+                  controller: to,
+                  decoration: const InputDecoration(
+                    labelText: 'To ref (optional)',
+                  ),
+                ),
+                if (preview.isNotEmpty) ...[
+                  const SizedBox(height: Insets.md),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        preview,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+            TextButton(
+              onPressed: busy || version.text.trim().isEmpty
+                  ? null
+                  : () async {
+                      setDialog(() => busy = true);
+                      try {
+                        final notes = await ref
+                            .read(repositoryRepositoryProvider)
+                            .changelog(
+                              projectId,
+                              version: version.text.trim(),
+                              from: _blankToNull(from.text),
+                              to: _blankToNull(to.text),
+                            );
+                        setDialog(() => preview = notes);
+                      } on ApiException catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.message)));
+                        }
+                      } finally {
+                        setDialog(() => busy = false);
+                      }
+                    },
+              child: const Text('Preview'),
+            ),
+            FilledButton(
+              onPressed: busy || version.text.trim().isEmpty
+                  ? null
+                  : () async {
+                      setDialog(() => busy = true);
+                      try {
+                        await ref
+                            .read(repositoryRepositoryProvider)
+                            .generateChangelog(
+                              projectId,
+                              version: version.text.trim(),
+                              from: _blankToNull(from.text),
+                              to: _blankToNull(to.text),
+                            );
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Changelog committed'),
+                            ),
+                          );
+                        }
+                      } on ApiException catch (e) {
+                        if (context.mounted) {
+                          setDialog(() => busy = false);
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.message)));
+                        }
+                      }
+                    },
+              child: const Text('Commit'),
+            ),
+          ],
+        ),
+      ),
+    );
+    version.dispose();
+    from.dispose();
+    to.dispose();
+  }
 }
+
+String? _blankToNull(String text) => text.trim().isEmpty ? null : text.trim();

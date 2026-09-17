@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
@@ -423,6 +425,54 @@ class RepositoryRepository {
       decoder: (j) => (j! as Map<String, dynamic>).map(
         (key, value) => MapEntry(key, (value as num).toDouble()),
       ),
+    );
+  }
+
+  /// Source tarball for a ref (`/repository/archive.tar.gz?sha=:ref`).
+  Future<Uint8List> archive(Object projectId, String ref) {
+    return _client.getBytes(
+      '${_p(projectId)}/repository/archive.tar.gz',
+      query: {'sha': ref},
+      maxBytes: 100 * 1024 * 1024,
+    );
+  }
+
+  /// Changelog entries for a version (`/repository/changelog`).
+  Future<String> changelog(
+    Object projectId, {
+    required String version,
+    String? from,
+    String? to,
+  }) {
+    return _client.get(
+      '${_p(projectId)}/repository/changelog',
+      query: {'version': version, 'from': ?from, 'to': ?to},
+      decoder: (j) => (j! as Map<String, dynamic>)['notes'] as String? ?? '',
+    );
+  }
+
+  /// Generates the changelog for [version] and commits it to [branch]
+  /// (default: the project's default branch).
+  Future<void> generateChangelog(
+    Object projectId, {
+    required String version,
+    String? from,
+    String? to,
+    String? branch,
+    String? message,
+    String? trailer,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/repository/changelog',
+      body: {
+        'version': version,
+        'from': ?from,
+        'to': ?to,
+        'branch': ?branch,
+        'message': ?message,
+        'trailer': ?trailer,
+      },
+      decoder: (_) {},
     );
   }
 }
