@@ -17,23 +17,25 @@ final pipelinesRepositoryProvider = Provider<PipelinesRepository>(
   (ref) => PipelinesRepository(ref.watch(apiClientProvider)),
 );
 
+typedef PipelineFilter = ({Object project, String? status});
+
 final pipelinesProvider =
     AsyncNotifierProvider.family<
       PipelinesNotifier,
       PagedListState<Pipeline>,
-      Object
+      PipelineFilter
     >(PipelinesNotifier.new);
 
 class PipelinesNotifier extends PagedListNotifier<Pipeline> {
-  PipelinesNotifier(this.project);
+  PipelinesNotifier(this.filter);
 
-  final Object project;
+  final PipelineFilter filter;
 
   @override
   Future<Paginated<Pipeline>> fetchPage(int page) {
     return ref
         .watch(pipelinesRepositoryProvider)
-        .pipelines(project, page: page);
+        .pipelines(filter.project, page: page, status: filter.status);
   }
 }
 

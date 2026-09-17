@@ -69,33 +69,96 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
   }
 }
 
-class _PipelineRuns extends ConsumerWidget {
+class _PipelineRuns extends ConsumerStatefulWidget {
   const _PipelineRuns({required this.projectId});
 
   final Object projectId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    final state = ref.watch(pipelinesProvider(projectId));
-    final notifier = ref.read(pipelinesProvider(projectId).notifier);
+  ConsumerState<_PipelineRuns> createState() => _PipelineRunsState();
+}
 
-    return AsyncValueWidget(
-      value: state,
-      onRetry: notifier.refresh,
-      data: (data) => PagedListView(
-        state: data,
-        onLoadMore: notifier.loadMore,
-        onRefresh: notifier.refresh,
-        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-        separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
-          icon: Icons.rocket_launch_outlined,
-          title: 'No pipelines yet',
+class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
+  String? _status;
+
+  static const _statuses = [
+    (null, 'All'),
+    ('running', 'Running'),
+    ('pending', 'Pending'),
+    ('success', 'Passed'),
+    ('failed', 'Failed'),
+    ('canceled', 'Canceled'),
+    ('skipped', 'Skipped'),
+    ('manual', 'Manual'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final filter = (project: widget.projectId, status: _status);
+    final state = ref.watch(pipelinesProvider(filter));
+    final notifier = ref.read(pipelinesProvider(filter).notifier);
+
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: PopupMenuButton<String?>(
+            tooltip: 'Filter pipelines',
+            onSelected: (v) => setState(() => _status = v),
+            itemBuilder: (context) => [
+              for (final (value, label) in _statuses)
+                CheckedPopupMenuItem(
+                  value: value,
+                  checked: _status == value,
+                  child: Text(label),
+                ),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Insets.lg,
+                vertical: Insets.sm,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _statuses.where((e) => e.$1 == _status).firstOrNull?.$2 ??
+                        'All',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  Icon(Icons.arrow_drop_down, color: colors.inkMuted),
+                ],
+              ),
+            ),
+          ),
         ),
-        itemBuilder: (context, index) =>
-            PipelineTile(pipeline: data.items[index], projectId: projectId),
-      ),
+        Expanded(
+          child: AsyncValueWidget(
+            value: state,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.rocket_launch_outlined,
+                title: 'No pipelines yet',
+              ),
+              itemBuilder: (context, index) => PipelineTile(
+                pipeline: data.items[index],
+                projectId: widget.projectId,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
