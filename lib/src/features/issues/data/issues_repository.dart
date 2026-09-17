@@ -306,6 +306,23 @@ class IssuesRepository {
     return _client.delete('${_p(projectId)}/issues/$iid/links/$linkId');
   }
 
+  /// Clones the issue into the same project and returns the copy.
+  Future<Issue> cloneIssue(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/clone',
+      decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Moves the issue to another project (id or full path).
+  Future<Issue> moveIssue(Object projectId, int iid, Object toProject) {
+    return _client.post(
+      '${_p(projectId)}/issues/$iid/move',
+      body: {'to_project_id': toProject},
+      decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Merge requests related to this issue (mentioned or closing it).
   Future<List<MergeRequest>> relatedMergeRequests(Object projectId, int iid) {
     // Paginated endpoint; a bounded list so fetch every page.

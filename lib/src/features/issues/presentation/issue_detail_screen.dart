@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -123,6 +125,81 @@ class _IssueActions extends ConsumerWidget {
           loc.iid,
           stateEvent: issue.isOpen ? 'close' : 'reopen',
         );
+  }
+
+  Future<void> _promptMove(BuildContext context, WidgetRef ref) async {
+    final controller = TextEditingController();
+    var error = false;
+    final target = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Move issue'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: 'Destination project',
+              hintText: 'group/project',
+              errorText: error ? 'Enter a project path' : null,
+            ),
+            onChanged: (_) {
+              if (error) {
+                setState(() => error = false);
+              }
+            },
+            onSubmitted: (v) {
+              if (v.trim().isEmpty) {
+                setState(() => error = true);
+                return;
+              }
+              Navigator.pop(context, v.trim());
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final v = controller.text.trim();
+                if (v.isEmpty) {
+                  setState(() => error = true);
+                  return;
+                }
+                Navigator.pop(context, v);
+              },
+              child: const Text('Move'),
+            ),
+          ],
+        ),
+      ),
+    );
+    controller.dispose();
+    if (target == null || !context.mounted) {
+      return;
+    }
+    try {
+      final moved = await ref
+          .read(issuesRepositoryProvider)
+          .moveIssue(loc.project, loc.iid, target);
+      ref.invalidate(issuesProvider);
+      if (context.mounted) {
+        // The issue now lives under the destination project.
+        unawaited(
+          context.pushReplacement(
+            Routes.projectIssue(moved.projectId, moved.iid),
+          ),
+        );
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 
   Future<void> _promptWeight(BuildContext context, WidgetRef ref) async {
@@ -251,6 +328,20 @@ class _IssueActions extends ConsumerWidget {
             ref.invalidate(issueProvider(loc));
           case 'weight':
             await _promptWeight(context, ref);
+          case 'clone':
+            final copy = await repo.cloneIssue(loc.project, loc.iid);
+            ref.invalidate(issuesProvider);
+            if (context.mounted) {
+              unawaited(
+                context.pushReplacement(
+                  Routes.projectIssue(copy.projectId, copy.iid),
+                ),
+              );
+            }
+            return;
+          case 'move':
+            await _promptMove(context, ref);
+            return;
           case 'edit':
             unawaited(
               IssueFormScreen.show(
@@ -286,6 +377,9 @@ class _IssueActions extends ConsumerWidget {
         if ((issue.timeSpent ?? 0) > 0)
           const PopupMenuItem(value: 'reset', child: Text('Reset time spent')),
         const PopupMenuItem(value: 'weight', child: Text('Set weight')),
+        const PopupMenuItem(value: 'clone', child: Text('Clone issue')),
+        if (issue.isOpen)
+          const PopupMenuItem(value: 'move', child: Text('Move issue')),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),

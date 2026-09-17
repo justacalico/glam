@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -26,6 +27,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
+import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
@@ -724,6 +726,56 @@ class _MrActions extends ConsumerWidget {
   final MergeRequest mr;
   final MrRef loc;
 
+  /// Cherry-pick with a branch prompt; navigates to the new commit.
+  Future<void> _cherryPick(
+    BuildContext context,
+    MergeRequestsRepository repo,
+  ) async {
+    final branch = TextEditingController(text: mr.targetBranch);
+    final target = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Cherry-pick !${mr.iid}'),
+        content: TextField(
+          controller: branch,
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Target branch'),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, branch.text.trim()),
+            child: const Text('Cherry-pick'),
+          ),
+        ],
+      ),
+    );
+    branch.dispose();
+    if (target == null || target.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      final commit = await repo.cherryPick(
+        loc.project,
+        loc.iid,
+        branch: target,
+      );
+      if (context.mounted) {
+        unawaited(context.push(Routes.projectCommit(loc.project, commit.id)));
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<String>(
@@ -753,6 +805,11 @@ class _MrActions extends ConsumerWidget {
               );
             case 'rebase':
               await repo.rebase(loc.project, loc.iid);
+            case 'cherry_pick':
+              await _cherryPick(context, repo);
+              return;
+            case 'revert':
+              await repo.revert(loc.project, loc.iid);
             case 'edit':
               if (context.mounted) {
                 unawaited(
@@ -797,6 +854,10 @@ class _MrActions extends ConsumerWidget {
             child: Text(mr.draft ? 'Mark as ready' : 'Mark as draft'),
           ),
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+        ],
+        if (mr.isMerged) ...[
+          const PopupMenuItem(value: 'cherry_pick', child: Text('Cherry-pick')),
+          const PopupMenuItem(value: 'revert', child: Text('Revert')),
         ],
         PopupMenuItem(
           value: 'subscribe',
