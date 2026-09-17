@@ -68,7 +68,12 @@ class Issue extends Equatable {
           ? GitLabUser.fromJson(json['closed_by'] as Map<String, dynamic>)
           : null,
       dueDate: _date(json['due_date']),
-      weight: json['weight'] as int?,
+      // GitLab stores cleared weights as 0 — treat it as unset.
+      weight: switch (json['weight']) {
+        0 => null,
+        final int w => w,
+        _ => null,
+      },
       confidential: json['confidential'] as bool? ?? false,
       blockingIssuesCount: json['blocking_issues_count'] as int? ?? 0,
       taskStatus: _taskStatus(json['task_completion_status']),

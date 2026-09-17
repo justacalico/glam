@@ -375,7 +375,7 @@ class _MergeBox extends ConsumerStatefulWidget {
 }
 
 class _MergeBoxState extends ConsumerState<_MergeBox> {
-  var _approving = false;
+  var _busy = false;
 
   @override
   Widget build(BuildContext context) {
@@ -389,16 +389,34 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
         (approvals.userHasApproved ??
             (myId != null && approvals.approvedBy.any((u) => u.id == myId)));
     final canAct = iApproved || (approvals?.userCanApprove ?? true);
+    // Pre-15.6 instances lack detailed_merge_status — fall back to the
+    // older merge_status field.
     final mergeable =
-        mr.detailedMergeStatus == 'mergeable' && !mr.draft && !mr.hasConflicts;
+        (mr.detailedMergeStatus == null
+            ? mr.mergeStatus == 'can_be_merged'
+            : mr.detailedMergeStatus == 'mergeable') &&
+        !mr.draft &&
+        !mr.hasConflicts;
     final pipelineRunning = switch (mr.headPipeline?.status) {
       'created' ||
       'waiting_for_resource' ||
+      'waiting_for_callback' ||
       'preparing' ||
       'pending' ||
+      'scheduled' ||
       'running' => true,
       _ => false,
     };
+    // Auto-merge only makes sense while CI is the blocker — conflicts,
+    // missing approvals, or unresolved discussions all 422 on schedule.
+    final canAutoMerge =
+        mr.mergeWhenPipelineSucceeds ||
+        (mr.detailedMergeStatus == null
+            ? pipelineRunning
+            : const {
+                'ci_still_running',
+                'ci_must_pass',
+              }.contains(mr.detailedMergeStatus));
 
     return Container(
       padding: const EdgeInsets.all(Insets.lg),
@@ -467,7 +485,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
               const SizedBox(width: Insets.sm),
               if (approvals != null && canAct)
                 OutlinedButton.icon(
-                  onPressed: _approving
+                  onPressed: _busy
                       ? null
                       : () => unawaited(_toggleApproval(iApproved)),
                   icon: Icon(
@@ -484,14 +502,12 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
             Padding(
               padding: const EdgeInsets.only(top: Insets.sm),
               child: OutlinedButton.icon(
-                onPressed: _approving
-                    ? null
-                    : () => unawaited(_cancelAutoMerge()),
+                onPressed: _busy ? null : () => unawaited(_cancelAutoMerge()),
                 icon: const Icon(Icons.cancel_outlined, size: 16),
                 label: const Text('Cancel auto-merge'),
               ),
             )
-          else if (!mergeable && pipelineRunning && mr.isOpen && !mr.draft)
+          else if (canAutoMerge)
             Padding(
               padding: const EdgeInsets.only(top: Insets.sm),
               child: OutlinedButton.icon(
@@ -520,7 +536,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
   }
 
   Future<void> _cancelAutoMerge() async {
-    setState(() => _approving = true);
+    setState(() => _busy = true);
     try {
       await ref
           .read(mrRepositoryProvider)
@@ -528,7 +544,10 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
       if (!mounted) {
         return;
       }
-      ref.invalidate(mrProvider(widget.loc));
+      ref
+        ..invalidate(mrProvider(widget.loc))
+        ..invalidate(projectMrsProvider)
+        ..invalidate(mergeRequestsProvider);
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -537,13 +556,13 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
       }
     } finally {
       if (mounted) {
-        setState(() => _approving = false);
+        setState(() => _busy = false);
       }
     }
   }
 
   Future<void> _toggleApproval(bool approved) async {
-    setState(() => _approving = true);
+    setState(() => _busy = true);
     final repo = ref.read(mrRepositoryProvider);
     try {
       if (approved) {
@@ -565,7 +584,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
       }
     } finally {
       if (mounted) {
-        setState(() => _approving = false);
+        setState(() => _busy = false);
       }
     }
   }

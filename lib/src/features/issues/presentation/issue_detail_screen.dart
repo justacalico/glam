@@ -137,7 +137,10 @@ class _IssueActions extends ConsumerWidget {
           controller: controller,
           autofocus: true,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(hintText: '0 clears the weight'),
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: const InputDecoration(
+            hintText: 'Empty clears the weight',
+          ),
           onSubmitted: (v) => Navigator.pop(context, v.trim()),
         ),
         actions: [
@@ -152,11 +155,16 @@ class _IssueActions extends ConsumerWidget {
         ],
       ),
     );
+    controller.dispose();
     if (input == null || !context.mounted) {
       return;
     }
-    final weight = int.tryParse(input) ?? 0;
-    if (weight < 0) {
+    // GitLab stores 0 / treats it as cleared weight.
+    final weight = input.isEmpty ? 0 : int.tryParse(input);
+    if (weight == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a whole number')));
       return;
     }
     try {
