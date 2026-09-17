@@ -48,6 +48,10 @@
       "short": "#12",
       "full": "calico/glam#12"
     },
+    "time_stats": {
+      "time_estimate": 7200,
+      "total_time_spent": 3600
+    },
     "web_url": "https://gitlab.example.com/calico/glam/-/issues/12",
     "iteration": {
       "id": 9001,

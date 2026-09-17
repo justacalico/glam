@@ -42,6 +42,18 @@ void main() {
       expect(mr.draft, isTrue);
     });
 
+    test('time_stats decodes estimate and spent', () {
+      final mr = _first();
+      expect(mr.timeEstimate, 7200);
+      expect(mr.timeSpent, 1800);
+      final flat = MergeRequest.fromJson(const {
+        'time_estimate': 60,
+        'total_time_spent': 30,
+      });
+      expect(flat.timeEstimate, 60);
+      expect(flat.timeSpent, 30);
+    });
+
     test('not_approved maps to a readable label', () {
       final mr = MergeRequest.fromJson(const {
         'state': 'opened',
@@ -105,6 +117,25 @@ void main() {
       final query = adapter.lastRequest!.queryParameters;
       expect(query['state'], 'merged');
       expect(query['target_branch'], 'main');
+    });
+
+    test('time tracking posts the duration endpoints', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/merge_requests/7/time_estimate', const {})
+        ..post('/projects/42/merge_requests/7/add_spent_time', const {})
+        ..post('/projects/42/merge_requests/7/reset_spent_time', const {});
+      final repo = MergeRequestsRepository(client);
+
+      await repo.setTimeEstimate(42, 7, '2h');
+      expect(adapter.lastRequest!.queryParameters['duration'], '2h');
+
+      await repo.addTimeSpent(42, 7, '30m');
+      expect(adapter.lastRequest!.queryParameters['duration'], '30m');
+      expect(adapter.lastRequest!.path, contains('add_spent_time'));
+
+      await repo.resetTimeSpent(42, 7);
+      expect(adapter.lastRequest!.path, contains('reset_spent_time'));
     });
 
     test('changes decodes the wrapped list', () async {
