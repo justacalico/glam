@@ -28,6 +28,7 @@ import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
+import 'package:glam/src/features/merge_requests/domain/draft_note.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_pipelines_tab.dart';
@@ -907,15 +908,211 @@ class _ChangesTab extends ConsumerWidget {
             title: 'No changes',
           );
         }
-        return ListView.separated(
-          padding: Insets.pagePadding,
-          itemCount: entries.length,
-          separatorBuilder: (_, _) => const SizedBox(height: Insets.md),
-          itemBuilder: (context, index) =>
-              _ChangeCard(entry: entries[index], loc: loc, diffRefs: diffRefs),
+        return Column(
+          children: [
+            _ReviewBanner(loc: loc),
+            Expanded(
+              child: ListView.separated(
+                padding: Insets.pagePadding,
+                itemCount: entries.length,
+                separatorBuilder: (_, _) => const SizedBox(height: Insets.md),
+                itemBuilder: (context, index) => _ChangeCard(
+                  entry: entries[index],
+                  loc: loc,
+                  diffRefs: diffRefs,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
+  }
+}
+
+/// Shows while review comments are queued: count plus publish/manage
+/// actions.
+class _ReviewBanner extends ConsumerWidget {
+  const _ReviewBanner({required this.loc});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final drafts = ref.watch(mrDraftNotesProvider(loc));
+    final count = drafts.value?.length ?? 0;
+    if (count == 0) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Insets.lg,
+        vertical: Insets.sm,
+      ),
+      color: colors.warningSoft,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '$count pending comment${count == 1 ? '' : 's'} in your review',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+          TextButton(
+            onPressed: () => _showDrafts(context, ref),
+            child: const Text('Review'),
+          ),
+          FilledButton(
+            onPressed: () => _publish(context, ref),
+            child: const Text('Publish'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _publish(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Submit review?'),
+        content: const Text('All pending comments become visible.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Publish all'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(mrDraftNotesProvider(loc).notifier).publish();
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _showDrafts(BuildContext context, WidgetRef ref) {
+    return showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => _DraftsSheet(loc: loc),
+    );
+  }
+}
+
+class _DraftsSheet extends ConsumerWidget {
+  const _DraftsSheet({required this.loc});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final drafts = ref.watch(mrDraftNotesProvider(loc));
+    final list = drafts.value ?? const [];
+
+    return ListView(
+      padding: Insets.pagePadding,
+      children: [
+        for (final d in list)
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.rate_review_outlined, size: 18),
+            title: Text(d.note, maxLines: 2, overflow: TextOverflow.ellipsis),
+            subtitle: d.position?.label == null
+                ? null
+                : Text(
+                    d.position!.label!,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 11.5,
+                    ),
+                  ),
+            trailing: PopupMenuButton<String>(
+              onSelected: (a) => unawaited(_act(context, ref, d, a)),
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: 'publish', child: Text('Publish')),
+                PopupMenuItem(value: 'edit', child: Text('Edit')),
+                PopupMenuItem(value: 'delete', child: Text('Delete')),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _act(
+    BuildContext context,
+    WidgetRef ref,
+    DraftNote draft,
+    String action,
+  ) async {
+    final notifier = ref.read(mrDraftNotesProvider(loc).notifier);
+    try {
+      switch (action) {
+        case 'publish':
+          await notifier.publish(only: draft);
+        case 'delete':
+          await notifier.remove(draft);
+        case 'edit':
+          await _edit(context, ref, draft);
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    DraftNote draft,
+  ) async {
+    final controller = TextEditingController(text: draft.note);
+    final text = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit comment'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          minLines: 2,
+          maxLines: 5,
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (text == null || text.isEmpty || !context.mounted) {
+      return;
+    }
+    await ref.read(mrDraftNotesProvider(loc).notifier).edit(draft, text);
   }
 }
 
@@ -1030,7 +1227,8 @@ class _ChangeCard extends ConsumerWidget {
     DiffLine line,
   ) async {
     final controller = TextEditingController();
-    final body = await showModalBottomSheet<String>(
+    // (body, pending) — pending adds the comment to the review queue.
+    final result = await showModalBottomSheet<(String, bool)>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -1058,18 +1256,28 @@ class _ChangeCard extends ConsumerWidget {
               decoration: const InputDecoration(hintText: 'Write a comment…'),
             ),
             const SizedBox(height: Insets.md),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                onPressed: () => Navigator.pop(context, controller.text.trim()),
-                child: const Text('Comment'),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () =>
+                      Navigator.pop(context, (controller.text.trim(), true)),
+                  child: const Text('Add to review'),
+                ),
+                const SizedBox(width: Insets.sm),
+                FilledButton(
+                  onPressed: () =>
+                      Navigator.pop(context, (controller.text.trim(), false)),
+                  child: const Text('Comment'),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
     controller.dispose();
+    final body = result?.$1;
     if (body == null || body.isEmpty || !context.mounted) {
       return;
     }
@@ -1087,21 +1295,25 @@ class _ChangeCard extends ConsumerWidget {
     }
     // Removed lines anchor on the old side, added on the new, context
     // on both — GitLab needs the pair to compute the line code.
+    final position = NotePosition(
+      baseSha: refs!.baseSha,
+      startSha: refs.startSha,
+      headSha: refs.headSha,
+      oldPath: entry.oldPath,
+      newPath: entry.newPath,
+      oldLine: line.kind == DiffLineKind.added ? null : line.oldLine,
+      newLine: line.kind == DiffLineKind.removed ? null : line.newLine,
+    );
     try {
-      await ref
-          .read(mrDiscussionsProvider(loc).notifier)
-          .addDiffComment(
-            body,
-            NotePosition(
-              baseSha: refs!.baseSha,
-              startSha: refs.startSha,
-              headSha: refs.headSha,
-              oldPath: entry.oldPath,
-              newPath: entry.newPath,
-              oldLine: line.kind == DiffLineKind.added ? null : line.oldLine,
-              newLine: line.kind == DiffLineKind.removed ? null : line.newLine,
-            ),
-          );
+      if (result!.$2) {
+        await ref
+            .read(mrDraftNotesProvider(loc).notifier)
+            .add(body, position: position);
+      } else {
+        await ref
+            .read(mrDiscussionsProvider(loc).notifier)
+            .addDiffComment(body, position);
+      }
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(

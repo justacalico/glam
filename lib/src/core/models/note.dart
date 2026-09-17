@@ -102,6 +102,18 @@ class NotePosition extends Equatable {
     return newPath ?? oldPath;
   }
 
+  /// Wire map for create calls (discussions and draft notes).
+  Map<String, Object?> toBody() => <String, Object?>{
+    'base_sha': baseSha,
+    'start_sha': startSha,
+    'head_sha': headSha,
+    'position_type': 'text',
+    'old_path': oldPath,
+    'new_path': newPath,
+    'old_line': oldLine,
+    'new_line': newLine,
+  }..removeWhere((_, v) => v == null || (v is String && v.isEmpty));
+
   @override
   List<Object?> get props => [oldPath, newPath, oldLine, newLine];
 }

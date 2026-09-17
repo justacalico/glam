@@ -4,6 +4,7 @@ import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/merge_requests/domain/draft_note.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -287,20 +288,7 @@ class MergeRequestsRepository {
   }) {
     return _client.post(
       '${_p(projectId)}/merge_requests/$iid/discussions',
-      body: {
-        'body': body,
-        if (position != null)
-          'position': <String, Object?>{
-            'base_sha': position.baseSha,
-            'start_sha': position.startSha,
-            'head_sha': position.headSha,
-            'position_type': 'text',
-            'old_path': position.oldPath,
-            'new_path': position.newPath,
-            'old_line': position.oldLine,
-            'new_line': position.newLine,
-          }..removeWhere((_, v) => v == null || (v is String && v.isEmpty)),
-      },
+      body: {'body': body, if (position != null) 'position': position.toBody()},
       decoder: (j) => Discussion.fromJson(j! as Map<String, dynamic>),
     );
   }
@@ -379,6 +367,69 @@ class MergeRequestsRepository {
         ? '${_p(projectId)}/merge_requests/$iid/award_emoji'
         : '${_p(projectId)}/merge_requests/$iid/notes/$noteId/award_emoji';
     return _client.delete('$base/$awardId');
+  }
+
+  /// Pending review comments (`/merge_requests/:iid/draft_notes`).
+  Future<List<DraftNote>> draftNotes(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes',
+      decoder: (j) => DraftNote.fromJson(j as Map<String, dynamic>),
+    );
+  }
+
+  /// Queues a review comment; [position] pins it to a diff line.
+  Future<DraftNote> createDraftNote(
+    Object projectId,
+    int iid,
+    String note, {
+    NotePosition? position,
+    bool? resolveDiscussion,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes',
+      body: {
+        'note': note,
+        if (position != null) 'position': position.toBody(),
+        'resolve_discussion': ?resolveDiscussion,
+      },
+      decoder: (j) => DraftNote.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Edits a pending comment's text.
+  Future<DraftNote> updateDraftNote(
+    Object projectId,
+    int iid,
+    int draftId,
+    String note,
+  ) {
+    return _client.put(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes/$draftId',
+      body: {'note': note},
+      decoder: (j) => DraftNote.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteDraftNote(Object projectId, int iid, int draftId) {
+    return _client.delete(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes/$draftId',
+    );
+  }
+
+  /// Publishes one pending comment into a real discussion.
+  Future<Note> publishDraftNote(Object projectId, int iid, int draftId) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes/$draftId/publish',
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Submits the whole pending review at once.
+  Future<void> publishAllDraftNotes(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/draft_notes/bulk_publish',
+      decoder: (_) {},
+    );
   }
 
   /// All pipelines attached to this MR, newest first.
