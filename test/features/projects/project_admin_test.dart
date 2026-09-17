@@ -399,5 +399,54 @@ void main() {
         hasLength(2),
       );
     });
+
+    test('runner enable and disable refetch the list', () async {
+      adapter
+        ..get('/projects/42/runners', fixtureJson('runners'))
+        ..post('/projects/42/runners', {'id': 8})
+        ..get('/projects/42/runners', fixtureJson('runners'))
+        ..delete('/projects/42/runners/6')
+        ..get('/projects/42/runners', fixtureJson('runners'));
+
+      await container.read(projectRunnersProvider(42).future);
+      await container.read(projectAdminActionsProvider).enableRunner(42, 8);
+      await container.read(projectRunnersProvider(42).future);
+
+      final enable = adapter.requestsTo('POST', '/projects/42/runners');
+      expect(enable, hasLength(1));
+      expect((enable.first.data as Map)['runner_id'], 8);
+
+      await container.read(projectAdminActionsProvider).disableRunner(42, 6);
+      await container.read(projectRunnersProvider(42).future);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/runners/6'),
+        hasLength(1),
+      );
+    });
+
+    test('projectAvailableRunnersProvider filters out enabled ids', () async {
+      final all = [
+        ...(fixtureJson('runners') as List),
+        {
+          'id': 8,
+          'description': 'spare shared runner',
+          'runner_type': 'instance_type',
+          'is_shared': true,
+          'online': false,
+          'status': 'offline',
+          'tag_list': <Object?>[],
+        },
+      ];
+      adapter
+        ..get('/projects/42/runners', fixtureJson('runners'))
+        ..get('/projects/42/runners/all', all);
+
+      final available = await container.read(
+        projectAvailableRunnersProvider(42).future,
+      );
+      expect(available, hasLength(1));
+      expect(available.single.id, 8);
+      expect(adapter.lastRequest!.queryParameters['type'], 'instance_type');
+    });
   });
 }
