@@ -145,6 +145,16 @@ void main() {
       expect(adapter.lastRequest!.queryParameters['scope'], 'assigned_to_me');
     });
 
+    test('projectMergeRequests forwards author_id', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/merge_requests', fixtureJson('mrs'));
+      final repo = MergeRequestsRepository(client);
+
+      await repo.projectMergeRequests(42, authorId: 4);
+
+      expect(adapter.lastRequest!.queryParameters['author_id'], '4');
+    });
+
     test('projectMergeRequests forwards assignee_id', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/merge_requests', fixtureJson('mrs'));

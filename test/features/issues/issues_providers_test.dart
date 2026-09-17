@@ -63,6 +63,7 @@ void main() {
       milestone: null,
       issueType: null,
       assigneeId: null,
+      authorId: null,
       orderBy: null,
       sort: null,
     );
@@ -83,6 +84,7 @@ void main() {
       milestone: 'v1',
       issueType: null,
       assigneeId: null,
+      authorId: null,
       orderBy: null,
       sort: null,
     );
@@ -104,6 +106,7 @@ void main() {
       milestone: null,
       issueType: null,
       assigneeId: 7,
+      authorId: null,
       orderBy: null,
       sort: null,
     );
@@ -123,6 +126,7 @@ void main() {
       milestone: null,
       issueType: null,
       assigneeId: null,
+      authorId: null,
       orderBy: 'due_date',
       sort: 'asc',
     );
@@ -131,6 +135,26 @@ void main() {
     final query = adapter.lastRequest!.queryParameters;
     expect(query['order_by'], 'due_date');
     expect(query['sort'], 'asc');
+  });
+
+  test('projectIssuesProvider forwards the author filter', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      authorId: 4,
+      orderBy: null,
+      sort: null,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    expect(adapter.lastRequest!.queryParameters['author_id'], '4');
   });
 
   test('issueProvider loads a single issue', () async {

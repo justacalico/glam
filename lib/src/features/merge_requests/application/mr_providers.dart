@@ -78,6 +78,7 @@ typedef ProjectMrFilter = ({
   String? milestone,
   String? targetBranch,
   int? assigneeId,
+  int? authorId,
   String? orderBy,
   String? sort,
 });
@@ -107,6 +108,7 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           milestone: filter.milestone,
           targetBranch: filter.targetBranch,
           assigneeId: filter.assigneeId,
+          authorId: filter.authorId,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

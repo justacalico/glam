@@ -232,6 +232,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _milestone;
   String? _issueType;
   int? _assigneeId;
+  int? _authorId;
   String? _orderBy;
   String? _sort;
 
@@ -246,6 +247,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       milestone: _milestone,
       issueType: _issueType,
       assigneeId: _assigneeId,
+      authorId: _authorId,
       orderBy: _orderBy,
       sort: _sort,
     );
@@ -342,6 +344,21 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 options: [for (final m in members) m.username],
                 onSelect: (v) => setState(
                   () => _assigneeId = v == null
+                      ? null
+                      : members.where((m) => m.username == v).firstOrNull?.id,
+                ),
+              ),
+              FilterMenu(
+                title: 'Author',
+                current: _authorId == null
+                    ? null
+                    : members
+                          .where((m) => m.id == _authorId)
+                          .firstOrNull
+                          ?.username,
+                options: [for (final m in members) m.username],
+                onSelect: (v) => setState(
+                  () => _authorId = v == null
                       ? null
                       : members.where((m) => m.username == v).firstOrNull?.id,
                 ),

@@ -80,6 +80,7 @@ typedef ProjectIssueFilter = ({
   String? milestone,
   String? issueType,
   int? assigneeId,
+  int? authorId,
   String? orderBy,
   String? sort,
 });
@@ -108,6 +109,7 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           milestone: filter.milestone,
           issueType: filter.issueType,
           assigneeId: filter.assigneeId,
+          authorId: filter.authorId,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
