@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/models/shared_group.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';

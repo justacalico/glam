@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/models/shared_group.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
@@ -64,6 +66,7 @@ class MembersList extends ConsumerWidget {
           ),
         ),
         _AccessRequests(scope: scope),
+        if (!isProject) _InvitedGroups(groupId: id),
         Expanded(
           child: AsyncValueWidget(
             value: state,
@@ -192,6 +195,267 @@ class _AccessRequests extends ConsumerWidget {
           .read(groupsRepositoryProvider)
           .denyAccessRequest(scope.id, userId, isProject: scope.isProject);
       ref.invalidate(accessRequestsProvider(scope));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+}
+
+/// Groups this group is shared with; invite/remove. Only meaningful
+/// on the group members tab, so callers gate it behind `!isProject`.
+class _InvitedGroups extends ConsumerWidget {
+  const _InvitedGroups({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final group = ref.watch(groupProvider(groupId)).value;
+    final shared = group?.sharedWithGroups ?? const [];
+    final colors = context.colors;
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        Insets.lg,
+        Insets.xs,
+        Insets.lg,
+        Insets.xs,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: Radii.borderMd,
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Insets.lg,
+              Insets.md,
+              Insets.lg,
+              Insets.xs,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Invited groups',
+                    style: theme.textTheme.labelMedium,
+                  ),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Share'),
+                  onPressed: () => _share(context, ref, shared),
+                ),
+              ],
+            ),
+          ),
+          if (shared.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Insets.lg,
+                0,
+                Insets.lg,
+                Insets.md,
+              ),
+              child: Text(
+                'Not shared with any group',
+                style: theme.textTheme.bodySmall,
+              ),
+            )
+          else
+            for (final g in shared)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Insets.lg,
+                  Insets.xs,
+                  Insets.sm,
+                  Insets.xs,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.group_outlined,
+                      size: 16,
+                      color: colors.inkMuted,
+                    ),
+                    const SizedBox(width: Insets.sm),
+                    Expanded(
+                      child: Text(
+                        [
+                          g.displayName,
+                          g.roleLabel,
+                          if (g.expiresAt != null)
+                            'expires ${Format.date(g.expiresAt)}',
+                        ].join(' · '),
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline, size: 18),
+                      tooltip: 'Unshare',
+                      onPressed: () => _unshare(context, ref, g),
+                    ),
+                  ],
+                ),
+              ),
+          const SizedBox(height: Insets.xs),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    List<SharedGroup> shared,
+  ) async {
+    final groups = await ref.read(groupsProvider(null).future);
+    final sharedIds = shared.map((g) => g.groupId).toSet();
+    final candidates = groups.items
+        .where((g) => !sharedIds.contains(g.id))
+        .toList();
+    if (!context.mounted) {
+      return;
+    }
+    if (candidates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No groups left to share with')),
+      );
+      return;
+    }
+    var groupId = candidates.first.id;
+    var accessLevel = 30;
+    final days = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Share with group'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<int>(
+                  initialValue: groupId,
+                  decoration: const InputDecoration(labelText: 'Group'),
+                  items: [
+                    for (final g in candidates)
+                      DropdownMenuItem(
+                        value: g.id,
+                        child: Text(
+                          g.fullPath.isEmpty ? g.name : g.fullPath,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => groupId = v ?? groupId),
+                ),
+                const SizedBox(height: Insets.sm),
+                DropdownButtonFormField<int>(
+                  initialValue: accessLevel,
+                  decoration: const InputDecoration(
+                    labelText: 'Max access level',
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 10, child: Text('Guest')),
+                    DropdownMenuItem(value: 15, child: Text('Planner')),
+                    DropdownMenuItem(value: 20, child: Text('Reporter')),
+                    DropdownMenuItem(value: 30, child: Text('Developer')),
+                    DropdownMenuItem(value: 40, child: Text('Maintainer')),
+                  ],
+                  onChanged: (v) => setState(() => accessLevel = v ?? 30),
+                ),
+                const SizedBox(height: Insets.sm),
+                TextField(
+                  controller: days,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    labelText: 'Expires in days (optional)',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Share'),
+            ),
+          ],
+        ),
+      ),
+    );
+    final expiryDays = int.tryParse(days.text.trim());
+    days.dispose();
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(groupsRepositoryProvider)
+          .shareGroup(
+            this.groupId,
+            groupId: groupId,
+            accessLevel: accessLevel,
+            expiresAt: expiryDays == null
+                ? null
+                : DateTime.now().add(Duration(days: expiryDays)),
+          );
+      ref.invalidate(groupProvider(this.groupId));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _unshare(
+    BuildContext context,
+    WidgetRef ref,
+    SharedGroup group,
+  ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${group.displayName}?'),
+        content: const Text('That group loses access to this one.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(groupsRepositoryProvider)
+          .unshareGroup(groupId, group.groupId);
+      ref.invalidate(groupProvider(groupId));
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
