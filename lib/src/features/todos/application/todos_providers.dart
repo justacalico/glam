@@ -9,7 +9,7 @@ final todosRepositoryProvider = Provider<TodosRepository>(
   (ref) => TodosRepository(ref.watch(apiClientProvider)),
 );
 
-typedef TodoFilter = ({String? state, String? action});
+typedef TodoFilter = ({String? state, String? action, String? type});
 
 final todosProvider =
     AsyncNotifierProvider.family<
@@ -27,7 +27,12 @@ class TodosNotifier extends PagedListNotifier<Todo> {
   Future<Paginated<Todo>> fetchPage(int page) {
     return ref
         .watch(todosRepositoryProvider)
-        .todos(state: filter.state, action: filter.action, page: page);
+        .todos(
+          state: filter.state,
+          action: filter.action,
+          type: filter.type,
+          page: page,
+        );
   }
 
   /// Marks one item done and drops it from the pending list.

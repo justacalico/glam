@@ -8,6 +8,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/todos/application/todos_providers.dart';
 import 'package:glam/src/features/todos/domain/todo.dart';
@@ -22,11 +23,12 @@ class TodosScreen extends ConsumerStatefulWidget {
 
 class _TodosScreenState extends ConsumerState<TodosScreen> {
   String? _state = 'pending';
+  String? _type;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (state: _state, action: null);
+    final filter = (state: _state, action: null, type: _type);
     final state = ref.watch(todosProvider(filter));
     final notifier = ref.read(todosProvider(filter).notifier);
     const states = {'pending': 'Pending', 'done': 'Done', null: 'All'};
@@ -64,6 +66,18 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                   ),
                   const SizedBox(width: Insets.sm),
                 ],
+                const Spacer(),
+                FilterMenu(
+                  title: 'type',
+                  current: _type,
+                  options: const [
+                    'Issue',
+                    'MergeRequest',
+                    'Commit',
+                    'Epic',
+                  ],
+                  onSelect: (t) => setState(() => _type = t),
+                ),
               ],
             ),
           ),
