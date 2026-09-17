@@ -221,19 +221,23 @@ class BranchesNotifier extends PagedListNotifier<Branch> {
   }
 }
 
+typedef TagFilter = ({Object project, String? search});
+
 final tagsProvider =
-    AsyncNotifierProvider.family<TagsNotifier, PagedListState<Tag>, Object>(
+    AsyncNotifierProvider.family<TagsNotifier, PagedListState<Tag>, TagFilter>(
       TagsNotifier.new,
     );
 
 class TagsNotifier extends PagedListNotifier<Tag> {
-  TagsNotifier(this.project);
+  TagsNotifier(this.filter);
 
-  final Object project;
+  final TagFilter filter;
 
   @override
   Future<Paginated<Tag>> fetchPage(int page) {
-    return ref.watch(repositoryRepositoryProvider).tags(project, page: page);
+    return ref
+        .watch(repositoryRepositoryProvider)
+        .tags(filter.project, page: page, search: filter.search);
   }
 }
 

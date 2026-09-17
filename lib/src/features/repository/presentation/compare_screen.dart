@@ -52,7 +52,9 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     final branches = ref.watch(
       branchesProvider((project: widget.projectId, search: null)),
     );
-    final tags = ref.watch(tagsProvider(widget.projectId));
+    final tags = ref.watch(
+      tagsProvider((project: widget.projectId, search: null)),
+    );
     final branchItems = branches.value?.items ?? const <Branch>[];
     final tagItems = tags.value?.items ?? const <Tag>[];
     // The base defaults to the project's default branch once it loads.

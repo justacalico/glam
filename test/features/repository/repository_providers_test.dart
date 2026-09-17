@@ -110,9 +110,21 @@ void main() {
   test('tagsProvider loads tags', () async {
     adapter.get('/projects/7/repository/tags', fixtureJson('tags'));
 
-    final state = await container.read(tagsProvider(7).future);
+    final state = await container.read(
+      tagsProvider((project: 7, search: null)).future,
+    );
 
     expect(state.items.first.name, 'v1.2.0');
+  });
+
+  test('tagsProvider forwards the search filter', () async {
+    adapter.get('/projects/7/repository/tags', fixtureJson('tags'));
+
+    await container.read(
+      tagsProvider((project: 7, search: 'v1')).future,
+    );
+
+    expect(adapter.lastRequest!.queryParameters['search'], 'v1');
   });
 
   test('releasesProvider loads releases', () async {
