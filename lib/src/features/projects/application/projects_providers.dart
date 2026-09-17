@@ -56,6 +56,25 @@ class ProjectListNotifier extends PagedListNotifier<Project> {
   }
 }
 
+/// Forks of one project.
+final projectForksProvider =
+    AsyncNotifierProvider.family<
+      ProjectForksNotifier,
+      PagedListState<Project>,
+      Object
+    >(ProjectForksNotifier.new);
+
+class ProjectForksNotifier extends PagedListNotifier<Project> {
+  ProjectForksNotifier(this.projectId);
+
+  final Object projectId;
+
+  @override
+  Future<Paginated<Project>> fetchPage(int page) {
+    return ref.watch(projectsRepositoryProvider).forks(projectId, page: page);
+  }
+}
+
 /// A single project by id or `namespace/path`.
 final projectProvider = FutureProvider.family<Project, String>(
   (ref, id) => ref.watch(projectsRepositoryProvider).get(id),

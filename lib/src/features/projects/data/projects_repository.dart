@@ -34,6 +34,20 @@ class ProjectsRepository {
     );
   }
 
+  /// Forks of this project visible to the user (`/projects/:id/forks`).
+  Future<Paginated<Project>> forks(
+    Object id, {
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '/projects/${GitLabApiClient.encodeProject(id)}/forks',
+      page: page,
+      perPage: perPage,
+      decoder: _decode,
+    );
+  }
+
   /// Namespaces the user can create projects in (`/namespaces`).
   Future<List<GitlabNamespace>> namespaces() {
     return _client.getAll(

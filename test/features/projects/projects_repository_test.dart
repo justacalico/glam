@@ -102,6 +102,17 @@ void main() {
     expect(adapter.requestsTo('POST', '/projects/42/unstar'), hasLength(1));
   });
 
+  test('forks lists forked projects', () async {
+    final (client, adapter) = testClient();
+    adapter.get('/projects/42/forks', fixtureJson('projects'));
+    final repo = ProjectsRepository(client);
+
+    final page = await repo.forks(42);
+
+    expect(adapter.lastRequest!.path, '/projects/42/forks');
+    expect(page.items, isNotEmpty);
+  });
+
   test('fork posts to the fork endpoint', () async {
     final (client, adapter) = testClient();
     adapter.post('/projects/42/fork', fixtureJson('project'));
