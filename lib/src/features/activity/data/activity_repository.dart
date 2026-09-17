@@ -42,6 +42,20 @@ class ActivityRepository {
     );
   }
 
+  /// Events inside one group.
+  Future<Paginated<ActivityEvent>> groupEvents(
+    Object groupId, {
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '/groups/${GitLabApiClient.encodeProject(groupId)}/events',
+      page: page,
+      perPage: perPage,
+      decoder: _decode,
+    );
+  }
+
   /// Public events authored by a user.
   Future<Paginated<ActivityEvent>> userEvents(
     Object userId, {

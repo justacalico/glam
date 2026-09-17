@@ -32,6 +32,7 @@ class ActivityNotifier extends PagedListNotifier<ActivityEvent> {
     final repo = ref.watch(activityRepositoryProvider);
     return switch (feed.kind) {
       'project' => repo.projectEvents(feed.id!, page: page),
+      'group' => repo.groupEvents(feed.id!, page: page),
       'user' => repo.userEvents(feed.id!, page: page),
       _ => repo.events(page: page),
     };

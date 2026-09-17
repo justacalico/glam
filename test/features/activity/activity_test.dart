@@ -56,7 +56,8 @@ void main() {
       adapter
         ..get('/events', fixtureJson('events'))
         ..get('/projects/42/events', fixtureJson('events'))
-        ..get('/users/7/events', fixtureJson('events'));
+        ..get('/users/7/events', fixtureJson('events'))
+        ..get('/groups/9/events', fixtureJson('events'));
       final repo = ActivityRepository(client);
 
       await repo.events(action: 'pushed to');
@@ -67,6 +68,9 @@ void main() {
 
       await repo.userEvents(7);
       expect(adapter.lastRequest!.path, '/users/7/events');
+
+      await repo.groupEvents(9);
+      expect(adapter.lastRequest!.path, '/groups/9/events');
     });
 
     test('notifications + markAllRead', () async {

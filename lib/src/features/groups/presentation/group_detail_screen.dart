@@ -11,6 +11,7 @@ import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
+import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
@@ -76,7 +77,7 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 8,
+          length: 9,
           child: Column(
             children: [
               _GroupHeader(group: g),
@@ -91,6 +92,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
                   Tab(text: 'Variables'),
+                  Tab(text: 'Activity'),
                 ],
               ),
               Expanded(
@@ -104,6 +106,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
                     _VariablesTab(groupId: groupId),
+                    EventList(feed: (kind: 'group', id: groupId)),
                   ],
                 ),
               ),
