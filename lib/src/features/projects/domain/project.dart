@@ -37,6 +37,7 @@ class Project extends Equatable {
     this.jobsEnabled = true,
     this.sharedRunnersEnabled = true,
     this.groupRunnersEnabled = true,
+    this.approvalsBeforeMerge,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -88,6 +89,7 @@ class Project extends Equatable {
       jobsEnabled: json['jobs_enabled'] as bool? ?? true,
       sharedRunnersEnabled: json['shared_runners_enabled'] as bool? ?? true,
       groupRunnersEnabled: json['group_runners_enabled'] as bool? ?? true,
+      approvalsBeforeMerge: json['approvals_before_merge'] as int?,
     );
   }
 
@@ -124,6 +126,9 @@ class Project extends Equatable {
   final bool jobsEnabled;
   final bool sharedRunnersEnabled;
   final bool groupRunnersEnabled;
+
+  /// Required approvals for a merge request, or null when unset.
+  final int? approvalsBeforeMerge;
 
   /// Display name: `namespace / project`.
   String get displayName => nameWithNamespace ?? pathWithNamespace;

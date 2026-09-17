@@ -3,6 +3,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
+import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
@@ -93,6 +94,12 @@ final projectDeployTokensProvider =
 final projectRunnersProvider = FutureProvider.family<List<Runner>, Object>(
   (ref, id) => ref.watch(projectsRepositoryProvider).projectRunners(id),
 );
+
+/// Merge-request approval rules configured on the project.
+final projectApprovalRulesProvider =
+    FutureProvider.family<List<ApprovalRule>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).approvalRules(id),
+    );
 
 /// Mutations for the admin lists; each refetches its list on success.
 final projectAdminActionsProvider = Provider<ProjectAdminActions>(
@@ -218,6 +225,50 @@ class ProjectAdminActions {
   Future<void> disableRunner(Object projectId, int runnerId) async {
     await _repo.disableRunner(projectId, runnerId);
     _ref.invalidate(projectRunnersProvider(projectId));
+  }
+
+  /// Creates or updates a rule; `ruleId` selects update over create.
+  Future<void> saveApprovalRule(
+    Object projectId, {
+    int? ruleId,
+    required String name,
+    required int approvalsRequired,
+    List<int> userIds = const [],
+  }) async {
+    if (ruleId == null) {
+      await _repo.createApprovalRule(
+        projectId,
+        name: name,
+        approvalsRequired: approvalsRequired,
+        userIds: userIds,
+      );
+    } else {
+      await _repo.updateApprovalRule(
+        projectId,
+        ruleId,
+        name: name,
+        approvalsRequired: approvalsRequired,
+        userIds: userIds,
+      );
+    }
+    _ref.invalidate(projectApprovalRulesProvider(projectId));
+  }
+
+  Future<void> deleteApprovalRule(Object projectId, int ruleId) async {
+    await _repo.deleteApprovalRule(projectId, ruleId);
+    _ref.invalidate(projectApprovalRulesProvider(projectId));
+  }
+
+  /// The project-wide `approvals_before_merge` setting.
+  Future<void> setApprovalsBeforeMerge(
+    Project project,
+    int approvalsBeforeMerge,
+  ) async {
+    await _repo.updateProject(
+      project.id,
+      approvalsBeforeMerge: approvalsBeforeMerge,
+    );
+    _ref.invalidate(projectProvider(project.id.toString()));
   }
 }
 

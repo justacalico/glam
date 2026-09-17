@@ -85,6 +85,7 @@ void main() {
         issuesEnabled: false,
         sharedRunnersEnabled: false,
         groupRunnersEnabled: true,
+        approvalsBeforeMerge: 2,
       );
 
       expect(adapter.lastRequest!.data, {
@@ -94,6 +95,7 @@ void main() {
         'issues_enabled': false,
         'shared_runners_enabled': false,
         'group_runners_enabled': true,
+        'approvals_before_merge': 2,
       });
     });
 

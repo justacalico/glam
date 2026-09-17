@@ -1,0 +1,66 @@
+[
+  {
+    "id": 11,
+    "name": "security",
+    "rule_type": "regular",
+    "eligible_approvers": [
+      {
+        "id": 5,
+        "name": "Security Lead",
+        "username": "sec-lead",
+        "state": "active",
+        "avatar_url": "https://gitlab.example.com/avatar5.png",
+        "web_url": "https://gitlab.example.com/sec-lead"
+      }
+    ],
+    "approvals_required": 1,
+    "users": [
+      {
+        "id": 5,
+        "name": "Security Lead",
+        "username": "sec-lead",
+        "state": "active",
+        "avatar_url": "https://gitlab.example.com/avatar5.png",
+        "web_url": "https://gitlab.example.com/sec-lead"
+      }
+    ],
+    "groups": [],
+    "contains_hidden_groups": false,
+    "protected_branches": [],
+    "source_rule": null,
+    "overridden": false
+  },
+  {
+    "id": 12,
+    "name": "devops",
+    "rule_type": "regular",
+    "eligible_approvers": [
+      {
+        "id": 7,
+        "name": "Ops One",
+        "username": "ops1",
+        "state": "active"
+      },
+      {
+        "id": 8,
+        "name": "Ops Two",
+        "username": "ops2",
+        "state": "active"
+      }
+    ],
+    "approvals_required": 2,
+    "users": [],
+    "groups": [
+      {
+        "id": 4,
+        "name": "DevOps",
+        "path": "devops",
+        "full_path": "platform/devops"
+      }
+    ],
+    "contains_hidden_groups": false,
+    "protected_branches": [],
+    "source_rule": null,
+    "overridden": false
+  }
+]

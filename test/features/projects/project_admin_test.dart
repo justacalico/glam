@@ -278,6 +278,56 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('approval rules list, create, update and delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/approval_rules', fixtureJson('approval_rules'))
+        ..post(
+          '/projects/42/approval_rules',
+          (fixtureJson('approval_rules') as List).first,
+        )
+        ..put(
+          '/projects/42/approval_rules/12',
+          (fixtureJson('approval_rules') as List).last,
+        )
+        ..delete('/projects/42/approval_rules/11');
+      final repo = ProjectsRepository(client);
+
+      final rules = await repo.approvalRules(42);
+      expect(rules, hasLength(2));
+      expect(rules.first.name, 'security');
+      expect(rules.first.users.single.username, 'sec-lead');
+      expect(rules.last.groups, ['platform/devops']);
+      expect(rules.last.eligibleApproverCount, 2);
+
+      await repo.createApprovalRule(
+        42,
+        name: 'security',
+        approvalsRequired: 1,
+        userIds: const [5],
+      );
+      expect(adapter.lastRequest!.data, {
+        'name': 'security',
+        'approvals_required': 1,
+        'user_ids': [5],
+      });
+
+      await repo.updateApprovalRule(
+        42,
+        12,
+        name: 'devops',
+        approvalsRequired: 2,
+        userIds: const [7, 8],
+      );
+      expect(adapter.lastRequest!.data['user_ids'], [7, 8]);
+
+      await repo.deleteApprovalRule(42, 11);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/approval_rules/11'),
+        hasLength(1),
+      );
+    });
   });
 
   group('projectAdminActionsProvider', () {
