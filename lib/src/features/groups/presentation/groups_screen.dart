@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
-import 'package:glam/src/core/utils/debouncer.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
@@ -24,16 +24,7 @@ class GroupsScreen extends ConsumerStatefulWidget {
 }
 
 class _GroupsScreenState extends ConsumerState<GroupsScreen> {
-  final _search = TextEditingController();
-  final _debouncer = Debouncer();
   String? _query;
-
-  @override
-  void dispose() {
-    _search.dispose();
-    _debouncer.dispose();
-    super.dispose();
-  }
 
   Future<void> _newGroup() async {
     final group = await NewGroupDialog.show(context);
@@ -68,27 +59,9 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
               Insets.lg,
               Insets.xs,
             ),
-            child: SizedBox(
-              height: 38,
-              child: TextField(
-                controller: _search,
-                textInputAction: TextInputAction.search,
-                onChanged: (v) => _debouncer(
-                  () => setState(() => _query = v.isEmpty ? null : v),
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search groups',
-                  prefixIcon: const Icon(Icons.search, size: 18),
-                  isDense: true,
-                  filled: true,
-                  fillColor: colors.surfaceMuted,
-                  border: OutlineInputBorder(
-                    borderRadius: Radii.borderMd,
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
+            child: SearchField(
+              hint: 'Search groups',
+              onChanged: (v) => setState(() => _query = v),
             ),
           ),
           Expanded(

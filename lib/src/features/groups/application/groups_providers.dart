@@ -67,23 +67,25 @@ class SubgroupsNotifier extends PagedListNotifier<Group> {
   }
 }
 
+typedef GroupProjectFilter = ({Object group, String? search});
+
 final groupProjectsProvider =
     AsyncNotifierProvider.family<
       GroupProjectsNotifier,
       PagedListState<Project>,
-      Object
+      GroupProjectFilter
     >(GroupProjectsNotifier.new);
 
 class GroupProjectsNotifier extends PagedListNotifier<Project> {
-  GroupProjectsNotifier(this.groupId);
+  GroupProjectsNotifier(this.filter);
 
-  final Object groupId;
+  final GroupProjectFilter filter;
 
   @override
   Future<Paginated<Project>> fetchPage(int page) {
     return ref
         .watch(groupsRepositoryProvider)
-        .groupProjects(groupId, page: page);
+        .groupProjects(filter.group, page: page, search: filter.search);
   }
 }
 

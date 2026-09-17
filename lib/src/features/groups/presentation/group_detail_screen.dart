@@ -19,6 +19,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/webhooks_section.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
@@ -221,38 +222,68 @@ class _GroupHeader extends StatelessWidget {
   }
 }
 
-class _ProjectsTab extends ConsumerWidget {
+class _ProjectsTab extends ConsumerStatefulWidget {
   const _ProjectsTab({required this.groupId});
 
   final Object groupId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    final state = ref.watch(groupProjectsProvider(groupId));
-    final notifier = ref.read(groupProjectsProvider(groupId).notifier);
+  ConsumerState<_ProjectsTab> createState() => _ProjectsTabState();
+}
 
-    return AsyncValueWidget(
-      value: state,
-      onRetry: notifier.refresh,
-      data: (data) => PagedListView(
-        state: data,
-        onLoadMore: notifier.loadMore,
-        onRefresh: notifier.refresh,
-        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-        separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
-          icon: Icons.folder_outlined,
-          title: 'No projects in this group',
+class _ProjectsTabState extends ConsumerState<_ProjectsTab> {
+  String? _search;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final filter = (group: widget.groupId, search: _search);
+    final state = ref.watch(groupProjectsProvider(filter));
+    final notifier = ref.read(groupProjectsProvider(filter).notifier);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search projects',
+            onChanged: (v) => setState(() => _search = v),
+          ),
         ),
-        itemBuilder: (context, index) {
-          final p = data.items[index];
-          return ProjectTile(
-            project: p,
-            onTap: () => unawaited(context.push(Routes.project(p.id))),
-          );
-        },
-      ),
+        Expanded(
+          child: AsyncValueWidget(
+            value: state,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.folder_outlined,
+                title: 'No projects in this group',
+              ),
+              itemBuilder: (context, index) {
+                final p = data.items[index];
+                return ProjectTile(
+                  project: p,
+                  onTap: () => unawaited(context.push(Routes.project(p.id))),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -478,6 +478,16 @@ void main() {
       expect(items, hasLength(2));
     });
 
+    test('groupProjectsProvider forwards the search filter', () async {
+      adapter.get('/groups/9/projects', [fixtureJson('project')]);
+
+      await container.read(
+        groupProjectsProvider((group: 9, search: 'glam')).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['search'], 'glam');
+    });
+
     test('sharedProjectsProvider loads shared projects', () async {
       adapter.get('/groups/9/projects/shared', [fixtureJson('project')]);
 
