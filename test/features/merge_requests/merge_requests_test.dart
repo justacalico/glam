@@ -400,6 +400,20 @@ void main() {
       expect(users.first.username, 'jane');
     });
 
+    test('closesIssues decodes issues', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/closes_issues',
+        fixtureJson('issues'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final issues = await repo.closesIssues(42, 7);
+
+      expect(issues, hasLength(2));
+      expect(issues.first.iid, 12);
+    });
+
     test('draft notes CRUD and publish hit their paths', () async {
       final (client, adapter) = testClient();
       final draft = (fixtureJson('draft_notes') as List).first;

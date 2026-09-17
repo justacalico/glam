@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/features/issues/presentation/issue_tile.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
@@ -100,6 +103,44 @@ class _MrPipelinesTabState extends ConsumerState<MrPipelinesTab> {
         setState(() => _busy = false);
       }
     }
+  }
+}
+
+/// Issues this MR will close when merged.
+class MrClosesIssuesRow extends ConsumerWidget {
+  const MrClosesIssuesRow({required this.loc, super.key});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final issues = ref.watch(mrClosesIssuesProvider(loc));
+    return issues.maybeWhen(
+      data: (items) => items.isEmpty
+          ? const SizedBox.shrink()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: Insets.md),
+                Text(
+                  'Closes ${items.length} '
+                  'issue${items.length == 1 ? '' : 's'}',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: Insets.xs),
+                for (final issue in items)
+                  IssueTile(
+                    issue: issue,
+                    onTap: () => unawaited(
+                      context.push(
+                        Routes.projectIssue(issue.projectId, issue.iid),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+      orElse: () => const SizedBox.shrink(),
+    );
   }
 }
 

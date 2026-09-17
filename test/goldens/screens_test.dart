@@ -134,6 +134,10 @@ void main() {
             fixtureJson('participants'),
           )
           ..get(
+            '/projects/42/merge_requests/7/closes_issues',
+            fixtureJson('issues'),
+          )
+          ..get(
             '/projects/42/merge_requests/7/award_emoji',
             fixtureJson('award_emojis'),
           )

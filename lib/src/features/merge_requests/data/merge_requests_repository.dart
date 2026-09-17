@@ -4,6 +4,7 @@ import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/merge_requests/domain/draft_note.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
@@ -507,6 +508,14 @@ class MergeRequestsRepository {
     return _client.getAll(
       '${_p(projectId)}/merge_requests/$iid/participants',
       decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Issues this MR closes when it merges (`/closes_issues`).
+  Future<List<Issue>> closesIssues(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/closes_issues',
+      decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
     );
   }
 
