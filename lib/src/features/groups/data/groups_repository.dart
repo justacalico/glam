@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 
@@ -36,6 +37,19 @@ class GroupsRepository {
     return _client.get(
       _g(groupId),
       decoder: (j) => Group.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Iterations the group and its ancestors define (GitLab Premium).
+  /// `state` accepts `opened`, `closed`, `current`, `upcoming`, `all`.
+  Future<List<Iteration>> iterations(
+    Object groupId, {
+    String state = 'opened',
+  }) {
+    return _client.getAll(
+      '${_g(groupId)}/iterations',
+      query: {'state': state},
+      decoder: (j) => Iteration.fromJson(j! as Map<String, dynamic>),
     );
   }
 

@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/features/projects/application/projects_providers.dart';
 
 final issuesRepositoryProvider = Provider<IssuesRepository>(
   (ref) => IssuesRepository(ref.watch(apiClientProvider)),
@@ -190,3 +193,16 @@ final issueParticipantsProvider =
           .watch(issuesRepositoryProvider)
           .participants(loc.project, loc.iid),
     );
+
+/// Open iterations on the project's parent group (and ancestors).
+/// Empty for personal-namespace projects and on Free tier.
+final issueIterationsProvider = FutureProvider.family<List<Iteration>, Object>((
+  ref,
+  projectId,
+) async {
+  final project = await ref.watch(projectsRepositoryProvider).get(projectId);
+  if (!project.isGroupNamespace || project.namespacePath == null) {
+    return const [];
+  }
+  return ref.watch(groupsRepositoryProvider).iterations(project.namespacePath!);
+});

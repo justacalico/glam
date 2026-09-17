@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/models/milestone.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 
@@ -33,6 +34,7 @@ class Issue extends Equatable {
     this.subscribed = false,
     this.timeEstimate,
     this.timeSpent,
+    this.iteration,
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
@@ -89,6 +91,9 @@ class Issue extends Equatable {
       subscribed: json['subscribed'] as bool? ?? false,
       timeEstimate: json['time_estimate'] as int?,
       timeSpent: json['total_time_spent'] as int?,
+      iteration: json['iteration'] is Map<String, dynamic>
+          ? Iteration.fromJson(json['iteration'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -131,6 +136,9 @@ class Issue extends Equatable {
   /// Seconds. `time_estimate` / `total_time_spent` from the API.
   final int? timeEstimate;
   final int? timeSpent;
+
+  /// Group iteration the issue is scheduled in (Premium tiers).
+  final Iteration? iteration;
 
   bool get isOpen => state == 'opened' || state == 'reopened';
 

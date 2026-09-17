@@ -8,6 +8,7 @@ import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
@@ -264,6 +265,31 @@ class _IssueActions extends ConsumerWidget {
     }
   }
 
+  Future<void> _promptIteration(BuildContext context, WidgetRef ref) async {
+    // 0 clears the assignment; null cancels.
+    final id = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) =>
+          _IterationPicker(project: loc.project, current: issue.iteration?.id),
+    );
+    if (id == null || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(issuesRepositoryProvider)
+          .updateIssue(loc.project, loc.iid, iterationId: id);
+      ref.invalidate(issueProvider(loc));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
   Future<void> _promptDuration(
     BuildContext context,
     WidgetRef ref, {
@@ -334,6 +360,8 @@ class _IssueActions extends ConsumerWidget {
             ref.invalidate(issueProvider(loc));
           case 'weight':
             await _promptWeight(context, ref);
+          case 'iteration':
+            await _promptIteration(context, ref);
           case 'clone':
             final copy = await repo.cloneIssue(
               loc.project,
@@ -387,6 +415,7 @@ class _IssueActions extends ConsumerWidget {
         if ((issue.timeSpent ?? 0) > 0)
           const PopupMenuItem(value: 'reset', child: Text('Reset time spent')),
         const PopupMenuItem(value: 'weight', child: Text('Set weight')),
+        const PopupMenuItem(value: 'iteration', child: Text('Set iteration')),
         const PopupMenuItem(value: 'clone', child: Text('Clone issue')),
         if (issue.isOpen)
           const PopupMenuItem(value: 'move', child: Text('Move issue')),
@@ -394,6 +423,55 @@ class _IssueActions extends ConsumerWidget {
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),
       ],
+    );
+  }
+}
+
+/// Bottom sheet listing the parent group's open iterations. Pops with
+/// the iteration id, 0 to clear, or null when dismissed.
+class _IterationPicker extends ConsumerWidget {
+  const _IterationPicker({required this.project, this.current});
+
+  final Object project;
+  final int? current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iterations = ref.watch(issueIterationsProvider(project));
+    return AsyncValueWidget<List<Iteration>>(
+      value: iterations,
+      onRetry: () => ref.invalidate(issueIterationsProvider(project)),
+      data: (items) => ListView(
+        shrinkWrap: true,
+        padding: Insets.pagePadding,
+        children: [
+          if (items.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: Text('No open iterations on this group.'),
+            ),
+          RadioListTile<int>(
+            value: 0,
+            // ignore: deprecated_member_use
+            groupValue: current ?? 0,
+            title: const Text('No iteration'),
+            // ignore: deprecated_member_use
+            onChanged: (v) => Navigator.pop(context, v),
+          ),
+          for (final it in items)
+            RadioListTile<int>(
+              value: it.id,
+              // ignore: deprecated_member_use
+              groupValue: current ?? 0,
+              title: Text(it.title.isEmpty ? 'Iteration ${it.iid}' : it.title),
+              subtitle: it.dueDate == null
+                  ? null
+                  : Text('Due ${Format.date(it.dueDate)}'),
+              // ignore: deprecated_member_use
+              onChanged: (v) => Navigator.pop(context, v),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -452,6 +530,15 @@ class _Header extends StatelessWidget {
               _MetaRow(
                 icon: Icons.scale_outlined,
                 label: 'Weight ${issue.weight}',
+                colors: colors,
+                theme: theme,
+              ),
+            if (issue.iteration != null)
+              _MetaRow(
+                icon: Icons.event_repeat_outlined,
+                label: issue.iteration!.title.isEmpty
+                    ? 'Iteration ${issue.iteration!.iid}'
+                    : issue.iteration!.title,
                 colors: colors,
                 theme: theme,
               ),
