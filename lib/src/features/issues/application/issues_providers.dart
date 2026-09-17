@@ -196,15 +196,13 @@ final issueParticipantsProvider =
 
 /// Open iterations on the project's parent group (and ancestors).
 /// Empty for personal-namespace projects and on Free tier.
-final issueIterationsProvider = FutureProvider.autoDispose
-    .family<List<Iteration>, Object>((ref, projectId) async {
-      final project = await ref
-          .watch(projectsRepositoryProvider)
-          .get(projectId);
-      if (!project.isGroupNamespace || project.namespacePath == null) {
-        return const [];
-      }
-      return ref
-          .watch(groupsRepositoryProvider)
-          .iterations(project.namespacePath!);
-    });
+final issueIterationsProvider = FutureProvider.family<List<Iteration>, Object>((
+  ref,
+  projectId,
+) async {
+  final project = await ref.watch(projectsRepositoryProvider).get(projectId);
+  if (!project.isGroupNamespace || project.namespacePath == null) {
+    return const [];
+  }
+  return ref.watch(groupsRepositoryProvider).iterations(project.namespacePath!);
+});

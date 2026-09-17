@@ -22,7 +22,10 @@
         "web_url": "https://gitlab.example.com/john"
       }
     ],
-    "labels": ["bug", "frontend"],
+    "labels": [
+      "bug",
+      "frontend"
+    ],
     "milestone": {
       "id": 5,
       "iid": 2,
@@ -37,9 +40,25 @@
     "updated_at": "2025-07-11T14:00:00.000+00:00",
     "due_date": "2025-08-01",
     "confidential": false,
-    "task_completion_status": {"count": 4, "completed_count": 1},
-    "references": {"short": "#12", "full": "calico/glam#12"},
-    "web_url": "https://gitlab.example.com/calico/glam/-/issues/12"
+    "task_completion_status": {
+      "count": 4,
+      "completed_count": 1
+    },
+    "references": {
+      "short": "#12",
+      "full": "calico/glam#12"
+    },
+    "web_url": "https://gitlab.example.com/calico/glam/-/issues/12",
+    "iteration": {
+      "id": 9001,
+      "iid": 4,
+      "group_id": 55,
+      "title": "Sprint 12",
+      "state": "opened",
+      "start_date": "2026-04-14",
+      "due_date": "2026-04-27",
+      "web_url": "https://gitlab.com/groups/acme/-/iterations/4"
+    }
   },
   {
     "id": 1025,

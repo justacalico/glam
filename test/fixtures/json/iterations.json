@@ -1,0 +1,30 @@
+[
+  {
+    "id": 9001,
+    "iid": 4,
+    "sequence": 4,
+    "group_id": 55,
+    "title": "Sprint 12",
+    "description": null,
+    "state": "opened",
+    "created_at": "2026-04-01T00:00:00.000Z",
+    "updated_at": "2026-04-01T00:00:00.000Z",
+    "start_date": "2026-04-14",
+    "due_date": "2026-04-27",
+    "web_url": "https://gitlab.com/groups/acme/-/iterations/4"
+  },
+  {
+    "id": 9002,
+    "iid": 5,
+    "sequence": 5,
+    "group_id": 55,
+    "title": "",
+    "description": null,
+    "state": "opened",
+    "created_at": "2026-04-01T00:00:00.000Z",
+    "updated_at": "2026-04-01T00:00:00.000Z",
+    "start_date": "2026-04-28",
+    "due_date": "2026-05-11",
+    "web_url": "https://gitlab.com/groups/acme/-/iterations/5"
+  }
+]

@@ -66,6 +66,19 @@ void main() {
       expect(page.items, hasLength(2));
     });
 
+    test('iterations lists open group iterations', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9/iterations', fixtureJson('iterations'));
+      final repo = GroupsRepository(client);
+
+      final items = await repo.iterations(9);
+
+      expect(items, hasLength(2));
+      expect(items.first.title, 'Sprint 12');
+      expect(items.first.dueDate, isNotNull);
+      expect(adapter.lastRequest!.queryParameters['state'], 'opened');
+    });
+
     test('members work for groups and projects', () async {
       final (client, adapter) = testClient();
       adapter

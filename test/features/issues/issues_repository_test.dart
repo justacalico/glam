@@ -134,6 +134,33 @@ void main() {
       expect((adapter.lastRequest!.data as Map)['weight'], 3);
     });
 
+    test('createIssue and updateIssue send iteration_id', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/issues', (fixtureJson('issues') as List).first)
+        ..put('/projects/42/issues/12', (fixtureJson('issues') as List).last);
+      final repo = IssuesRepository(client);
+
+      await repo.createIssue(42, title: 't', iterationId: 9001);
+      expect((adapter.lastRequest!.data as Map)['iteration_id'], 9001);
+
+      await repo.updateIssue(42, 12, iterationId: 0);
+      expect((adapter.lastRequest!.data as Map)['iteration_id'], 0);
+    });
+
+    test('issue decodes the embedded iteration', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/issues/12',
+        (fixtureJson('issues') as List).first,
+      );
+      final repo = IssuesRepository(client);
+
+      final issue = await repo.issue(42, 12);
+      expect(issue.iteration?.id, 9001);
+      expect(issue.iteration?.title, 'Sprint 12');
+    });
+
     test('clone and move return the resulting issue', () async {
       final (client, adapter) = testClient();
       adapter
