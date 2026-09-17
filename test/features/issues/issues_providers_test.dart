@@ -41,6 +41,7 @@ void main() {
       state: 'closed',
       search: 'x',
       issueType: 'incident',
+      confidential: null,
       orderBy: null,
       sort: null,
     ));
@@ -64,6 +65,7 @@ void main() {
       issueType: null,
       assigneeId: null,
       authorId: null,
+      confidential: null,
       orderBy: null,
       sort: null,
     );
@@ -85,6 +87,7 @@ void main() {
       issueType: null,
       assigneeId: null,
       authorId: null,
+      confidential: null,
       orderBy: null,
       sort: null,
     );
@@ -107,6 +110,7 @@ void main() {
       issueType: null,
       assigneeId: 7,
       authorId: null,
+      confidential: null,
       orderBy: null,
       sort: null,
     );
@@ -127,6 +131,7 @@ void main() {
       issueType: null,
       assigneeId: null,
       authorId: null,
+      confidential: null,
       orderBy: 'due_date',
       sort: 'asc',
     );
@@ -149,12 +154,33 @@ void main() {
       issueType: null,
       assigneeId: null,
       authorId: 4,
+      confidential: null,
       orderBy: null,
       sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     expect(adapter.lastRequest!.queryParameters['author_id'], '4');
+  });
+
+  test('forwards the confidential filter', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      authorId: null,
+      confidential: true,
+      orderBy: null,
+      sort: null,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    expect(adapter.lastRequest!.queryParameters['confidential'], true);
   });
 
   test('issueProvider loads a single issue', () async {
