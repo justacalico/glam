@@ -108,11 +108,13 @@ class PipelinesRepository {
   Future<Paginated<Job>> jobs(
     Object projectId,
     int pipelineId, {
+    bool includeRetried = false,
     int page = 1,
     int perPage = 50,
   }) {
     return _client.getPage(
       '${_p(projectId)}/pipelines/$pipelineId/jobs',
+      query: {if (includeRetried) 'include_retried': true},
       page: page,
       perPage: perPage,
       decoder: (j) => Job.fromJson(j! as Map<String, dynamic>),
