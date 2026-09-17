@@ -300,6 +300,20 @@ void main() {
     expect(mrs.first.title, isNotEmpty);
   });
 
+  test('closed-by merge requests parse as MRs', () async {
+    final (client, adapter) = testClient();
+    adapter.get(
+      '/projects/42/issues/12/closed_by',
+      fixtureJson('related_mrs'),
+    );
+    final repo = IssuesRepository(client);
+
+    final mrs = await repo.closedByMergeRequests(42, 12);
+
+    expect(mrs, hasLength(2));
+    expect(mrs.first.iid, greaterThan(0));
+  });
+
   test('participants decodes users', () async {
     final (client, adapter) = testClient();
     adapter.get(

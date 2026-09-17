@@ -282,6 +282,7 @@ class RelatedMrsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final mrs = ref.watch(issueRelatedMrsProvider(loc));
+    final closedBy = ref.watch(issueClosedByMrsProvider(loc)).value ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,6 +291,20 @@ class RelatedMrsSection extends ConsumerWidget {
           'Related merge requests',
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        if (closedBy.isNotEmpty) ...[
+          const SizedBox(height: Insets.sm),
+          Text(
+            'Will be closed by',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          for (final m in closedBy)
+            MrTile(
+              mr: m,
+              onTap: () => unawaited(
+                context.push(Routes.projectMr(m.projectId, m.iid)),
+              ),
+            ),
+        ],
         const SizedBox(height: Insets.sm),
         Container(
           decoration: BoxDecoration(
