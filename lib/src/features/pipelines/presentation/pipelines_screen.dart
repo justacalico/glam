@@ -10,6 +10,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
@@ -64,10 +65,8 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
               TextButton.icon(
                 icon: const Icon(Icons.checklist_outlined, size: 16),
                 label: const Text('Lint'),
-                onPressed: () => CiLintSheet.show(
-                  context,
-                  projectId: widget.projectId,
-                ),
+                onPressed: () =>
+                    CiLintSheet.show(context, projectId: widget.projectId),
               ),
             ],
           ),
@@ -98,6 +97,7 @@ class _PipelineRuns extends ConsumerStatefulWidget {
 class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
   String? _status;
   String? _source;
+  String? _ref;
 
   static const _statuses = [
     (null, 'All'),
@@ -125,10 +125,17 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final branches =
+        ref
+            .watch(branchesProvider((project: widget.projectId, search: null)))
+            .value
+            ?.items ??
+        const [];
     final filter = (
       project: widget.projectId,
       status: _status,
       source: _source,
+      ref: _ref,
     );
     final state = ref.watch(pipelinesProvider(filter));
     final notifier = ref.read(pipelinesProvider(filter).notifier);
@@ -147,6 +154,12 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
                   options: _sources,
                   current: _source,
                   onSelect: (v) => setState(() => _source = v),
+                ),
+                FilterMenu(
+                  title: 'Ref',
+                  current: _ref,
+                  options: [for (final b in branches) b.name],
+                  onSelect: (v) => setState(() => _ref = v),
                 ),
                 _FilterMenu(
                   tooltip: 'Filter pipelines',
@@ -524,9 +537,7 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
                 if (_result != null)
                   StateChip(
                     label: _result!.valid ? 'valid' : 'invalid',
-                    tone: _result!.valid
-                        ? ChipTone.success
-                        : ChipTone.danger,
+                    tone: _result!.valid ? ChipTone.success : ChipTone.danger,
                   ),
                 if (_result != null && _result!.jobs.isNotEmpty) ...[
                   const SizedBox(width: Insets.sm),
@@ -555,10 +566,7 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
               for (final w in _result!.warnings)
                 Padding(
                   padding: const EdgeInsets.only(top: Insets.xs),
-                  child: Text(
-                    w,
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  child: Text(w, style: theme.textTheme.bodySmall),
                 ),
             ],
           ],
@@ -608,10 +616,7 @@ class _FilterMenu extends StatelessWidget {
                   options.first.$2,
               style: Theme.of(context).textTheme.labelLarge,
             ),
-            Icon(
-              Icons.arrow_drop_down,
-              color: context.colors.inkMuted,
-            ),
+            Icon(Icons.arrow_drop_down, color: context.colors.inkMuted),
           ],
         ),
       ),

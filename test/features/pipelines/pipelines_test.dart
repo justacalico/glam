@@ -635,7 +635,12 @@ void main() {
       adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
 
       final state = await container.read(
-        pipelinesProvider((project: 42, status: null, source: null)).future,
+        pipelinesProvider((
+          project: 42,
+          status: null,
+          source: null,
+          ref: null,
+        )).future,
       );
 
       expect(state.items, hasLength(2));
@@ -646,7 +651,12 @@ void main() {
       adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
 
       await container.read(
-        pipelinesProvider((project: 42, status: 'failed', source: null)).future,
+        pipelinesProvider((
+          project: 42,
+          status: 'failed',
+          source: null,
+          ref: null,
+        )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['status'], 'failed');
@@ -656,12 +666,27 @@ void main() {
       adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
 
       await container.read(
-        pipelinesProvider(
-          (project: 42, status: null, source: 'schedule'),
-        ).future,
+        pipelinesProvider((
+          project: 42,
+          status: null,
+          source: 'schedule',
+          ref: null,
+        )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['source'], 'schedule');
+    });
+
+    test('pipelinesProvider forwards the ref filter', () async {
+      adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
+
+      await container.read(
+        pipelinesProvider(
+          (project: 42, status: null, source: null, ref: 'main'),
+        ).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['ref'], 'main');
     });
 
     test('pipelineJobsProvider loads jobs', () async {
@@ -679,10 +704,7 @@ void main() {
       const loc = (project: 42, id: 900, retried: true);
       await container.read(pipelineJobsProvider(loc).future);
 
-      expect(
-        adapter.lastRequest!.queryParameters['include_retried'],
-        true,
-      );
+      expect(adapter.lastRequest!.queryParameters['include_retried'], true);
     });
 
     test('pipelineTestReportProvider loads the report', () async {
