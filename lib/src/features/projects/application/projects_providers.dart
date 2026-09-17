@@ -23,6 +23,7 @@ import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
+import 'package:glam/src/features/projects/domain/secure_file.dart';
 import 'package:glam/src/core/models/webhook.dart';
 
 final projectsRepositoryProvider = Provider<ProjectsRepository>(
@@ -213,6 +214,19 @@ final projectStatisticsProvider =
       } on ApiException catch (e) {
         if (e.statusCode == 404 || e.statusCode == 403) {
           return null;
+        }
+        rethrow;
+      }
+    });
+
+/// CI/CD secure files; empty where the endpoint is unavailable.
+final projectSecureFilesProvider =
+    FutureProvider.family<List<SecureFile>, Object>((ref, id) async {
+      try {
+        return await ref.watch(projectsRepositoryProvider).secureFiles(id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
         }
         rethrow;
       }
