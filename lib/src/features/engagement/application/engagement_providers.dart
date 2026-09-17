@@ -3,10 +3,12 @@ import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
+import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 
 /// Identifies something that can carry emoji reactions: an issue, an MR,
-/// or a note inside either.
-typedef AwardableRef = ({String kind, Object project, int iid, int? noteId});
+/// a note inside either, or a snippet. `project` is null for personal
+/// snippets.
+typedef AwardableRef = ({String kind, Object? project, int iid, int? noteId});
 
 /// Reactions on one awardable, grouped for display by the widget layer.
 final awardEmojisProvider =
@@ -27,39 +29,60 @@ class AwardEmojisNotifier extends AsyncNotifier<List<AwardEmoji>> {
   }
 
   Future<List<AwardEmoji>> _fetchTop() {
-    return loc.kind == 'mr'
-        ? ref.watch(mrRepositoryProvider).awardEmojis(loc.project, loc.iid)
-        : ref.watch(issuesRepositoryProvider).awardEmojis(loc.project, loc.iid);
+    return switch (loc.kind) {
+      'mr' =>
+        ref.watch(mrRepositoryProvider).awardEmojis(loc.project!, loc.iid),
+      'snippet' =>
+        ref
+            .watch(snippetsRepositoryProvider)
+            .awardEmojis(loc.iid, projectId: loc.project),
+      _ =>
+        ref.watch(issuesRepositoryProvider).awardEmojis(loc.project!, loc.iid),
+    };
   }
 
   Future<List<AwardEmoji>> _fetchNote() {
     return loc.kind == 'mr'
         ? ref
               .watch(mrRepositoryProvider)
-              .noteAwardEmojis(loc.project, loc.iid, loc.noteId!)
+              .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!)
         : ref
               .watch(issuesRepositoryProvider)
-              .noteAwardEmojis(loc.project, loc.iid, loc.noteId!);
+              .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!);
   }
 
   Future<void> _add(String name) {
-    return loc.kind == 'mr'
-        ? ref
-              .read(mrRepositoryProvider)
-              .award(loc.project, loc.iid, name, noteId: loc.noteId)
-        : ref
-              .read(issuesRepositoryProvider)
-              .award(loc.project, loc.iid, name, noteId: loc.noteId);
+    return switch (loc.kind) {
+      'mr' =>
+        ref
+            .read(mrRepositoryProvider)
+            .award(loc.project!, loc.iid, name, noteId: loc.noteId),
+      'snippet' =>
+        ref
+            .read(snippetsRepositoryProvider)
+            .award(loc.iid, name, projectId: loc.project),
+      _ =>
+        ref
+            .read(issuesRepositoryProvider)
+            .award(loc.project!, loc.iid, name, noteId: loc.noteId),
+    };
   }
 
   Future<void> _remove(int awardId) {
-    return loc.kind == 'mr'
-        ? ref
-              .read(mrRepositoryProvider)
-              .removeAward(loc.project, loc.iid, awardId, noteId: loc.noteId)
-        : ref
-              .read(issuesRepositoryProvider)
-              .removeAward(loc.project, loc.iid, awardId, noteId: loc.noteId);
+    return switch (loc.kind) {
+      'mr' =>
+        ref
+            .read(mrRepositoryProvider)
+            .removeAward(loc.project!, loc.iid, awardId, noteId: loc.noteId),
+      'snippet' =>
+        ref
+            .read(snippetsRepositoryProvider)
+            .removeAward(loc.iid, awardId, projectId: loc.project),
+      _ =>
+        ref
+            .read(issuesRepositoryProvider)
+            .removeAward(loc.project!, loc.iid, awardId, noteId: loc.noteId),
+    };
   }
 
   /// Adds the reaction, or removes the current user's existing one.

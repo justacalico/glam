@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/code_viewer.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_form_screen.dart';
@@ -76,6 +77,15 @@ class SnippetDetailScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(Insets.lg),
           children: [
             _Header(snippet: s),
+            const SizedBox(height: Insets.sm),
+            ReactionsRow(
+              loc: (
+                kind: 'snippet',
+                project: loc.projectId,
+                iid: loc.id,
+                noteId: null,
+              ),
+            ),
             if (s.description != null && s.description!.isNotEmpty) ...[
               const SizedBox(height: Insets.md),
               MarkdownViewer(data: s.description!),

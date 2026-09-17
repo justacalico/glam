@@ -94,6 +94,40 @@ void main() {
       expect((put.data as Map)['title'], 'New title');
       expect(adapter.requestsTo('DELETE', '/snippets/21'), hasLength(1));
     });
+
+    test('award emojis scope personal vs project paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/snippets/21/award_emoji', [
+          {'id': 1, 'name': 'thumbsup', 'user': {'id': 7}},
+        ])
+        ..get('/projects/42/snippets/21/award_emoji', [])
+        ..post('/projects/42/snippets/21/award_emoji', {'id': 2})
+        ..delete('/projects/42/snippets/21/award_emoji/2');
+      final repo = SnippetsRepository(client);
+
+      final awards = await repo.awardEmojis(21);
+      expect(awards.single.name, 'thumbsup');
+
+      await repo.awardEmojis(21, projectId: 42);
+      expect(
+        adapter.lastRequest!.path,
+        '/projects/42/snippets/21/award_emoji',
+      );
+
+      await repo.award(21, 'rocket', projectId: 42);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['name'], 'rocket');
+
+      await repo.removeAward(21, 2, projectId: 42);
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/snippets/21/award_emoji/2',
+        ),
+        hasLength(1),
+      );
+    });
   });
 
   group('providers', () {

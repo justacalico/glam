@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 
 /// `/snippets` for personal snippets plus `/projects/:id/snippets`.
@@ -134,5 +135,32 @@ class SnippetsRepository {
           : '/projects/${GitLabApiClient.encodeProject(projectId)}'
                 '/snippets/$id',
     );
+  }
+
+  String _path(int id, Object? projectId, [String suffix = '']) {
+    final base = projectId == null
+        ? '/snippets/$id'
+        : '/projects/${GitLabApiClient.encodeProject(projectId)}/snippets/$id';
+    return '$base$suffix';
+  }
+
+  /// Emoji reactions on the snippet (`/award_emoji`).
+  Future<List<AwardEmoji>> awardEmojis(int id, {Object? projectId}) {
+    return _client.getAll(
+      _path(id, projectId, '/award_emoji'),
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<AwardEmoji> award(int id, String name, {Object? projectId}) {
+    return _client.post(
+      _path(id, projectId, '/award_emoji'),
+      body: {'name': name},
+      decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> removeAward(int id, int awardId, {Object? projectId}) {
+    return _client.delete(_path(id, projectId, '/award_emoji/$awardId'));
   }
 }
