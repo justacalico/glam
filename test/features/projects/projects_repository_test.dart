@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
@@ -230,6 +233,51 @@ void main() {
           .requestsTo('POST', '/projects/42/housekeeping')
           .single;
       expect((sent.data as Map)['task'], 'eager');
+    });
+
+    test('secure files list, upload, download and delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/secure_files', [
+          {
+            'id': 7,
+            'name': 'deploy.pem',
+            'checksum': 'abc123def456',
+            'checksum_algorithm': 'sha256',
+            'expires_at': '2026-01-01',
+          },
+        ])
+        ..post('/projects/42/secure_files', {'id': 8, 'name': 'id_rsa'})
+        ..get(
+          '/projects/42/secure_files/7/download',
+          Uint8List.fromList('pem'.codeUnits),
+        )
+        ..delete('/projects/42/secure_files/7');
+      final repo = ProjectsRepository(client);
+
+      final files = await repo.secureFiles(42);
+      expect(files.single.name, 'deploy.pem');
+      expect(files.single.checksumAlgorithm, 'sha256');
+
+      final up = await repo.uploadSecureFile(
+        42,
+        Uint8List.fromList('key'.codeUnits),
+        'id_rsa',
+      );
+      expect(up.id, 8);
+      expect(
+        adapter.requestsTo('POST', '/projects/42/secure_files'),
+        hasLength(1),
+      );
+
+      final bytes = await repo.downloadSecureFile(42, 7);
+      expect(utf8.decode(bytes), 'pem');
+
+      await repo.deleteSecureFile(42, 7);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/secure_files/7'),
+        hasLength(1),
+      );
     });
   });
 

@@ -22,6 +22,7 @@ import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
+import 'package:glam/src/features/projects/domain/secure_file.dart';
 import 'package:glam/src/core/models/webhook.dart';
 
 /// Talks to `/projects` and related endpoints.
@@ -818,6 +819,43 @@ class ProjectsRepository {
         (j! as Map<String, dynamic>)['statistics'] as Map<String, dynamic>? ??
             const {},
       ),
+    );
+  }
+
+  /// CI/CD secure files (`/projects/:id/secure_files`).
+  Future<List<SecureFile>> secureFiles(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/secure_files',
+      decoder: (j) => SecureFile.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<SecureFile> uploadSecureFile(
+    Object id,
+    Uint8List bytes,
+    String filename,
+  ) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/secure_files',
+      body: FormData.fromMap({
+        'name': filename,
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+      }),
+      decoder: (j) => SecureFile.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Uint8List> downloadSecureFile(Object id, int fileId) {
+    return _client.getBytes(
+      '/projects/${GitLabApiClient.encodeProject(id)}'
+      '/secure_files/$fileId/download',
+      maxBytes: 100 * 1024 * 1024,
+    );
+  }
+
+  Future<void> deleteSecureFile(Object id, int fileId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/secure_files/$fileId',
     );
   }
 
