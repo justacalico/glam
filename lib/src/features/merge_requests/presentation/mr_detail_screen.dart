@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +37,7 @@ import 'package:glam/src/features/merge_requests/presentation/mr_pipelines_tab.d
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// MR detail with four tabs: overview (desc + activity), changed
 /// files, the commit list, and pipelines. Merge actions live in a
@@ -853,6 +855,28 @@ class _MrActions extends ConsumerWidget {
                 );
               }
               return;
+            case 'patch':
+              final patch = await repo.rawDiff(loc.project, loc.iid);
+              if (!context.mounted) {
+                return;
+              }
+              final box = context.findRenderObject()! as RenderBox;
+              unawaited(
+                SharePlus.instance.share(
+                  ShareParams(
+                    files: [
+                      XFile.fromData(
+                        utf8.encode(patch),
+                        name: 'mr-${loc.iid}.patch',
+                        mimeType: 'text/plain',
+                      ),
+                    ],
+                    sharePositionOrigin:
+                        box.localToGlobal(Offset.zero) & box.size,
+                  ),
+                ),
+              );
+              return;
             case 'copy':
               if (mr.webUrl != null) {
                 unawaited(Clipboard.setData(ClipboardData(text: mr.webUrl!)));
@@ -911,6 +935,7 @@ class _MrActions extends ConsumerWidget {
             child: Text('Reset time spent'),
           ),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
+        const PopupMenuItem(value: 'patch', child: Text('Download patch')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),
       ],
