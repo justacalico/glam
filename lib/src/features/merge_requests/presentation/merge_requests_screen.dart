@@ -180,16 +180,25 @@ class ProjectMrsTab extends ConsumerStatefulWidget {
 
 class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _state = 'opened';
+  MrScope _scope = MrScope.all;
   String? _search;
   String? _label;
   String? _milestone;
   String? _targetBranch;
+
+  static const _scopes = {
+    MrScope.all: 'All',
+    MrScope.assigned: 'Assigned to me',
+    MrScope.created: 'Created by me',
+    MrScope.review: 'Review requested',
+  };
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final filter = (
       project: widget.projectId,
+      scope: _scope,
       state: _state,
       search: _search,
       label: _label,
@@ -267,6 +276,22 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 const SizedBox(width: Insets.sm),
               ],
               const Spacer(),
+              FilterMenu(
+                title: 'Scope',
+                current: _scope == MrScope.all ? null : _scopes[_scope],
+                options: [
+                  for (final e in _scopes.entries)
+                    if (e.key != MrScope.all) e.value,
+                ],
+                onSelect: (v) => setState(
+                  () => _scope = _scopes.entries
+                      .firstWhere(
+                        (e) => e.value == v,
+                        orElse: () => const MapEntry(MrScope.all, 'All'),
+                      )
+                      .key,
+                ),
+              ),
               FilterMenu(
                 title: 'Label',
                 current: _label,

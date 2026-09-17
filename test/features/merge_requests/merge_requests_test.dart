@@ -123,6 +123,31 @@ void main() {
       expect(query['milestone'], 'v1');
     });
 
+    test('projectMergeRequests maps the review scope', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/merge_requests', fixtureJson('mrs'));
+      final repo = MergeRequestsRepository(client);
+
+      await repo.projectMergeRequests(42, scope: MrScope.review);
+
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['reviewer_id'], 'self');
+      expect(query['scope'], 'all');
+    });
+
+    test('projectMergeRequests forwards assigned scope', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/merge_requests', fixtureJson('mrs'));
+      final repo = MergeRequestsRepository(client);
+
+      await repo.projectMergeRequests(42, scope: MrScope.assigned);
+
+      expect(
+        adapter.lastRequest!.queryParameters['scope'],
+        'assigned_to_me',
+      );
+    });
+
     test('time tracking posts the duration endpoints', () async {
       final (client, adapter) = testClient();
       adapter
