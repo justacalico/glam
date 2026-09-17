@@ -64,6 +64,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       state: f.state,
                       search: f.search,
                       issueType: f.issueType,
+                      confidential: null,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -85,6 +86,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             state: f.state,
                             search: v,
                             issueType: f.issueType,
+                            confidential: f.confidential,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -100,6 +102,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           state: s,
                           search: f.search,
                           issueType: f.issueType,
+                          confidential: f.confidential,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -115,6 +118,31 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           state: f.state,
                           search: f.search,
                           issueType: v,
+                          confidential: f.confidential,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    FilterMenu(
+                      title: 'Confidential',
+                      current: switch (filter.confidential) {
+                        true => 'true',
+                        false => 'false',
+                        null => null,
+                      },
+                      options: const ['true', 'false'],
+                      labels: const {
+                        'true': 'Confidential',
+                        'false': 'Not confidential',
+                      },
+                      onSelect: (v) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          issueType: f.issueType,
+                          confidential: v == null ? null : v == 'true',
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -130,6 +158,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           state: f.state,
                           search: f.search,
                           issueType: f.issueType,
+                          confidential: f.confidential,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -231,6 +260,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _label;
   String? _milestone;
   String? _issueType;
+  bool? _confidential;
   int? _assigneeId;
   int? _authorId;
   String? _orderBy;
@@ -246,6 +276,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       label: _label,
       milestone: _milestone,
       issueType: _issueType,
+      confidential: _confidential,
       assigneeId: _assigneeId,
       authorId: _authorId,
       orderBy: _orderBy,
@@ -380,6 +411,22 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 current: _issueType,
                 options: const ['issue', 'incident', 'task', 'test_case'],
                 onSelect: (v) => setState(() => _issueType = v),
+              ),
+              FilterMenu(
+                title: 'Confidential',
+                current: switch (_confidential) {
+                  true => 'true',
+                  false => 'false',
+                  null => null,
+                },
+                options: const ['true', 'false'],
+                labels: const {
+                  'true': 'Confidential',
+                  'false': 'Not confidential',
+                },
+                onSelect: (v) => setState(
+                  () => _confidential = v == null ? null : v == 'true',
+                ),
               ),
               SortMenu(
                 orderBy: _orderBy,
