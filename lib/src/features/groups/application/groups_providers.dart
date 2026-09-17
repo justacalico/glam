@@ -4,6 +4,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
+import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -115,6 +116,13 @@ final groupVariablesProvider = FutureProvider.family<List<CiVariable>, Object>(
 final groupHooksProvider = FutureProvider.family<List<Webhook>, Object>(
   (ref, groupId) => ref.watch(groupsRepositoryProvider).webhooks(groupId),
 );
+
+/// Group-level deploy tokens.
+final groupDeployTokensProvider =
+    FutureProvider.family<List<DeployToken>, Object>(
+      (ref, groupId) =>
+          ref.watch(groupsRepositoryProvider).deployTokens(groupId),
+    );
 
 /// Iterations defined on the group and its ancestors. Empty on
 /// Free tier / self-hosted CE where the endpoint is absent.
