@@ -451,6 +451,28 @@ class RepositoryRepository {
     );
   }
 
+  /// File template keys for a type (`/templates/:type`): `gitignores`,
+  /// `dockerfiles`, `gitlab_ci_ymls`, `licenses`. Licenses key by `key`,
+  /// the rest by `name`.
+  Future<List<String>> fileTemplateNames(Object projectId, String type) async {
+    final keys = await _client.getAll(
+      '${_p(projectId)}/templates/$type',
+      decoder: (j) {
+        final m = j! as Map<String, dynamic>;
+        return (m['key'] ?? m['name']) as String? ?? '';
+      },
+    );
+    return keys.where((k) => k.isNotEmpty).toList();
+  }
+
+  /// Content of one template (`/templates/:type/:key`).
+  Future<String> fileTemplate(Object projectId, String type, String key) {
+    return _client.get(
+      '${_p(projectId)}/templates/$type/${Uri.encodeComponent(key)}',
+      decoder: (j) => (j! as Map<String, dynamic>)['content'] as String? ?? '',
+    );
+  }
+
   /// Generates the changelog for [version] and commits it to [branch]
   /// (default: the project's default branch).
   Future<void> generateChangelog(

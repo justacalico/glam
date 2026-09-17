@@ -500,6 +500,40 @@ void main() {
     });
   });
 
+  group('file templates', () {
+    test('names decode key or name per template kind', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/templates/gitignores', [
+          {'name': 'Dart'},
+          {'name': 'Rails'},
+        ])
+        ..get('/projects/42/templates/licenses', [
+          {'key': 'agpl-3.0', 'name': 'GNU AGPLv3'},
+        ]);
+      final repo = RepositoryRepository(client);
+
+      final ignores = await repo.fileTemplateNames(42, 'gitignores');
+      expect(ignores, ['Dart', 'Rails']);
+
+      final licenses = await repo.fileTemplateNames(42, 'licenses');
+      expect(licenses, ['agpl-3.0']);
+    });
+
+    test('fileTemplate fetches content by key', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/templates/gitignores/Dart', {
+        'name': 'Dart',
+        'content': 'build/\n',
+      });
+      final repo = RepositoryRepository(client);
+
+      final content = await repo.fileTemplate(42, 'gitignores', 'Dart');
+
+      expect(content, 'build/\n');
+    });
+  });
+
   group('releases', () {
     test('lists releases', () async {
       final (client, adapter) = testClient();
