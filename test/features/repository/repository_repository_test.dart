@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/repository/data/repository_repository.dart';
 
@@ -445,6 +448,55 @@ void main() {
         adapter.requestsTo('DELETE', '/projects/42/repository/tags/v1.1.0'),
         hasLength(1),
       );
+    });
+  });
+
+  group('archive and changelog', () {
+    test('archive returns tarball bytes for the ref', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/repository/archive.tar.gz',
+        Uint8List.fromList('gzip-data'.codeUnits),
+      );
+      final repo = RepositoryRepository(client);
+
+      final bytes = await repo.archive(42, 'main');
+
+      expect(utf8.decode(bytes), 'gzip-data');
+      expect(adapter.lastRequest!.queryParameters['sha'], 'main');
+    });
+
+    test('changelog decodes the notes field', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/changelog', {
+        'notes': '## v1.3.0\n- fix',
+      });
+      final repo = RepositoryRepository(client);
+
+      final notes = await repo.changelog(42, version: 'v1.3.0', from: 'v1.2.0');
+
+      expect(notes, contains('fix'));
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['version'], 'v1.3.0');
+      expect(query['from'], 'v1.2.0');
+    });
+
+    test('generateChangelog posts version and range', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/repository/changelog', {});
+      final repo = RepositoryRepository(client);
+
+      await repo.generateChangelog(
+        42,
+        version: 'v1.3.0',
+        branch: 'main',
+        trailer: 'Changelog',
+      );
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['version'], 'v1.3.0');
+      expect(sent['branch'], 'main');
+      expect(sent['trailer'], 'Changelog');
     });
   });
 

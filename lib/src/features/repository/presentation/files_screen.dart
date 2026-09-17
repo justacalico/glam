@@ -6,12 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Repository file browser: folder listing with a breadcrumb and a
 /// branch/ref selector.
@@ -140,6 +142,16 @@ class _PathBar extends ConsumerWidget {
           ),
           if (ref != null)
             IconButton(
+              tooltip: 'Download source',
+              icon: Icon(
+                Icons.download_outlined,
+                size: 18,
+                color: colors.inkMuted,
+              ),
+              onPressed: () => _download(context, refScope),
+            ),
+          if (ref != null)
+            IconButton(
               tooltip: 'New file',
               icon: Icon(Icons.add, size: 18, color: colors.inkMuted),
               onPressed: () async {
@@ -160,6 +172,38 @@ class _PathBar extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _download(BuildContext context, WidgetRef refScope) async {
+    try {
+      final bytes = await refScope
+          .read(repositoryRepositoryProvider)
+          .archive(projectId, ref!);
+      if (!context.mounted) {
+        return;
+      }
+      final box = context.findRenderObject()! as RenderBox;
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile.fromData(
+                bytes,
+                name: '${ref!.replaceAll('/', '-')}.tar.gz',
+                mimeType: 'application/gzip',
+              ),
+            ],
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
+          ),
+        ),
+      );
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
 
