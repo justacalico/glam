@@ -147,15 +147,13 @@ void main() {
         );
       final repo = IssuesRepository(client);
 
-      final copy = await repo.cloneIssue(42, 12);
+      final copy = await repo.cloneIssue(42, 12, toProjectId: 42);
       expect(copy.title, isNotEmpty);
+      expect((adapter.lastRequest!.data as Map)['to_project_id'], 42);
 
-      final moved = await repo.moveIssue(42, 12, 'group/other');
+      final moved = await repo.moveIssue(42, 12, 77);
       expect(moved.title, isNotEmpty);
-      expect(
-        (adapter.lastRequest!.data as Map)['to_project_id'],
-        'group/other',
-      );
+      expect((adapter.lastRequest!.data as Map)['to_project_id'], 77);
     });
   });
 

@@ -25,6 +25,7 @@ import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_links_section.dart';
+import 'package:glam/src/features/projects/application/projects_providers.dart';
 
 /// Issue detail: metadata, description, and the comment thread with a
 /// composer docked at the bottom.
@@ -181,10 +182,17 @@ class _IssueActions extends ConsumerWidget {
       return;
     }
     try {
+      final dest = await ref.read(projectsRepositoryProvider).get(target);
+      if (!context.mounted) {
+        return;
+      }
       final moved = await ref
           .read(issuesRepositoryProvider)
-          .moveIssue(loc.project, loc.iid, target);
-      ref.invalidate(issuesProvider);
+          .moveIssue(loc.project, loc.iid, dest.id);
+      ref
+        ..invalidate(issueProvider(loc))
+        ..invalidate(issuesProvider)
+        ..invalidate(projectIssuesProvider);
       if (context.mounted) {
         // The issue now lives under the destination project.
         context.pushReplacement(
@@ -327,8 +335,14 @@ class _IssueActions extends ConsumerWidget {
           case 'weight':
             await _promptWeight(context, ref);
           case 'clone':
-            final copy = await repo.cloneIssue(loc.project, loc.iid);
-            ref.invalidate(issuesProvider);
+            final copy = await repo.cloneIssue(
+              loc.project,
+              loc.iid,
+              toProjectId: issue.projectId,
+            );
+            ref
+              ..invalidate(issuesProvider)
+              ..invalidate(projectIssuesProvider);
             if (context.mounted) {
               context.pushReplacement(
                 Routes.projectIssue(copy.projectId, copy.iid),

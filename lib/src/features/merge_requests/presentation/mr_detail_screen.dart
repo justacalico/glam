@@ -31,6 +31,7 @@ import 'package:glam/src/features/merge_requests/data/merge_requests_repository.
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
+import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 
@@ -726,16 +727,24 @@ class _MrActions extends ConsumerWidget {
   final MergeRequest mr;
   final MrRef loc;
 
-  /// Cherry-pick with a branch prompt; navigates to the new commit.
-  Future<void> _cherryPick(
+  /// Cherry-picks or reverts the merge/squash commit onto a prompted
+  /// branch, then navigates to the new commit. GitLab only exposes
+  /// commit-level pick/revert, so the merge commit sha is used.
+  Future<void> _pickCommit(
     BuildContext context,
-    MergeRequestsRepository repo,
-  ) async {
+    WidgetRef ref, {
+    required bool revert,
+  }) async {
+    final sha = mr.mergeCommitSha ?? mr.squashCommitSha;
+    if (sha == null) {
+      return;
+    }
+    final label = revert ? 'Revert' : 'Cherry-pick';
     final branch = TextEditingController(text: mr.targetBranch);
     final target = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Cherry-pick !${mr.iid}'),
+        title: Text('$label !${mr.iid}'),
         content: TextField(
           controller: branch,
           autofocus: true,
@@ -749,7 +758,7 @@ class _MrActions extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, branch.text.trim()),
-            child: const Text('Cherry-pick'),
+            child: Text(label),
           ),
         ],
       ),
@@ -759,12 +768,12 @@ class _MrActions extends ConsumerWidget {
       return;
     }
     try {
-      final commit = await repo.cherryPick(
-        loc.project,
-        loc.iid,
-        branch: target,
-      );
+      final repo = ref.read(repositoryRepositoryProvider);
+      final commit = revert
+          ? await repo.revert(loc.project, sha, branch: target)
+          : await repo.cherryPick(loc.project, sha, branch: target);
       if (context.mounted) {
+        ref.invalidate(mrDiscussionsProvider(loc));
         unawaited(context.push(Routes.projectCommit(loc.project, commit.id)));
       }
     } on ApiException catch (e) {
@@ -806,10 +815,11 @@ class _MrActions extends ConsumerWidget {
             case 'rebase':
               await repo.rebase(loc.project, loc.iid);
             case 'cherry_pick':
-              await _cherryPick(context, repo);
+              await _pickCommit(context, ref, revert: false);
               return;
             case 'revert':
-              await repo.revert(loc.project, loc.iid);
+              await _pickCommit(context, ref, revert: true);
+              return;
             case 'edit':
               if (context.mounted) {
                 unawaited(
@@ -855,7 +865,8 @@ class _MrActions extends ConsumerWidget {
           ),
           const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
         ],
-        if (mr.isMerged) ...[
+        if (mr.isMerged &&
+            (mr.mergeCommitSha != null || mr.squashCommitSha != null)) ...[
           const PopupMenuItem(value: 'cherry_pick', child: Text('Cherry-pick')),
           const PopupMenuItem(value: 'revert', child: Text('Revert')),
         ],

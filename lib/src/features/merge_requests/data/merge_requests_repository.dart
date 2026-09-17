@@ -226,25 +226,6 @@ class MergeRequestsRepository {
     );
   }
 
-  /// Cherry-picks a merged MR's changes onto [branch] (defaults to the
-  /// MR's target branch).
-  Future<Commit> cherryPick(Object projectId, int iid, {String? branch}) {
-    return _client.post(
-      '${_p(projectId)}/merge_requests/$iid/cherry_pick',
-      body: {'branch': ?branch},
-      decoder: (j) => Commit.fromJson(j! as Map<String, dynamic>),
-    );
-  }
-
-  /// Creates a revert MR (open) or commit for a merged MR.
-  Future<MergeRequest> revert(Object projectId, int iid, {String? branch}) {
-    return _client.post(
-      '${_p(projectId)}/merge_requests/$iid/revert',
-      body: {'branch': ?branch},
-      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
-    );
-  }
-
   Future<ApprovalState> approvals(Object projectId, int iid) {
     return _client.get(
       '${_p(projectId)}/merge_requests/$iid/approvals',
