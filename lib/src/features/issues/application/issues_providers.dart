@@ -25,6 +25,7 @@ typedef IssueFilter = ({
   String? search,
   String? issueType,
   bool? confidential,
+  String? dueDate,
   String? orderBy,
   String? sort,
 });
@@ -35,6 +36,7 @@ const defaultIssueFilter = (
   search: null,
   issueType: null,
   confidential: null,
+  dueDate: null,
   orderBy: null,
   sort: null,
 );
@@ -67,6 +69,7 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
           search: filter.search,
           issueType: filter.issueType,
           confidential: filter.confidential,
+          dueDate: filter.dueDate,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -85,6 +88,7 @@ typedef ProjectIssueFilter = ({
   int? assigneeId,
   int? authorId,
   bool? confidential,
+  String? dueDate,
   String? orderBy,
   String? sort,
 });
@@ -115,6 +119,7 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           assigneeId: filter.assigneeId,
           authorId: filter.authorId,
           confidential: filter.confidential,
+          dueDate: filter.dueDate,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

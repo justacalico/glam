@@ -65,6 +65,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       search: f.search,
                       issueType: f.issueType,
                       confidential: null,
+                      dueDate: f.dueDate,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -87,6 +88,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             search: v,
                             issueType: f.issueType,
                             confidential: f.confidential,
+                            dueDate: f.dueDate,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -103,6 +105,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           search: f.search,
                           issueType: f.issueType,
                           confidential: f.confidential,
+                          dueDate: f.dueDate,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -119,6 +122,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           search: f.search,
                           issueType: v,
                           confidential: f.confidential,
+                          dueDate: f.dueDate,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -143,6 +147,37 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           search: f.search,
                           issueType: f.issueType,
                           confidential: v == null ? null : v == 'true',
+                          dueDate: f.dueDate,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    FilterMenu(
+                      title: 'Due',
+                      current: filter.dueDate,
+                      options: const [
+                        'overdue',
+                        'week',
+                        'month',
+                        'next_month_and_previous_two_weeks',
+                        '0',
+                      ],
+                      labels: const {
+                        'overdue': 'Overdue',
+                        'week': 'Due this week',
+                        'month': 'Due this month',
+                        'next_month_and_previous_two_weeks': 'Due soon',
+                        '0': 'No due date',
+                      },
+                      onSelect: (v) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          issueType: f.issueType,
+                          confidential: f.confidential,
+                          dueDate: v,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -159,6 +194,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           search: f.search,
                           issueType: f.issueType,
                           confidential: f.confidential,
+                          dueDate: f.dueDate,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -261,6 +297,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _milestone;
   String? _issueType;
   bool? _confidential;
+  String? _dueDate;
   int? _assigneeId;
   int? _authorId;
   String? _orderBy;
@@ -277,6 +314,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       milestone: _milestone,
       issueType: _issueType,
       confidential: _confidential,
+      dueDate: _dueDate,
       assigneeId: _assigneeId,
       authorId: _authorId,
       orderBy: _orderBy,
@@ -427,6 +465,25 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 onSelect: (v) => setState(
                   () => _confidential = v == null ? null : v == 'true',
                 ),
+              ),
+              FilterMenu(
+                title: 'Due',
+                current: _dueDate,
+                options: const [
+                  'overdue',
+                  'week',
+                  'month',
+                  'next_month_and_previous_two_weeks',
+                  '0',
+                ],
+                labels: const {
+                  'overdue': 'Overdue',
+                  'week': 'Due this week',
+                  'month': 'Due this month',
+                  'next_month_and_previous_two_weeks': 'Due soon',
+                  '0': 'No due date',
+                },
+                onSelect: (v) => setState(() => _dueDate = v),
               ),
               SortMenu(
                 orderBy: _orderBy,

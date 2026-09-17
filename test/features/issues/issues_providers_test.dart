@@ -42,6 +42,7 @@ void main() {
       search: 'x',
       issueType: 'incident',
       confidential: null,
+      dueDate: null,
       orderBy: null,
       sort: null,
     ));
@@ -66,6 +67,7 @@ void main() {
       assigneeId: null,
       authorId: null,
       confidential: null,
+      dueDate: null,
       orderBy: null,
       sort: null,
     );
@@ -88,6 +90,7 @@ void main() {
       assigneeId: null,
       authorId: null,
       confidential: null,
+      dueDate: null,
       orderBy: null,
       sort: null,
     );
@@ -111,6 +114,7 @@ void main() {
       assigneeId: 7,
       authorId: null,
       confidential: null,
+      dueDate: null,
       orderBy: null,
       sort: null,
     );
@@ -132,6 +136,7 @@ void main() {
       assigneeId: null,
       authorId: null,
       confidential: null,
+      dueDate: null,
       orderBy: 'due_date',
       sort: 'asc',
     );
@@ -155,6 +160,7 @@ void main() {
       assigneeId: null,
       authorId: 4,
       confidential: null,
+      dueDate: null,
       orderBy: null,
       sort: null,
     );
@@ -175,12 +181,34 @@ void main() {
       assigneeId: null,
       authorId: null,
       confidential: true,
+      dueDate: null,
       orderBy: null,
       sort: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     expect(adapter.lastRequest!.queryParameters['confidential'], true);
+  });
+
+  test('forwards the due_date bucket', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: null,
+      authorId: null,
+      confidential: null,
+      dueDate: 'overdue',
+      orderBy: null,
+      sort: null,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    expect(adapter.lastRequest!.queryParameters['due_date'], 'overdue');
   });
 
   test('issueProvider loads a single issue', () async {
