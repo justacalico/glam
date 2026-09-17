@@ -10,7 +10,9 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
+import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
@@ -26,6 +28,7 @@ import 'package:glam/src/features/registry/presentation/registry_tab.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
+import 'package:glam/src/features/projects/presentation/project_tile.dart';
 import 'package:glam/src/features/repository/presentation/branches_screen.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
@@ -103,6 +106,8 @@ class _ProjectBody extends ConsumerWidget {
         label: 'Activity',
         builder: () => EventList(feed: (kind: 'project', id: project.id)),
       ),
+      if (project.forksCount > 0)
+        (label: 'Forks', builder: () => _ForksTab(projectId: project.id)),
       (
         label: 'Packages',
         builder: () => ProjectPackagesTab(projectId: project.id),
@@ -436,6 +441,40 @@ class _ActionChip extends StatelessWidget {
         side: BorderSide(color: colors.border),
         padding: const EdgeInsets.symmetric(horizontal: Insets.md),
         textStyle: Theme.of(context).textTheme.labelMedium,
+      ),
+    );
+  }
+}
+
+/// Paginated list of the project's visible forks.
+class _ForksTab extends ConsumerWidget {
+  const _ForksTab({required this.projectId});
+
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final state = ref.watch(projectForksProvider(projectId));
+    final notifier = ref.read(projectForksProvider(projectId).notifier);
+
+    return AsyncValueWidget(
+      value: state,
+      onRetry: notifier.refresh,
+      data: (data) => PagedListView(
+        state: data,
+        onLoadMore: notifier.loadMore,
+        onRefresh: notifier.refresh,
+        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+        separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
+        empty: const EmptyState(icon: Icons.fork_right, title: 'No forks yet'),
+        itemBuilder: (context, index) {
+          final p = data.items[index];
+          return ProjectTile(
+            project: p,
+            onTap: () => unawaited(context.push(Routes.project(p.id))),
+          );
+        },
       ),
     );
   }
