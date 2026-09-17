@@ -73,6 +73,27 @@ void main() {
     expect(sent['message'], 'On vacation');
   });
 
+  test('follow lists and follow/unfollow endpoints', () async {
+    final (client, adapter) = testClient();
+    final user = {'id': 7, 'username': 'calico', 'name': 'Calico'};
+    adapter
+      ..get('/users/7/followers', [user])
+      ..get('/users/7/followed_users', [user])
+      ..get('/user/followed_users', [user])
+      ..post('/users/7/follow', user)
+      ..post('/users/7/unfollow', user);
+    final repo = AuthRepository(client);
+
+    expect((await repo.userFollowers(7)).single.id, 7);
+    expect((await repo.userFollowing(7)).single.username, 'calico');
+    expect((await repo.myFollowed()).single.id, 7);
+
+    await repo.followUser(7);
+    expect(adapter.requestsTo('POST', '/users/7/follow'), hasLength(1));
+    await repo.unfollowUser(7);
+    expect(adapter.requestsTo('POST', '/users/7/unfollow'), hasLength(1));
+  });
+
   test('fetchUserByUsername throws when nobody matches', () async {
     final (client, adapter) = testClient();
     adapter.get('/users', []);

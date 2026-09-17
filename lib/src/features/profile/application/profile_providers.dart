@@ -18,3 +18,22 @@ final userProjectsProvider = FutureProvider.family<List<Project>, int>(
 final userStarredProvider = FutureProvider.family<List<Project>, int>(
   (ref, id) => ref.watch(projectsRepositoryProvider).starredBy(id),
 );
+
+/// Users following [id].
+final userFollowersProvider = FutureProvider.family<List<GitLabUser>, int>(
+  (ref, id) => ref.watch(authRepositoryProvider).userFollowers(id),
+);
+
+/// Users [id] follows.
+final userFollowingProvider = FutureProvider.family<List<GitLabUser>, int>(
+  (ref, id) => ref.watch(authRepositoryProvider).userFollowing(id),
+);
+
+/// Ids of users the signed-in account follows. REST exposes no
+/// `is_following` flag on `/users/:id`, so the follow button checks
+/// membership in this set.
+final myFollowedProvider = FutureProvider<Set<int>>(
+  (ref) async => {
+    for (final u in await ref.watch(authRepositoryProvider).myFollowed()) u.id,
+  },
+);

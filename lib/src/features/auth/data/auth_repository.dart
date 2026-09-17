@@ -88,4 +88,42 @@ class AuthRepository {
       },
     );
   }
+
+  /// Users following [id] (`/users/:id/followers`).
+  Future<List<GitLabUser>> userFollowers(int id) {
+    return _client.getAll(
+      '/users/$id/followers',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Users [id] follows (`/users/:id/followed_users`).
+  Future<List<GitLabUser>> userFollowing(int id) {
+    return _client.getAll(
+      '/users/$id/followed_users',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Users the signed-in account follows (`/user/followed_users`).
+  Future<List<GitLabUser>> myFollowed() {
+    return _client.getAll(
+      '/user/followed_users',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<GitLabUser> followUser(int id) {
+    return _client.post(
+      '/users/$id/follow',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<GitLabUser> unfollowUser(int id) {
+    return _client.post(
+      '/users/$id/unfollow',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
 }
