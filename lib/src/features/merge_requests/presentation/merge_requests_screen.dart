@@ -7,12 +7,18 @@ import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/models/milestone.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
+import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
+import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/features/repository/application/repository_providers.dart';
+import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 
 /// Global MR list with scope/state/search filters.
@@ -175,13 +181,51 @@ class ProjectMrsTab extends ConsumerStatefulWidget {
 class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _state = 'opened';
   String? _search;
+  String? _label;
+  String? _milestone;
+  String? _targetBranch;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (project: widget.projectId, state: _state, search: _search);
+    final filter = (
+      project: widget.projectId,
+      state: _state,
+      search: _search,
+      label: _label,
+      milestone: _milestone,
+      targetBranch: _targetBranch,
+    );
     final list = ref.watch(projectMrsProvider(filter));
     final notifier = ref.read(projectMrsProvider(filter).notifier);
+    final milestones =
+        ref
+            .watch(
+              milestonesProvider((
+                scope: (id: widget.projectId, isProject: true),
+                state: 'active',
+                search: null,
+              )),
+            )
+            .value
+            ?.items ??
+        const <Milestone>[];
+    final labels =
+        ref
+            .watch(
+              labelsProvider((
+                scope: (id: widget.projectId, isProject: true),
+                search: null,
+              )),
+            )
+            .value ??
+        const <Label>[];
+    final branches =
+        ref
+            .watch(branchesProvider((project: widget.projectId, search: null)))
+            .value
+            ?.items ??
+        const <Branch>[];
     const states = {
       'opened': 'Open',
       'merged': 'Merged',
@@ -223,6 +267,24 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 const SizedBox(width: Insets.sm),
               ],
               const Spacer(),
+              FilterMenu(
+                title: 'Label',
+                current: _label,
+                options: [for (final l in labels) l.name],
+                onSelect: (v) => setState(() => _label = v),
+              ),
+              FilterMenu(
+                title: 'Milestone',
+                current: _milestone,
+                options: [for (final m in milestones) m.title],
+                onSelect: (v) => setState(() => _milestone = v),
+              ),
+              FilterMenu(
+                title: 'Branch',
+                current: _targetBranch,
+                options: [for (final b in branches) b.name],
+                onSelect: (v) => setState(() => _targetBranch = v),
+              ),
               IconButton(
                 tooltip: 'New merge request',
                 icon: const Icon(Icons.add),

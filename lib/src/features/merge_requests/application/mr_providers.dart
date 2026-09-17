@@ -57,7 +57,14 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
   }
 }
 
-typedef ProjectMrFilter = ({Object project, String? state, String? search});
+typedef ProjectMrFilter = ({
+  Object project,
+  String? state,
+  String? search,
+  String? label,
+  String? milestone,
+  String? targetBranch,
+});
 
 final projectMrsProvider =
     AsyncNotifierProvider.family<
@@ -79,6 +86,9 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           filter.project,
           state: filter.state,
           search: filter.search,
+          labels: filter.label,
+          milestone: filter.milestone,
+          targetBranch: filter.targetBranch,
           page: page,
         );
   }
