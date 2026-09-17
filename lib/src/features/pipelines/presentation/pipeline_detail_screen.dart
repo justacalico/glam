@@ -46,7 +46,7 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
     final pipeline = ref.watch(pipelineProvider(_loc));
     final jobs = ref.watch(pipelineJobsProvider(_loc));
     final report = ref.watch(pipelineTestReportProvider(_loc));
-    final hasReport = (report.value?.totalCount ?? 0) > 0;
+    final hasReport = !(report.value?.isEmpty ?? true);
 
     return Scaffold(
       appBar: AppBar(
