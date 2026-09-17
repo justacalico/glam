@@ -154,6 +154,36 @@ void main() {
       expect(vars.last.variableType, 'file');
     });
 
+    test('bridges decodes downstream pipelines', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/pipelines/900/bridges', [
+        {
+          'id': 11,
+          'name': 'deploy-child',
+          'stage': 'deploy',
+          'status': 'success',
+          'downstream_pipeline': {
+            'id': 901,
+            'status': 'running',
+            'ref': 'main',
+            'project': {'id': 7, 'name': 'child-app'},
+          },
+        },
+        {'id': 12, 'name': 'manual-bridge', 'status': 'manual'},
+      ]);
+      final repo = PipelinesRepository(client);
+
+      final bridges = await repo.bridges(42, 900);
+
+      expect(bridges, hasLength(2));
+      final first = bridges.first;
+      expect(first.name, 'deploy-child');
+      expect(first.downstream!.id, 901);
+      expect(first.downstream!.projectId, 7);
+      expect(first.downstream!.projectName, 'child-app');
+      expect(bridges.last.downstream, isNull);
+    });
+
     test('jobTrace returns raw text', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/jobs/5001/trace', 'line1\nline2');
