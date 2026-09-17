@@ -51,5 +51,14 @@
   "approvals_before_merge": 2,
   "merge_commit_template": "Merge %{source_branch} into %{target_branch}",
   "squash_commit_template": "%{title}",
-  "suggestion_commit_message": "Apply suggestion"
+  "suggestion_commit_message": "Apply suggestion",
+  "shared_with_groups": [
+    {
+      "group_id": 4,
+      "group_name": "Platform",
+      "group_full_path": "platform",
+      "group_access_level": 30,
+      "expires_at": null
+    }
+  ]
 }

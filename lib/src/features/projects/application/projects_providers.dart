@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
@@ -109,6 +110,12 @@ final projectApprovalRulesProvider =
         rethrow;
       }
     });
+
+/// Project access tokens; secrets are only in the create response.
+final projectAccessTokensProvider =
+    FutureProvider.family<List<ProjectAccessToken>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).accessTokens(id),
+    );
 
 /// Mutations for the admin lists; each refetches its list on success.
 final projectAdminActionsProvider = Provider<ProjectAdminActions>(
@@ -277,6 +284,50 @@ class ProjectAdminActions {
       project.id,
       approvalsBeforeMerge: approvalsBeforeMerge,
     );
+    _ref.invalidate(projectProvider(project.id.toString()));
+  }
+
+  /// Returns the created token — the only time its secret is readable.
+  Future<ProjectAccessToken> addAccessToken(
+    Object projectId, {
+    required String name,
+    required List<String> scopes,
+    required int accessLevel,
+    DateTime? expiresAt,
+  }) async {
+    final token = await _repo.createAccessToken(
+      projectId,
+      name: name,
+      scopes: scopes,
+      accessLevel: accessLevel,
+      expiresAt: expiresAt,
+    );
+    _ref.invalidate(projectAccessTokensProvider(projectId));
+    return token;
+  }
+
+  Future<void> revokeAccessToken(Object projectId, int tokenId) async {
+    await _repo.revokeAccessToken(projectId, tokenId);
+    _ref.invalidate(projectAccessTokensProvider(projectId));
+  }
+
+  Future<void> shareProject(
+    Project project, {
+    required int groupId,
+    required int accessLevel,
+    DateTime? expiresAt,
+  }) async {
+    await _repo.shareGroup(
+      project.id,
+      groupId: groupId,
+      accessLevel: accessLevel,
+      expiresAt: expiresAt,
+    );
+    _ref.invalidate(projectProvider(project.id.toString()));
+  }
+
+  Future<void> unshareProject(Project project, int groupId) async {
+    await _repo.unshareGroup(project.id, groupId);
     _ref.invalidate(projectProvider(project.id.toString()));
   }
 }
