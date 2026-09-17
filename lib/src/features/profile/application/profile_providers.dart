@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/auth/domain/user_counts.dart';
 import 'package:glam/src/features/profile/domain/membership.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -42,4 +43,9 @@ final myFollowedProvider = FutureProvider<Set<int>>(
 /// Groups and projects the signed-in account belongs to.
 final myMembershipsProvider = FutureProvider<List<Membership>>(
   (ref) => ref.watch(authRepositoryProvider).userMemberships(),
+);
+
+/// Queue sizes for dashboard badges (`/user/counts`).
+final myCountsProvider = FutureProvider<UserCounts>(
+  (ref) => ref.watch(authRepositoryProvider).userCounts(),
 );

@@ -121,6 +121,24 @@ void main() {
     expect(memberships.last.expiresAt, isNotNull);
   });
 
+  test('userCounts decodes the badge fields', () async {
+    final (client, adapter) = testClient();
+    adapter.get('/user/counts', {
+      'assigned_issues': 3,
+      'assigned_merge_requests': 2,
+      'merge_requests': 5,
+      'review_requested_merge_requests': 4,
+      'todos': 7,
+    });
+    final repo = AuthRepository(client);
+
+    final counts = await repo.userCounts();
+
+    expect(counts.assignedIssues, 3);
+    expect(counts.mrBadge, 6);
+    expect(counts.todos, 7);
+  });
+
   test('fetchUserByUsername throws when nobody matches', () async {
     final (client, adapter) = testClient();
     adapter.get('/users', []);
