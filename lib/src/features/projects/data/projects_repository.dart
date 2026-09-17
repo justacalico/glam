@@ -756,6 +756,14 @@ class ProjectsRepository {
     );
   }
 
+  /// Triggers an immediate pull-mirror sync (`POST /projects/:id/mirror/pull`).
+  Future<void> pullMirrorSync(Object id) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/mirror/pull',
+      decoder: (_) {},
+    );
+  }
+
   /// Users who starred the project (`/projects/:id/starrers`).
   Future<List<GitLabUser>> starrers(Object id) {
     return _client.getAll(

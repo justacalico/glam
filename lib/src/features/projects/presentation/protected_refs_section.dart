@@ -779,6 +779,11 @@ class RemoteMirrorsSection extends ConsumerWidget {
           children: [
             const Expanded(child: SectionLabel('Mirroring repositories')),
             TextButton.icon(
+              icon: const Icon(Icons.sync, size: 16),
+              label: const Text('Sync now'),
+              onPressed: () => _syncNow(context, ref),
+            ),
+            TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add'),
               onPressed: () => _add(context, ref),
@@ -926,6 +931,18 @@ class RemoteMirrorsSection extends ConsumerWidget {
       await ref
           .read(projectAdminActionsProvider)
           .updateRemoteMirror(project.id, mirror.id, enabled: enabled);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _syncNow(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .pullMirrorSync(project.id);
     } on ApiException catch (e) {
       if (context.mounted) {
         showAdminError(context, e.message);
