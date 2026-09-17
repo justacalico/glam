@@ -242,26 +242,31 @@ class _IssueLinkTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final issue = link.issue;
-    return ListTile(
-      dense: true,
-      leading: Icon(
-        issue.isOpen ? Icons.adjust : Icons.check_circle_outline,
-        size: 18,
-        color: issue.isOpen ? context.colors.success : context.colors.merged,
-      ),
-      title: Text(issue.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        '${link.typeLabel} · ${issue.references ?? '#${issue.iid}'}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      onTap: () => unawaited(
-        context.push(Routes.projectIssue(issue.projectId, issue.iid)),
-      ),
-      trailing: IconButton(
-        icon: const Icon(Icons.link_off_outlined, size: 18),
-        tooltip: 'Remove link',
-        onPressed: onRemove,
+    // The tile sits inside a decorated card, so it needs its own
+    // Material for the splash to paint on.
+    return Material(
+      type: MaterialType.transparency,
+      child: ListTile(
+        dense: true,
+        leading: Icon(
+          issue.isOpen ? Icons.adjust : Icons.check_circle_outline,
+          size: 18,
+          color: issue.isOpen ? context.colors.success : context.colors.merged,
+        ),
+        title: Text(issue.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(
+          '${link.typeLabel} · ${issue.references ?? '#${issue.iid}'}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        onTap: () => unawaited(
+          context.push(Routes.projectIssue(issue.projectId, issue.iid)),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.link_off_outlined, size: 18),
+          tooltip: 'Remove link',
+          onPressed: onRemove,
+        ),
       ),
     );
   }
