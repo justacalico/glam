@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
@@ -14,6 +15,8 @@ import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/features/boards/application/boards_providers.dart';
 import 'package:glam/src/features/boards/domain/board.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/labels/domain/label.dart';
+import 'package:glam/src/features/milestones/application/planning_providers.dart';
 
 /// Boards tab inside project detail: a board picker plus a horizontal
 /// Kanban view.
@@ -38,9 +41,11 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
       onRetry: () => ref.invalidate(boardsProvider(widget.projectId)),
       data: (items) {
         if (items.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.view_kanban_outlined,
             title: 'No boards',
+            actionLabel: 'New board',
+            onAction: () => unawaited(_editBoard(null)),
           );
         }
         final board = items.firstWhere(
@@ -49,32 +54,60 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
         );
         return Column(
           children: [
-            if (items.length > 1)
-              SizedBox(
-                height: 44,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(
-                    Insets.lg,
-                    Insets.sm,
-                    Insets.lg,
-                    Insets.xs,
-                  ),
-                  children: [
-                    for (final b in items)
-                      Padding(
-                        padding: const EdgeInsets.only(right: Insets.sm),
-                        child: ChoiceChip(
-                          label: Text(b.name),
-                          selected: board.id == b.id,
-                          onSelected: (_) => setState(() => _boardId = b.id),
-                          showCheckmark: false,
-                          visualDensity: VisualDensity.compact,
-                        ),
+            SizedBox(
+              height: 44,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.fromLTRB(
+                        Insets.lg,
+                        Insets.sm,
+                        Insets.xs,
+                        Insets.xs,
                       ),
-                  ],
-                ),
+                      children: [
+                        for (final b in items)
+                          Padding(
+                            padding: const EdgeInsets.only(right: Insets.sm),
+                            child: ChoiceChip(
+                              label: Text(b.name),
+                              selected: board.id == b.id,
+                              onSelected: (_) =>
+                                  setState(() => _boardId = b.id),
+                              showCheckmark: false,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'New board',
+                    iconSize: 18,
+                    icon: const Icon(Icons.add),
+                    onPressed: () => unawaited(_editBoard(null)),
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: 'Board actions',
+                    iconSize: 18,
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'rename', child: Text('Rename')),
+                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    ],
+                    onSelected: (v) {
+                      if (v == 'rename') {
+                        unawaited(_editBoard(board));
+                      } else if (v == 'delete') {
+                        unawaited(_deleteBoard(board));
+                      }
+                    },
+                  ),
+                  const SizedBox(width: Insets.sm),
+                ],
               ),
+            ),
             Expanded(
               child: _Kanban(
                 loc: (projectId: widget.projectId, boardId: board.id),
@@ -84,6 +117,95 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
         );
       },
     );
+  }
+
+  Future<void> _editBoard(Board? existing) async {
+    final controller = TextEditingController(text: existing?.name ?? '');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(existing == null ? 'New board' : 'Rename board'),
+        content: SizedBox(
+          width: 320,
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Name',
+              border: OutlineInputBorder(),
+            ),
+            onSubmitted: (_) => Navigator.pop(context, true),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    final name = controller.text.trim();
+    controller.dispose();
+    if (ok != true || name.isEmpty || !mounted) {
+      return;
+    }
+    try {
+      final repo = ref.read(boardsRepositoryProvider);
+      final board = existing == null
+          ? await repo.createBoard(widget.projectId, name: name)
+          : await repo.updateBoard(widget.projectId, existing.id, name: name);
+      setState(() => _boardId = board.id);
+      ref.invalidate(boardsProvider(widget.projectId));
+    } on ApiException catch (e) {
+      if (mounted) {
+        _error(e.message);
+      }
+    }
+  }
+
+  Future<void> _deleteBoard(Board board) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete ${board.name}?'),
+        content: const Text('Issues stay on the project; only the board goes.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(boardsRepositoryProvider)
+          .deleteBoard(widget.projectId, board.id);
+      setState(() => _boardId = null);
+      ref.invalidate(boardsProvider(widget.projectId));
+    } on ApiException catch (e) {
+      if (mounted) {
+        _error(e.message);
+      }
+    }
+  }
+
+  void _error(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -102,29 +224,143 @@ class _Kanban extends ConsumerWidget {
       onRetry: () => ref.invalidate(boardListsProvider(loc)),
       data: (lists) {
         if (lists.isEmpty) {
-          return const EmptyState(
-            icon: Icons.view_column_outlined,
-            title: 'This board has no lists',
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const EmptyState(
+                  icon: Icons.view_column_outlined,
+                  title: 'This board has no lists',
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Add list'),
+                  onPressed: () =>
+                      unawaited(_AddListTile.pick(context, ref, loc)),
+                ),
+              ],
+            ),
           );
         }
         final sorted = [...lists]..sort((a, b) => a.position - b.position);
         return ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.all(Insets.md),
-          itemCount: sorted.length,
+          itemCount: sorted.length + 1,
           separatorBuilder: (_, _) => const SizedBox(width: Insets.md),
-          itemBuilder: (context, index) => _Column(
-            list: sorted[index],
-            loc: (
-              projectId: loc.projectId,
-              boardId: loc.boardId,
-              listId: sorted[index].id,
-            ),
-            allLists: sorted,
-            colors: colors,
-          ),
+          itemBuilder: (context, index) => index == sorted.length
+              ? _AddListTile(loc: loc)
+              : _Column(
+                  list: sorted[index],
+                  loc: (
+                    projectId: loc.projectId,
+                    boardId: loc.boardId,
+                    listId: sorted[index].id,
+                  ),
+                  allLists: sorted,
+                  colors: colors,
+                ),
         );
       },
+    );
+  }
+}
+
+/// Dashed trailing tile that opens a label picker and adds a label list.
+class _AddListTile extends ConsumerWidget {
+  const _AddListTile({required this.loc});
+
+  final BoardRef loc;
+
+  static Future<void> pick(
+    BuildContext context,
+    WidgetRef ref,
+    BoardRef loc,
+  ) async {
+    final label = await showDialog<Label>(
+      context: context,
+      builder: (context) => _LabelPicker(projectId: loc.projectId),
+    );
+    if (label == null || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(boardsRepositoryProvider)
+          .createList(loc.projectId, loc.boardId, labelId: label.id);
+      ref.invalidate(boardListsProvider(loc));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: 160,
+      child: Center(
+        child: OutlinedButton.icon(
+          icon: const Icon(Icons.add, size: 16),
+          label: const Text('Add list'),
+          onPressed: () => unawaited(pick(context, ref, loc)),
+        ),
+      ),
+    );
+  }
+}
+
+class _LabelPicker extends ConsumerWidget {
+  const _LabelPicker({required this.projectId});
+
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final labels = ref.watch(labelsProvider((id: projectId, isProject: true)));
+    return AlertDialog(
+      title: const Text('Add list'),
+      content: SizedBox(
+        width: 320,
+        child: labels.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.all(Insets.lg),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, _) => Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Text('$e'),
+          ),
+          data: (items) => items.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(Insets.lg),
+                  child: Text('No labels on this project.'),
+                )
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 360),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final l in items)
+                        ListTile(
+                          dense: true,
+                          title: LabelChip(name: l.name),
+                          onTap: () => Navigator.pop(context, l),
+                        ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+      ],
     );
   }
 }
@@ -166,6 +402,43 @@ class _Column extends ConsumerWidget {
           listId: target.id,
         )),
       );
+  }
+
+  Future<void> _removeList(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${list.title}?'),
+        content: const Text('Issues keep their label; only the column goes.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(boardsRepositoryProvider)
+          .deleteList(loc.projectId, loc.boardId, loc.listId);
+      ref.invalidate(
+        boardListsProvider((projectId: loc.projectId, boardId: loc.boardId)),
+      );
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 
   @override
@@ -214,6 +487,23 @@ class _Column extends ConsumerWidget {
                       '${list.issuesCount}',
                       style: theme.textTheme.labelSmall,
                     ),
+                  ),
+                if (list.listType == 'label')
+                  PopupMenuButton<String>(
+                    tooltip: 'List actions',
+                    iconSize: 16,
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 16,
+                      color: colors.inkFaint,
+                    ),
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(
+                        value: 'remove',
+                        child: Text('Remove list'),
+                      ),
+                    ],
+                    onSelected: (_) => unawaited(_removeList(context, ref)),
                   ),
               ],
             ),
