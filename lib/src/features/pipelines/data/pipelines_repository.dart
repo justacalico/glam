@@ -48,6 +48,16 @@ class PipelinesRepository {
     );
   }
 
+  /// The most recent pipeline for the default branch
+  /// (`/pipelines/latest`). 404s when the project never ran one.
+  Future<Pipeline?> latestPipeline(Object projectId, {String? ref}) {
+    return _client.get(
+      '${_p(projectId)}/pipelines/latest',
+      query: {'ref': ?ref},
+      decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Pipeline> retryPipeline(Object projectId, int id) {
     return _client.post(
       '${_p(projectId)}/pipelines/$id/retry',

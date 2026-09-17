@@ -121,6 +121,21 @@ void main() {
       expect(page.items[2].status, 'manual');
     });
 
+    test('latestPipeline hits the latest path and sends ref', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/pipelines/latest',
+        (fixtureJson('pipelines') as List).first,
+      );
+      final repo = PipelinesRepository(client);
+
+      final pipeline = await repo.latestPipeline(42, ref: 'main');
+
+      expect(pipeline?.status, isNotEmpty);
+      final sent = adapter.requestsTo('GET', '/projects/42/pipelines/latest');
+      expect(sent.single.uri.queryParameters['ref'], 'main');
+    });
+
     test('testReport decodes totals and suites', () async {
       final (client, adapter) = testClient();
       adapter.get(

@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/users_sheet.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
@@ -23,6 +24,7 @@ import 'package:glam/src/features/issues/presentation/issues_screen.dart';
 import 'package:glam/src/features/labels/presentation/labels_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/merge_requests_screen.dart';
+import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/registry/presentation/packages_tab.dart';
@@ -276,6 +278,7 @@ class _ProjectHeader extends ConsumerWidget {
                   value: project.visibility!.toUpperCase(),
                   label: '',
                 ),
+              _LatestPipelineStat(projectId: project.id),
             ],
           ),
           const SizedBox(height: Insets.md),
@@ -502,6 +505,39 @@ class _Stat extends StatelessWidget {
       ],
     );
     return onTap == null ? row : GestureDetector(onTap: onTap, child: row);
+  }
+}
+
+/// Latest default-branch pipeline as a header stat; hidden until it
+/// loads and invisible when the project never ran one.
+class _LatestPipelineStat extends ConsumerWidget {
+  const _LatestPipelineStat({required this.projectId});
+
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pipeline = ref.watch(latestPipelineProvider(projectId)).value;
+    if (pipeline == null) {
+      return const SizedBox.shrink();
+    }
+    return GestureDetector(
+      onTap: () => unawaited(
+        context.push(Routes.projectPipeline(projectId, pipeline.id)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.account_tree_outlined,
+            size: 15,
+            color: context.colors.inkMuted,
+          ),
+          const SizedBox(width: Insets.xs),
+          StateChip.pipeline(pipeline.status),
+        ],
+      ),
+    );
   }
 }
 
