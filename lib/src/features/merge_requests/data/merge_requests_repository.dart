@@ -69,6 +69,7 @@ class MergeRequestsRepository {
   /// MRs inside one project.
   Future<Paginated<MergeRequest>> projectMergeRequests(
     Object projectId, {
+    MrScope scope = MrScope.all,
     String? state,
     String? search,
     String? labels,
@@ -78,15 +79,22 @@ class MergeRequestsRepository {
     int page = 1,
     int perPage = 20,
   }) {
+    final query = <String, Object?>{
+      'state': ?state,
+      'search': ?search,
+      'labels': ?labels,
+      'target_branch': ?targetBranch,
+      'milestone': ?milestone ?? milestoneId?.toString(),
+    };
+    if (scope == MrScope.review) {
+      query['scope'] = 'all';
+      query['reviewer_id'] = 'self';
+    } else {
+      query['scope'] = scope.apiValue;
+    }
     return _client.getPage(
       '${_p(projectId)}/merge_requests',
-      query: {
-        'state': ?state,
-        'search': ?search,
-        'labels': ?labels,
-        'target_branch': ?targetBranch,
-        'milestone': ?milestone ?? milestoneId?.toString(),
-      },
+      query: query,
       page: page,
       perPage: perPage,
       decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),

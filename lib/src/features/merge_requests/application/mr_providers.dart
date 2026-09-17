@@ -59,6 +59,7 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
 
 typedef ProjectMrFilter = ({
   Object project,
+  MrScope scope,
   String? state,
   String? search,
   String? label,
@@ -84,6 +85,7 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
         .watch(mrRepositoryProvider)
         .projectMergeRequests(
           filter.project,
+          scope: filter.scope,
           state: filter.state,
           search: filter.search,
           labels: filter.label,
