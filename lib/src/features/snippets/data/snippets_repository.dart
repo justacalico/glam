@@ -1,6 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
+import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 
 /// `/snippets` for personal snippets plus `/projects/:id/snippets`.
@@ -144,23 +145,87 @@ class SnippetsRepository {
     return '$base$suffix';
   }
 
-  /// Emoji reactions on the snippet (`/award_emoji`).
-  Future<List<AwardEmoji>> awardEmojis(int id, {Object? projectId}) {
+  /// Comments on the snippet (`/notes`), oldest first.
+  Future<Paginated<Note>> notes(
+    int id, {
+    Object? projectId,
+    int page = 1,
+    int perPage = 50,
+  }) {
+    return _client.getPage(
+      _path(id, projectId, '/notes'),
+      query: {'sort': 'asc', 'order_by': 'created_at'},
+      page: page,
+      perPage: perPage,
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Note> addNote(int id, String body, {Object? projectId}) {
+    return _client.post(
+      _path(id, projectId, '/notes'),
+      body: {'body': body},
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<Note> updateNote(
+    int id,
+    int noteId,
+    String body, {
+    Object? projectId,
+  }) {
+    return _client.put(
+      _path(id, projectId, '/notes/$noteId'),
+      body: {'body': body},
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteNote(int id, int noteId, {Object? projectId}) {
+    return _client.delete(_path(id, projectId, '/notes/$noteId'));
+  }
+
+  /// Emoji reactions on the snippet or one of its notes (`/award_emoji`).
+  Future<List<AwardEmoji>> awardEmojis(
+    int id, {
+    Object? projectId,
+    int? noteId,
+  }) {
+    final suffix = noteId == null
+        ? '/award_emoji'
+        : '/notes/$noteId/award_emoji';
     return _client.getAll(
-      _path(id, projectId, '/award_emoji'),
+      _path(id, projectId, suffix),
       decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
     );
   }
 
-  Future<AwardEmoji> award(int id, String name, {Object? projectId}) {
+  Future<AwardEmoji> award(
+    int id,
+    String name, {
+    Object? projectId,
+    int? noteId,
+  }) {
+    final suffix = noteId == null
+        ? '/award_emoji'
+        : '/notes/$noteId/award_emoji';
     return _client.post(
-      _path(id, projectId, '/award_emoji'),
+      _path(id, projectId, suffix),
       body: {'name': name},
       decoder: (j) => AwardEmoji.fromJson(j! as Map<String, dynamic>),
     );
   }
 
-  Future<void> removeAward(int id, int awardId, {Object? projectId}) {
-    return _client.delete(_path(id, projectId, '/award_emoji/$awardId'));
+  Future<void> removeAward(
+    int id,
+    int awardId, {
+    Object? projectId,
+    int? noteId,
+  }) {
+    final suffix = noteId == null
+        ? '/award_emoji'
+        : '/notes/$noteId/award_emoji';
+    return _client.delete(_path(id, projectId, '$suffix/$awardId'));
   }
 }

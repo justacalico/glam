@@ -42,13 +42,20 @@ class AwardEmojisNotifier extends AsyncNotifier<List<AwardEmoji>> {
   }
 
   Future<List<AwardEmoji>> _fetchNote() {
-    return loc.kind == 'mr'
-        ? ref
-              .watch(mrRepositoryProvider)
-              .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!)
-        : ref
-              .watch(issuesRepositoryProvider)
-              .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!);
+    return switch (loc.kind) {
+      'mr' =>
+        ref
+            .watch(mrRepositoryProvider)
+            .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!),
+      'snippet' =>
+        ref
+            .watch(snippetsRepositoryProvider)
+            .awardEmojis(loc.iid, projectId: loc.project, noteId: loc.noteId),
+      _ =>
+        ref
+            .watch(issuesRepositoryProvider)
+            .noteAwardEmojis(loc.project!, loc.iid, loc.noteId!),
+    };
   }
 
   Future<void> _add(String name) {
@@ -60,7 +67,7 @@ class AwardEmojisNotifier extends AsyncNotifier<List<AwardEmoji>> {
       'snippet' =>
         ref
             .read(snippetsRepositoryProvider)
-            .award(loc.iid, name, projectId: loc.project),
+            .award(loc.iid, name, projectId: loc.project, noteId: loc.noteId),
       _ =>
         ref
             .read(issuesRepositoryProvider)
@@ -77,7 +84,12 @@ class AwardEmojisNotifier extends AsyncNotifier<List<AwardEmoji>> {
       'snippet' =>
         ref
             .read(snippetsRepositoryProvider)
-            .removeAward(loc.iid, awardId, projectId: loc.project),
+            .removeAward(
+              loc.iid,
+              awardId,
+              projectId: loc.project,
+              noteId: loc.noteId,
+            ),
       _ =>
         ref
             .read(issuesRepositoryProvider)

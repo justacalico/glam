@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/snippets/data/snippets_repository.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
@@ -69,3 +70,45 @@ final snippetRawProvider = FutureProvider.family<String, SnippetRef>(
       .watch(snippetsRepositoryProvider)
       .raw(loc.id, projectId: loc.projectId),
 );
+
+final snippetNotesProvider =
+    AsyncNotifierProvider.family<
+      SnippetNotesNotifier,
+      PagedListState<Note>,
+      SnippetRef
+    >(SnippetNotesNotifier.new);
+
+class SnippetNotesNotifier extends PagedListNotifier<Note> {
+  SnippetNotesNotifier(this.loc);
+
+  final SnippetRef loc;
+
+  @override
+  Future<Paginated<Note>> fetchPage(int page) {
+    return ref
+        .watch(snippetsRepositoryProvider)
+        .notes(loc.id, projectId: loc.projectId, page: page);
+  }
+
+  Future<Note> addComment(String body) async {
+    final note = await ref
+        .read(snippetsRepositoryProvider)
+        .addNote(loc.id, body, projectId: loc.projectId);
+    await refresh();
+    return note;
+  }
+
+  Future<void> editComment(int noteId, String body) async {
+    await ref
+        .read(snippetsRepositoryProvider)
+        .updateNote(loc.id, noteId, body, projectId: loc.projectId);
+    await refresh();
+  }
+
+  Future<void> deleteComment(int noteId) async {
+    await ref
+        .read(snippetsRepositoryProvider)
+        .deleteNote(loc.id, noteId, projectId: loc.projectId);
+    await refresh();
+  }
+}
