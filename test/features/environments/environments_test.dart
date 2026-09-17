@@ -152,6 +152,56 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('feature flag user lists CRUD', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/feature_flags_user_lists', [
+          {'id': 3, 'iid': 1, 'name': 'beta testers', 'user_xids': '11,22'},
+        ])
+        ..post('/projects/42/feature_flags_user_lists', {
+          'id': 4,
+          'iid': 2,
+          'name': 'staff',
+          'user_xids': '7',
+        })
+        ..put('/projects/42/feature_flags_user_lists/1', {
+          'id': 3,
+          'iid': 1,
+          'name': 'beta',
+          'user_xids': '11,22,33',
+        })
+        ..delete('/projects/42/feature_flags_user_lists/1');
+      final repo = EnvironmentsRepository(client);
+
+      final lists = await repo.featureFlagUserLists(42);
+      expect(lists.single.name, 'beta testers');
+      expect(lists.single.userXids, '11,22');
+      expect(lists.single.iid, 1);
+
+      await repo.createFeatureFlagUserList(42, name: 'staff', userXids: '7');
+      final post = adapter
+          .requestsTo('POST', '/projects/42/feature_flags_user_lists')
+          .single;
+      expect((post.data as Map)['user_xids'], '7');
+
+      final updated = await repo.updateFeatureFlagUserList(
+        42,
+        1,
+        userXids: '11,22,33',
+      );
+      expect(updated.userXids, '11,22,33');
+      final put = adapter
+          .requestsTo('PUT', '/projects/42/feature_flags_user_lists/1')
+          .single;
+      expect((put.data as Map).containsKey('name'), isFalse);
+
+      await repo.deleteFeatureFlagUserList(42, 1);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/feature_flags_user_lists/1'),
+        hasLength(1),
+      );
+    });
   });
 
   group('environments providers', () {
