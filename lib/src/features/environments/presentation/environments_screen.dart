@@ -16,33 +16,81 @@ import 'package:glam/src/features/environments/application/environments_provider
 import 'package:glam/src/features/environments/domain/environment.dart';
 
 /// Environments tab on the project page.
-class EnvironmentsScreen extends ConsumerWidget {
+class EnvironmentsScreen extends ConsumerStatefulWidget {
   const EnvironmentsScreen({required this.projectId, super.key});
 
   final Object projectId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final list = ref.watch(environmentsProvider(projectId));
-    final notifier = ref.read(environmentsProvider(projectId).notifier);
+  ConsumerState<EnvironmentsScreen> createState() => _EnvironmentsScreenState();
+}
+
+class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
+  String? _states;
+
+  static const _stateOptions = [
+    (null, 'All'),
+    ('available', 'Available'),
+    ('stopped', 'Stopped'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final filter = (project: widget.projectId, states: _states);
+    final list = ref.watch(environmentsProvider(filter));
+    final notifier = ref.read(environmentsProvider(filter).notifier);
     final colors = context.colors;
 
     return Column(
       children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              Insets.md,
-              Insets.sm,
-              Insets.md,
-              0,
-            ),
-            child: TextButton.icon(
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text('New environment'),
-              onPressed: () => _showCreate(context, ref),
-            ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.md,
+            Insets.sm,
+            Insets.md,
+            0,
+          ),
+          child: Row(
+            children: [
+              const Spacer(),
+              PopupMenuButton<String?>(
+                tooltip: 'Filter environments',
+                onSelected: (v) => setState(() => _states = v),
+                itemBuilder: (context) => [
+                  for (final (value, label) in _stateOptions)
+                    CheckedPopupMenuItem(
+                      value: value,
+                      checked: _states == value,
+                      child: Text(label),
+                    ),
+                ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Insets.sm,
+                    vertical: Insets.sm,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _stateOptions
+                                .where((e) => e.$1 == _states)
+                                .firstOrNull
+                                ?.$2 ??
+                            'All',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      Icon(Icons.arrow_drop_down, color: colors.inkMuted),
+                    ],
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text('New environment'),
+                onPressed: () => _showCreate(context, ref),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -62,7 +110,7 @@ class EnvironmentsScreen extends ConsumerWidget {
               ),
               itemBuilder: (context, index) => _EnvironmentTile(
                 env: data.items[index],
-                projectId: projectId,
+                projectId: widget.projectId,
               ),
             ),
           ),
@@ -111,11 +159,11 @@ class EnvironmentsScreen extends ConsumerWidget {
       await ref
           .read(environmentsRepositoryProvider)
           .createEnvironment(
-            projectId,
+            widget.projectId,
             name: name.text.trim(),
             externalUrl: url.text.trim().isEmpty ? null : url.text.trim(),
           );
-      unawaited(ref.read(environmentsProvider(projectId).notifier).refresh());
+      ref.invalidate(environmentsProvider);
     }
   }
 }
