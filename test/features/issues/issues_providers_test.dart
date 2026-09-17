@@ -51,11 +51,34 @@ void main() {
   test('projectIssuesProvider is scoped per filter', () async {
     adapter.get('/projects/9/issues', fixtureJson('issues'));
 
-    const filter = (project: 9, state: 'opened', search: null);
+    const filter = (
+      project: 9,
+      state: 'opened',
+      search: null,
+      label: null,
+      milestone: null,
+    );
     final state = await container.read(projectIssuesProvider(filter).future);
 
     expect(state.items, hasLength(2));
     expect(adapter.lastRequest!.queryParameters['state'], 'opened');
+  });
+
+  test('projectIssuesProvider forwards label and milestone', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: 'bug',
+      milestone: 'v1',
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    final query = adapter.lastRequest!.queryParameters;
+    expect(query['labels'], 'bug');
+    expect(query['milestone'], 'v1');
   });
 
   test('issueProvider loads a single issue', () async {

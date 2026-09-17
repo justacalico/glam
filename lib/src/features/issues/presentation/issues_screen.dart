@@ -14,6 +14,9 @@ import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_tile.dart';
+import 'package:glam/src/features/labels/domain/label.dart';
+import 'package:glam/src/core/models/milestone.dart';
+import 'package:glam/src/features/milestones/application/planning_providers.dart';
 
 /// Global issues list with scope/state/search filters.
 class IssuesScreen extends ConsumerStatefulWidget {
@@ -170,14 +173,44 @@ class ProjectIssuesTab extends ConsumerStatefulWidget {
 class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _state = 'opened';
   String? _search;
+  String? _label;
+  String? _milestone;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (project: widget.projectId, state: _state, search: _search);
+    final filter = (
+      project: widget.projectId,
+      state: _state,
+      search: _search,
+      label: _label,
+      milestone: _milestone,
+    );
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
     final stats = ref.watch(projectIssueStatsProvider(widget.projectId)).value;
+    final milestones =
+        ref
+            .watch(
+              milestonesProvider((
+                scope: (id: widget.projectId, isProject: true),
+                state: 'active',
+                search: null,
+              )),
+            )
+            .value
+            ?.items ??
+        const <Milestone>[];
+    final labels =
+        ref
+            .watch(
+              labelsProvider((
+                scope: (id: widget.projectId, isProject: true),
+                search: null,
+              )),
+            )
+            .value ??
+        const <Label>[];
     const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
     final counts = {
       'opened': stats?.opened,
@@ -223,6 +256,18 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 const SizedBox(width: Insets.sm),
               ],
               const Spacer(),
+              _FilterMenu(
+                title: 'Label',
+                current: _label,
+                options: [for (final l in labels) l.name],
+                onSelect: (v) => setState(() => _label = v),
+              ),
+              _FilterMenu(
+                title: 'Milestone',
+                current: _milestone,
+                options: [for (final m in milestones) m.title],
+                onSelect: (v) => setState(() => _milestone = v),
+              ),
               IconButton(
                 tooltip: 'New issue',
                 icon: const Icon(Icons.add),
@@ -263,6 +308,56 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Compact dropdown filter for a single-valued string dimension
+/// (label, milestone, ...). First entry clears the filter.
+class _FilterMenu extends StatelessWidget {
+  const _FilterMenu({
+    required this.title,
+    required this.current,
+    required this.options,
+    required this.onSelect,
+  });
+
+  final String title;
+  final String? current;
+  final List<String> options;
+  final ValueChanged<String?> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return PopupMenuButton<String?>(
+      tooltip: 'Filter by $title',
+      onSelected: onSelect,
+      itemBuilder: (context) => [
+        CheckedPopupMenuItem(
+          value: null,
+          checked: current == null,
+          child: Text('Any $title'),
+        ),
+        for (final o in options)
+          CheckedPopupMenuItem(value: o, checked: current == o, child: Text(o)),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Insets.sm,
+          vertical: Insets.sm,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              current ?? title,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Icon(Icons.arrow_drop_down, color: colors.inkMuted),
+          ],
+        ),
+      ),
     );
   }
 }
