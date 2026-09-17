@@ -118,6 +118,75 @@ void main() {
       );
     });
 
+    test('pages config, switches, domains, unpublish', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/pages', {
+          'url': 'https://demo.gitlab.io',
+          'force_https': true,
+          'is_unique_domain_enabled': false,
+        })
+        ..patch('/projects/42/pages', {
+          'url': 'https://demo.gitlab.io',
+          'force_https': false,
+          'is_unique_domain_enabled': true,
+        })
+        ..get('/projects/42/pages/domains', [
+          {
+            'domain': 'docs.example.com',
+            'url': 'https://docs.example.com',
+            'verified': true,
+            'auto_ssl_enabled': true,
+            'certificate': {'expiration': '2027-01-01T00:00:00.000Z'},
+          },
+        ])
+        ..post('/projects/42/pages/domains', {
+          'domain': 'www.example.com',
+          'verified': false,
+        })
+        ..delete('/projects/42/pages/domains/www.example.com')
+        ..delete('/projects/42/pages');
+      final repo = ProjectsRepository(client);
+
+      final pages = await repo.pages(42);
+      expect(pages.url, 'https://demo.gitlab.io');
+      expect(pages.forceHttps, isTrue);
+
+      final updated = await repo.updatePages(
+        42,
+        forceHttps: false,
+        uniqueDomainEnabled: true,
+      );
+      expect(updated.uniqueDomainEnabled, isTrue);
+      final patchBody = adapter
+          .requestsTo('PATCH', '/projects/42/pages')
+          .single;
+      expect((patchBody.data as Map)['force_https'], isFalse);
+
+      final domains = await repo.pageDomains(42);
+      expect(domains.single.domain, 'docs.example.com');
+      expect(domains.single.verified, isTrue);
+      expect(domains.single.expiresAt, isNotNull);
+
+      await repo.addPageDomain(42, 'www.example.com');
+      final addBody = adapter
+          .requestsTo('POST', '/projects/42/pages/domains')
+          .single;
+      expect((addBody.data as Map)['domain'], 'www.example.com');
+
+      await repo.deletePageDomain(42, 'www.example.com');
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/pages/domains/www.example.com',
+        ),
+        hasLength(1),
+      );
+
+      await repo.unpublishPages(42);
+      expect(adapter.requestsTo('DELETE', '/projects/42/pages'), hasLength(1));
+    });
+
     test('deploy keys list, add, delete', () async {
       final (client, adapter) = testClient();
       adapter

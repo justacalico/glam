@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
+import 'package:glam/src/features/projects/domain/project_pages.dart';
 import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
@@ -370,6 +371,59 @@ class ProjectsRepository {
   Future<void> deleteDeployKey(Object id, int keyId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/deploy_keys/$keyId',
+    );
+  }
+
+  /// GitLab Pages config (`/projects/:id/pages`). 404 when Pages is off.
+  Future<ProjectPages> pages(Object id) {
+    return _client.get(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages',
+      decoder: (j) => ProjectPages.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ProjectPages> updatePages(
+    Object id, {
+    bool? forceHttps,
+    bool? uniqueDomainEnabled,
+  }) {
+    return _client.patch(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages',
+      body: {
+        'force_https': ?forceHttps,
+        'is_unique_domain_enabled': ?uniqueDomainEnabled,
+      },
+      decoder: (j) => ProjectPages.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Takes the Pages site offline (`DELETE /projects/:id/pages`).
+  Future<void> unpublishPages(Object id) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages',
+    );
+  }
+
+  /// Custom domains bound to Pages (`/projects/:id/pages/domains`).
+  Future<List<PageDomain>> pageDomains(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages/domains',
+      decoder: (j) => PageDomain.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<PageDomain> addPageDomain(Object id, String domain) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages/domains',
+      body: {'domain': domain},
+      decoder: (j) => PageDomain.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deletePageDomain(Object id, String domain) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/pages/domains/'
+      '${Uri.encodeComponent(domain)}',
     );
   }
 

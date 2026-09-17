@@ -196,6 +196,24 @@ class GitLabApiClient {
     }
   }
 
+  Future<T> patch<T>(
+    String path, {
+    Map<String, dynamic>? query,
+    Object? body,
+    required T Function(Object? json) decoder,
+  }) async {
+    try {
+      final response = await _dio.patch<Object?>(
+        path,
+        queryParameters: _clean(query),
+        data: body,
+      );
+      return decoder(response.data);
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
+  }
+
   Future<T?> delete<T>(
     String path, {
     Map<String, dynamic>? query,

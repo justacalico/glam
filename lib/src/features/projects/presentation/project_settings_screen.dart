@@ -19,6 +19,7 @@ import 'package:glam/src/features/projects/presentation/deploy_tokens_section.da
 import 'package:glam/src/features/projects/presentation/export_section.dart';
 import 'package:glam/src/features/projects/presentation/integrations_section.dart';
 import 'package:glam/src/features/projects/presentation/merge_settings_section.dart';
+import 'package:glam/src/features/projects/presentation/pages_section.dart';
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
 import 'package:glam/src/features/projects/presentation/secure_files_section.dart';
@@ -91,6 +92,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             ExportSection(project: p),
             const SizedBox(height: Insets.xl),
             StorageSection(project: p),
+            const SizedBox(height: Insets.xl),
+            PagesSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),
