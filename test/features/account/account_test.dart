@@ -247,5 +247,62 @@ void main() {
       expect((puts.single.data as Map)['new_issue'], isTrue);
       expect((puts.single.data as Map).containsKey('level'), isFalse);
     });
+
+    test('project notification settings get and put', () async {
+      adapter
+        ..get(
+          '/projects/42/notification_settings',
+          fixtureJson('notification_settings'),
+        )
+        ..put(
+          '/projects/42/notification_settings',
+          fixtureJson('notification_settings'),
+        )
+        ..get(
+          '/projects/42/notification_settings',
+          fixtureJson('notification_settings'),
+        );
+
+      await container.read(projectNotificationProvider(42).future);
+      await container
+          .read(accountActionsProvider)
+          .setProjectNotificationLevel(42, 'watch');
+      await container.read(projectNotificationProvider(42).future);
+
+      final puts = adapter.requestsTo(
+        'PUT',
+        '/projects/42/notification_settings',
+      );
+      expect(puts, hasLength(1));
+      expect((puts.single.data as Map)['level'], 'watch');
+      expect(
+        adapter.requestsTo('GET', '/projects/42/notification_settings'),
+        hasLength(2),
+      );
+    });
+
+    test('toggleProjectNotificationEvent puts only the event flag', () async {
+      adapter
+        ..put(
+          '/projects/42/notification_settings',
+          fixtureJson('notification_settings'),
+        )
+        ..get(
+          '/projects/42/notification_settings',
+          fixtureJson('notification_settings'),
+        );
+
+      await container
+          .read(accountActionsProvider)
+          .toggleProjectNotificationEvent(42, 'new_issue', true);
+      await container.read(projectNotificationProvider(42).future);
+
+      final sent = adapter.requestsTo(
+        'PUT',
+        '/projects/42/notification_settings',
+      );
+      expect((sent.single.data as Map)['new_issue'], isTrue);
+      expect((sent.single.data as Map).containsKey('level'), isFalse);
+    });
   });
 }

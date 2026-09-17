@@ -25,6 +25,14 @@ final notificationSettingsProvider = FutureProvider<NotificationSettings>(
   (ref) => ref.watch(accountRepositoryProvider).notificationSettings(),
 );
 
+/// Per-project notification level and custom events.
+final projectNotificationProvider =
+    FutureProvider.family<NotificationSettings, Object>(
+      (ref, projectId) => ref
+          .watch(accountRepositoryProvider)
+          .projectNotificationSettings(projectId),
+    );
+
 /// Account mutations; each refetches its list on success.
 final accountActionsProvider = Provider<AccountActions>(AccountActions.new);
 
@@ -62,5 +70,25 @@ class AccountActions {
   Future<void> toggleNotificationEvent(String event, bool on) async {
     await _repo.updateNotificationSettings(events: {event: on});
     _ref.invalidate(notificationSettingsProvider);
+  }
+
+  Future<void> setProjectNotificationLevel(
+    Object projectId,
+    String level,
+  ) async {
+    await _repo.updateProjectNotificationSettings(projectId, level: level);
+    _ref.invalidate(projectNotificationProvider(projectId));
+  }
+
+  Future<void> toggleProjectNotificationEvent(
+    Object projectId,
+    String event,
+    bool on,
+  ) async {
+    await _repo.updateProjectNotificationSettings(
+      projectId,
+      events: {event: on},
+    );
+    _ref.invalidate(projectNotificationProvider(projectId));
   }
 }

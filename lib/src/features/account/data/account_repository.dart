@@ -81,4 +81,24 @@ class AccountRepository {
       decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
     );
   }
+
+  /// Project-scoped notification settings (`/projects/:id/notification_settings`).
+  Future<NotificationSettings> projectNotificationSettings(Object projectId) {
+    return _client.get(
+      '/projects/${GitLabApiClient.encodeProject(projectId)}/notification_settings',
+      decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<NotificationSettings> updateProjectNotificationSettings(
+    Object projectId, {
+    String? level,
+    Map<String, bool> events = const {},
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(projectId)}/notification_settings',
+      body: {'level': ?level, ...events},
+      decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
+    );
+  }
 }

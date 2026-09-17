@@ -23,6 +23,7 @@ import 'package:glam/src/features/registry/presentation/packages_tab.dart';
 import 'package:glam/src/features/registry/presentation/registry_tab.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/presentation/notification_sheet.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
 import 'package:glam/src/features/repository/presentation/branches_screen.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
@@ -272,6 +273,13 @@ class _ProjectHeader extends ConsumerWidget {
                 icon: Icons.link,
                 label: 'Copy clone URL',
                 onTap: () => _copyClone(context),
+              ),
+              _ActionChip(
+                icon: Icons.notifications_outlined,
+                label: 'Notifications',
+                onTap: () => unawaited(
+                  ProjectNotificationSheet.show(context, project.id),
+                ),
               ),
               if (project.webUrl != null)
                 _ActionChip(
