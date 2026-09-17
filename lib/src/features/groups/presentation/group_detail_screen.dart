@@ -26,6 +26,8 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/groups/presentation/edit_group_dialog.dart';
 import 'package:glam/src/features/groups/presentation/groups_screen.dart';
+import 'package:glam/src/features/issues/presentation/issue_tile.dart';
+import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/labels/presentation/labels_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
@@ -93,6 +95,8 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Projects'),
                   Tab(text: 'Shared'),
                   Tab(text: 'Subgroups'),
+                  Tab(text: 'Issues'),
+                  Tab(text: 'MRs'),
                   Tab(text: 'Members'),
                   Tab(text: 'Milestones'),
                   Tab(text: 'Boards'),
@@ -112,6 +116,8 @@ class GroupDetailScreen extends ConsumerWidget {
                     _ProjectsTab(groupId: groupId),
                     _SharedProjectsTab(groupId: groupId),
                     _SubgroupsTab(groupId: groupId),
+                    _GroupIssuesTab(groupId: groupId),
+                    _GroupMrsTab(groupId: groupId),
                     MembersList(id: groupId, isProject: false),
                     MilestonesTab(scope: (id: groupId, isProject: false)),
                     BoardsTab(scope: (id: groupId, isProject: false)),
@@ -589,6 +595,200 @@ class _SubgroupsTab extends ConsumerWidget {
         ),
         itemBuilder: (context, index) => GroupTile(group: data.items[index]),
       ),
+    );
+  }
+}
+
+/// Issues across the group's projects, with state chips and search.
+class _GroupIssuesTab extends ConsumerStatefulWidget {
+  const _GroupIssuesTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  ConsumerState<_GroupIssuesTab> createState() => _GroupIssuesTabState();
+}
+
+class _GroupIssuesTabState extends ConsumerState<_GroupIssuesTab> {
+  String? _state = 'opened';
+  String? _search;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final filter = (group: widget.groupId, state: _state, search: _search);
+    final list = ref.watch(groupIssuesProvider(filter));
+    final notifier = ref.read(groupIssuesProvider(filter).notifier);
+    const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search issues',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            Insets.xs,
+          ),
+          child: Row(
+            children: [
+              for (final e in states.entries) ...[
+                ChoiceChip(
+                  label: Text(e.value),
+                  selected: _state == e.key,
+                  onSelected: (_) => setState(() => _state = e.key),
+                  showCheckmark: false,
+                  visualDensity: VisualDensity.compact,
+                ),
+                const SizedBox(width: Insets.sm),
+              ],
+            ],
+          ),
+        ),
+        Expanded(
+          child: AsyncValueWidget(
+            value: list,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.task_alt,
+                title: 'No issues',
+              ),
+              itemBuilder: (context, index) {
+                final issue = data.items[index];
+                return IssueTile(
+                  issue: issue,
+                  onTap: () => unawaited(
+                    context.push(
+                      Routes.projectIssue(issue.projectId, issue.iid),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Merge requests across the group's projects, with state chips and
+/// search.
+class _GroupMrsTab extends ConsumerStatefulWidget {
+  const _GroupMrsTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  ConsumerState<_GroupMrsTab> createState() => _GroupMrsTabState();
+}
+
+class _GroupMrsTabState extends ConsumerState<_GroupMrsTab> {
+  String? _state = 'opened';
+  String? _search;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final filter = (group: widget.groupId, state: _state, search: _search);
+    final list = ref.watch(groupMrsProvider(filter));
+    final notifier = ref.read(groupMrsProvider(filter).notifier);
+    const states = {
+      'opened': 'Open',
+      'merged': 'Merged',
+      'closed': 'Closed',
+      null: 'All',
+    };
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search merge requests',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            Insets.xs,
+          ),
+          child: Row(
+            children: [
+              for (final e in states.entries) ...[
+                ChoiceChip(
+                  label: Text(e.value),
+                  selected: _state == e.key,
+                  onSelected: (_) => setState(() => _state = e.key),
+                  showCheckmark: false,
+                  visualDensity: VisualDensity.compact,
+                ),
+                const SizedBox(width: Insets.sm),
+              ],
+            ],
+          ),
+        ),
+        Expanded(
+          child: AsyncValueWidget(
+            value: list,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.merge,
+                title: 'No merge requests',
+              ),
+              itemBuilder: (context, index) {
+                final mr = data.items[index];
+                return MrTile(
+                  mr: mr,
+                  onTap: () => unawaited(
+                    context.push(Routes.projectMr(mr.projectId, mr.iid)),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

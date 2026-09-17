@@ -5,6 +5,8 @@ import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
@@ -151,6 +153,41 @@ class GroupsRepository {
       page: page,
       perPage: perPage,
       decoder: (j) => Project.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Issues across the group's projects (`/groups/:id/issues`).
+  Future<Paginated<Issue>> groupIssues(
+    Object groupId, {
+    String? state,
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '${_g(groupId)}/issues',
+      query: {'state': ?state, 'search': ?search},
+      page: page,
+      perPage: perPage,
+      decoder: (j) => Issue.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Merge requests across the group's projects
+  /// (`/groups/:id/merge_requests`).
+  Future<Paginated<MergeRequest>> groupMergeRequests(
+    Object groupId, {
+    String? state,
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) {
+    return _client.getPage(
+      '${_g(groupId)}/merge_requests',
+      query: {'state': ?state, 'search': ?search},
+      page: page,
+      perPage: perPage,
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
 
