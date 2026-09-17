@@ -1,0 +1,34 @@
+[
+  {
+    "id": 5,
+    "title": "Slack",
+    "slug": "slack",
+    "active": true,
+    "push_events": true,
+    "issues_events": true,
+    "merge_requests_events": true,
+    "properties": {
+      "channel": "#dev",
+      "username": "gitlab",
+      "webhook": "*****"
+    }
+  },
+  {
+    "id": 8,
+    "title": "Emails on push",
+    "slug": "emails_on_push",
+    "active": false,
+    "push_events": true,
+    "properties": {
+      "recipients": "dev@example.com",
+      "send_from_committer_email": "false"
+    }
+  },
+  {
+    "id": 12,
+    "title": "Jira",
+    "slug": "jira",
+    "active": false,
+    "properties": {}
+  }
+]

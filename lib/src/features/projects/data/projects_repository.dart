@@ -5,6 +5,7 @@ import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
+import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
@@ -556,6 +557,29 @@ class ProjectsRepository {
   Future<void> revokeAccessToken(Object id, int tokenId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/access_tokens/$tokenId',
+    );
+  }
+
+  /// Project integrations (`/services`).
+  Future<List<Integration>> integrations(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/services',
+      decoder: (j) => Integration.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Enables/disables an integration and updates any changed
+  /// properties. Only provided keys are sent.
+  Future<Integration> updateIntegration(
+    Object id,
+    String slug, {
+    bool? active,
+    Map<String, String> properties = const {},
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/services/$slug',
+      body: {'active': ?active, ...properties},
+      decoder: (j) => Integration.fromJson(j! as Map<String, dynamic>),
     );
   }
 
