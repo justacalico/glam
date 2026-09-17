@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/issues/presentation/issue_tile.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
@@ -28,17 +29,30 @@ class MilestonesTab extends ConsumerStatefulWidget {
 
 class _MilestonesTabState extends ConsumerState<MilestonesTab> {
   String? _state = 'active';
+  String? _search;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (scope: widget.scope, state: _state);
+    final filter = (scope: widget.scope, state: _state, search: _search);
     final list = ref.watch(milestonesProvider(filter));
     final notifier = ref.read(milestonesProvider(filter).notifier);
     const states = {'active': 'Active', 'closed': 'Closed', null: 'All'};
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search milestones',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             Insets.lg,
