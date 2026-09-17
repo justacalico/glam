@@ -91,6 +91,10 @@ void main() {
             fixtureJson('related_mrs'),
           )
           ..get(
+            '/projects/42/issues/12/closed_by',
+            fixtureJson('related_mrs'),
+          )
+          ..get(
             '/projects/42/issues/12/award_emoji',
             fixtureJson('award_emojis'),
           )

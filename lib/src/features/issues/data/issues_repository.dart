@@ -366,6 +366,14 @@ class IssuesRepository {
     );
   }
 
+  /// MRs that will close this issue when merged (`/issues/:iid/closed_by`).
+  Future<List<MergeRequest>> closedByMergeRequests(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/closed_by',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Close/reopen history (`/issues/:iid/resource_state_events`).
   Future<List<ResourceStateEvent>> stateEvents(Object projectId, int iid) {
     return _client.getAll(

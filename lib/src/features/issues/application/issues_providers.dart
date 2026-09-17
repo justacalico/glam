@@ -227,6 +227,14 @@ final issueRelatedMrsProvider =
           .relatedMergeRequests(loc.project, loc.iid),
     );
 
+/// MRs that close this issue on merge (`/issues/:iid/closed_by`).
+final issueClosedByMrsProvider =
+    FutureProvider.family<List<MergeRequest>, IssueRef>(
+      (ref, loc) => ref
+          .watch(issuesRepositoryProvider)
+          .closedByMergeRequests(loc.project, loc.iid),
+    );
+
 final issueParticipantsProvider =
     FutureProvider.family<List<GitLabUser>, IssueRef>(
       (ref, loc) => ref
