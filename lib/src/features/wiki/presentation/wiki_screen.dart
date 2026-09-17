@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -222,6 +223,7 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
   late final TextEditingController _title;
   late final TextEditingController _content;
   var _saving = false;
+  var _uploading = false;
   String? _error;
 
   bool get _editing => widget.page != null;
@@ -286,6 +288,36 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
     }
   }
 
+  Future<void> _attach() async {
+    final file = await FilePicker.pickFile();
+    if (file == null || !mounted) {
+      return;
+    }
+    final bytes = await file.readAsBytes();
+    setState(() => _uploading = true);
+    try {
+      final markdown = await ref
+          .read(wikiRepositoryProvider)
+          .uploadAttachment(widget.projectId, bytes, file.name);
+      final text = _content.text;
+      final sel = _content.selection;
+      final at = sel.isValid ? sel.start : text.length;
+      _content
+        ..text = '${text.substring(0, at)}$markdown${text.substring(at)}'
+        ..selection = TextSelection.collapsed(offset: at + markdown.length);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to upload file')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _uploading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -324,6 +356,20 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
               hintText: 'Markdown',
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: _uploading ? null : _attach,
+              icon: _uploading
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.attach_file, size: 16),
+              label: const Text('Attach file'),
             ),
           ),
           if (_error != null)
