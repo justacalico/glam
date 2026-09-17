@@ -83,7 +83,7 @@ class LabelsRepository {
     if (subscribed) {
       await _client.post(path, decoder: _decode);
     } else {
-      await _client.delete(path);
+      await _client.delete<void>(path);
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +51,7 @@ class DashboardScreen extends ConsumerWidget {
       body: ListView(
         padding: Insets.pagePadding,
         children: [
+          const _BroadcastBanner(),
           if (user != null) ...[
             Text(
               _greeting(),
@@ -116,6 +119,80 @@ class DashboardScreen extends ConsumerWidget {
       return 'Good afternoon,';
     }
     return 'Good evening,';
+  }
+}
+
+/// Instance announcements (`/broadcast_messages`) above the greeting.
+class _BroadcastBanner extends ConsumerStatefulWidget {
+  const _BroadcastBanner();
+
+  @override
+  ConsumerState<_BroadcastBanner> createState() => _BroadcastBannerState();
+}
+
+class _BroadcastBannerState extends ConsumerState<_BroadcastBanner> {
+  final _dismissed = <int>{};
+
+  void _dismiss(int id) {
+    setState(() => _dismissed.add(id));
+    unawaited(
+      ref
+          .read(authRepositoryProvider)
+          .dismissBroadcastMessage(id)
+          .onError((_, _) {}),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final messages = ref.watch(broadcastMessagesProvider).value ?? [];
+    final colors = context.colors;
+    final theme = Theme.of(context);
+    final visible = messages
+        .where(
+          (m) =>
+              m.active &&
+              !_dismissed.contains(m.id) &&
+              m.plainText.isNotEmpty,
+        )
+        .toList();
+    if (visible.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        for (final m in visible)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: Insets.md),
+            padding: const EdgeInsets.all(Insets.md),
+            decoration: BoxDecoration(
+              color: colors.accent.withValues(alpha: 0.12),
+              borderRadius: Radii.borderMd,
+              border: Border.all(color: colors.accent.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.campaign_outlined, size: 18, color: colors.accent),
+                const SizedBox(width: Insets.sm),
+                Expanded(
+                  child: Text(m.plainText, style: theme.textTheme.bodySmall),
+                ),
+                if (m.dismissable)
+                  GestureDetector(
+                    onTap: () => _dismiss(m.id),
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                      color: colors.inkMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
   }
 }
 
