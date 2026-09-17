@@ -563,10 +563,14 @@ class _AuthorLine extends StatelessWidget {
           radius: 10,
         ),
         const SizedBox(width: Insets.xs),
-        Text(
-          '${issue.author!.name} opened '
-          '${Format.relative(issue.createdAt)}',
-          style: theme.textTheme.bodySmall,
+        Flexible(
+          child: Text(
+            '${issue.author!.name} opened '
+            '${Format.relative(issue.createdAt)}',
+            style: theme.textTheme.bodySmall,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
