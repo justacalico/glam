@@ -17,6 +17,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/features/groups/presentation/edit_group_dialog.dart';
 import 'package:glam/src/features/groups/presentation/groups_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/labels/presentation/labels_screen.dart';
@@ -57,10 +58,14 @@ class GroupDetailScreen extends ConsumerWidget {
             tooltip: 'Group actions',
             iconSize: 20,
             itemBuilder: (context) => const [
+              PopupMenuItem(value: 'edit', child: Text('Edit group')),
               PopupMenuItem(value: 'delete', child: Text('Delete group')),
             ],
             onSelected: (v) {
-              if (v == 'delete') {
+              final g = group.value;
+              if (v == 'edit' && g != null) {
+                unawaited(EditGroupDialog.show(context, g));
+              } else if (v == 'delete') {
                 unawaited(_deleteGroup(context, ref, groupId));
               }
             },

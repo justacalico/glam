@@ -62,6 +62,27 @@ class GroupsRepository {
     );
   }
 
+  /// Edits group fields. Moving a group to a new parent uses
+  /// `POST /groups/:id/transfer`, not this endpoint.
+  Future<Group> updateGroup(
+    Object groupId, {
+    String? name,
+    String? path,
+    String? description,
+    String? visibility,
+  }) {
+    return _client.put(
+      '/groups/${GitLabApiClient.encodeProject(groupId)}',
+      body: {
+        'name': ?name,
+        'path': ?path,
+        'description': ?description,
+        'visibility': ?visibility,
+      },
+      decoder: (j) => Group.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Deletes a group and everything inside it.
   Future<void> deleteGroup(Object groupId) {
     return _client.delete(_g(groupId));
