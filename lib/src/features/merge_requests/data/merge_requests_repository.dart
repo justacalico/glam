@@ -86,6 +86,7 @@ class MergeRequestsRepository {
     String? milestone,
     int? milestoneId,
     int? assigneeId,
+    int? authorId,
     String? orderBy,
     String? sort,
     int page = 1,
@@ -98,6 +99,7 @@ class MergeRequestsRepository {
       'target_branch': ?targetBranch,
       'milestone': ?milestone ?? milestoneId?.toString(),
       'assignee_id': ?assigneeId?.toString(),
+      'author_id': ?authorId?.toString(),
       'order_by': ?orderBy,
       'sort': ?sort,
     };
