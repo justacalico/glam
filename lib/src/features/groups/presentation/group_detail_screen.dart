@@ -10,6 +10,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/widgets/audit_events_list.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
@@ -78,7 +79,7 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 10,
+          length: 11,
           child: Column(
             children: [
               _GroupHeader(group: g),
@@ -95,6 +96,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Variables'),
                   Tab(text: 'Webhooks'),
                   Tab(text: 'Activity'),
+                  Tab(text: 'Audit'),
                 ],
               ),
               Expanded(
@@ -110,6 +112,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     _VariablesTab(groupId: groupId),
                     _WebhooksTab(groupId: groupId),
                     EventList(feed: (kind: 'group', id: groupId)),
+                    _AuditTab(groupId: groupId),
                   ],
                 ),
               ),
@@ -366,6 +369,22 @@ class _WebhooksTab extends ConsumerWidget {
             ref.invalidate(groupHooksProvider(groupId));
           },
         ),
+      ],
+    );
+  }
+}
+
+class _AuditTab extends ConsumerWidget {
+  const _AuditTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: Insets.pagePadding,
+      children: [
+        AuditEventsList(events: ref.watch(groupAuditEventsProvider(groupId))),
       ],
     );
   }

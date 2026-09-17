@@ -99,7 +99,11 @@ void main() {
       final (client, adapter) = testClient();
       adapter
         ..get('/snippets/21/award_emoji', [
-          {'id': 1, 'name': 'thumbsup', 'user': {'id': 7}},
+          {
+            'id': 1,
+            'name': 'thumbsup',
+            'user': {'id': 7},
+          },
         ])
         ..get('/projects/42/snippets/21/award_emoji', [])
         ..post('/projects/42/snippets/21/award_emoji', {'id': 2})
@@ -110,10 +114,7 @@ void main() {
       expect(awards.single.name, 'thumbsup');
 
       await repo.awardEmojis(21, projectId: 42);
-      expect(
-        adapter.lastRequest!.path,
-        '/projects/42/snippets/21/award_emoji',
-      );
+      expect(adapter.lastRequest!.path, '/projects/42/snippets/21/award_emoji');
 
       await repo.award(21, 'rocket', projectId: 42);
       final sent = adapter.lastRequest!.data as Map;
@@ -121,10 +122,7 @@ void main() {
 
       await repo.removeAward(21, 2, projectId: 42);
       expect(
-        adapter.requestsTo(
-          'DELETE',
-          '/projects/42/snippets/21/award_emoji/2',
-        ),
+        adapter.requestsTo('DELETE', '/projects/42/snippets/21/award_emoji/2'),
         hasLength(1),
       );
     });
@@ -133,7 +131,11 @@ void main() {
       final (client, adapter) = testClient();
       adapter
         ..get('/snippets/21/notes', [
-          {'id': 30, 'body': 'nice', 'author': {'id': 7}},
+          {
+            'id': 30,
+            'body': 'nice',
+            'author': {'id': 7},
+          },
         ])
         ..post('/snippets/21/notes', {'id': 31})
         ..put('/snippets/21/notes/30', {'id': 30})
@@ -155,10 +157,7 @@ void main() {
       );
 
       await repo.awardEmojis(21, noteId: 30);
-      expect(
-        adapter.lastRequest!.path,
-        '/snippets/21/notes/30/award_emoji',
-      );
+      expect(adapter.lastRequest!.path, '/snippets/21/notes/30/award_emoji');
     });
   });
 

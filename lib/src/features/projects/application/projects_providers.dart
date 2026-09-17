@@ -3,6 +3,8 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/features/projects/data/projects_repository.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
@@ -135,6 +137,25 @@ final projectRemoteMirrorsProvider =
     FutureProvider.family<List<RemoteMirror>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).remoteMirrors(id),
     );
+
+/// Users who starred the project.
+final projectStarrersProvider = FutureProvider.family<List<GitLabUser>, Object>(
+  (ref, id) => ref.watch(projectsRepositoryProvider).starrers(id),
+);
+
+/// Audit events on the project. Empty on Free tier or self-hosted
+/// instances where the endpoint is premium-gated.
+final projectAuditEventsProvider =
+    FutureProvider.family<List<AuditEvent>, Object>((ref, id) async {
+      try {
+        return await ref.watch(projectsRepositoryProvider).auditEvents(id);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
 
 final projectDeployTokensProvider =
     FutureProvider.family<List<DeployToken>, Object>(

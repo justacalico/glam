@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/core/models/webhook.dart';
@@ -132,6 +133,20 @@ final groupIterationsProvider = FutureProvider.family<List<Iteration>, Object>((
     rethrow;
   }
 });
+
+/// Audit events on the group. Empty where the endpoint is
+/// premium-gated or absent.
+final groupAuditEventsProvider =
+    FutureProvider.family<List<AuditEvent>, Object>((ref, groupId) async {
+      try {
+        return await ref.watch(groupsRepositoryProvider).auditEvents(groupId);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
 
 /// Members of a group or project (depending on `kind`).
 typedef MemberScope = ({Object id, bool isProject});

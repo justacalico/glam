@@ -1,5 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/audit_event.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
@@ -745,6 +747,22 @@ class ProjectsRepository {
   Future<void> deleteRemoteMirror(Object id, int mirrorId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/remote_mirrors/$mirrorId',
+    );
+  }
+
+  /// Users who starred the project (`/projects/:id/starrers`).
+  Future<List<GitLabUser>> starrers(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/starrers',
+      decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Audit events (`/projects/:id/audit_events`); premium-gated upstream.
+  Future<List<AuditEvent>> auditEvents(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/audit_events',
+      decoder: (j) => AuditEvent.fromJson(j! as Map<String, dynamic>),
     );
   }
 

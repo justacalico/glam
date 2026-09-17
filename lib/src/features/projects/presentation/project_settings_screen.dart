@@ -11,6 +11,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/access_tokens_section.dart';
+import 'package:glam/src/features/projects/presentation/audit_events_section.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
 import 'package:glam/src/features/projects/presentation/ci_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
@@ -79,6 +80,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             AccessTokensSection(project: p),
             const SizedBox(height: Insets.xl),
             TriggersSection(project: p),
+            const SizedBox(height: Insets.xl),
+            AuditEventsSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),

@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/users_sheet.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
@@ -246,6 +247,13 @@ class _ProjectHeader extends ConsumerWidget {
                 icon: Icons.star_outline,
                 value: Format.compact(project.starCount),
                 label: 'stars',
+                onTap: () => unawaited(
+                  UsersSheet.show(
+                    context,
+                    title: 'Starrers',
+                    provider: projectStarrersProvider(project.id),
+                  ),
+                ),
               ),
               _Stat(
                 icon: Icons.fork_right,
@@ -462,16 +470,22 @@ class _ContributorsTab extends ConsumerWidget {
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat({required this.icon, required this.value, required this.label});
+  const _Stat({
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.onTap,
+  });
 
   final IconData icon;
   final String value;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Row(
+    final row = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 15, color: colors.inkMuted),
@@ -484,6 +498,7 @@ class _Stat extends StatelessWidget {
         ),
       ],
     );
+    return onTap == null ? row : GestureDetector(onTap: onTap, child: row);
   }
 }
 
