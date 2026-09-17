@@ -284,6 +284,65 @@ void main() {
       );
     });
 
+    test('freeze periods list, create, update, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/freeze_periods', [
+          {
+            'id': 5,
+            'freeze_start': '0 23 * * 5',
+            'freeze_end': '0 7 * * 1',
+            'cron_timezone': 'Europe/Berlin',
+          },
+        ])
+        ..post('/projects/42/freeze_periods', {
+          'id': 6,
+          'freeze_start': '0 0 * * 6',
+          'freeze_end': '0 0 * * 1',
+          'cron_timezone': 'UTC',
+        })
+        ..put('/projects/42/freeze_periods/6', {
+          'id': 6,
+          'freeze_start': '0 1 * * 6',
+          'freeze_end': '0 1 * * 1',
+          'cron_timezone': 'UTC',
+        })
+        ..delete('/projects/42/freeze_periods/6');
+      final repo = ProjectsRepository(client);
+
+      final periods = await repo.freezePeriods(42);
+      expect(periods.single.id, 5);
+      expect(periods.single.cronTimezone, 'Europe/Berlin');
+
+      final created = await repo.createFreezePeriod(
+        42,
+        freezeStart: '0 0 * * 6',
+        freezeEnd: '0 0 * * 1',
+        cronTimezone: 'UTC',
+      );
+      expect(created.id, 6);
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['freeze_start'], '0 0 * * 6');
+
+      await repo.updateFreezePeriod(
+        42,
+        6,
+        freezeStart: '0 1 * * 6',
+        freezeEnd: '0 1 * * 1',
+        cronTimezone: 'UTC',
+      );
+      expect(
+        adapter.requestsTo('PUT', '/projects/42/freeze_periods/6'),
+        hasLength(1),
+      );
+
+      await repo.deleteFreezePeriod(42, 6);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/freeze_periods/6'),
+        hasLength(1),
+      );
+    });
+
     test('deploy tokens list, create keeps the secret, revoke', () async {
       final (client, adapter) = testClient();
       adapter

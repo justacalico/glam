@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
+import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
@@ -578,6 +579,219 @@ class _ProtectedEnvironmentTile extends StatelessWidget {
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, size: 18),
         onPressed: onDelete,
+      ),
+    );
+  }
+}
+
+/// Deploy freeze windows with create / edit / delete.
+class FreezePeriodsSection extends ConsumerWidget {
+  const FreezePeriodsSection({required this.project, super.key});
+
+  final Project project;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final periods = ref.watch(projectFreezePeriodsProvider(project.id));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(child: SectionLabel('Deploy freezes')),
+            TextButton.icon(
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Add freeze'),
+              onPressed: () => _edit(context, ref, null),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: Radii.borderMd,
+            border: Border.all(color: colors.border),
+          ),
+          child: periods.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => Padding(
+              padding: const EdgeInsets.all(Insets.lg),
+              child: Text('$e'),
+            ),
+            data: (list) => list.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(Insets.lg),
+                    child: EmptyState(
+                      icon: Icons.ac_unit_outlined,
+                      title: 'No deploy freezes',
+                    ),
+                  )
+                : Column(
+                    children: [
+                      for (final p in list)
+                        _FreezePeriodTile(
+                          period: p,
+                          onEdit: () => _edit(context, ref, p),
+                          onDelete: () => _delete(context, ref, p),
+                        ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    FreezePeriod? existing,
+  ) async {
+    final start = TextEditingController(text: existing?.freezeStart ?? '');
+    final end = TextEditingController(text: existing?.freezeEnd ?? '');
+    final zone = TextEditingController(text: existing?.cronTimezone ?? 'UTC');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(existing == null ? 'Add deploy freeze' : 'Edit freeze'),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: start,
+                autofocus: existing == null,
+                decoration: const InputDecoration(
+                  labelText: 'Freeze start (cron)',
+                  hintText: '0 23 * * 5',
+                ),
+              ),
+              const SizedBox(height: Insets.sm),
+              TextField(
+                controller: end,
+                decoration: const InputDecoration(
+                  labelText: 'Freeze end (cron)',
+                  hintText: '0 7 * * 1',
+                ),
+              ),
+              const SizedBox(height: Insets.sm),
+              TextField(
+                controller: zone,
+                decoration: const InputDecoration(
+                  labelText: 'Timezone',
+                  hintText: 'UTC',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (start.text.trim().isEmpty || end.text.trim().isEmpty) {
+                return;
+              }
+              Navigator.pop(context, true);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    final freezeStart = start.text.trim();
+    final freezeEnd = end.text.trim();
+    final cronTimezone = zone.text.trim();
+    start.dispose();
+    end.dispose();
+    zone.dispose();
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .saveFreezePeriod(
+            project.id,
+            periodId: existing?.id,
+            freezeStart: freezeStart,
+            freezeEnd: freezeEnd,
+            cronTimezone: cronTimezone.isEmpty ? 'UTC' : cronTimezone,
+          );
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    FreezePeriod period,
+  ) async {
+    final ok = await confirmAdminAction(
+      context,
+      title: 'Delete deploy freeze?',
+      body: '"${period.freezeStart}" to "${period.freezeEnd}" will be removed.',
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .deleteFreezePeriod(project.id, period.id);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+}
+
+class _FreezePeriodTile extends StatelessWidget {
+  const _FreezePeriodTile({
+    required this.period,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final FreezePeriod period;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      leading: const Icon(Icons.ac_unit_outlined, size: 18),
+      title: Text(
+        '${period.freezeStart} → ${period.freezeEnd}',
+        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12.5),
+      ),
+      subtitle: Text(period.cronTimezone),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, size: 18),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 18),
+            onPressed: onDelete,
+          ),
+        ],
       ),
     );
   }
