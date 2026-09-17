@@ -26,6 +26,7 @@ typedef IssueFilter = ({
   String? issueType,
   bool? confidential,
   String? dueDate,
+  String? myReactionEmoji,
   String? orderBy,
   String? sort,
 });
@@ -37,6 +38,7 @@ const defaultIssueFilter = (
   issueType: null,
   confidential: null,
   dueDate: null,
+  myReactionEmoji: null,
   orderBy: null,
   sort: null,
 );
@@ -70,6 +72,7 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
           issueType: filter.issueType,
           confidential: filter.confidential,
           dueDate: filter.dueDate,
+          myReactionEmoji: filter.myReactionEmoji,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -89,6 +92,7 @@ typedef ProjectIssueFilter = ({
   int? authorId,
   bool? confidential,
   String? dueDate,
+  String? myReactionEmoji,
   String? orderBy,
   String? sort,
 });
@@ -120,6 +124,7 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           authorId: filter.authorId,
           confidential: filter.confidential,
           dueDate: filter.dueDate,
+          myReactionEmoji: filter.myReactionEmoji,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

@@ -687,6 +687,7 @@ void main() {
         state: 'merged',
         search: 'x',
         wip: null,
+        myReactionEmoji: null,
         orderBy: null,
         sort: null,
       ));
@@ -703,6 +704,7 @@ void main() {
         state: null,
         search: null,
         wip: null,
+        myReactionEmoji: null,
         orderBy: 'title',
         sort: 'asc',
       ));
@@ -721,12 +723,33 @@ void main() {
         state: null,
         search: null,
         wip: 'yes',
+        myReactionEmoji: null,
         orderBy: null,
         sort: null,
       ));
       await container.read(mergeRequestsProvider.future);
 
       expect(adapter.lastRequest!.queryParameters['wip'], 'yes');
+    });
+
+    test('filter forwards my_reaction_emoji', () async {
+      adapter.get('/merge_requests', fixtureJson('mrs'));
+
+      container.read(mrFilterProvider.notifier).update((
+        scope: MrScope.assigned,
+        state: null,
+        search: null,
+        wip: null,
+        myReactionEmoji: 'thumbsup',
+        orderBy: null,
+        sort: null,
+      ));
+      await container.read(mergeRequestsProvider.future);
+
+      expect(
+        adapter.lastRequest!.queryParameters['my_reaction_emoji'],
+        'thumbsup',
+      );
     });
 
     test('mrProvider and mrChangesProvider fetch detail', () async {

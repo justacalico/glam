@@ -25,6 +25,7 @@ typedef MrFilter = ({
   String? state,
   String? search,
   String? wip,
+  String? myReactionEmoji,
   String? orderBy,
   String? sort,
 });
@@ -34,6 +35,7 @@ const defaultMrFilter = (
   state: 'opened',
   search: null,
   wip: null,
+  myReactionEmoji: null,
   orderBy: null,
   sort: null,
 );
@@ -65,6 +67,7 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
           state: filter.state,
           search: filter.search,
           wip: filter.wip,
+          myReactionEmoji: filter.myReactionEmoji,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -83,6 +86,7 @@ typedef ProjectMrFilter = ({
   int? assigneeId,
   int? authorId,
   String? wip,
+  String? myReactionEmoji,
   String? orderBy,
   String? sort,
 });
@@ -114,6 +118,7 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           assigneeId: filter.assigneeId,
           authorId: filter.authorId,
           wip: filter.wip,
+          myReactionEmoji: filter.myReactionEmoji,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

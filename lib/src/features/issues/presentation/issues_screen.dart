@@ -22,6 +22,15 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
 
+const _reactions = ['thumbsup', 'thumbsdown', 'smile', 'tada', 'heart'];
+const _reactionLabels = {
+  'thumbsup': 'Thumbs up',
+  'thumbsdown': 'Thumbs down',
+  'smile': 'Smile',
+  'tada': 'Tada',
+  'heart': 'Heart',
+};
+
 /// Global issues list with scope/state/search filters.
 class IssuesScreen extends ConsumerStatefulWidget {
   const IssuesScreen({super.key});
@@ -66,6 +75,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       issueType: f.issueType,
                       confidential: null,
                       dueDate: f.dueDate,
+                      myReactionEmoji: f.myReactionEmoji,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -89,6 +99,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             issueType: f.issueType,
                             confidential: f.confidential,
                             dueDate: f.dueDate,
+                            myReactionEmoji: f.myReactionEmoji,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -106,6 +117,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           issueType: f.issueType,
                           confidential: f.confidential,
                           dueDate: f.dueDate,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -123,6 +135,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           issueType: v,
                           confidential: f.confidential,
                           dueDate: f.dueDate,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -148,6 +161,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           issueType: f.issueType,
                           confidential: v == null ? null : v == 'true',
                           dueDate: f.dueDate,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -178,6 +192,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           issueType: f.issueType,
                           confidential: f.confidential,
                           dueDate: v,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -195,6 +210,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                           issueType: f.issueType,
                           confidential: f.confidential,
                           dueDate: f.dueDate,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -298,6 +314,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _issueType;
   bool? _confidential;
   String? _dueDate;
+  String? _myReaction;
   int? _assigneeId;
   int? _authorId;
   String? _orderBy;
@@ -315,6 +332,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       issueType: _issueType,
       confidential: _confidential,
       dueDate: _dueDate,
+      myReactionEmoji: _myReaction,
       assigneeId: _assigneeId,
       authorId: _authorId,
       orderBy: _orderBy,
@@ -484,6 +502,13 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                   '0': 'No due date',
                 },
                 onSelect: (v) => setState(() => _dueDate = v),
+              ),
+              FilterMenu(
+                title: 'Reacted',
+                current: _myReaction,
+                options: _reactions,
+                labels: _reactionLabels,
+                onSelect: (v) => setState(() => _myReaction = v),
               ),
               SortMenu(
                 orderBy: _orderBy,

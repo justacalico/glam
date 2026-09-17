@@ -67,6 +67,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                       state: f.state,
                       search: f.search,
                       wip: f.wip,
+                      myReactionEmoji: f.myReactionEmoji,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -88,6 +89,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                             state: f.state,
                             search: v,
                             wip: f.wip,
+                            myReactionEmoji: f.myReactionEmoji,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -103,6 +105,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           state: s,
                           search: f.search,
                           wip: f.wip,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -120,6 +123,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           state: f.state,
                           search: f.search,
                           wip: w,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -135,6 +139,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           state: f.state,
                           search: f.search,
                           wip: f.wip,
+                          myReactionEmoji: f.myReactionEmoji,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -224,6 +229,15 @@ class _StateMenu extends StatelessWidget {
   }
 }
 
+const _reactions = ['thumbsup', 'thumbsdown', 'smile', 'tada', 'heart'];
+const _reactionLabels = {
+  'thumbsup': 'Thumbs up',
+  'thumbsdown': 'Thumbs down',
+  'smile': 'Smile',
+  'tada': 'Tada',
+  'heart': 'Heart',
+};
+
 /// MRs tab inside project detail: state chips + new MR button.
 class ProjectMrsTab extends ConsumerStatefulWidget {
   const ProjectMrsTab({required this.projectId, super.key});
@@ -244,6 +258,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   int? _assigneeId;
   int? _authorId;
   String? _wip;
+  String? _myReaction;
   String? _orderBy;
   String? _sort;
 
@@ -268,6 +283,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
       assigneeId: _assigneeId,
       authorId: _authorId,
       wip: _wip,
+      myReactionEmoji: _myReaction,
       orderBy: _orderBy,
       sort: _sort,
     );
@@ -424,6 +440,13 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 options: const ['yes', 'no'],
                 labels: const {'yes': 'Drafts', 'no': 'No drafts'},
                 onSelect: (v) => setState(() => _wip = v),
+              ),
+              FilterMenu(
+                title: 'Reacted',
+                current: _myReaction,
+                options: _reactions,
+                labels: _reactionLabels,
+                onSelect: (v) => setState(() => _myReaction = v),
               ),
               SortMenu(
                 orderBy: _orderBy,
