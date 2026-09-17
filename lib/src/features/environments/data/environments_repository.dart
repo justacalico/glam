@@ -48,6 +48,21 @@ class EnvironmentsRepository {
     );
   }
 
+  /// Renames an environment or repoints its live URL
+  /// (`PUT /environments/:id`).
+  Future<GlEnvironment> updateEnvironment(
+    Object projectId,
+    int envId, {
+    String? name,
+    String? externalUrl,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/environments/$envId',
+      body: {'name': ?name, 'external_url': ?externalUrl},
+      decoder: (j) => GlEnvironment.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<GlEnvironment> stop(Object projectId, int envId) {
     return _client.post(
       '${_p(projectId)}/environments/$envId/stop',

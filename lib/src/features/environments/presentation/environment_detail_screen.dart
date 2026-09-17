@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/environments/application/environments_providers.dart';
+import 'package:glam/src/features/environments/data/environments_repository.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
 
 /// One environment: metadata header + the deployments it has seen.
@@ -54,12 +55,65 @@ class _EnvActions extends ConsumerWidget {
   final GlEnvironment env;
   final EnvironmentRef loc;
 
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    EnvironmentsRepository repo,
+  ) async {
+    final name = TextEditingController(text: env.name);
+    final url = TextEditingController(text: env.externalUrl ?? '');
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit environment'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: name,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            const SizedBox(height: Insets.md),
+            TextField(
+              controller: url,
+              decoration: const InputDecoration(
+                labelText: 'External URL (optional)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (saved == true && name.text.trim().isNotEmpty) {
+      await repo.updateEnvironment(
+        loc.project,
+        env.id,
+        name: name.text.trim(),
+        externalUrl: url.text.trim().isEmpty ? null : url.text.trim(),
+      );
+      ref.invalidate(environmentProvider(loc));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<String>(
       onSelected: (action) async {
         final repo = ref.read(environmentsRepositoryProvider);
         switch (action) {
+          case 'edit':
+            await _edit(context, ref, repo);
           case 'stop':
             await repo.stop(loc.project, env.id);
             ref.invalidate(environmentProvider(loc));
@@ -100,6 +154,7 @@ class _EnvActions extends ConsumerWidget {
         }
       },
       itemBuilder: (context) => [
+        const PopupMenuItem(value: 'edit', child: Text('Edit')),
         if (env.isAvailable)
           const PopupMenuItem(value: 'stop', child: Text('Stop')),
         if (env.externalUrl != null)
