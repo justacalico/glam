@@ -7,6 +7,7 @@ import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/core/models/webhook.dart';
+import 'package:glam/src/features/projects/domain/runner.dart';
 
 /// `/groups` plus members endpoints for both groups and projects.
 class GroupsRepository {
@@ -452,6 +453,15 @@ class GroupsRepository {
   Future<void> deleteDeployToken(Object id, int tokenId) {
     return _client.delete(
       '${_scopeBase(id, isProject: false)}/deploy_tokens/$tokenId',
+    );
+  }
+
+  /// CI/CD runners available to the group, inherited ones included
+  /// (`/groups/:id/runners`).
+  Future<List<Runner>> groupRunners(Object id) {
+    return _client.getAll(
+      '${_g(id)}/runners',
+      decoder: (j) => Runner.fromJson(j! as Map<String, dynamic>),
     );
   }
 }

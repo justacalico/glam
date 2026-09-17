@@ -19,6 +19,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/webhooks_section.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/runner_tile.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
@@ -98,6 +99,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   Tab(text: 'Labels'),
                   Tab(text: 'Iterations'),
                   Tab(text: 'Variables'),
+                  Tab(text: 'Runners'),
                   Tab(text: 'Tokens'),
                   Tab(text: 'Webhooks'),
                   Tab(text: 'Activity'),
@@ -116,6 +118,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     LabelsTab(scope: (id: groupId, isProject: false)),
                     _IterationsTab(groupId: groupId),
                     _VariablesTab(groupId: groupId),
+                    _RunnersTab(groupId: groupId),
                     _TokensTab(groupId: groupId),
                     _WebhooksTab(groupId: groupId),
                     EventList(feed: (kind: 'group', id: groupId)),
@@ -367,6 +370,44 @@ class _VariablesTab extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _RunnersTab extends ConsumerWidget {
+  const _RunnersTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final runners = ref.watch(groupRunnersProvider(groupId));
+    return AsyncValueWidget(
+      value: runners,
+      onRetry: () => ref.invalidate(groupRunnersProvider(groupId)),
+      data: (list) => list.isEmpty
+          ? const EmptyState(
+              icon: Icons.smart_toy_outlined,
+              title: 'No runners available',
+            )
+          : ListView(
+              padding: Insets.pagePadding,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: Radii.borderMd,
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: Column(
+                    children: [
+                      for (final r in list) RunnerTile(runner: r),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
