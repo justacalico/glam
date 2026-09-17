@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
-import 'package:glam/src/core/utils/debouncer.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
@@ -24,16 +24,6 @@ class IssuesScreen extends ConsumerStatefulWidget {
 }
 
 class _IssuesScreenState extends ConsumerState<IssuesScreen> {
-  final _search = TextEditingController();
-  final _debouncer = Debouncer();
-
-  @override
-  void dispose() {
-    _search.dispose();
-    _debouncer.dispose();
-    super.dispose();
-  }
-
   void _setFilter(IssueFilter Function(IssueFilter) update) {
     final current = ref.read(issueFilterProvider);
     ref.read(issueFilterProvider.notifier).update(update(current));
@@ -73,32 +63,10 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 38,
-                        child: TextField(
-                          controller: _search,
-                          textInputAction: TextInputAction.search,
-                          onChanged: (v) => _debouncer(
-                            () => _setFilter(
-                              (f) => (
-                                scope: f.scope,
-                                state: f.state,
-                                search: v.isEmpty ? null : v,
-                              ),
-                            ),
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Search issues',
-                            prefixIcon: const Icon(Icons.search, size: 18),
-                            isDense: true,
-                            filled: true,
-                            fillColor: colors.surfaceMuted,
-                            border: OutlineInputBorder(
-                              borderRadius: Radii.borderMd,
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
+                      child: SearchField(
+                        hint: 'Search issues',
+                        onChanged: (v) => _setFilter(
+                          (f) => (scope: f.scope, state: f.state, search: v),
                         ),
                       ),
                     ),
@@ -201,11 +169,12 @@ class ProjectIssuesTab extends ConsumerStatefulWidget {
 
 class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _state = 'opened';
+  String? _search;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (project: widget.projectId, state: _state, search: null);
+    final filter = (project: widget.projectId, state: _state, search: _search);
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
     final stats = ref.watch(projectIssueStatsProvider(widget.projectId)).value;
@@ -218,6 +187,18 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search issues',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             Insets.lg,

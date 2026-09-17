@@ -442,7 +442,9 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final theme = Theme.of(context);
-    final branches = ref.watch(branchesProvider(widget.projectId));
+    final branches = ref.watch(
+      branchesProvider((project: widget.projectId, search: null)),
+    );
     final branchNames = branches.value?.items.map((b) => b.name).toList();
 
     return AlertDialog(
