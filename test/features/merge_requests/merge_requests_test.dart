@@ -297,6 +297,45 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('mrPipelines lists and createMrPipeline posts', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get(
+          '/projects/42/merge_requests/7/pipelines',
+          fixtureJson('pipelines'),
+        )
+        ..post(
+          '/projects/42/merge_requests/7/pipelines',
+          (fixtureJson('pipelines') as List).first,
+        );
+      final repo = MergeRequestsRepository(client);
+
+      final list = await repo.mrPipelines(42, 7);
+      expect(list, hasLength(2));
+      expect(list.first.id, 900);
+
+      final created = await repo.createMrPipeline(42, 7);
+      expect(created.id, 900);
+      expect(
+        adapter.requestsTo('POST', '/projects/42/merge_requests/7/pipelines'),
+        hasLength(1),
+      );
+    });
+
+    test('participants decodes users', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/participants',
+        fixtureJson('members'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final users = await repo.participants(42, 7);
+
+      expect(users, isNotEmpty);
+      expect(users.first.name, isNotEmpty);
+    });
   });
 
   group('providers', () {
