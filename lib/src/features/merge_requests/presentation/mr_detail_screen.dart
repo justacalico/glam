@@ -24,6 +24,7 @@ import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
+import 'package:glam/src/core/widgets/state_events_row.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
@@ -165,6 +166,8 @@ class _OverviewTab extends ConsumerWidget {
                   'Activity',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+                const SizedBox(height: Insets.sm),
+                StateEventsRow(events: ref.watch(mrStateEventsProvider(loc))),
                 const SizedBox(height: Insets.sm),
                 threads.when(
                   loading: () => const Padding(

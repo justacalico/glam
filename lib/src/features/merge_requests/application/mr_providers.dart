@@ -4,6 +4,7 @@ import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
@@ -260,6 +261,21 @@ final mrClosesIssuesProvider = FutureProvider.family<List<Issue>, MrRef>(
   (ref, loc) =>
       ref.watch(mrRepositoryProvider).closesIssues(loc.project, loc.iid),
 );
+
+/// Close/reopen history. Missing on older instances; treat as empty.
+final mrStateEventsProvider =
+    FutureProvider.family<List<ResourceStateEvent>, MrRef>((ref, loc) async {
+      try {
+        return await ref
+            .watch(mrRepositoryProvider)
+            .stateEvents(loc.project, loc.iid);
+      } on ApiException catch (e) {
+        if (e.statusCode == 403 || e.statusCode == 404) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
 
 /// Pending review comments (draft notes) for the changes tab banner.
 final mrDraftNotesProvider =

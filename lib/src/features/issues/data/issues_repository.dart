@@ -2,6 +2,7 @@ import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
@@ -353,6 +354,14 @@ class IssuesRepository {
     return _client.getAll(
       '${_p(projectId)}/issues/$iid/related_merge_requests',
       decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Close/reopen history (`/issues/:iid/resource_state_events`).
+  Future<List<ResourceStateEvent>> stateEvents(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/issues/$iid/resource_state_events',
+      decoder: (j) => ResourceStateEvent.fromJson(j! as Map<String, dynamic>),
     );
   }
 }

@@ -19,6 +19,7 @@ import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
+import 'package:glam/src/core/widgets/state_events_row.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/engagement/application/engagement_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
@@ -93,6 +94,10 @@ class IssueDetailScreen extends ConsumerWidget {
                   Text(
                     'Activity',
                     style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: Insets.sm),
+                  StateEventsRow(
+                    events: ref.watch(issueStateEventsProvider(_loc)),
                   ),
                   const SizedBox(height: Insets.sm),
                   _NotesList(loc: _loc),

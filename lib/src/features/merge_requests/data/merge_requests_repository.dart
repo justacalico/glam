@@ -3,6 +3,7 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
+import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/merge_requests/domain/draft_note.dart';
@@ -566,6 +567,14 @@ class MergeRequestsRepository {
     return _client.post(
       '${_p(projectId)}/merge_requests/$iid/reset_spent_time',
       decoder: (_) {},
+    );
+  }
+
+  /// Close/reopen history (`/merge_requests/:iid/resource_state_events`).
+  Future<List<ResourceStateEvent>> stateEvents(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/resource_state_events',
+      decoder: (j) => ResourceStateEvent.fromJson(j! as Map<String, dynamic>),
     );
   }
 }

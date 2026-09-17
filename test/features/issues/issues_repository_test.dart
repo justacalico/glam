@@ -314,6 +314,33 @@ void main() {
     expect(users.first.username, 'jane');
   });
 
+  test('stateEvents decodes close/reopen entries', () async {
+    final (client, adapter) = testClient();
+    adapter.get('/projects/42/issues/12/resource_state_events', [
+      {
+        'id': 9,
+        'state': 'closed',
+        'user': {'id': 5, 'username': 'jane', 'name': 'Jane'},
+        'created_at': '2024-05-01T10:00:00.000Z',
+      },
+      {
+        'id': 10,
+        'state': 'reopened',
+        'user': {'id': 6, 'username': 'bob', 'name': 'Bob'},
+        'created_at': '2024-05-02T10:00:00.000Z',
+      },
+    ]);
+    final repo = IssuesRepository(client);
+
+    final events = await repo.stateEvents(42, 12);
+
+    expect(events, hasLength(2));
+    expect(events.first.state, 'closed');
+    expect(events.first.user?.username, 'jane');
+    expect(events.last.state, 'reopened');
+    expect(events.first.createdAt, isNotNull);
+  });
+
   group('Issue model', () {
     test('closed issue parses closed_by and confidentiality', () {
       final closed = Issue.fromJson(

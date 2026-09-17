@@ -414,6 +414,24 @@ void main() {
       expect(issues.first.iid, 12);
     });
 
+    test('stateEvents decodes close/reopen entries', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/merge_requests/7/resource_state_events', [
+        {
+          'id': 4,
+          'state': 'closed',
+          'user': {'id': 5, 'username': 'jane', 'name': 'Jane'},
+          'created_at': '2024-05-01T10:00:00.000Z',
+        },
+      ]);
+      final repo = MergeRequestsRepository(client);
+
+      final events = await repo.stateEvents(42, 7);
+
+      expect(events.single.state, 'closed');
+      expect(events.single.user?.username, 'jane');
+    });
+
     test('rawDiff returns patch text', () async {
       final (client, adapter) = testClient();
       adapter.get(
