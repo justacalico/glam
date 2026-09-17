@@ -57,10 +57,10 @@ void main() {
 
   test('updateStatus puts emoji and message', () async {
     final (client, adapter) = testClient();
-    adapter.put(
-      '/user/status',
-      const {'emoji': '🌴', 'message': 'On vacation'},
-    );
+    adapter.put('/user/status', const {
+      'emoji': '🌴',
+      'message': 'On vacation',
+    });
 
     final status = await AuthRepository(
       client,

@@ -167,10 +167,7 @@ void main() {
 
       await repo.testHook(9, 7);
       await repo.deleteHook(9, 7);
-      expect(
-        adapter.requestsTo('DELETE', '/groups/9/hooks/7'),
-        hasLength(1),
-      );
+      expect(adapter.requestsTo('DELETE', '/groups/9/hooks/7'), hasLength(1));
     });
 
     test('create and delete groups hit the /groups paths', () async {
@@ -266,10 +263,7 @@ void main() {
 
     test('addMember sends email invites', () async {
       final (client, adapter) = testClient();
-      adapter.post(
-        '/groups/9/members',
-        (fixtureJson('members') as List).first,
-      );
+      adapter.post('/groups/9/members', (fixtureJson('members') as List).first);
       final repo = GroupsRepository(client);
 
       await repo.addMember(
@@ -279,8 +273,8 @@ void main() {
         accessLevel: 30,
       );
 
-      final body = adapter.requestsTo('POST', '/groups/9/members').single.data
-          as Map;
+      final body =
+          adapter.requestsTo('POST', '/groups/9/members').single.data as Map;
       expect(body['email'], 'jane@example.com');
       expect(body.containsKey('username'), isFalse);
     });
