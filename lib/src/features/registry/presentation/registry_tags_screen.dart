@@ -7,11 +7,12 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 
 /// Tags inside one container repository.
-class RegistryTagsScreen extends ConsumerWidget {
+class RegistryTagsScreen extends ConsumerStatefulWidget {
   const RegistryTagsScreen({required this.loc, this.repoName, super.key});
 
   final RegistryLoc loc;
@@ -20,46 +21,75 @@ class RegistryTagsScreen extends ConsumerWidget {
   final String? repoName;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RegistryTagsScreen> createState() => _RegistryTagsScreenState();
+}
+
+class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
+  String? _name;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final state = ref.watch(registryTagsProvider(loc));
-    final notifier = ref.read(registryTagsProvider(loc).notifier);
+    final filter = (loc: widget.loc, name: _name);
+    final state = ref.watch(registryTagsProvider(filter));
+    final notifier = ref.read(registryTagsProvider(filter).notifier);
 
     return Scaffold(
-      appBar: AppBar(title: Text(repoName ?? 'Tags')),
-      body: AsyncValueWidget(
-        value: state,
-        onRetry: notifier.refresh,
-        data: (data) => PagedListView<RegistryTag>(
-          state: data,
-          onLoadMore: notifier.loadMore,
-          onRefresh: notifier.refresh,
-          padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-          separator: Divider(
-            height: 1,
-            color: colors.border,
-            indent: Insets.lg,
+      appBar: AppBar(title: Text(widget.repoName ?? 'Tags')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Insets.lg,
+              Insets.sm,
+              Insets.lg,
+              0,
+            ),
+            child: SearchField(
+              hint: 'Filter tags (regex)',
+              onChanged: (s) => setState(() => _name = s.isEmpty ? null : s),
+            ),
           ),
-          empty: const EmptyState(icon: Icons.sell_outlined, title: 'No tags'),
-          itemBuilder: (context, index) {
-            final t = data.items[index];
-            return ListTile(
-              leading: const Icon(Icons.sell_outlined, size: 20),
-              title: Text(
-                t.name,
-                style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
-                  fontSize: 12.5,
+          Expanded(
+            child: AsyncValueWidget(
+              value: state,
+              onRetry: notifier.refresh,
+              data: (data) => PagedListView<RegistryTag>(
+                state: data,
+                onLoadMore: notifier.loadMore,
+                onRefresh: notifier.refresh,
+                padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+                separator: Divider(
+                  height: 1,
+                  color: colors.border,
+                  indent: Insets.lg,
                 ),
+                empty: const EmptyState(
+                  icon: Icons.sell_outlined,
+                  title: 'No tags',
+                ),
+                itemBuilder: (context, index) {
+                  final t = data.items[index];
+                  return ListTile(
+                    leading: const Icon(Icons.sell_outlined, size: 20),
+                    title: Text(
+                      t.name,
+                      style: const TextStyle(
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 12.5,
+                      ),
+                    ),
+                    subtitle: _TagSubtitle(loc: widget.loc, tag: t),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, size: 18),
+                      onPressed: () => _delete(context, ref, t),
+                    ),
+                  );
+                },
               ),
-              subtitle: _TagSubtitle(loc: loc, tag: t),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline, size: 18),
-                onPressed: () => _delete(context, ref, t),
-              ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

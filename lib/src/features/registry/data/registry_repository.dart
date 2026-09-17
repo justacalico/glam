@@ -57,10 +57,12 @@ class RegistryRepository {
   Future<Paginated<RegistryTag>> registryTags(
     Object projectId,
     int repoId, {
+    String? nameRegex,
     int page = 1,
   }) {
     return _client.getPage(
       '${_p(projectId)}/registry/repositories/$repoId/tags',
+      query: {'name_regex': ?nameRegex},
       page: page,
       decoder: (j) => RegistryTag.fromJson(j! as Map<String, dynamic>),
     );

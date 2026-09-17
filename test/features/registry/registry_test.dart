@@ -237,7 +237,7 @@ void main() {
     });
 
     test('registryTagsProvider removes the tag locally', () async {
-      const loc = (project: 42, repoId: 41);
+      const filter = (loc: (project: 42, repoId: 41), name: null);
       adapter
         ..get(
           '/projects/42/registry/repositories/41/tags',
@@ -245,17 +245,29 @@ void main() {
         )
         ..delete('/projects/42/registry/repositories/41/tags/latest');
 
-      await container.read(registryTagsProvider(loc).future);
+      await container.read(registryTagsProvider(filter).future);
       await container
-          .read(registryTagsProvider(loc).notifier)
+          .read(registryTagsProvider(filter).notifier)
           .deleteTag('latest');
 
-      final items = container.read(registryTagsProvider(loc)).value!.items;
+      final items = container.read(registryTagsProvider(filter)).value!.items;
       expect(items.single.name, 'v1.0.0');
       expect(
         adapter.requestsTo('GET', '/projects/42/registry/repositories/41/tags'),
         hasLength(1),
       );
+    });
+
+    test('registryTagsProvider forwards name_regex', () async {
+      const filter = (loc: (project: 42, repoId: 41), name: 'v1.*');
+      adapter.get(
+        '/projects/42/registry/repositories/41/tags',
+        fixtureJson('registry_tags'),
+      );
+
+      await container.read(registryTagsProvider(filter).future);
+
+      expect(adapter.lastRequest!.queryParameters['name_regex'], 'v1.*');
     });
   });
 }
