@@ -241,6 +241,140 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
     }
   }
 
+  Future<void> _editLink(ReleaseLink? existing) async {
+    final name = TextEditingController(text: existing?.name ?? '');
+    final url = TextEditingController(text: existing?.url ?? '');
+    final filepath = TextEditingController(text: existing?.filepath ?? '');
+    var linkType = existing?.linkType ?? 'other';
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(existing == null ? 'Add asset link' : 'Edit link'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: name,
+                autofocus: true,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: Insets.md),
+              TextField(
+                controller: url,
+                decoration: const InputDecoration(labelText: 'URL'),
+              ),
+              const SizedBox(height: Insets.md),
+              DropdownButtonFormField<String>(
+                initialValue: linkType,
+                decoration: const InputDecoration(labelText: 'Type'),
+                items: const [
+                  DropdownMenuItem(value: 'runbook', child: Text('Runbook')),
+                  DropdownMenuItem(value: 'image', child: Text('Image')),
+                  DropdownMenuItem(value: 'package', child: Text('Package')),
+                  DropdownMenuItem(value: 'other', child: Text('Other')),
+                ],
+                onChanged: (v) => setState(() => linkType = v ?? 'other'),
+              ),
+              const SizedBox(height: Insets.md),
+              TextField(
+                controller: filepath,
+                decoration: const InputDecoration(
+                  labelText: 'Filepath (optional)',
+                  hintText: '/releases/v1.2.0/asset.zip',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved != true || !mounted) {
+      return;
+    }
+    try {
+      final repo = ref.read(repositoryRepositoryProvider);
+      final tag = widget.release.tagName;
+      final trimmedUrl = url.text.trim();
+      if (existing == null) {
+        await repo.createReleaseLink(
+          widget.projectId,
+          tag,
+          name: name.text.trim(),
+          url: trimmedUrl,
+          linkType: linkType,
+          filepath: filepath.text.trim().isEmpty ? null : filepath.text.trim(),
+        );
+      } else {
+        await repo.updateReleaseLink(
+          widget.projectId,
+          tag,
+          existing.id!,
+          name: name.text.trim(),
+          url: trimmedUrl,
+          linkType: linkType,
+          filepath: filepath.text.trim().isEmpty ? null : filepath.text.trim(),
+        );
+      }
+      ref.invalidate(releasesProvider);
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _deleteLink(ReleaseLink link) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${link.name}?'),
+        content: const Text('Only the link is removed; assets stay.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(repositoryRepositoryProvider)
+          .deleteReleaseLink(
+            widget.projectId,
+            widget.release.tagName,
+            link.id!,
+          );
+      ref.invalidate(releasesProvider);
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
   Future<void> _showEvidence() async {
     try {
       final ev = await ref
@@ -385,36 +519,74 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                         style: theme.textTheme.bodySmall,
                       ),
                     ),
-                  if (release.assets.isNotEmpty) ...[
-                    const SizedBox(height: Insets.md),
-                    for (final link in release.assets)
-                      InkWell(
-                        onTap: () => launchExternal(link.url),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: Insets.xs,
+                  const SizedBox(height: Insets.md),
+                  for (final link in release.assets)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: Insets.xs),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.download_outlined,
+                            size: 16,
+                            color: colors.accent,
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.download_outlined,
-                                size: 16,
-                                color: colors.accent,
-                              ),
-                              const SizedBox(width: Insets.sm),
-                              Expanded(
-                                child: Text(
-                                  link.name,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colors.accent,
-                                  ),
+                          const SizedBox(width: Insets.sm),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => launchExternal(link.url),
+                              child: Text(
+                                link.name,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.accent,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          if (link.linkType != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: Insets.sm),
+                              child: Text(
+                                link.linkType!,
+                                style: theme.textTheme.labelSmall,
+                              ),
+                            ),
+                          if (link.id != null)
+                            PopupMenuButton<String>(
+                              iconSize: 16,
+                              icon: Icon(
+                                Icons.more_vert,
+                                size: 16,
+                                color: colors.inkFaint,
+                              ),
+                              itemBuilder: (context) => const [
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit link'),
+                                ),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Remove link'),
+                                ),
+                              ],
+                              onSelected: (v) {
+                                if (v == 'edit') {
+                                  unawaited(_editLink(link));
+                                } else if (v == 'delete') {
+                                  unawaited(_deleteLink(link));
+                                }
+                              },
+                            ),
+                        ],
                       ),
-                  ],
+                    ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.add_link, size: 16),
+                      label: const Text('Add link'),
+                      onPressed: () => unawaited(_editLink(null)),
+                    ),
+                  ),
                 ],
               ),
             ),

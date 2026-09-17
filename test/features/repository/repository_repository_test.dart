@@ -593,6 +593,55 @@ void main() {
       expect(ev.sha, '760d9cdfb8');
       expect(ev.collectedAt, isNotNull);
     });
+
+    test('release links create, update and delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/releases/v1.2.0/assets/links', {
+          'id': 5,
+          'name': 'installer',
+          'url': 'https://cdn.example.com/app.zip',
+          'link_type': 'package',
+        })
+        ..put('/projects/42/releases/v1.2.0/assets/links/5', {
+          'id': 5,
+          'name': 'installer-2',
+          'url': 'https://cdn.example.com/app2.zip',
+          'link_type': 'package',
+        })
+        ..delete('/projects/42/releases/v1.2.0/assets/links/5');
+      final repo = RepositoryRepository(client);
+
+      final link = await repo.createReleaseLink(
+        42,
+        'v1.2.0',
+        name: 'installer',
+        url: 'https://cdn.example.com/app.zip',
+        linkType: 'package',
+      );
+      expect(link.id, 5);
+      final post = adapter.requestsTo(
+        'POST',
+        '/projects/42/releases/v1.2.0/assets/links',
+      );
+      expect((post.single.data as Map)['link_type'], 'package');
+
+      await repo.updateReleaseLink(
+        42,
+        'v1.2.0',
+        5,
+        name: 'installer-2',
+        url: 'https://cdn.example.com/app2.zip',
+      );
+      await repo.deleteReleaseLink(42, 'v1.2.0', 5);
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/releases/v1.2.0/assets/links/5',
+        ),
+        hasLength(1),
+      );
+    });
   });
 
   group('readme', () {

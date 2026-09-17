@@ -417,6 +417,57 @@ class RepositoryRepository {
     );
   }
 
+  /// Attaches an asset link to the release
+  /// (`/releases/:tag/assets/links`).
+  Future<ReleaseLink> createReleaseLink(
+    Object projectId,
+    String tag, {
+    required String name,
+    required String url,
+    String? linkType,
+    String? filepath,
+  }) {
+    return _client.post(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}/assets/links',
+      body: {
+        'name': name,
+        'url': url,
+        'link_type': ?linkType,
+        'filepath': ?filepath,
+      },
+      decoder: (j) => ReleaseLink.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ReleaseLink> updateReleaseLink(
+    Object projectId,
+    String tag,
+    int linkId, {
+    String? name,
+    String? url,
+    String? linkType,
+    String? filepath,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}'
+      '/assets/links/$linkId',
+      body: {
+        'name': ?name,
+        'url': ?url,
+        'link_type': ?linkType,
+        'filepath': ?filepath,
+      },
+      decoder: (j) => ReleaseLink.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteReleaseLink(Object projectId, String tag, int linkId) {
+    return _client.delete(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}'
+      '/assets/links/$linkId',
+    );
+  }
+
   /// The rendered README for the project overview.
   Future<RepoFile?> readme(Object projectId, {String? ref}) async {
     const candidates = [
