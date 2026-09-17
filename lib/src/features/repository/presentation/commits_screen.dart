@@ -11,17 +11,26 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
-/// Commit history for a project (optionally pinned to a ref).
+/// Commit history for a project (optionally pinned to a ref or to one
+/// file's history).
 class CommitsScreen extends ConsumerWidget {
-  const CommitsScreen({required this.projectId, this.ref, super.key});
+  const CommitsScreen({
+    required this.projectId,
+    this.ref,
+    this.path,
+    super.key,
+  });
 
   final String projectId;
   final String? ref;
 
+  /// When set, only commits touching this file are listed.
+  final String? path;
+
   @override
   Widget build(BuildContext context, WidgetRef refScope) {
     final colors = context.colors;
-    final location = (project: projectId as Object, ref: ref);
+    final location = (project: projectId as Object, ref: ref, path: path);
     final state = refScope.watch(commitsProvider(location));
     final notifier = refScope.read(commitsProvider(location).notifier);
 
