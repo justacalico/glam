@@ -159,6 +159,26 @@ void main() {
       expect(adapter.requestsTo('DELETE', '/groups/9'), hasLength(1));
     });
 
+    test('updateGroup puts name, path and visibility', () async {
+      final (client, adapter) = testClient();
+      adapter.put('/groups/9', (fixtureJson('groups') as List).first);
+      final repo = GroupsRepository(client);
+
+      await repo.updateGroup(
+        9,
+        name: 'Platform',
+        path: 'platform',
+        visibility: 'internal',
+      );
+
+      final sent = adapter.requestsTo('PUT', '/groups/9').single;
+      final body = sent.data as Map;
+      expect(body['name'], 'Platform');
+      expect(body['path'], 'platform');
+      expect(body['visibility'], 'internal');
+      expect(body.containsKey('description'), isFalse);
+    });
+
     test('members work for groups and projects', () async {
       final (client, adapter) = testClient();
       adapter
