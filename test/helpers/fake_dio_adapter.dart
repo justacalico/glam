@@ -51,6 +51,10 @@ class FakeDioAdapter implements HttpClientAdapter {
     _add('PUT', path, StubbedResponse(status: status, body: body));
   }
 
+  void patch(String path, Object? body, {int status = 200}) {
+    _add('PATCH', path, StubbedResponse(status: status, body: body));
+  }
+
   void delete(String path, {int status = 204}) {
     _add('DELETE', path, StubbedResponse(status: status, body: null));
   }

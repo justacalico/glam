@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/domain/project_pages.dart';
 import 'package:glam/src/features/projects/domain/project_export.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
@@ -185,6 +186,26 @@ final projectDeployTokensProvider =
 final projectRunnersProvider = FutureProvider.family<List<Runner>, Object>(
   (ref, id) => ref.watch(projectsRepositoryProvider).projectRunners(id),
 );
+
+/// GitLab Pages config plus its custom domains. Null when Pages is
+/// disabled on the project or instance.
+final projectPagesProvider =
+    FutureProvider.family<
+      ({ProjectPages pages, List<PageDomain> domains})?,
+      Object
+    >((ref, id) async {
+      try {
+        final repo = ref.watch(projectsRepositoryProvider);
+        final pages = await repo.pages(id);
+        final domains = await repo.pageDomains(id);
+        return (pages: pages, domains: domains);
+      } on ApiException catch (e) {
+        if (e.statusCode == 403 || e.statusCode == 404) {
+          return null;
+        }
+        rethrow;
+      }
+    });
 
 /// Merge-request approval rules configured on the project. Empty on
 /// instances where the endpoint is absent or feature-gated.
