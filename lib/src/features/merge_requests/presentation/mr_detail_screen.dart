@@ -28,6 +28,7 @@ import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
+import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/draft_note.dart';
@@ -220,6 +221,9 @@ class _OverviewTab extends ConsumerWidget {
                   .read(mrDiscussionsProvider(loc).notifier)
                   .addComment(body);
             },
+            onUpload: (bytes, name) => ref
+                .read(projectsRepositoryProvider)
+                .uploadFile(loc.project, bytes, name),
           ),
       ],
     );

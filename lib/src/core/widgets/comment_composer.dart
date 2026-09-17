@@ -1,14 +1,27 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 
-/// Bottom-docked comment input with a send button.
+/// Bottom-docked comment input with a send button and an optional
+/// file-attach affordance.
 class CommentComposer extends StatefulWidget {
-  const CommentComposer({required this.onSend, this.hint, super.key});
+  const CommentComposer({
+    required this.onSend,
+    this.hint,
+    this.onUpload,
+    super.key,
+  });
 
   /// Called with the trimmed body. Throw to surface a snackbar.
   final Future<void> Function(String body) onSend;
   final String? hint;
+
+  /// Uploads a picked file and returns the markdown snippet to insert.
+  /// When null the attach button is hidden.
+  final Future<String> Function(Uint8List bytes, String name)? onUpload;
 
   @override
   State<CommentComposer> createState() => _CommentComposerState();
@@ -17,11 +30,40 @@ class CommentComposer extends StatefulWidget {
 class _CommentComposerState extends State<CommentComposer> {
   final _controller = TextEditingController();
   var _sending = false;
+  var _uploading = false;
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _attach() async {
+    final file = await FilePicker.pickFile();
+    if (file == null || !mounted) {
+      return;
+    }
+    final bytes = await file.readAsBytes();
+    setState(() => _uploading = true);
+    try {
+      final markdown = await widget.onUpload!(bytes, file.name);
+      final text = _controller.text;
+      final sel = _controller.selection;
+      final at = sel.isValid ? sel.start : text.length;
+      _controller
+        ..text = '${text.substring(0, at)}$markdown${text.substring(at)}'
+        ..selection = TextSelection.collapsed(offset: at + markdown.length);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to upload file')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _uploading = false);
+      }
+    }
   }
 
   Future<void> _send() async {
@@ -85,6 +127,18 @@ class _CommentComposerState extends State<CommentComposer> {
               ),
             ),
           ),
+          if (widget.onUpload != null)
+            IconButton(
+              tooltip: 'Attach a file',
+              onPressed: _uploading ? null : _attach,
+              icon: _uploading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(Icons.attach_file, color: colors.inkMuted, size: 20),
+            ),
           IconButton(
             onPressed: _sending ? null : _send,
             icon: _sending

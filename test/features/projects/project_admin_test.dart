@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
@@ -458,6 +459,24 @@ void main() {
 
       final bytes = await repo.exportDownload(42);
       expect(utf8.decode(bytes), 'tar');
+    });
+
+    test('uploadFile posts multipart and returns markdown', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/uploads', {
+        'markdown': '![img](/uploads/abc/img.png)',
+      });
+      final repo = ProjectsRepository(client);
+
+      final md = await repo.uploadFile(
+        42,
+        Uint8List.fromList('png'.codeUnits),
+        'img.png',
+      );
+
+      expect(md, '![img](/uploads/abc/img.png)');
+      expect(adapter.requestsTo('POST', '/projects/42/uploads'), hasLength(1));
+      expect(adapter.lastRequest!.data, isA<FormData>());
     });
 
     test('deploy tokens list, create keeps the secret, revoke', () async {

@@ -17,6 +17,7 @@ import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
+import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_form_screen.dart';
@@ -136,6 +137,11 @@ class SnippetDetailScreen extends ConsumerWidget {
                     .read(snippetNotesProvider(loc).notifier)
                     .addComment(body);
               },
+              onUpload: loc.projectId == null
+                  ? null
+                  : (bytes, name) => ref
+                        .read(projectsRepositoryProvider)
+                        .uploadFile(loc.projectId!, bytes, name),
             ),
           ],
         ),
