@@ -66,6 +66,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                       scope: s.first,
                       state: f.state,
                       search: f.search,
+                      wip: f.wip,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -86,6 +87,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                             scope: f.scope,
                             state: f.state,
                             search: v,
+                            wip: f.wip,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -100,6 +102,24 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           scope: f.scope,
                           state: s,
                           search: f.search,
+                          wip: f.wip,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Insets.sm),
+                    FilterMenu(
+                      title: 'Draft',
+                      current: filter.wip,
+                      options: const ['yes', 'no'],
+                      labels: const {'yes': 'Drafts', 'no': 'No drafts'},
+                      onSelect: (w) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          wip: w,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -114,6 +134,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           scope: f.scope,
                           state: f.state,
                           search: f.search,
+                          wip: f.wip,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -222,6 +243,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _targetBranch;
   int? _assigneeId;
   int? _authorId;
+  String? _wip;
   String? _orderBy;
   String? _sort;
 
@@ -245,6 +267,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
       targetBranch: _targetBranch,
       assigneeId: _assigneeId,
       authorId: _authorId,
+      wip: _wip,
       orderBy: _orderBy,
       sort: _sort,
     );
@@ -394,6 +417,13 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 current: _targetBranch,
                 options: [for (final b in branches) b.name],
                 onSelect: (v) => setState(() => _targetBranch = v),
+              ),
+              FilterMenu(
+                title: 'Draft',
+                current: _wip,
+                options: const ['yes', 'no'],
+                labels: const {'yes': 'Drafts', 'no': 'No drafts'},
+                onSelect: (v) => setState(() => _wip = v),
               ),
               SortMenu(
                 orderBy: _orderBy,

@@ -10,6 +10,7 @@ class FilterMenu extends StatelessWidget {
     required this.current,
     required this.options,
     required this.onSelect,
+    this.labels = const {},
     super.key,
   });
 
@@ -17,6 +18,10 @@ class FilterMenu extends StatelessWidget {
   final String? current;
   final List<String> options;
   final ValueChanged<String?> onSelect;
+
+  /// Optional display labels when option values aren't user-facing
+  /// (e.g. `yes`/`no` API params).
+  final Map<String, String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,11 @@ class FilterMenu extends StatelessWidget {
           child: Text('Any $title'),
         ),
         for (final o in options)
-          CheckedPopupMenuItem(value: o, checked: current == o, child: Text(o)),
+          CheckedPopupMenuItem(
+            value: o,
+            checked: current == o,
+            child: Text(labels[o] ?? o),
+          ),
       ],
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -42,7 +51,7 @@ class FilterMenu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              current ?? title,
+              labels[current] ?? current ?? title,
               style: Theme.of(context).textTheme.labelLarge,
             ),
             Icon(Icons.arrow_drop_down, color: colors.inkMuted),

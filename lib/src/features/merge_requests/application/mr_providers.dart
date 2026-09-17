@@ -24,6 +24,7 @@ typedef MrFilter = ({
   MrScope scope,
   String? state,
   String? search,
+  String? wip,
   String? orderBy,
   String? sort,
 });
@@ -32,6 +33,7 @@ const defaultMrFilter = (
   scope: MrScope.assigned,
   state: 'opened',
   search: null,
+  wip: null,
   orderBy: null,
   sort: null,
 );
@@ -62,6 +64,7 @@ class MergeRequestsNotifier extends PagedListNotifier<MergeRequest> {
           scope: filter.scope,
           state: filter.state,
           search: filter.search,
+          wip: filter.wip,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -79,6 +82,7 @@ typedef ProjectMrFilter = ({
   String? targetBranch,
   int? assigneeId,
   int? authorId,
+  String? wip,
   String? orderBy,
   String? sort,
 });
@@ -109,6 +113,7 @@ class ProjectMrsNotifier extends PagedListNotifier<MergeRequest> {
           targetBranch: filter.targetBranch,
           assigneeId: filter.assigneeId,
           authorId: filter.authorId,
+          wip: filter.wip,
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

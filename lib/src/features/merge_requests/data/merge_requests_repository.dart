@@ -47,6 +47,7 @@ class MergeRequestsRepository {
     MrScope scope = MrScope.assigned,
     String? state,
     String? search,
+    String? wip,
     String? orderBy,
     String? sort,
     int page = 1,
@@ -57,6 +58,7 @@ class MergeRequestsRepository {
     final query = <String, Object?>{
       'state': ?state,
       'search': ?search,
+      'wip': ?wip,
       'order_by': ?orderBy,
       'sort': ?sort,
     };
@@ -87,6 +89,7 @@ class MergeRequestsRepository {
     int? milestoneId,
     int? assigneeId,
     int? authorId,
+    String? wip,
     String? orderBy,
     String? sort,
     int page = 1,
@@ -100,6 +103,7 @@ class MergeRequestsRepository {
       'milestone': ?milestone ?? milestoneId?.toString(),
       'assignee_id': ?assigneeId?.toString(),
       'author_id': ?authorId?.toString(),
+      'wip': ?wip,
       'order_by': ?orderBy,
       'sort': ?sort,
     };
