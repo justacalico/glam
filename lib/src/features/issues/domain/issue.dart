@@ -35,6 +35,7 @@ class Issue extends Equatable {
     this.timeEstimate,
     this.timeSpent,
     this.iteration,
+    this.issueType = 'ISSUE',
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
@@ -94,6 +95,7 @@ class Issue extends Equatable {
       iteration: json['iteration'] is Map<String, dynamic>
           ? Iteration.fromJson(json['iteration'] as Map<String, dynamic>)
           : null,
+      issueType: json['type'] as String? ?? 'ISSUE',
     );
   }
 
@@ -139,6 +141,9 @@ class Issue extends Equatable {
 
   /// Group iteration the issue is scheduled in (Premium tiers).
   final Iteration? iteration;
+
+  /// `ISSUE`, `INCIDENT`, `TASK`, or `TEST_CASE`.
+  final String issueType;
 
   bool get isOpen => state == 'opened' || state == 'reopened';
 
