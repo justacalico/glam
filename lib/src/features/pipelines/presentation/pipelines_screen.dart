@@ -11,6 +11,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/filter_menu.dart';
+import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
@@ -98,6 +99,7 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
   String? _status;
   String? _source;
   String? _ref;
+  String? _username;
 
   static const _statuses = [
     (null, 'All'),
@@ -131,11 +133,24 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
             .value
             ?.items ??
         const [];
+    final members =
+        ref
+            .watch(
+              membersProvider((
+                id: widget.projectId,
+                isProject: true,
+                query: null,
+              )),
+            )
+            .value
+            ?.items ??
+        const [];
     final filter = (
       project: widget.projectId,
       status: _status,
       source: _source,
       ref: _ref,
+      username: _username,
     );
     final state = ref.watch(pipelinesProvider(filter));
     final notifier = ref.read(pipelinesProvider(filter).notifier);
@@ -160,6 +175,12 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
                   current: _ref,
                   options: [for (final b in branches) b.name],
                   onSelect: (v) => setState(() => _ref = v),
+                ),
+                FilterMenu(
+                  title: 'User',
+                  current: _username,
+                  options: [for (final m in members) m.username],
+                  onSelect: (v) => setState(() => _username = v),
                 ),
                 _FilterMenu(
                   tooltip: 'Filter pipelines',

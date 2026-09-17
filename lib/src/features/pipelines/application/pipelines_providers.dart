@@ -22,6 +22,7 @@ typedef PipelineFilter = ({
   String? status,
   String? source,
   String? ref,
+  String? username,
 });
 
 final pipelinesProvider =
@@ -46,6 +47,7 @@ class PipelinesNotifier extends PagedListNotifier<Pipeline> {
           status: filter.status,
           source: filter.source,
           ref: filter.ref,
+          username: filter.username,
         );
   }
 }
