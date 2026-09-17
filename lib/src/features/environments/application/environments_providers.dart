@@ -23,23 +23,25 @@ final featureFlagUserListsProvider =
           ref.watch(environmentsRepositoryProvider).featureFlagUserLists(id),
     );
 
+typedef EnvironmentFilter = ({Object project, String? states});
+
 final environmentsProvider =
     AsyncNotifierProvider.family<
       EnvironmentsNotifier,
       PagedListState<GlEnvironment>,
-      Object
+      EnvironmentFilter
     >(EnvironmentsNotifier.new);
 
 class EnvironmentsNotifier extends PagedListNotifier<GlEnvironment> {
-  EnvironmentsNotifier(this.projectId);
+  EnvironmentsNotifier(this.filter);
 
-  final Object projectId;
+  final EnvironmentFilter filter;
 
   @override
   Future<Paginated<GlEnvironment>> fetchPage(int page) {
     return ref
         .watch(environmentsRepositoryProvider)
-        .environments(projectId, page: page);
+        .environments(filter.project, page: page, states: filter.states);
   }
 }
 
