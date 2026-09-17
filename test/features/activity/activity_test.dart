@@ -73,6 +73,21 @@ void main() {
       expect(adapter.lastRequest!.path, '/groups/9/events');
     });
 
+    test('userActivities maps dates to counts', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/user/activities', [
+        {'date': '2024-06-01', 'event_count': 3},
+        {'date': '2024-06-03', 'event_count': 7},
+      ]);
+      final repo = ActivityRepository(client);
+
+      final days = await repo.userActivities();
+
+      expect(days[DateTime(2024, 6, 1)], 3);
+      expect(days[DateTime(2024, 6, 3)], 7);
+      expect(days, hasLength(2));
+    });
+
     test('notifications + markAllRead', () async {
       final (client, adapter) = testClient();
       adapter
