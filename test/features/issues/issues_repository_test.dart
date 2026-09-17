@@ -177,12 +177,17 @@ void main() {
 
   test('issue links list, link, unlink', () async {
     final (client, adapter) = testClient();
+    final linkRows = fixtureJson('issue_links') as List;
     adapter
-      ..get('/projects/42/issues/12/links', fixtureJson('issue_links'))
-      ..post(
-        '/projects/42/issues/12/links',
-        (fixtureJson('issue_links') as List).first,
-      )
+      ..get('/projects/42/issues/12/links', linkRows)
+      // POST /links returns {id, link_type, source_issue, target_issue}
+      // — a different shape from the GET list rows.
+      ..post('/projects/42/issues/12/links', {
+        'id': 200,
+        'link_type': 'blocks',
+        'source_issue': linkRows.first,
+        'target_issue': linkRows.last,
+      })
       ..delete('/projects/42/issues/12/links/100');
     final repo = IssuesRepository(client);
 
@@ -201,7 +206,9 @@ void main() {
       targetIid: 9,
       linkType: 'blocks',
     );
-    expect(created.linkId, 100);
+    expect(created.linkId, 200);
+    expect(created.linkType, 'blocks');
+    expect(created.issue.title, isNotEmpty);
     final sent = adapter.lastRequest!.data as Map;
     expect(sent['target_project_id'], 'group/other');
     expect(sent['target_issue_iid'], 9);

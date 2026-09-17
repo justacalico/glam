@@ -88,83 +88,85 @@ class IssueLinksSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Link issue'),
-          content: SizedBox(
-            width: 420,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: iid,
-                  autofocus: true,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Issue #',
-                    errorText: iidError ? 'Enter an issue number' : null,
-                  ),
-                  onChanged: (_) {
-                    if (iidError) {
-                      setState(() => iidError = false);
-                    }
-                  },
-                ),
-                const SizedBox(height: Insets.sm),
-                TextField(
-                  controller: project,
-                  decoration: const InputDecoration(
-                    labelText: 'Project (optional)',
-                    hintText: 'group/other-project',
-                  ),
-                ),
-                const SizedBox(height: Insets.md),
-                Row(
-                  children: [
-                    const Expanded(child: Text('Link type')),
-                    DropdownButton<String>(
-                      value: linkType,
-                      onChanged: (v) {
-                        if (v != null) {
-                          setState(() => linkType = v);
-                        }
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'relates_to',
-                          child: Text('Relates to'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'blocks',
-                          child: Text('Blocks'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'is_blocked_by',
-                          child: Text('Blocked by'),
-                        ),
-                      ],
+        builder: (context, setState) {
+          void submit() {
+            if (int.tryParse(iid.text.trim()) == null) {
+              setState(() => iidError = true);
+              return;
+            }
+            Navigator.pop(context, true);
+          }
+
+          return AlertDialog(
+            title: const Text('Link issue'),
+            content: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: iid,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Issue #',
+                      errorText: iidError ? 'Enter an issue number' : null,
                     ),
-                  ],
-                ),
-              ],
+                    onChanged: (_) {
+                      if (iidError) {
+                        setState(() => iidError = false);
+                      }
+                    },
+                    onSubmitted: (_) => submit(),
+                  ),
+                  const SizedBox(height: Insets.sm),
+                  TextField(
+                    controller: project,
+                    decoration: const InputDecoration(
+                      labelText: 'Project (optional)',
+                      hintText: 'group/other-project',
+                    ),
+                  ),
+                  const SizedBox(height: Insets.md),
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Link type')),
+                      DropdownButton<String>(
+                        value: linkType,
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() => linkType = v);
+                          }
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'relates_to',
+                            child: Text('Relates to'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'blocks',
+                            child: Text('Blocks'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'is_blocked_by',
+                            child: Text('Blocked by'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (int.tryParse(iid.text.trim()) == null) {
-                  setState(() => iidError = true);
-                  return;
-                }
-                Navigator.pop(context, true);
-              },
-              child: const Text('Link'),
-            ),
-          ],
-        ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(onPressed: submit, child: const Text('Link')),
+            ],
+          );
+        },
       ),
     );
     final draft = (
@@ -199,6 +201,26 @@ class IssueLinksSection extends ConsumerWidget {
     WidgetRef ref,
     IssueLink link,
   ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove link?'),
+        content: Text('Unlink #${link.issue.iid} from this issue.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
     try {
       await ref.read(issueLinksProvider(loc).notifier).unlink(link.linkId);
     } on ApiException catch (e) {

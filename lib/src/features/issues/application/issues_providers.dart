@@ -133,7 +133,9 @@ class IssueLinksNotifier extends AsyncNotifier<List<IssueLink>> {
     return ref.watch(issuesRepositoryProvider).issueLinks(loc.project, loc.iid);
   }
 
-  /// Adds a link then refreshes. Returns the created link.
+  /// Adds a link then refetches without a reload spinner — `link_type`
+  /// like `is_blocked_by` can flip the stored direction, so trusting
+  /// the POST body for an in-place insert would be wrong.
   Future<IssueLink> link(
     Object targetProject,
     int targetIid,
@@ -148,7 +150,11 @@ class IssueLinksNotifier extends AsyncNotifier<List<IssueLink>> {
           targetIid: targetIid,
           linkType: linkType,
         );
-    ref.invalidateSelf();
+    state = AsyncData(
+      await ref.read(issuesRepositoryProvider).issueLinks(loc.project, loc.iid),
+    );
+    // The link writes a system note ("marked as related to #5").
+    ref.invalidate(issueNotesProvider(loc));
     return created;
   }
 
@@ -157,18 +163,20 @@ class IssueLinksNotifier extends AsyncNotifier<List<IssueLink>> {
     await ref
         .read(issuesRepositoryProvider)
         .unlinkIssue(loc.project, loc.iid, linkId);
-    state = state.value == null
-        ? state
-        : AsyncData([
-            for (final l in state.value!)
-              if (l.linkId != linkId) l,
-          ]);
+    final current = state.value;
+    if (current != null) {
+      state = AsyncData([
+        for (final l in current)
+          if (l.linkId != linkId) l,
+      ]);
+    }
+    ref.invalidate(issueNotesProvider(loc));
   }
 }
 
 /// Merge requests related to this issue.
-final issueRelatedMrsProvider = FutureProvider.family
-    .autoDispose<List<MergeRequest>, IssueRef>(
+final issueRelatedMrsProvider =
+    FutureProvider.family<List<MergeRequest>, IssueRef>(
       (ref, loc) => ref
           .watch(issuesRepositoryProvider)
           .relatedMergeRequests(loc.project, loc.iid),

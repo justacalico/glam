@@ -272,8 +272,8 @@ class IssuesRepository {
     );
   }
 
-  /// Links this issue to [targetIid]. [targetProject] defaults to the
-  /// issue's own project; accepts an id or URL-encoded full path.
+  /// Links this issue to [targetIid]. [targetProject] accepts an id or
+  /// a full path like `group/other`.
   Future<IssueLink> linkIssue(
     Object projectId,
     int iid, {
@@ -288,7 +288,17 @@ class IssuesRepository {
         'target_issue_iid': targetIid,
         'link_type': linkType,
       },
-      decoder: (j) => IssueLink.fromJson(j! as Map<String, dynamic>),
+      // POST returns {id, link_type, source_issue, target_issue} — a
+      // different shape from the GET list's flat issue rows.
+      decoder: (j) {
+        final m = j! as Map<String, dynamic>;
+        final target = m['target_issue'];
+        return IssueLink(
+          issue: Issue.fromJson(target is Map<String, dynamic> ? target : m),
+          linkId: (m['issue_link_id'] ?? m['id']) as int? ?? 0,
+          linkType: m['link_type'] as String? ?? 'relates_to',
+        );
+      },
     );
   }
 
@@ -298,7 +308,8 @@ class IssuesRepository {
 
   /// Merge requests related to this issue (mentioned or closing it).
   Future<List<MergeRequest>> relatedMergeRequests(Object projectId, int iid) {
-    return _client.getList(
+    // Paginated endpoint; a bounded list so fetch every page.
+    return _client.getAll(
       '${_p(projectId)}/issues/$iid/related_merge_requests',
       decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
