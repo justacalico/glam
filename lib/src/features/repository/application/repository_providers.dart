@@ -139,6 +139,25 @@ final descriptionTemplatesProvider =
       }
     });
 
+/// File template names for a type (`gitignores`, `dockerfiles`,
+/// `gitlab_ci_ymls`, `licenses`); empty where the endpoint is absent.
+final fileTemplateNamesProvider =
+    FutureProvider.family<List<String>, ({Object project, String type})>((
+      ref,
+      loc,
+    ) async {
+      try {
+        return await ref
+            .watch(repositoryRepositoryProvider)
+            .fileTemplateNames(loc.project, loc.type);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404 || e.statusCode == 403) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
+
 /// Branches and tags containing a commit.
 final commitRefsProvider =
     FutureProvider.family<List<CommitRef>, ({Object project, String sha})>(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 
 /// Create or edit a repository file. Commits straight to [branch].
@@ -112,6 +114,21 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
     }
   }
 
+  Future<void> _applyTemplate() async {
+    final picked = await _TemplateSheet.show(
+      context,
+      projectId: widget.projectId,
+    );
+    if (picked == null || !mounted) {
+      return;
+    }
+    _content.text = picked.content;
+    // Only overwrite the path when it is still just the folder prefix.
+    if (_path.text == widget.pathPrefix) {
+      _path.text = '${widget.pathPrefix}${picked.filename}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -120,6 +137,12 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       appBar: AppBar(
         title: Text(_creating ? 'New file' : 'Edit ${widget.path}'),
         actions: [
+          if (_creating)
+            TextButton.icon(
+              icon: const Icon(Icons.article_outlined, size: 16),
+              label: const Text('Template'),
+              onPressed: _applyTemplate,
+            ),
           Padding(
             padding: const EdgeInsets.only(right: Insets.sm),
             child: FilledButton(
@@ -179,5 +202,121 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Picks a GitLab file template (gitignore / license / CI / Dockerfile)
+/// and returns its content plus the conventional filename.
+class _TemplateSheet extends ConsumerStatefulWidget {
+  const _TemplateSheet({required this.projectId});
+
+  final Object projectId;
+
+  static const _types = {
+    'gitignores': ('Gitignore', '.gitignore'),
+    'licenses': ('License', 'LICENSE'),
+    'gitlab_ci_ymls': ('GitLab CI', '.gitlab-ci.yml'),
+    'dockerfiles': ('Dockerfile', 'Dockerfile'),
+  };
+
+  static Future<({String filename, String content})?> show(
+    BuildContext context, {
+    required Object projectId,
+  }) {
+    return showModalBottomSheet<({String filename, String content})>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _TemplateSheet(projectId: projectId),
+    );
+  }
+
+  @override
+  ConsumerState<_TemplateSheet> createState() => _TemplateSheetState();
+}
+
+class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
+  String _type = 'gitignores';
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final names = ref.watch(
+      fileTemplateNamesProvider((project: widget.projectId, type: _type)),
+    );
+
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.6,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      builder: (context, controller) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Wrap(
+              spacing: Insets.sm,
+              children: [
+                for (final e in _TemplateSheet._types.entries)
+                  ChoiceChip(
+                    label: Text(e.value.$1),
+                    selected: _type == e.key,
+                    onSelected: (_) => setState(() => _type = e.key),
+                  ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: names.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (list) => list.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.article_outlined,
+                      title: 'No templates',
+                    )
+                  : ListView.builder(
+                      controller: controller,
+                      itemCount: list.length,
+                      itemBuilder: (context, i) => ListTile(
+                        dense: true,
+                        title: Text(
+                          list[i],
+                          style: TextStyle(
+                            fontFamily: 'JetBrains Mono',
+                            fontSize: 13,
+                            color: colors.ink,
+                          ),
+                        ),
+                        onTap: _busy ? null : () => _pick(list[i]),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pick(String key) async {
+    setState(() => _busy = true);
+    try {
+      final content = await ref
+          .read(repositoryRepositoryProvider)
+          .fileTemplate(widget.projectId, _type, key);
+      if (mounted) {
+        Navigator.pop(context, (
+          filename: _TemplateSheet._types[_type]!.$2,
+          content: content,
+        ));
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() => _busy = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 }
