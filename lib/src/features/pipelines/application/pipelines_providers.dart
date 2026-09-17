@@ -44,6 +44,23 @@ final pipelineProvider = FutureProvider.family<Pipeline, PipelineRef>(
       ref.watch(pipelinesRepositoryProvider).pipeline(loc.project, loc.id),
 );
 
+/// Latest pipeline on the default branch; null when none ever ran.
+final latestPipelineProvider = FutureProvider.family<Pipeline?, Object>((
+  ref,
+  projectId,
+) async {
+  try {
+    return await ref
+        .watch(pipelinesRepositoryProvider)
+        .latestPipeline(projectId);
+  } on ApiException catch (e) {
+    if (e.statusCode == 404) {
+      return null;
+    }
+    rethrow;
+  }
+});
+
 /// Aggregated test report for a pipeline; empty when none was published.
 final pipelineTestReportProvider =
     FutureProvider.family<TestReport, PipelineRef>((ref, loc) async {
