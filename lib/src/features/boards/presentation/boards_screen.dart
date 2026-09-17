@@ -120,45 +120,32 @@ class _ProjectBoardsTabState extends ConsumerState<ProjectBoardsTab> {
   }
 
   Future<void> _editBoard(Board? existing) async {
-    final controller = TextEditingController(text: existing?.name ?? '');
-    final ok = await showDialog<bool>(
+    final draft = await showDialog<_BoardDraft>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(existing == null ? 'New board' : 'Rename board'),
-        content: SizedBox(
-          width: 320,
-          child: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              border: OutlineInputBorder(),
-            ),
-            onSubmitted: (_) => Navigator.pop(context, true),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      builder: (_) =>
+          _BoardDialog(projectId: widget.projectId, existing: existing),
     );
-    final name = controller.text.trim();
-    controller.dispose();
-    if (ok != true || name.isEmpty || !mounted) {
+    if (draft == null || !mounted) {
       return;
     }
     try {
       final repo = ref.read(boardsRepositoryProvider);
       final board = existing == null
-          ? await repo.createBoard(widget.projectId, name: name)
-          : await repo.updateBoard(widget.projectId, existing.id, name: name);
+          ? await repo.createBoard(
+              widget.projectId,
+              name: draft.name,
+              milestoneId: draft.milestoneId,
+              labels: draft.labels,
+              weight: draft.weight,
+            )
+          : await repo.updateBoard(
+              widget.projectId,
+              existing.id,
+              name: draft.name,
+              milestoneId: draft.milestoneId,
+              labels: draft.labels,
+              weight: draft.weight,
+            );
       setState(() => _boardId = board.id);
       ref.invalidate(boardsProvider(widget.projectId));
     } on ApiException catch (e) {
@@ -633,5 +620,149 @@ class _Card extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// What the board dialog returns on save.
+typedef _BoardDraft = ({
+  String name,
+  int? milestoneId,
+  List<String> labels,
+  int? weight,
+});
+
+/// Board create/edit dialog: name plus the scope filters GitLab
+/// accepts (milestone, labels, weight).
+class _BoardDialog extends ConsumerStatefulWidget {
+  const _BoardDialog({required this.projectId, this.existing});
+
+  final Object projectId;
+  final Board? existing;
+
+  @override
+  ConsumerState<_BoardDialog> createState() => _BoardDialogState();
+}
+
+class _BoardDialogState extends ConsumerState<_BoardDialog> {
+  late final _name = TextEditingController(text: widget.existing?.name ?? '');
+  late final _labels = TextEditingController(
+    text: widget.existing?.labels.join(', ') ?? '',
+  );
+  late final _weight = TextEditingController(
+    text: widget.existing?.weight?.toString() ?? '',
+  );
+  int? _milestone;
+
+  @override
+  void initState() {
+    super.initState();
+    _milestone = widget.existing?.milestoneId;
+  }
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _labels.dispose();
+    _weight.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final existing = widget.existing;
+    final milestones = ref.watch(
+      milestonesProvider((
+        scope: (id: widget.projectId, isProject: true),
+        state: 'active',
+      )),
+    );
+
+    return AlertDialog(
+      title: Text(existing == null ? 'New board' : 'Edit board'),
+      content: SizedBox(
+        width: 360,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _name,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
+                ),
+                onSubmitted: (_) => _save(),
+              ),
+              const SizedBox(height: Insets.md),
+              milestones.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (_, _) => const SizedBox.shrink(),
+                data: (state) => DropdownButtonFormField<int?>(
+                  initialValue: _milestone,
+                  decoration: const InputDecoration(
+                    labelText: 'Milestone scope',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    const DropdownMenuItem(child: Text('No milestone')),
+                    for (final m in state.items)
+                      DropdownMenuItem(value: m.id, child: Text(m.title)),
+                  ],
+                  onChanged: (v) => setState(() => _milestone = v),
+                ),
+              ),
+              const SizedBox(height: Insets.md),
+              TextField(
+                controller: _labels,
+                decoration: const InputDecoration(
+                  labelText: 'Label scope',
+                  hintText: 'bug, frontend',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: Insets.md),
+              TextField(
+                controller: _weight,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Weight scope',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(onPressed: _save, child: const Text('Save')),
+      ],
+    );
+  }
+
+  void _save() {
+    final name = _name.text.trim();
+    if (name.isEmpty) {
+      return;
+    }
+    final labels = _labels.text
+        .split(',')
+        .map((l) => l.trim())
+        .where((l) => l.isNotEmpty)
+        .toList();
+    // Clearing a set milestone means sending -1, not omitting the key.
+    final milestoneId = _milestone == null && widget.existing != null
+        ? -1
+        : _milestone;
+    Navigator.pop(context, (
+      name: name,
+      milestoneId: milestoneId,
+      labels: labels,
+      weight: int.tryParse(_weight.text.trim()),
+    ));
   }
 }

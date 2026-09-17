@@ -7,6 +7,8 @@ class Board extends Equatable {
     required this.id,
     required this.name,
     this.milestoneId,
+    this.labels = const [],
+    this.weight,
     this.lists = const [],
   });
 
@@ -18,6 +20,14 @@ class Board extends Equatable {
       milestoneId: json['milestone'] is Map<String, dynamic>
           ? json['milestone']['id'] as int?
           : null,
+      labels: json['labels'] is List
+          ? (json['labels'] as List)
+                .whereType<Map<String, dynamic>>()
+                .map((l) => l['name'] as String? ?? '')
+                .where((n) => n.isNotEmpty)
+                .toList()
+          : const [],
+      weight: json['weight'] as int?,
       lists: lists is List
           ? lists
                 .whereType<Map<String, dynamic>>()
@@ -30,6 +40,10 @@ class Board extends Equatable {
   final int id;
   final String name;
   final int? milestoneId;
+
+  /// Scope filters from the board settings.
+  final List<String> labels;
+  final int? weight;
 
   /// Populated on the detail endpoint (`/boards/:id`).
   final List<BoardList> lists;
