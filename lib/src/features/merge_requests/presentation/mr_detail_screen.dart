@@ -27,7 +27,6 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
-import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';

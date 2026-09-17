@@ -65,6 +65,10 @@ class JobDetailScreen extends ConsumerWidget {
                     icon: const Icon(Icons.open_in_new, size: 20),
                     onPressed: () => unawaited(launchExternal(j.webUrl!)),
                   ),
+                _JobMenu(
+                  job: j,
+                  onAction: (a) => unawaited(_act(context, ref, a)),
+                ),
               ],
             ),
             orElse: () => const SizedBox.shrink(),
@@ -85,16 +89,51 @@ class JobDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _act(BuildContext context, WidgetRef ref, String action) async {
+    if (action == 'erase' || action == 'delete_artifacts') {
+      final erase = action == 'erase';
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(erase ? 'Erase job?' : 'Delete artifacts?'),
+          content: Text(
+            erase
+                ? 'The trace and artifacts are permanently removed.'
+                : 'Locked artifacts may remain. Requires a maintainer role.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(erase ? 'Erase' : 'Delete'),
+            ),
+          ],
+        ),
+      );
+      if (ok != true || !context.mounted) {
+        return;
+      }
+    }
     final repo = ref.read(pipelinesRepositoryProvider);
     try {
       await switch (action) {
         'cancel' => repo.cancelJob(projectId, jobId),
         'play' => repo.playJob(projectId, jobId),
+        'erase' => repo.eraseJob(projectId, jobId),
+        'keep_artifacts' => repo.keepArtifacts(projectId, jobId),
+        'delete_artifacts' => repo.deleteArtifacts(projectId, jobId),
         _ => repo.retryJob(projectId, jobId),
       };
+      if (!context.mounted) {
+        return;
+      }
       ref
         ..invalidate(jobProvider(_loc))
-        ..invalidate(jobTraceProvider(_loc));
+        ..invalidate(jobTraceProvider(_loc))
+        ..invalidate(pipelineJobsProvider)
+        ..invalidate(projectJobsProvider);
     } on ApiException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -102,6 +141,41 @@ class JobDetailScreen extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     }
+  }
+}
+
+class _JobMenu extends StatelessWidget {
+  const _JobMenu({required this.job, required this.onAction});
+
+  final Job job;
+  final ValueChanged<String> onAction;
+
+  /// Terminal statuses where a job has something erasable.
+  static const _erasable = {'success', 'failed', 'canceled', 'skipped'};
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <PopupMenuEntry<String>>[
+      if (job.status == 'success' || job.status == 'failed') ...[
+        const PopupMenuItem(
+          value: 'keep_artifacts',
+          child: Text('Keep artifacts'),
+        ),
+        const PopupMenuItem(
+          value: 'delete_artifacts',
+          child: Text('Delete artifacts'),
+        ),
+      ],
+      if (_erasable.contains(job.status))
+        const PopupMenuItem(value: 'erase', child: Text('Erase job')),
+    ];
+    if (items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return PopupMenuButton<String>(
+      onSelected: onAction,
+      itemBuilder: (context) => items,
+    );
   }
 }
 

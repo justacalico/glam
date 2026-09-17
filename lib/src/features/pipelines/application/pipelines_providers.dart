@@ -5,6 +5,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/data/pipelines_repository.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 
 final pipelinesRepositoryProvider = Provider<PipelinesRepository>(
   (ref) => PipelinesRepository(ref.watch(apiClientProvider)),
@@ -67,6 +68,34 @@ final jobTraceProvider = FutureProvider.family<String, JobRef>(
   (ref, loc) =>
       ref.watch(pipelinesRepositoryProvider).jobTrace(loc.project, loc.id),
 );
+
+typedef ProjectJobsFilter = ({Object project, String? scope});
+
+final projectJobsProvider =
+    AsyncNotifierProvider.family<
+      ProjectJobsNotifier,
+      PagedListState<Job>,
+      ProjectJobsFilter
+    >(ProjectJobsNotifier.new);
+
+class ProjectJobsNotifier extends PagedListNotifier<Job> {
+  ProjectJobsNotifier(this.filter);
+
+  final ProjectJobsFilter filter;
+
+  @override
+  Future<Paginated<Job>> fetchPage(int page) {
+    return ref
+        .watch(pipelinesRepositoryProvider)
+        .projectJobs(filter.project, page: page, scope: filter.scope);
+  }
+}
+
+final pipelineTriggersProvider =
+    FutureProvider.family<List<PipelineTrigger>, Object>(
+      (ref, project) =>
+          ref.watch(pipelinesRepositoryProvider).triggers(project),
+    );
 
 final pipelineSchedulesProvider =
     AsyncNotifierProvider.family<
