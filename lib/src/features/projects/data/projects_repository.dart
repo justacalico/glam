@@ -182,6 +182,16 @@ class ProjectsRepository {
     );
   }
 
+  /// Moves the project to another namespace. [namespace] takes a
+  /// namespace id or a full path.
+  Future<Project> transfer(Object id, {required Object namespace}) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/transfer',
+      body: {'namespace': namespace},
+      decoder: _decodeOne,
+    );
+  }
+
   /// CI/CD variables (`/projects/:id/variables`).
   Future<List<CiVariable>> variables(Object id) {
     return _client.getAll(

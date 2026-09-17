@@ -224,6 +224,27 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('addMember sends email invites', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/groups/9/members',
+        (fixtureJson('members') as List).first,
+      );
+      final repo = GroupsRepository(client);
+
+      await repo.addMember(
+        9,
+        isProject: false,
+        email: 'jane@example.com',
+        accessLevel: 30,
+      );
+
+      final body = adapter.requestsTo('POST', '/groups/9/members').single.data
+          as Map;
+      expect(body['email'], 'jane@example.com');
+      expect(body.containsKey('username'), isFalse);
+    });
   });
 
   group('providers', () {

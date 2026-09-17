@@ -175,6 +175,17 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('transfer puts the target namespace', () async {
+      final (client, adapter) = testClient();
+      adapter.put('/projects/42/transfer', fixtureJson('project'));
+      final repo = ProjectsRepository(client);
+
+      await repo.transfer(42, namespace: 9);
+
+      final sent = adapter.requestsTo('PUT', '/projects/42/transfer').single;
+      expect((sent.data as Map)['namespace'], 9);
+    });
   });
 
   group('variables', () {
