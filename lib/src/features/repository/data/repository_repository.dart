@@ -143,6 +143,15 @@ class RepositoryRepository {
     );
   }
 
+  /// Branches and tags containing this commit (`/commits/:sha/refs`).
+  Future<List<CommitRef>> commitRefs(Object projectId, String sha) {
+    return _client.getAll(
+      '${_p(projectId)}/repository/commits/$sha/refs',
+      query: {'type': 'all'},
+      decoder: (j) => CommitRef.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Merge requests that contain this commit
   /// (`/repository/commits/:sha/merge_requests`).
   Future<List<MergeRequest>> commitMergeRequests(Object projectId, String sha) {

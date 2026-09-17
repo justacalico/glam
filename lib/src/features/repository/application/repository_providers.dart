@@ -139,6 +139,14 @@ final descriptionTemplatesProvider =
       }
     });
 
+/// Branches and tags containing a commit.
+final commitRefsProvider =
+    FutureProvider.family<List<CommitRef>, ({Object project, String sha})>(
+      (ref, loc) => ref
+          .watch(repositoryRepositoryProvider)
+          .commitRefs(loc.project, loc.sha),
+    );
+
 /// Merge requests containing a commit.
 final commitMergeRequestsProvider =
     FutureProvider.family<List<MergeRequest>, ({Object project, String sha})>(

@@ -57,6 +57,7 @@ class CommitDetailScreen extends ConsumerWidget {
             const SizedBox(height: Insets.lg),
             _CommitStatuses(projectId: projectId, sha: sha),
             _RelatedMrs(projectId: projectId, sha: sha),
+            _CommitRefs(projectId: projectId, sha: sha),
             const SizedBox(height: Insets.lg),
             diffs.when(
               loading: () => const Center(
@@ -409,6 +410,74 @@ class _RelatedMrs extends ConsumerWidget {
             ),
             const SizedBox(height: Insets.lg),
           ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// Branches and tags containing this commit, e.g. "on main, v2.0".
+class _CommitRefs extends ConsumerWidget {
+  const _CommitRefs({required this.projectId, required this.sha});
+
+  final String projectId;
+  final String sha;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = (project: projectId as Object, sha: sha);
+    final refs = ref.watch(commitRefsProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return refs.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: Insets.md),
+          child: Wrap(
+            spacing: Insets.xs,
+            runSpacing: Insets.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text('On', style: theme.textTheme.bodySmall),
+              for (final r in list)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Insets.sm,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceMuted,
+                    borderRadius: Radii.borderSm,
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        r.isTag
+                            ? Icons.sell_outlined
+                            : Icons.call_split_outlined,
+                        size: 12,
+                        color: colors.inkFaint,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        r.name,
+                        style: const TextStyle(
+                          fontFamily: 'JetBrains Mono',
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         );
       },
       orElse: () => const SizedBox.shrink(),
