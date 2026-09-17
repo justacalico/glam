@@ -106,8 +106,15 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _StateMenu(
+                            FilterMenu(
+                              title: 'State',
                               current: filter.state,
+                              options: const ['opened', 'merged', 'closed'],
+                              labels: const {
+                                'opened': 'Open',
+                                'merged': 'Merged',
+                                'closed': 'Closed',
+                              },
                               onSelect: (s) => _setFilter(
                                 (f) => (
                                   scope: f.scope,
@@ -222,50 +229,6 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _StateMenu extends StatelessWidget {
-  const _StateMenu({required this.current, required this.onSelect});
-
-  final String? current;
-  final ValueChanged<String?> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    const options = {
-      'opened': 'Open',
-      'merged': 'Merged',
-      'closed': 'Closed',
-      null: 'All',
-    };
-    return PopupMenuButton<String?>(
-      initialValue: current,
-      onSelected: onSelect,
-      itemBuilder: (context) => [
-        for (final e in options.entries)
-          PopupMenuItem(value: e.key, child: Text(e.value)),
-      ],
-      child: Container(
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: Insets.md),
-        decoration: BoxDecoration(
-          color: colors.surfaceMuted,
-          borderRadius: Radii.borderMd,
-        ),
-        child: Row(
-          children: [
-            Text(
-              options[current] ?? 'All',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(width: Insets.xs),
-            Icon(Icons.expand_more, size: 16, color: colors.inkMuted),
-          ],
         ),
       ),
     );

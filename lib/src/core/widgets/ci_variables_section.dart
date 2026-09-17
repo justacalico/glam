@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Editable fields from the variable dialog.
 typedef VariableFields = ({
@@ -214,9 +215,7 @@ class _VariableTile extends StatelessWidget {
     return ListTile(
       title: Text(
         variable.key,
-        style: theme.textTheme.titleSmall?.copyWith(
-          fontFamily: 'JetBrains Mono',
-        ),
+        style: theme.textTheme.titleSmall?.copyWith(fontFamily: GlamFonts.mono),
       ),
       subtitle: Text(
         [

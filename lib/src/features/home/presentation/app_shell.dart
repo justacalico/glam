@@ -7,6 +7,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/home/presentation/more_sheet.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// One entry in the app's primary navigation.
 class NavDestination {
@@ -213,7 +214,7 @@ class _RailLogo extends StatelessWidget {
         child: Text(
           'G',
           style: TextStyle(
-            fontFamily: 'Space Grotesk',
+            fontFamily: GlamFonts.display,
             fontWeight: FontWeight.w700,
             fontSize: 18,
             color: Colors.white,

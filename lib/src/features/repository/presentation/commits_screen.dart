@@ -10,6 +10,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Commit history for a project (optionally pinned to a ref or to one
 /// file's history).
@@ -122,7 +123,7 @@ class CommitTile extends StatelessWidget {
               child: Text(
                 commit.shortId,
                 style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 11.5,
                 ),
               ),

@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Deploy keys with add / remove.
 class DeployKeysSection extends ConsumerWidget {
@@ -72,7 +73,7 @@ class DeployKeysSection extends ConsumerWidget {
                                 'added ${Format.date(k.createdAt!)}',
                             ].join(' · '),
                             style: const TextStyle(
-                              fontFamily: 'JetBrains Mono',
+                              fontFamily: GlamFonts.mono,
                               fontSize: 11,
                             ),
                           ),

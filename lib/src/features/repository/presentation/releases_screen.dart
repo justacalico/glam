@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Release list; each entry expands to show notes and asset links.
 class ReleasesScreen extends ConsumerWidget {
@@ -469,7 +470,7 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                           '${release.tagName} · '
                           '${Format.date(release.releasedAt)}',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: GlamFonts.mono,
                           ),
                         ),
                       ],

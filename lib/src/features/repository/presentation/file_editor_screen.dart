@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Create or edit a repository file. Commits straight to [branch].
 class FileEditorScreen extends ConsumerStatefulWidget {
@@ -165,7 +166,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
             controller: _path,
             enabled: _creating,
             decoration: const InputDecoration(labelText: 'File path'),
-            style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 13),
+            style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 13),
           ),
           const SizedBox(height: Insets.md),
           TextField(
@@ -188,7 +189,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
                 hintText: 'File contents',
               ),
               style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
+                fontFamily: GlamFonts.mono,
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -226,6 +227,7 @@ class _TemplateSheet extends ConsumerStatefulWidget {
     return showModalBottomSheet<({String filename, String content})>(
       context: context,
       isScrollControlled: true,
+      showDragHandle: true,
       builder: (_) => _TemplateSheet(projectId: projectId),
     );
   }
@@ -262,6 +264,8 @@ class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
                     label: Text(e.value.$1),
                     selected: _type == e.key,
                     onSelected: (_) => setState(() => _type = e.key),
+                    showCheckmark: false,
+                    visualDensity: VisualDensity.compact,
                   ),
               ],
             ),
@@ -283,7 +287,7 @@ class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
                         title: Text(
                           list[i],
                           style: TextStyle(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: GlamFonts.mono,
                             fontSize: 13,
                             color: colors.ink,
                           ),

@@ -12,6 +12,7 @@ import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Create/edit form for a merge request. Dialog on wide screens,
 /// bottom sheet on phones.
@@ -321,10 +322,7 @@ class _BranchPicker extends StatelessWidget {
             value: b,
             child: Text(
               b,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 13),
             ),
           ),
       ],

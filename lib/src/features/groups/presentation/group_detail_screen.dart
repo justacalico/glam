@@ -32,6 +32,7 @@ import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/labels/presentation/labels_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Group home: header plus tabs for projects, subgroups, members.
 class GroupDetailScreen extends ConsumerWidget {
@@ -207,7 +208,7 @@ class _GroupHeader extends StatelessWidget {
                 Text(
                   group.fullPath,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    fontFamily: 'JetBrains Mono',
+                    fontFamily: GlamFonts.mono,
                   ),
                 ),
                 if (group.description?.isNotEmpty ?? false)

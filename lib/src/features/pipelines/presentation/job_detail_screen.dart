@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Job page: meta header plus the full console trace in monospace.
 class JobDetailScreen extends ConsumerWidget {
@@ -225,7 +226,7 @@ class _JobHeader extends StatelessWidget {
             Text(
               job.tagList.join(', '),
               style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
+                fontFamily: GlamFonts.mono,
                 fontSize: 11.5,
               ),
             ),
@@ -261,7 +262,7 @@ class _TraceView extends ConsumerWidget {
                   child: Text(
                     body.isEmpty ? '(empty trace)' : body,
                     style: TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 11.5,
                       height: 1.5,
                       color: colors.ink,

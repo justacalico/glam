@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// One MR row: state icon, title, source → target, pipeline status.
 class MrTile extends StatelessWidget {
@@ -76,7 +77,7 @@ class MrTile extends StatelessWidget {
                         child: Text(
                           mr.sourceBranch,
                           style: const TextStyle(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: GlamFonts.mono,
                             fontSize: 11.5,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -95,7 +96,7 @@ class MrTile extends StatelessWidget {
                       Text(
                         mr.targetBranch,
                         style: TextStyle(
-                          fontFamily: 'JetBrains Mono',
+                          fontFamily: GlamFonts.mono,
                           fontSize: 11.5,
                           color: colors.inkMuted,
                         ),

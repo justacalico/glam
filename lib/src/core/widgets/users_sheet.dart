@@ -23,6 +23,7 @@ class UsersSheet extends ConsumerWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: true,
       builder: (_) => UsersSheet(title: title, provider: provider),
     );
   }

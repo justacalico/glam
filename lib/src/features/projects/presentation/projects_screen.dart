@@ -129,6 +129,8 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                       onSelected: (_) => ref
                           .read(projectFilterProvider.notifier)
                           .setScope(scope),
+                      showCheckmark: false,
+                      visualDensity: VisualDensity.compact,
                     ),
                   ),
               ],

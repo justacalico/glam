@@ -10,6 +10,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
@@ -30,11 +31,8 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
   String? _states;
   String? _search;
 
-  static const _stateOptions = [
-    (null, 'All'),
-    ('available', 'Available'),
-    ('stopped', 'Stopped'),
-  ];
+  static const _stateValues = ['available', 'stopped'];
+  static const _stateLabels = {'available': 'Available', 'stopped': 'Stopped'};
 
   @override
   Widget build(BuildContext context) {
@@ -71,37 +69,12 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
           child: Row(
             children: [
               const Spacer(),
-              PopupMenuButton<String?>(
-                tooltip: 'Filter environments',
-                onSelected: (v) => setState(() => _states = v),
-                itemBuilder: (context) => [
-                  for (final (value, label) in _stateOptions)
-                    CheckedPopupMenuItem(
-                      value: value,
-                      checked: _states == value,
-                      child: Text(label),
-                    ),
-                ],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Insets.sm,
-                    vertical: Insets.sm,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _stateOptions
-                                .where((e) => e.$1 == _states)
-                                .firstOrNull
-                                ?.$2 ??
-                            'All',
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      Icon(Icons.arrow_drop_down, color: colors.inkMuted),
-                    ],
-                  ),
-                ),
+              FilterMenu(
+                title: 'State',
+                current: _states,
+                options: _stateValues,
+                labels: _stateLabels,
+                onSelect: (v) => setState(() => _states = v),
               ),
               TextButton.icon(
                 icon: const Icon(Icons.add, size: 16),

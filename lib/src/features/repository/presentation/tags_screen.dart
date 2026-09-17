@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Tag list; tags with attached releases show the release name.
 class TagsScreen extends ConsumerStatefulWidget {
@@ -179,7 +180,7 @@ class _TagTile extends ConsumerWidget {
                     Text(
                       tag.name,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                       ),
                     ),
                     if (tag.hasRelease) ...[

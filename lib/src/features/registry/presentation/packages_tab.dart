@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 String _label(GitLabPackage p) =>
     p.version.isEmpty ? p.name : '${p.name} ${p.version}';
@@ -219,7 +220,7 @@ class _PackageFiles extends ConsumerWidget {
                     title: Text(
                       f.fileName,
                       style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: GlamFonts.mono,
                         fontSize: 12,
                       ),
                     ),

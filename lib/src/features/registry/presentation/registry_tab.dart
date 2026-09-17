@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Container repositories published by a project.
 class ProjectRegistryTab extends ConsumerWidget {
@@ -44,7 +45,7 @@ class ProjectRegistryTab extends ConsumerWidget {
             title: Text(
               repo.path,
               style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
+                fontFamily: GlamFonts.mono,
                 fontSize: 12.5,
               ),
             ),

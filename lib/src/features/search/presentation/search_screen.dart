@@ -28,6 +28,7 @@ import 'package:glam/src/features/search/data/search_repository.dart';
 import 'package:glam/src/features/search/domain/search_result.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Global or container-scoped search. Pass [projectId] or [groupId] to
 /// scope the scope list and the endpoint.
@@ -244,7 +245,7 @@ class _BlobTile extends StatelessWidget {
                   child: Text(
                     blob.path,
                     style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
+                      fontFamily: GlamFonts.mono,
                       fontSize: 12,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -265,7 +266,7 @@ class _BlobTile extends StatelessWidget {
               child: Text(
                 blob.data,
                 style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 11.5,
                 ),
                 maxLines: 5,

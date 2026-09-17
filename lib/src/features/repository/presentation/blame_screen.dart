@@ -10,6 +10,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// `git blame` for one file: each hunk gets a commit banner followed by
 /// its numbered lines.
@@ -43,7 +44,7 @@ class BlameScreen extends ConsumerWidget {
               path,
               style: Theme.of(
                 context,
-              ).textTheme.labelSmall?.copyWith(fontFamily: 'JetBrains Mono'),
+              ).textTheme.labelSmall?.copyWith(fontFamily: GlamFonts.mono),
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -108,7 +109,7 @@ class _HunkView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     const codeStyle = TextStyle(
-      fontFamily: 'JetBrains Mono',
+      fontFamily: GlamFonts.mono,
       fontSize: 11.5,
       height: 1.5,
     );
@@ -213,7 +214,7 @@ class _CommitBanner extends StatelessWidget {
               Text(
                 commit.shortId.isEmpty ? '—' : commit.shortId,
                 style: const TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: GlamFonts.mono,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),

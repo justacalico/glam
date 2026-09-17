@@ -8,6 +8,7 @@ import 'package:glam/src/core/widgets/note_card.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// One discussion thread: a stack of notes, an inline reply box, and a
 /// resolve toggle when the thread is resolvable.
@@ -114,7 +115,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                       child: Text(
                         position,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          fontFamily: 'JetBrains Mono',
+                          fontFamily: GlamFonts.mono,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

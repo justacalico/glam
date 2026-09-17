@@ -46,6 +46,7 @@ class ProfileScreen extends ConsumerWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
+                  showDragHandle: true,
                   builder: (_) => _EditProfileSheet(user: user.value!),
                 ),
               ),

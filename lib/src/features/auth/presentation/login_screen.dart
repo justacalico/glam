@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Sign-in with a GitLab instance URL and a personal access token.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -243,7 +244,7 @@ class _Wordmark extends StatelessWidget {
             child: Text(
               'G',
               style: TextStyle(
-                fontFamily: 'Space Grotesk',
+                fontFamily: GlamFonts.display,
                 fontWeight: FontWeight.w700,
                 fontSize: 20,
                 color: Colors.white,

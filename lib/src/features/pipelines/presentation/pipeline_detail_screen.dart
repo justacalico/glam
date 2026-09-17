@@ -17,6 +17,7 @@ import 'package:glam/src/features/pipelines/application/pipelines_providers.dart
 import 'package:glam/src/features/pipelines/domain/bridge.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
+import 'package:glam/src/app/theme/app_typography.dart';
 
 /// Pipeline detail: meta header plus jobs grouped by stage, with
 /// retry/cancel actions. A Tests view appears when the pipeline
@@ -253,10 +254,7 @@ class _PipelineHeader extends StatelessWidget {
                 : pipeline.sha!.length > 8
                 ? pipeline.sha!.substring(0, 8)
                 : pipeline.sha!}',
-            style: const TextStyle(
-              fontFamily: 'JetBrains Mono',
-              fontSize: 12.5,
-            ),
+            style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
           ),
           const SizedBox(height: Insets.xs),
           Text(
