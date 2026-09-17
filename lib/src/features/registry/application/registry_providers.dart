@@ -9,29 +9,36 @@ final registryRepositoryProvider = Provider<RegistryRepository>(
   (ref) => RegistryRepository(ref.watch(apiClientProvider)),
 );
 
+typedef PackageFilter = ({Object project, String? type, String? name});
+
 final projectPackagesProvider =
     AsyncNotifierProvider.family<
       ProjectPackagesNotifier,
       PagedListState<GitLabPackage>,
-      Object
+      PackageFilter
     >(ProjectPackagesNotifier.new);
 
 class ProjectPackagesNotifier extends PagedListNotifier<GitLabPackage> {
-  ProjectPackagesNotifier(this.projectId);
+  ProjectPackagesNotifier(this.filter);
 
-  final Object projectId;
+  final PackageFilter filter;
 
   @override
   Future<Paginated<GitLabPackage>> fetchPage(int page) {
     return ref
         .watch(registryRepositoryProvider)
-        .packages(projectId, page: page);
+        .packages(
+          filter.project,
+          page: page,
+          packageType: filter.type,
+          name: filter.name,
+        );
   }
 
   Future<void> deletePackage(int packageId) async {
     await ref
         .read(registryRepositoryProvider)
-        .deletePackage(projectId, packageId);
+        .deletePackage(filter.project, packageId);
     updateItems((items) => items.where((p) => p.id != packageId).toList());
   }
 }
