@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
@@ -199,6 +201,10 @@ class _ProfileHeader extends StatelessWidget {
               child: _FollowButton(userId: user.id),
             ),
           ],
+          if (isSelf) ...[
+            const SizedBox(height: Insets.lg),
+            const _ContributionHeatmap(),
+          ],
         ],
       ),
     );
@@ -289,6 +295,98 @@ class _FollowButton extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     }
+  }
+}
+
+/// GitHub-style contribution heatmap for the signed-in user
+/// (`/user/activities` only covers the current account).
+class _ContributionHeatmap extends ConsumerWidget {
+  const _ContributionHeatmap();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final days = ref.watch(userActivitiesProvider);
+    final colors = context.colors;
+    final theme = Theme.of(context);
+
+    return days.maybeWhen(
+      data: (counts) {
+        if (counts.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        final today = clock.now();
+        final end = DateTime(today.year, today.month, today.day);
+        // 53 columns: 52 full weeks plus the current partial week.
+        // `weekday % 7` maps Sunday to 0 so the grid starts on a Sunday.
+        final start = end.subtract(Duration(days: end.weekday % 7 + 52 * 7));
+        final total = counts.values.fold(0, (a, b) => a + b);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$total contributions in the last year',
+              style: theme.textTheme.labelMedium,
+            ),
+            const SizedBox(height: Insets.sm),
+            SizedBox(
+              height: 7 * 9,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                children: [
+                  for (var w = 0; w < 53; w++)
+                    Column(
+                      children: [
+                        for (var d = 0; d < 7; d++)
+                          _Cell(
+                            color: _cellColor(
+                              colors,
+                              counts[start.add(Duration(days: w * 7 + d))] ?? 0,
+                            ),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Color _cellColor(GlamColors colors, int count) {
+    if (count <= 0) {
+      return colors.surfaceMuted;
+    }
+    final opacity = switch (count) {
+      < 3 => 0.35,
+      < 6 => 0.6,
+      < 10 => 0.8,
+      _ => 1.0,
+    };
+    return colors.accent.withValues(alpha: opacity);
+  }
+}
+
+class _Cell extends StatelessWidget {
+  const _Cell({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 7,
+      height: 7,
+      margin: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(1.5),
+      ),
+    );
   }
 }
 

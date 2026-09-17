@@ -70,6 +70,25 @@ class ActivityRepository {
     );
   }
 
+  /// Daily event counts for the signed-in user (`/user/activities`).
+  /// Returned as `date -> count` covering roughly the last year.
+  Future<Map<DateTime, int>> userActivities() async {
+    final list = await _client.getList(
+      '/user/activities',
+      decoder: (j) {
+        final m = j! as Map<String, dynamic>;
+        return (
+          date: DateTime.tryParse(m['date'] as String? ?? ''),
+          count: m['event_count'] as int? ?? 0,
+        );
+      },
+    );
+    return {
+      for (final e in list)
+        if (e.date != null) e.date!: e.count,
+    };
+  }
+
   /// Unread notifications for the current user.
   Future<Paginated<GlamNotification>> notifications({
     int page = 1,

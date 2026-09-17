@@ -39,6 +39,11 @@ class ActivityNotifier extends PagedListNotifier<ActivityEvent> {
   }
 }
 
+/// Daily contribution counts for the signed-in user.
+final userActivitiesProvider = FutureProvider<Map<DateTime, int>>(
+  (ref) => ref.watch(activityRepositoryProvider).userActivities(),
+);
+
 final notificationsProvider =
     AsyncNotifierProvider<
       NotificationsNotifier,
