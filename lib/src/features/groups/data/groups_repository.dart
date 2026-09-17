@@ -369,4 +369,30 @@ class GroupsRepository {
       '${_scopeBase(id, isProject: isProject)}/access_requests/$userId',
     );
   }
+
+  /// Shares this group with another group (`POST /groups/:id/share`).
+  /// Owner role required.
+  Future<void> shareGroup(
+    Object id, {
+    required int groupId,
+    required int accessLevel,
+    DateTime? expiresAt,
+  }) {
+    return _client.post(
+      '${_scopeBase(id, isProject: false)}/share',
+      body: {
+        'group_id': groupId,
+        'group_access': accessLevel,
+        'expires_at': ?expiresAt?.toIso8601String().substring(0, 10),
+      },
+      decoder: (_) {},
+    );
+  }
+
+  /// Removes a group share (`DELETE /groups/:id/share/:group_id`).
+  Future<void> unshareGroup(Object id, int sharedGroupId) {
+    return _client.delete(
+      '${_scopeBase(id, isProject: false)}/share/$sharedGroupId',
+    );
+  }
 }

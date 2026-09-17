@@ -222,6 +222,53 @@ void main() {
       expect(adapter.lastRequest!.path, '/projects/42/access_requests');
     });
 
+    test('share and unshare group hit the share paths', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/groups/9/share', {})
+        ..delete('/groups/9/share/4');
+      final repo = GroupsRepository(client);
+
+      await repo.shareGroup(
+        9,
+        groupId: 4,
+        accessLevel: 30,
+        expiresAt: DateTime(2025, 12, 31),
+      );
+      await repo.unshareGroup(9, 4);
+
+      final sent = adapter.requestsTo('POST', '/groups/9/share').single;
+      expect((sent.data as Map)['group_id'], 4);
+      expect((sent.data as Map)['group_access'], 30);
+      expect((sent.data as Map)['expires_at'], '2025-12-31');
+      expect(adapter.requestsTo('DELETE', '/groups/9/share/4'), hasLength(1));
+    });
+
+    test('group decodes shared_with_groups', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9', {
+        'id': 9,
+        'name': 'calico',
+        'full_path': 'calico',
+        'shared_with_groups': [
+          {
+            'group_id': 4,
+            'group_name': 'Design',
+            'group_full_path': 'design',
+            'group_access_level': 30,
+            'expires_at': '2025-12-31',
+          },
+        ],
+      });
+      final repo = GroupsRepository(client);
+
+      final g = await repo.group(9);
+
+      expect(g.sharedWithGroups.single.groupId, 4);
+      expect(g.sharedWithGroups.single.roleLabel, 'Developer');
+      expect(g.sharedWithGroups.single.expiresAt, isNotNull);
+    });
+
     test('create and delete groups hit the /groups paths', () async {
       final (client, adapter) = testClient();
       adapter

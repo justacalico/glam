@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:glam/src/core/models/shared_group.dart';
 
 /// A GitLab group (`/groups`).
 class Group extends Equatable {
@@ -15,6 +16,7 @@ class Group extends Equatable {
     this.projectCount,
     this.subgroupCount,
     this.createdAt,
+    this.sharedWithGroups = const [],
   });
 
   factory Group.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,12 @@ class Group extends Equatable {
           ? stats['subgroup_count'] as int?
           : null,
       createdAt: _date(json['created_at']),
+      sharedWithGroups: json['shared_with_groups'] is List
+          ? (json['shared_with_groups'] as List)
+                .whereType<Map<String, dynamic>>()
+                .map(SharedGroup.fromJson)
+                .toList()
+          : const [],
     );
   }
 
@@ -51,6 +59,7 @@ class Group extends Equatable {
   final int? projectCount;
   final int? subgroupCount;
   final DateTime? createdAt;
+  final List<SharedGroup> sharedWithGroups;
 
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;

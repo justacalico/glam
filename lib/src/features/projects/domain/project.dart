@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:glam/src/core/models/shared_group.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 
 /// A GitLab project (`/projects/:id`).
@@ -229,46 +230,4 @@ class Project extends Equatable {
     lastActivityAt,
     archived,
   ];
-}
-
-/// One entry of a project's `shared_with_groups` list.
-class SharedGroup extends Equatable {
-  const SharedGroup({
-    required this.groupId,
-    this.groupName,
-    this.groupFullPath,
-    this.accessLevel = 0,
-    this.expiresAt,
-  });
-
-  factory SharedGroup.fromJson(Map<String, dynamic> json) {
-    return SharedGroup(
-      groupId: json['group_id'] as int? ?? 0,
-      groupName: json['group_name'] as String?,
-      groupFullPath: json['group_full_path'] as String?,
-      accessLevel: json['group_access_level'] as int? ?? 0,
-      expiresAt: Project._date(json['expires_at']),
-    );
-  }
-
-  final int groupId;
-  final String? groupName;
-  final String? groupFullPath;
-  final int accessLevel;
-  final DateTime? expiresAt;
-
-  String get displayName => groupFullPath ?? groupName ?? 'group $groupId';
-
-  String get roleLabel => switch (accessLevel) {
-    10 => 'Guest',
-    15 => 'Planner',
-    20 => 'Reporter',
-    30 => 'Developer',
-    40 => 'Maintainer',
-    50 => 'Owner',
-    _ => 'level $accessLevel',
-  };
-
-  @override
-  List<Object?> get props => [groupId];
 }
