@@ -12,6 +12,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
@@ -28,27 +29,47 @@ const accessLevels = {
 
 /// Member list shared between project and group detail screens,
 /// with invite / change-role / remove actions.
-class MembersList extends ConsumerWidget {
+class MembersList extends ConsumerStatefulWidget {
   const MembersList({required this.id, required this.isProject, super.key});
 
   final Object id;
   final bool isProject;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MembersList> createState() => _MembersListState();
+}
+
+class _MembersListState extends ConsumerState<MembersList> {
+  String? _query;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final scope = (id: id, isProject: isProject);
-    final state = ref.watch(membersProvider(scope));
-    final notifier = ref.read(membersProvider(scope).notifier);
+    final scope = (id: widget.id, isProject: widget.isProject);
+    final filter = (id: widget.id, isProject: widget.isProject, query: _query);
+    final state = ref.watch(membersProvider(filter));
+    final notifier = ref.read(membersProvider(filter).notifier);
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search members',
+            onChanged: (v) => setState(() => _query = v),
+          ),
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
               Insets.lg,
-              Insets.sm,
+              Insets.xs,
               Insets.lg,
               Insets.xs,
             ),
@@ -66,7 +87,7 @@ class MembersList extends ConsumerWidget {
           ),
         ),
         _AccessRequests(scope: scope),
-        if (!isProject) _InvitedGroups(groupId: id),
+        if (!widget.isProject) _InvitedGroups(groupId: widget.id),
         Expanded(
           child: AsyncValueWidget(
             value: state,
