@@ -285,3 +285,19 @@ class UserPreferences extends Equatable {
     projectsView,
   ];
 }
+
+/// The connected GitLab instance's version info (`GET /version`).
+class GitLabVersion extends Equatable {
+  const GitLabVersion({this.version = '', this.revision = ''});
+
+  factory GitLabVersion.fromJson(Map<String, dynamic> json) => GitLabVersion(
+    version: json['version'] as String? ?? '',
+    revision: json['revision'] as String? ?? '',
+  );
+
+  final String version;
+  final String revision;
+
+  @override
+  List<Object?> get props => [version, revision];
+}

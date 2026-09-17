@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/app/theme/theme_controller.dart';
+import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/presentation/account_sections.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 
@@ -83,6 +84,21 @@ class SettingsScreen extends ConsumerWidget {
                 leading: Icon(Icons.info_outline),
                 title: Text('Glam'),
                 subtitle: Text('A GitLab client for desktop and mobile'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.dns_outlined),
+                title: const Text('GitLab instance'),
+                subtitle: ref
+                    .watch(instanceVersionProvider)
+                    .when(
+                      data: (v) => Text(
+                        v.revision.isEmpty
+                            ? 'Version ${v.version}'
+                            : 'Version ${v.version} (${v.revision})',
+                      ),
+                      loading: () => const Text('Checking version...'),
+                      error: (_, _) => const Text('Version unavailable'),
+                    ),
               ),
             ],
           ),

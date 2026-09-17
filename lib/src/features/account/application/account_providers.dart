@@ -37,6 +37,11 @@ final userPreferencesProvider = FutureProvider<UserPreferences>(
   (ref) => ref.watch(accountRepositoryProvider).userPreferences(),
 );
 
+/// The connected GitLab instance's version (`GET /version`).
+final instanceVersionProvider = FutureProvider<GitLabVersion>(
+  (ref) => ref.watch(accountRepositoryProvider).instanceVersion(),
+);
+
 /// Per-project notification level and custom events.
 final projectNotificationProvider =
     FutureProvider.family<NotificationSettings, Object>(

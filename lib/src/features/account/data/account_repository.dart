@@ -178,4 +178,13 @@ class AccountRepository {
       decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
     );
   }
+
+  /// The GitLab instance's version (`GET /version`). Anonymous-safe.
+  Future<GitLabVersion> instanceVersion() {
+    return _client.get(
+      '/version',
+      decoder: (j) => GitLabVersion.fromJson(j! as Map<String, dynamic>),
+    );
+  }
 }
+

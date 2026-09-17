@@ -213,6 +213,21 @@ void main() {
       expect(sent['new_issue'], true);
     });
 
+    test('instanceVersion decodes version and revision', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/version', {
+        'version': '17.11.0-ee',
+        'revision': 'abcdef12',
+      });
+      final repo = AccountRepository(client);
+
+      final v = await repo.instanceVersion();
+
+      expect(v.version, '17.11.0-ee');
+      expect(v.revision, 'abcdef12');
+      expect(adapter.requestsTo('GET', '/version'), hasLength(1));
+    });
+
     test('user preferences get and put', () async {
       final (client, adapter) = testClient();
       adapter
