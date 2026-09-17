@@ -13,6 +13,7 @@ import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
+import 'package:glam/src/features/pipelines/presentation/job_artifacts_screen.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_detail_screen.dart';
 import 'package:glam/src/features/projects/presentation/projects_screen.dart';
@@ -22,8 +23,8 @@ import '../helpers/fixtures.dart';
 import '../helpers/test_client.dart';
 
 /// Renders real screens against the fake adapter and captures them
-/// into `test/golden/goldens/`. Regenerate with
-/// `flutter test test/golden --update-goldens`.
+/// into `test/goldens/goldens/`. Regenerate with
+/// `flutter test test/goldens --update-goldens`.
 void main() {
   const phone = Size(430, 932);
   const desktop = Size(1440, 900);
@@ -159,6 +160,35 @@ void main() {
       const PipelinesScreen(projectId: 42),
       size: phone,
       stubs: (a) => a.get('/projects/42/pipelines', fixtureJson('pipelines')),
+    );
+  });
+
+  testWidgets('job artifacts', (tester) async {
+    await _shot(
+      tester,
+      'artifacts',
+      const JobArtifactsScreen(projectId: 42, jobId: 5001),
+      size: phone,
+      stubs: (a) => a.get('/projects/42/jobs/5001/artifacts/tree', [
+        {
+          'name': 'report.html',
+          'path': 'coverage/report.html',
+          'type': 'blob',
+          'size': 184320,
+        },
+        {
+          'name': 'app-release.apk',
+          'path': 'dist/app-release.apk',
+          'type': 'blob',
+          'size': 52428800,
+        },
+        {
+          'name': 'build.log',
+          'path': 'logs/build.log',
+          'type': 'blob',
+          'size': 96256,
+        },
+      ]),
     );
   });
 }
