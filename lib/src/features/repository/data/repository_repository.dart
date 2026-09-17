@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
 /// Wraps `/projects/:id/repository/*`, `/files`, `/releases`.
@@ -139,6 +140,15 @@ class RepositoryRepository {
       '${_p(projectId)}/repository/contributors',
       query: {'ref': ?ref},
       decoder: (j) => Contributor.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Merge requests that contain this commit
+  /// (`/repository/commits/:sha/merge_requests`).
+  Future<List<MergeRequest>> commitMergeRequests(Object projectId, String sha) {
+    return _client.getAll(
+      '${_p(projectId)}/repository/commits/$sha/merge_requests',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
 

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
@@ -14,6 +16,7 @@ import 'package:glam/src/core/widgets/comment_composer.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
@@ -53,6 +56,7 @@ class CommitDetailScreen extends ConsumerWidget {
             _Meta(commit: c),
             const SizedBox(height: Insets.lg),
             _CommitStatuses(projectId: projectId, sha: sha),
+            _RelatedMrs(projectId: projectId, sha: sha),
             const SizedBox(height: Insets.lg),
             diffs.when(
               loading: () => const Center(
@@ -356,6 +360,100 @@ class _CommitStatuses extends ConsumerWidget {
         );
       },
       orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// Merge requests this commit belongs to. Hidden while loading or
+/// when the commit is in no MR.
+class _RelatedMrs extends ConsumerWidget {
+  const _RelatedMrs({required this.projectId, required this.sha});
+
+  final String projectId;
+  final String sha;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = (project: projectId as Object, sha: sha);
+    final mrs = ref.watch(commitMergeRequestsProvider(loc));
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return mrs.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Merge requests', style: theme.textTheme.titleMedium),
+            const SizedBox(height: Insets.sm),
+            Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: Radii.borderMd,
+                border: Border.all(color: colors.border),
+              ),
+              child: Column(
+                children: [
+                  for (final mr in list)
+                    _RelatedMrTile(
+                      mr: mr,
+                      onTap: () => unawaited(
+                        context.push(Routes.projectMr(mr.projectId, mr.iid)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: Insets.lg),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RelatedMrTile extends StatelessWidget {
+  const _RelatedMrTile({required this.mr, required this.onTap});
+
+  final MergeRequest mr;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = context.colors;
+    final (icon, color) = switch (mr.state) {
+      'merged' => (Icons.merge, colors.info),
+      'closed' => (Icons.cancel_outlined, colors.danger),
+      _ => (Icons.merge_type_outlined, colors.success),
+    };
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Insets.md,
+          vertical: Insets.sm + 2,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: Insets.sm),
+            Expanded(
+              child: Text(
+                mr.title,
+                style: theme.textTheme.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Text('!${mr.iid}', style: theme.textTheme.bodySmall),
+          ],
+        ),
+      ),
     );
   }
 }

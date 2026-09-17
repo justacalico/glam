@@ -238,6 +238,20 @@ void main() {
       expect(list.last.additions, 0);
     });
 
+    test('commitMergeRequests decodes MRs containing the commit', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/repository/commits/abc123/merge_requests',
+        fixtureJson('related_mrs'),
+      );
+      final repo = RepositoryRepository(client);
+
+      final mrs = await repo.commitMergeRequests(42, 'abc123');
+
+      expect(mrs, isNotEmpty);
+      expect(mrs.first.iid, greaterThan(0));
+    });
+
     test('commitComments decodes plain and anchored comments', () async {
       final (client, adapter) = testClient();
       adapter.get(

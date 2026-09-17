@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/data/repository_repository.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
@@ -116,6 +117,14 @@ final commitStatusesProvider =
       (ref, loc) => ref
           .watch(repositoryRepositoryProvider)
           .commitStatuses(loc.project, loc.sha),
+    );
+
+/// Merge requests containing a commit.
+final commitMergeRequestsProvider =
+    FutureProvider.family<List<MergeRequest>, ({Object project, String sha})>(
+      (ref, loc) => ref
+          .watch(repositoryRepositoryProvider)
+          .commitMergeRequests(loc.project, loc.sha),
     );
 
 /// Commit authors ranked by commit count for a project's default ref.
