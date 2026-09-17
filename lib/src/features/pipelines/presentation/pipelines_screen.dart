@@ -161,34 +161,37 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
           alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.only(right: Insets.lg),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _FilterMenu(
-                  tooltip: 'Filter by source',
-                  options: _sources,
-                  current: _source,
-                  onSelect: (v) => setState(() => _source = v),
-                ),
-                FilterMenu(
-                  title: 'Ref',
-                  current: _ref,
-                  options: [for (final b in branches) b.name],
-                  onSelect: (v) => setState(() => _ref = v),
-                ),
-                FilterMenu(
-                  title: 'User',
-                  current: _username,
-                  options: [for (final m in members) m.username],
-                  onSelect: (v) => setState(() => _username = v),
-                ),
-                _FilterMenu(
-                  tooltip: 'Filter pipelines',
-                  options: _statuses,
-                  current: _status,
-                  onSelect: (v) => setState(() => _status = v),
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _FilterMenu(
+                    tooltip: 'Filter by source',
+                    options: _sources,
+                    current: _source,
+                    onSelect: (v) => setState(() => _source = v),
+                  ),
+                  FilterMenu(
+                    title: 'Ref',
+                    current: _ref,
+                    options: [for (final b in branches) b.name],
+                    onSelect: (v) => setState(() => _ref = v),
+                  ),
+                  FilterMenu(
+                    title: 'User',
+                    current: _username,
+                    options: [for (final m in members) m.username],
+                    onSelect: (v) => setState(() => _username = v),
+                  ),
+                  _FilterMenu(
+                    tooltip: 'Filter pipelines',
+                    options: _statuses,
+                    current: _status,
+                    onSelect: (v) => setState(() => _status = v),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

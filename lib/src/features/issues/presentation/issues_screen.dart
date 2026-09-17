@@ -90,6 +90,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                 child: Row(
                   children: [
                     Expanded(
+                      flex: 2,
                       child: SearchField(
                         hint: 'Search issues',
                         onChanged: (v) => _setFilter(
@@ -109,143 +110,158 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                       ),
                     ),
                     const SizedBox(width: Insets.sm),
-                    _StateMenu(
-                      current: filter.state,
-                      onSelect: (s) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: s,
-                          search: f.search,
-                          issueType: f.issueType,
-                          confidential: f.confidential,
-                          dueDate: f.dueDate,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    FilterMenu(
-                      title: 'Type',
-                      current: filter.issueType,
-                      options: const ['issue', 'incident', 'task', 'test_case'],
-                      onSelect: (v) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          issueType: v,
-                          confidential: f.confidential,
-                          dueDate: f.dueDate,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    FilterMenu(
-                      title: 'Confidential',
-                      current: switch (filter.confidential) {
-                        true => 'true',
-                        false => 'false',
-                        null => null,
-                      },
-                      options: const ['true', 'false'],
-                      labels: const {
-                        'true': 'Confidential',
-                        'false': 'Not confidential',
-                      },
-                      onSelect: (v) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          issueType: f.issueType,
-                          confidential: v == null ? null : v == 'true',
-                          dueDate: f.dueDate,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    FilterMenu(
-                      title: 'Due',
-                      current: filter.dueDate,
-                      options: const [
-                        'overdue',
-                        'week',
-                        'month',
-                        'next_month_and_previous_two_weeks',
-                        '0',
-                      ],
-                      labels: const {
-                        'overdue': 'Overdue',
-                        'week': 'Due this week',
-                        'month': 'Due this month',
-                        'next_month_and_previous_two_weeks': 'Due soon',
-                        '0': 'No due date',
-                      },
-                      onSelect: (v) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          issueType: f.issueType,
-                          confidential: f.confidential,
-                          dueDate: v,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    FilterMenu(
-                      title: 'Activity',
-                      current: filter.updatedDays == null
-                          ? null
-                          : '${filter.updatedDays}',
-                      options: const ['1', '7', '30'],
-                      labels: const {
-                        '1': 'Last 24h',
-                        '7': 'Last week',
-                        '30': 'Last month',
-                      },
-                      onSelect: (v) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          issueType: f.issueType,
-                          confidential: f.confidential,
-                          dueDate: f.dueDate,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: v == null ? null : int.parse(v),
-                          orderBy: f.orderBy,
-                          sort: f.sort,
-                        ),
-                      ),
-                    ),
-                    SortMenu(
-                      orderBy: filter.orderBy,
-                      sort: filter.sort,
-                      options: SortOptions.issues,
-                      onSelect: (o) => _setFilter(
-                        (f) => (
-                          scope: f.scope,
-                          state: f.state,
-                          search: f.search,
-                          issueType: f.issueType,
-                          confidential: f.confidential,
-                          dueDate: f.dueDate,
-                          myReactionEmoji: f.myReactionEmoji,
-                          updatedDays: f.updatedDays,
-                          orderBy: o.orderBy,
-                          sort: o.sort,
+                    Flexible(
+                      flex: 3,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _StateMenu(
+                              current: filter.state,
+                              onSelect: (s) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: s,
+                                  search: f.search,
+                                  issueType: f.issueType,
+                                  confidential: f.confidential,
+                                  dueDate: f.dueDate,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            FilterMenu(
+                              title: 'Type',
+                              current: filter.issueType,
+                              options: const [
+                                'issue',
+                                'incident',
+                                'task',
+                                'test_case',
+                              ],
+                              onSelect: (v) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  issueType: v,
+                                  confidential: f.confidential,
+                                  dueDate: f.dueDate,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            FilterMenu(
+                              title: 'Confidential',
+                              current: switch (filter.confidential) {
+                                true => 'true',
+                                false => 'false',
+                                null => null,
+                              },
+                              options: const ['true', 'false'],
+                              labels: const {
+                                'true': 'Confidential',
+                                'false': 'Not confidential',
+                              },
+                              onSelect: (v) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  issueType: f.issueType,
+                                  confidential: v == null ? null : v == 'true',
+                                  dueDate: f.dueDate,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            FilterMenu(
+                              title: 'Due',
+                              current: filter.dueDate,
+                              options: const [
+                                'overdue',
+                                'week',
+                                'month',
+                                'next_month_and_previous_two_weeks',
+                                '0',
+                              ],
+                              labels: const {
+                                'overdue': 'Overdue',
+                                'week': 'Due this week',
+                                'month': 'Due this month',
+                                'next_month_and_previous_two_weeks': 'Due soon',
+                                '0': 'No due date',
+                              },
+                              onSelect: (v) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  issueType: f.issueType,
+                                  confidential: f.confidential,
+                                  dueDate: v,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            FilterMenu(
+                              title: 'Activity',
+                              current: filter.updatedDays == null
+                                  ? null
+                                  : '${filter.updatedDays}',
+                              options: const ['1', '7', '30'],
+                              labels: const {
+                                '1': 'Last 24h',
+                                '7': 'Last week',
+                                '30': 'Last month',
+                              },
+                              onSelect: (v) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  issueType: f.issueType,
+                                  confidential: f.confidential,
+                                  dueDate: f.dueDate,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: v == null ? null : int.parse(v),
+                                  orderBy: f.orderBy,
+                                  sort: f.sort,
+                                ),
+                              ),
+                            ),
+                            SortMenu(
+                              orderBy: filter.orderBy,
+                              sort: filter.sort,
+                              options: SortOptions.issues,
+                              onSelect: (o) => _setFilter(
+                                (f) => (
+                                  scope: f.scope,
+                                  state: f.state,
+                                  search: f.search,
+                                  issueType: f.issueType,
+                                  confidential: f.confidential,
+                                  dueDate: f.dueDate,
+                                  myReactionEmoji: f.myReactionEmoji,
+                                  updatedDays: f.updatedDays,
+                                  orderBy: o.orderBy,
+                                  sort: o.sort,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -431,7 +447,8 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
-        Padding(
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(
             Insets.lg,
             Insets.sm,
@@ -454,7 +471,6 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 ),
                 const SizedBox(width: Insets.sm),
               ],
-              const Spacer(),
               FilterMenu(
                 title: 'Assignee',
                 current: _assigneeId == null
