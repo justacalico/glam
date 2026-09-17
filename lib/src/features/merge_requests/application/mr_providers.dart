@@ -262,6 +262,13 @@ final mrClosesIssuesProvider = FutureProvider.family<List<Issue>, MrRef>(
       ref.watch(mrRepositoryProvider).closesIssues(loc.project, loc.iid),
 );
 
+/// Other MRs related to this one (mentioned, chained, same source).
+final mrRelatedMrsProvider = FutureProvider.family<List<MergeRequest>, MrRef>(
+  (ref, loc) => ref
+      .watch(mrRepositoryProvider)
+      .relatedMergeRequests(loc.project, loc.iid),
+);
+
 /// Close/reopen history. Missing on older instances; treat as empty.
 final mrStateEventsProvider =
     FutureProvider.family<List<ResourceStateEvent>, MrRef>((ref, loc) async {

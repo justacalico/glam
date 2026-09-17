@@ -365,6 +365,7 @@ class _MrHeader extends StatelessWidget {
         ],
         MrParticipantsRow(loc: loc),
         MrClosesIssuesRow(loc: loc),
+        MrRelatedMrsRow(loc: loc),
       ],
     );
   }

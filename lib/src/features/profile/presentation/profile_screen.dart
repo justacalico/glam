@@ -18,6 +18,7 @@ import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/profile/application/profile_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
@@ -205,6 +206,8 @@ class _ProfileHeader extends StatelessWidget {
           if (isSelf) ...[
             const SizedBox(height: Insets.lg),
             const _ContributionHeatmap(),
+            const SizedBox(height: Insets.lg),
+            const _MembershipsSection(),
           ],
         ],
       ),
@@ -595,6 +598,65 @@ class _UserProjects extends ConsumerWidget {
                     unawaited(context.push(Routes.project(items[index].id))),
               ),
             ),
+    );
+  }
+}
+
+/// Groups and projects the signed-in account belongs to
+/// (`/user/memberships`). Shown on own profile only.
+class _MembershipsSection extends ConsumerWidget {
+  const _MembershipsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final memberships = ref.watch(myMembershipsProvider);
+    final theme = Theme.of(context);
+    final colors = context.colors;
+
+    return memberships.maybeWhen(
+      data: (items) {
+        if (items.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Memberships', style: theme.textTheme.titleMedium),
+            const SizedBox(height: Insets.sm),
+            for (final m in items)
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  m.sourceType == 'Project'
+                      ? Icons.folder_outlined
+                      : Icons.group_outlined,
+                  size: 18,
+                  color: colors.inkFaint,
+                ),
+                title: Text(m.sourceName),
+                subtitle: Text(
+                  [
+                    accessLevels[m.accessLevel] ?? 'Level ${m.accessLevel}',
+                    if (m.expiresAt != null)
+                      'expires ${Format.date(m.expiresAt)}',
+                  ].join(' · '),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.inkFaint,
+                  ),
+                ),
+                onTap: () => unawaited(
+                  context.push(
+                    m.sourceType == 'Project'
+                        ? Routes.project(m.sourceId)
+                        : Routes.group(m.sourceId),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

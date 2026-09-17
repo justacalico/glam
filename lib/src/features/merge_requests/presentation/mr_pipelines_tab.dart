@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/issues/presentation/issue_tile.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
@@ -167,6 +168,41 @@ class MrParticipantsRow extends ConsumerWidget {
                 ),
                 const SizedBox(height: Insets.xs),
                 AvatarStack(users: users, max: 8),
+              ],
+            ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// MRs related to this one via mentions or shared branches.
+class MrRelatedMrsRow extends ConsumerWidget {
+  const MrRelatedMrsRow({required this.loc, super.key});
+
+  final MrRef loc;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mrs = ref.watch(mrRelatedMrsProvider(loc));
+    return mrs.maybeWhen(
+      data: (items) => items.isEmpty
+          ? const SizedBox.shrink()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: Insets.md),
+                Text(
+                  'Related merge request${items.length == 1 ? '' : 's'}',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: Insets.xs),
+                for (final mr in items)
+                  MrTile(
+                    mr: mr,
+                    onTap: () => unawaited(
+                      context.push(Routes.projectMr(mr.projectId, mr.iid)),
+                    ),
+                  ),
               ],
             ),
       orElse: () => const SizedBox.shrink(),

@@ -432,6 +432,26 @@ void main() {
       expect(events.single.user?.username, 'jane');
     });
 
+    test('relatedMergeRequests decodes related MRs', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/related_merge_requests',
+        fixtureJson('related_mrs'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final mrs = await repo.relatedMergeRequests(42, 7);
+
+      expect(mrs, isNotEmpty);
+      expect(
+        adapter.requestsTo(
+          'GET',
+          '/projects/42/merge_requests/7/related_merge_requests',
+        ),
+        hasLength(1),
+      );
+    });
+
     test('rawDiff returns patch text', () async {
       final (client, adapter) = testClient();
       adapter.get(

@@ -94,6 +94,33 @@ void main() {
     expect(adapter.requestsTo('POST', '/users/7/unfollow'), hasLength(1));
   });
 
+  test('userMemberships decodes source and access level', () async {
+    final (client, adapter) = testClient();
+    adapter.get('/user/memberships', [
+      {
+        'source_id': 9,
+        'source_name': 'Platform',
+        'source_type': 'Namespace',
+        'access_level': 40,
+      },
+      {
+        'source_id': 42,
+        'source_name': 'glam',
+        'source_type': 'Project',
+        'access_level': 30,
+        'expires_at': '2026-01-01',
+      },
+    ]);
+    final repo = AuthRepository(client);
+
+    final memberships = await repo.userMemberships();
+
+    expect(memberships, hasLength(2));
+    expect(memberships.first.sourceType, 'Namespace');
+    expect(memberships.first.accessLevel, 40);
+    expect(memberships.last.expiresAt, isNotNull);
+  });
+
   test('fetchUserByUsername throws when nobody matches', () async {
     final (client, adapter) = testClient();
     adapter.get('/users', []);
