@@ -340,6 +340,55 @@ void main() {
       );
     });
 
+    test('remote mirrors list, create, update, delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/remote_mirrors', [
+          {
+            'id': 9,
+            'url': 'https://example.com/repo.git',
+            'enabled': true,
+            'only_protected_branches': true,
+            'update_status': 'finished',
+          },
+        ])
+        ..post('/projects/42/remote_mirrors', {
+          'id': 10,
+          'url': 'https://x.test/r.git',
+        })
+        ..put('/projects/42/remote_mirrors/9', {
+          'id': 9,
+          'url': 'https://example.com/repo.git',
+          'enabled': false,
+        })
+        ..delete('/projects/42/remote_mirrors/9');
+      final repo = ProjectsRepository(client);
+
+      final mirrors = await repo.remoteMirrors(42);
+      expect(mirrors.single.id, 9);
+      expect(mirrors.single.onlyProtectedBranches, isTrue);
+
+      await repo.createRemoteMirror(
+        42,
+        url: 'https://x.test/r.git',
+        mirrorBranchRegex: 'main|release/.*',
+      );
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['mirror_branch_regex'], 'main|release/.*');
+
+      await repo.updateRemoteMirror(42, 9, enabled: false);
+      expect(
+        adapter.requestsTo('PUT', '/projects/42/remote_mirrors/9'),
+        hasLength(1),
+      );
+
+      await repo.deleteRemoteMirror(42, 9);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/remote_mirrors/9'),
+        hasLength(1),
+      );
+    });
+
     test('deploy tokens list, create keeps the secret, revoke', () async {
       final (client, adapter) = testClient();
       adapter

@@ -64,6 +64,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             const SizedBox(height: Insets.xl),
             FreezePeriodsSection(project: p),
             const SizedBox(height: Insets.xl),
+            RemoteMirrorsSection(project: p),
+            const SizedBox(height: Insets.xl),
             RunnersSection(project: p),
             const SizedBox(height: Insets.xl),
             CiSettingsSection(project: p),

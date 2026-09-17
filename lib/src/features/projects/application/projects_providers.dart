@@ -17,6 +17,7 @@ import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
+import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/core/models/webhook.dart';
 
@@ -128,6 +129,11 @@ final projectProtectedTagsProvider =
 final projectFreezePeriodsProvider =
     FutureProvider.family<List<FreezePeriod>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).freezePeriods(id),
+    );
+
+final projectRemoteMirrorsProvider =
+    FutureProvider.family<List<RemoteMirror>, Object>(
+      (ref, id) => ref.watch(projectsRepositoryProvider).remoteMirrors(id),
     );
 
 final projectDeployTokensProvider =
@@ -305,6 +311,47 @@ class ProjectAdminActions {
   Future<void> deleteFreezePeriod(Object projectId, int periodId) async {
     await _repo.deleteFreezePeriod(projectId, periodId);
     _ref.invalidate(projectFreezePeriodsProvider(projectId));
+  }
+
+  Future<void> addRemoteMirror(
+    Object projectId, {
+    required String url,
+    bool onlyProtectedBranches = false,
+    bool keepDivergentRefs = false,
+    String? mirrorBranchRegex,
+  }) async {
+    await _repo.createRemoteMirror(
+      projectId,
+      url: url,
+      onlyProtectedBranches: onlyProtectedBranches,
+      keepDivergentRefs: keepDivergentRefs,
+      mirrorBranchRegex: mirrorBranchRegex,
+    );
+    _ref.invalidate(projectRemoteMirrorsProvider(projectId));
+  }
+
+  Future<void> updateRemoteMirror(
+    Object projectId,
+    int mirrorId, {
+    bool? enabled,
+    bool? onlyProtectedBranches,
+    bool? keepDivergentRefs,
+    String? mirrorBranchRegex,
+  }) async {
+    await _repo.updateRemoteMirror(
+      projectId,
+      mirrorId,
+      enabled: enabled,
+      onlyProtectedBranches: onlyProtectedBranches,
+      keepDivergentRefs: keepDivergentRefs,
+      mirrorBranchRegex: mirrorBranchRegex,
+    );
+    _ref.invalidate(projectRemoteMirrorsProvider(projectId));
+  }
+
+  Future<void> deleteRemoteMirror(Object projectId, int mirrorId) async {
+    await _repo.deleteRemoteMirror(projectId, mirrorId);
+    _ref.invalidate(projectRemoteMirrorsProvider(projectId));
   }
 
   /// Returns the created token — the only time its secret is readable.

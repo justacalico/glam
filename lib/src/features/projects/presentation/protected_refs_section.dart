@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
@@ -10,6 +11,7 @@ import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
+import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 
 /// Protected branch rules with protect / unprotect.
@@ -756,6 +758,258 @@ class FreezePeriodsSection extends ConsumerWidget {
         showAdminError(context, e.message);
       }
     }
+  }
+}
+
+/// Pull mirrors with add / toggle / delete.
+class RemoteMirrorsSection extends ConsumerWidget {
+  const RemoteMirrorsSection({required this.project, super.key});
+
+  final Project project;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final mirrors = ref.watch(projectRemoteMirrorsProvider(project.id));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(child: SectionLabel('Mirroring repositories')),
+            TextButton.icon(
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Add'),
+              onPressed: () => _add(context, ref),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: Radii.borderMd,
+            border: Border.all(color: colors.border),
+          ),
+          child: mirrors.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => Padding(
+              padding: const EdgeInsets.all(Insets.lg),
+              child: Text('$e'),
+            ),
+            data: (list) => list.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(Insets.lg),
+                    child: EmptyState(
+                      icon: Icons.sync_outlined,
+                      title: 'No mirrors',
+                    ),
+                  )
+                : Column(
+                    children: [
+                      for (final m in list)
+                        _RemoteMirrorTile(
+                          mirror: m,
+                          onToggle: (v) => _toggle(context, ref, m, v),
+                          onDelete: () => _delete(context, ref, m),
+                        ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _add(BuildContext context, WidgetRef ref) async {
+    final url = TextEditingController();
+    final regex = TextEditingController();
+    var onlyProtected = false;
+    var keepDivergent = false;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Mirror repository'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: url,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Git repository URL',
+                    hintText: 'https://user:token@example.com/repo.git',
+                  ),
+                ),
+                const SizedBox(height: Insets.sm),
+                TextField(
+                  controller: regex,
+                  decoration: const InputDecoration(
+                    labelText: 'Branch regex (optional)',
+                    hintText: r'^(main|release/.*)$',
+                  ),
+                ),
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Only protected branches'),
+                  value: onlyProtected,
+                  onChanged: (v) => setState(() => onlyProtected = v ?? false),
+                ),
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Keep divergent refs'),
+                  value: keepDivergent,
+                  onChanged: (v) => setState(() => keepDivergent = v ?? false),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (url.text.trim().isEmpty) {
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        ),
+      ),
+    );
+    final u = url.text.trim();
+    final r = regex.text.trim();
+    url.dispose();
+    regex.dispose();
+    if (ok != true || u.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .addRemoteMirror(
+            project.id,
+            url: u,
+            onlyProtectedBranches: onlyProtected,
+            keepDivergentRefs: keepDivergent,
+            mirrorBranchRegex: r.isEmpty ? null : r,
+          );
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _toggle(
+    BuildContext context,
+    WidgetRef ref,
+    RemoteMirror mirror,
+    bool enabled,
+  ) async {
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .updateRemoteMirror(project.id, mirror.id, enabled: enabled);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    RemoteMirror mirror,
+  ) async {
+    final ok = await confirmAdminAction(
+      context,
+      title: 'Delete mirror?',
+      body: 'Syncing from ${mirror.url} will stop.',
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(projectAdminActionsProvider)
+          .deleteRemoteMirror(project.id, mirror.id);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        showAdminError(context, e.message);
+      }
+    }
+  }
+}
+
+class _RemoteMirrorTile extends StatelessWidget {
+  const _RemoteMirrorTile({
+    required this.mirror,
+    required this.onToggle,
+    required this.onDelete,
+  });
+
+  final RemoteMirror mirror;
+  final ValueChanged<bool> onToggle;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final subtitle = [
+      if (mirror.onlyProtectedBranches) 'protected only',
+      if (mirror.keepDivergentRefs) 'keep divergent',
+      if (mirror.mirrorBranchRegex != null) mirror.mirrorBranchRegex!,
+      if (mirror.lastError != null) 'error: ${mirror.lastError}',
+      if (mirror.lastUpdateAt != null)
+        'synced ${Format.dateTime(mirror.lastUpdateAt)}',
+    ].join(' · ');
+    return ListTile(
+      dense: true,
+      leading: const Icon(Icons.sync_outlined, size: 18),
+      title: Text(
+        mirror.url,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12),
+      ),
+      subtitle: subtitle.isEmpty
+          ? null
+          : Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: mirror.lastError != null ? colors.danger : null,
+              ),
+            ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Switch(value: mirror.enabled, onChanged: onToggle),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 18),
+            onPressed: onDelete,
+          ),
+        ],
+      ),
+    );
   }
 }
 
