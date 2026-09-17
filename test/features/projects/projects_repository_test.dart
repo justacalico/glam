@@ -83,6 +83,8 @@ void main() {
         visibility: 'internal',
         topics: ['dart', 'flutter'],
         issuesEnabled: false,
+        sharedRunnersEnabled: false,
+        groupRunnersEnabled: true,
       );
 
       expect(adapter.lastRequest!.data, {
@@ -90,6 +92,8 @@ void main() {
         'visibility': 'internal',
         'topics': ['dart', 'flutter'],
         'issues_enabled': false,
+        'shared_runners_enabled': false,
+        'group_runners_enabled': true,
       });
     });
 

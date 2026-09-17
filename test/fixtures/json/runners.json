@@ -1,0 +1,32 @@
+[
+  {
+    "id": 6,
+    "description": "shared-runner-01",
+    "name": "gitlab-runner-6",
+    "runner_type": "instance_type",
+    "paused": false,
+    "status": "online",
+    "is_shared": true,
+    "tag_list": ["docker", "linux"]
+  },
+  {
+    "id": 7,
+    "description": "project runner",
+    "name": "gitlab-runner-7",
+    "runner_type": "project_type",
+    "paused": true,
+    "status": "never_contacted",
+    "is_shared": false,
+    "tag_list": []
+  },
+  {
+    "id": 8,
+    "description": "",
+    "name": "gitlab-runner-8",
+    "runner_type": "group_type",
+    "paused": false,
+    "status": "stale",
+    "is_shared": false,
+    "tag_list": []
+  }
+]

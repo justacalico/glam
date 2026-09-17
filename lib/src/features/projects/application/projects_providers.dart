@@ -10,6 +10,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
+import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
 
 final projectsRepositoryProvider = Provider<ProjectsRepository>(
@@ -86,6 +87,12 @@ final projectDeployTokensProvider =
     FutureProvider.family<List<DeployToken>, Object>(
       (ref, id) => ref.watch(projectsRepositoryProvider).deployTokens(id),
     );
+
+/// Runners available to this project: its own runners plus group and
+/// shared runners the project allows.
+final projectRunnersProvider = FutureProvider.family<List<Runner>, Object>(
+  (ref, id) => ref.watch(projectsRepositoryProvider).projectRunners(id),
+);
 
 /// Mutations for the admin lists; each refetches its list on success.
 final projectAdminActionsProvider = Provider<ProjectAdminActions>(
@@ -206,6 +213,11 @@ class ProjectAdminActions {
   Future<void> deleteDeployToken(Object projectId, int tokenId) async {
     await _repo.deleteDeployToken(projectId, tokenId);
     _ref.invalidate(projectDeployTokensProvider(projectId));
+  }
+
+  Future<void> disableRunner(Object projectId, int runnerId) async {
+    await _repo.disableRunner(projectId, runnerId);
+    _ref.invalidate(projectRunnersProvider(projectId));
   }
 }
 

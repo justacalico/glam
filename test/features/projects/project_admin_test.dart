@@ -399,5 +399,29 @@ void main() {
         hasLength(2),
       );
     });
+
+    test('runners list parses status and disableRunner refetches', () async {
+      adapter
+        ..get('/projects/42/runners', fixtureJson('runners'))
+        ..delete('/projects/42/runners/7')
+        ..get('/projects/42/runners', fixtureJson('runners'));
+
+      final runners = await container.read(projectRunnersProvider(42).future);
+      expect(runners, hasLength(3));
+      expect(runners.first.statusLabel, 'Online');
+      expect(runners.first.typeLabel, 'Shared');
+      expect(runners[1].statusLabel, 'Paused');
+      expect(runners[1].isProjectRunner, isTrue);
+      expect(runners.last.statusLabel, 'Stale');
+      expect(runners.last.typeLabel, 'Group');
+
+      await container.read(projectAdminActionsProvider).disableRunner(42, 7);
+      await container.read(projectRunnersProvider(42).future);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/runners/7'),
+        hasLength(1),
+      );
+      expect(adapter.requestsTo('GET', '/projects/42/runners'), hasLength(2));
+    });
   });
 }
