@@ -217,6 +217,15 @@ class MergeRequestsRepository {
     );
   }
 
+  /// Cancels a scheduled merge-when-pipeline-succeeds.
+  Future<void> cancelAutoMerge(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/'
+      'cancel_merge_when_pipeline_succeeds',
+      decoder: (_) {},
+    );
+  }
+
   Future<ApprovalState> approvals(Object projectId, int iid) {
     return _client.get(
       '${_p(projectId)}/merge_requests/$iid/approvals',
