@@ -14,6 +14,7 @@ class PagedListView<T> extends StatelessWidget {
     this.separator,
     this.padding = Insets.pagePadding,
     this.empty,
+    this.header,
     super.key,
   });
 
@@ -23,6 +24,9 @@ class PagedListView<T> extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final Widget? separator;
   final EdgeInsets padding;
+
+  /// Optional content scrolled above the items, e.g. a section card.
+  final Widget? header;
 
   /// Rendered when the loaded list is empty.
   final Widget? empty;
@@ -46,7 +50,8 @@ class PagedListView<T> extends StatelessWidget {
     }
 
     final footerCount = state.hasMore || state.loadMoreFailed ? 1 : 0;
-    final itemCount = state.items.length + footerCount;
+    final headerCount = header == null ? 0 : 1;
+    final itemCount = headerCount + state.items.length + footerCount;
 
     final list = separator != null
         ? ListView.separated(
@@ -78,6 +83,12 @@ class PagedListView<T> extends StatelessWidget {
   }
 
   Widget _buildItem(BuildContext context, int index) {
+    if (header != null) {
+      if (index == 0) {
+        return header!;
+      }
+      index -= 1;
+    }
     if (index >= state.items.length) {
       return _LoadMoreFooter(failed: state.loadMoreFailed, onRetry: onLoadMore);
     }

@@ -163,6 +163,14 @@ class MergeRequestsRepository {
     );
   }
 
+  /// Commits shown for context only (not part of the diff).
+  Future<List<Commit>> contextCommits(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/context_commits',
+      decoder: (j) => Commit.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<MergeRequest> createMergeRequest(
     Object projectId, {
     required String sourceBranch,
