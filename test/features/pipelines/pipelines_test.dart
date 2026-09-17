@@ -237,6 +237,114 @@ void main() {
       final sent = adapter.requests.first.data as Map;
       expect(sent['variable_type'], 'env_var');
     });
+
+    test('projectJobs forwards the scope filter', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/jobs', fixtureJson('jobs'));
+      final repo = PipelinesRepository(client);
+
+      final page = await repo.projectJobs(42, scope: 'running');
+
+      expect(page.items, hasLength(3));
+      final req = adapter.requestsTo('GET', '/projects/42/jobs').single;
+      expect(req.queryParameters['scope'], 'running');
+    });
+
+    test('erase, keepArtifacts and deleteArtifacts hit their paths', () async {
+      final (client, adapter) = testClient();
+      final body = (fixtureJson('jobs') as List).first;
+      adapter
+        ..post('/projects/42/jobs/5001/erase', body)
+        ..post('/projects/42/jobs/5001/artifacts/keep', body)
+        ..delete('/projects/42/jobs/5001/artifacts');
+      final repo = PipelinesRepository(client);
+
+      await repo.eraseJob(42, 5001);
+      await repo.keepArtifacts(42, 5001);
+      await repo.deleteArtifacts(42, 5001);
+
+      expect(
+        adapter.requestsTo('POST', '/projects/42/jobs/5001/erase'),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo('POST', '/projects/42/jobs/5001/artifacts/keep'),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/jobs/5001/artifacts'),
+        hasLength(1),
+      );
+    });
+
+    test('createTrigger posts the description and returns the token', () async {
+      final (client, adapter) = testClient();
+      final body =
+          (fixtureJson('triggers') as List).first as Map<String, dynamic>;
+      adapter.post('/projects/42/triggers', {
+        ...body,
+        'token': 'full-secret-token',
+      });
+      final repo = PipelinesRepository(client);
+
+      final t = await repo.createTrigger(42, 'Deploy webhook');
+
+      expect(t.token, 'full-secret-token');
+      expect(t.id, 10);
+      final sent = adapter.requestsTo('POST', '/projects/42/triggers').single;
+      expect((sent.data as Map)['description'], 'Deploy webhook');
+    });
+
+    test('deleteTrigger hits the trigger path', () async {
+      final (client, adapter) = testClient();
+      adapter.delete('/projects/42/triggers/10');
+      final repo = PipelinesRepository(client);
+
+      await repo.deleteTrigger(42, 10);
+
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/triggers/10'),
+        hasLength(1),
+      );
+    });
+
+    test('ciLint posts content and decodes errors', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/ci/lint', {
+        'valid': false,
+        'status': 'invalid',
+        'errors': ['jobs:test config missing script'],
+        'warnings': ['deprecated keyword'],
+        'jobs': [
+          {'name': 'build'},
+          {'name': 'test'},
+        ],
+      });
+      final repo = PipelinesRepository(client);
+
+      final result = await repo.ciLint(42, 'test:\n  script: echo hi');
+
+      expect(result.valid, isFalse);
+      expect(result.errors, hasLength(1));
+      expect(result.warnings, hasLength(1));
+      expect(result.jobs, ['build', 'test']);
+      final sent = adapter.requestsTo('POST', '/projects/42/ci/lint').single;
+      expect((sent.data as Map)['content'], contains('script'));
+    });
+
+    test('ciLint falls back to status when valid is absent', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/ci/lint', {
+        'status': 'valid',
+        'errors': <String>[],
+        'warnings': <String>[],
+      });
+      final repo = PipelinesRepository(client);
+
+      final result = await repo.ciLint(42, 'x');
+
+      expect(result.valid, isTrue);
+    });
   });
 
   group('providers', () {
@@ -325,6 +433,28 @@ void main() {
 
       expect(s.variables, hasLength(2));
       expect(s.variables.first.key, 'NIGHTLY');
+    });
+
+    test('projectJobsProvider loads jobs and forwards scope', () async {
+      adapter.get('/projects/42/jobs', fixtureJson('jobs'));
+
+      const loc = (project: 42, scope: 'failed');
+      final state = await container.read(projectJobsProvider(loc).future);
+
+      expect(state.items, hasLength(3));
+      final req = adapter.requestsTo('GET', '/projects/42/jobs').single;
+      expect(req.queryParameters['scope'], 'failed');
+    });
+
+    test('pipelineTriggersProvider lists triggers', () async {
+      adapter.get('/projects/42/triggers', fixtureJson('triggers'));
+
+      final list = await container.read(pipelineTriggersProvider(42).future);
+
+      expect(list, hasLength(2));
+      expect(list.first.description, 'Deploy webhook');
+      expect(list.first.owner, 'Jane Doe');
+      expect(list.last.lastUsedAt, isNull);
     });
   });
 }
