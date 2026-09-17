@@ -11,6 +11,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/ci_variables_section.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
@@ -35,6 +36,16 @@ class GroupDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Group'),
         actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            icon: const Icon(Icons.notifications_outlined, size: 20),
+            onPressed: () => unawaited(
+              ScopedNotificationSheet.show(context, (
+                id: groupId,
+                isProject: false,
+              )),
+            ),
+          ),
           IconButton(
             tooltip: 'Search this group',
             icon: const Icon(Icons.search, size: 20),

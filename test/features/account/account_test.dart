@@ -304,5 +304,35 @@ void main() {
       expect((sent.single.data as Map)['new_issue'], isTrue);
       expect((sent.single.data as Map).containsKey('level'), isFalse);
     });
+
+    test('group notification settings get and put', () async {
+      adapter
+        ..get(
+          '/groups/9/notification_settings',
+          fixtureJson('notification_settings'),
+        )
+        ..put(
+          '/groups/9/notification_settings',
+          fixtureJson('notification_settings'),
+        )
+        ..get(
+          '/groups/9/notification_settings',
+          fixtureJson('notification_settings'),
+        );
+
+      await container.read(groupNotificationProvider(9).future);
+      await container
+          .read(accountActionsProvider)
+          .setGroupNotificationLevel(9, 'participating');
+      await container.read(groupNotificationProvider(9).future);
+
+      final puts = adapter.requestsTo('PUT', '/groups/9/notification_settings');
+      expect(puts, hasLength(1));
+      expect((puts.single.data as Map)['level'], 'participating');
+      expect(
+        adapter.requestsTo('GET', '/groups/9/notification_settings'),
+        hasLength(2),
+      );
+    });
   });
 }
