@@ -226,6 +226,31 @@ void main() {
       expect(adapter.requestsTo('GET', '/groups/9/runners'), hasLength(1));
     });
 
+    test('group issues and MRs forward state and search', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/groups/9/issues', fixtureJson('issues'))
+        ..get('/groups/9/merge_requests', fixtureJson('mrs'));
+      final repo = GroupsRepository(client);
+
+      final issues = await repo.groupIssues(
+        9,
+        state: 'opened',
+        search: 'fix',
+      );
+      final mrs = await repo.groupMergeRequests(9, state: 'merged');
+
+      expect(issues.items, isNotEmpty);
+      expect(mrs.items, isNotEmpty);
+      final issueQuery = adapter.requestsTo('GET', '/groups/9/issues').single;
+      expect(issueQuery.queryParameters['state'], 'opened');
+      expect(issueQuery.queryParameters['search'], 'fix');
+      final mrQuery = adapter
+          .requestsTo('GET', '/groups/9/merge_requests')
+          .single;
+      expect(mrQuery.queryParameters['state'], 'merged');
+    });
+
     test('auditEvents decodes detail fields', () async {
       final (client, adapter) = testClient();
       adapter.get('/groups/9/audit_events', [

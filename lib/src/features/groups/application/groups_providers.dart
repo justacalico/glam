@@ -10,6 +10,8 @@ import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 
@@ -108,6 +110,61 @@ class SharedProjectsNotifier extends PagedListNotifier<Project> {
     return ref
         .watch(groupsRepositoryProvider)
         .sharedProjects(groupId, page: page);
+  }
+}
+
+/// (group, state, search) for the group's work-item lists.
+typedef GroupWorkFilter = ({Object group, String? state, String? search});
+
+/// Issues across the group's projects.
+final groupIssuesProvider =
+    AsyncNotifierProvider.family<
+      GroupIssuesNotifier,
+      PagedListState<Issue>,
+      GroupWorkFilter
+    >(GroupIssuesNotifier.new);
+
+class GroupIssuesNotifier extends PagedListNotifier<Issue> {
+  GroupIssuesNotifier(this.filter);
+
+  final GroupWorkFilter filter;
+
+  @override
+  Future<Paginated<Issue>> fetchPage(int page) {
+    return ref
+        .watch(groupsRepositoryProvider)
+        .groupIssues(
+          filter.group,
+          state: filter.state,
+          search: filter.search,
+          page: page,
+        );
+  }
+}
+
+/// Merge requests across the group's projects.
+final groupMrsProvider =
+    AsyncNotifierProvider.family<
+      GroupMrsNotifier,
+      PagedListState<MergeRequest>,
+      GroupWorkFilter
+    >(GroupMrsNotifier.new);
+
+class GroupMrsNotifier extends PagedListNotifier<MergeRequest> {
+  GroupMrsNotifier(this.filter);
+
+  final GroupWorkFilter filter;
+
+  @override
+  Future<Paginated<MergeRequest>> fetchPage(int page) {
+    return ref
+        .watch(groupsRepositoryProvider)
+        .groupMergeRequests(
+          filter.group,
+          state: filter.state,
+          search: filter.search,
+          page: page,
+        );
   }
 }
 
