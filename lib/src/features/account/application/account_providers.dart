@@ -15,6 +15,10 @@ final gpgKeysProvider = FutureProvider<List<GpgKey>>(
   (ref) => ref.watch(accountRepositoryProvider).gpgKeys(),
 );
 
+final emailsProvider = FutureProvider<List<UserEmail>>(
+  (ref) => ref.watch(accountRepositoryProvider).emails(),
+);
+
 final personalAccessTokensProvider = FutureProvider<List<PersonalAccessToken>>(
   (ref) => ref.watch(accountRepositoryProvider).personalAccessTokens(),
 );
@@ -77,6 +81,16 @@ class AccountActions {
   Future<void> deleteGpgKey(int keyId) async {
     await _repo.deleteGpgKey(keyId);
     _ref.invalidate(gpgKeysProvider);
+  }
+
+  Future<void> addEmail(String email) async {
+    await _repo.addEmail(email);
+    _ref.invalidate(emailsProvider);
+  }
+
+  Future<void> deleteEmail(int emailId) async {
+    await _repo.deleteEmail(emailId);
+    _ref.invalidate(emailsProvider);
   }
 
   Future<void> revokeToken(int tokenId) async {

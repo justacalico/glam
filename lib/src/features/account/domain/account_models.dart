@@ -89,6 +89,32 @@ class GpgKey extends Equatable {
   List<Object?> get props => [id];
 }
 
+/// An email address on the account (`/user/emails`). The primary
+/// address cannot be removed and is marked `primary`.
+class UserEmail extends Equatable {
+  const UserEmail({
+    required this.id,
+    required this.email,
+    this.primary = false,
+    this.confirmed = false,
+  });
+
+  factory UserEmail.fromJson(Map<String, dynamic> json) => UserEmail(
+    id: json['id'] as int? ?? 0,
+    email: json['email'] as String? ?? '',
+    primary: json['primary'] as bool? ?? false,
+    confirmed: json['confirmed_at'] != null,
+  );
+
+  final int id;
+  final String email;
+  final bool primary;
+  final bool confirmed;
+
+  @override
+  List<Object?> get props => [id];
+}
+
 /// A personal access token (`/personal_access_tokens`). The token
 /// string itself is never returned on list, only metadata.
 class PersonalAccessToken extends Equatable {

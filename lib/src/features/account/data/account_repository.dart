@@ -57,6 +57,26 @@ class AccountRepository {
     return _client.delete('/user/gpg_keys/$keyId');
   }
 
+  /// Secondary email addresses on the account (`/user/emails`).
+  Future<List<UserEmail>> emails() {
+    return _client.getAll(
+      '/user/emails',
+      decoder: (j) => UserEmail.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<UserEmail> addEmail(String email) {
+    return _client.post(
+      '/user/emails',
+      body: {'email': email},
+      decoder: (j) => UserEmail.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteEmail(int emailId) {
+    return _client.delete('/user/emails/$emailId');
+  }
+
   Future<List<PersonalAccessToken>> personalAccessTokens({
     bool activeOnly = true,
   }) {
