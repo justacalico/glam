@@ -61,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
           length: 3,
           child: Column(
             children: [
-              _ProfileHeader(user: u),
+              _ProfileHeader(user: u, isSelf: isSelf),
               const TabBar(
                 tabs: [
                   Tab(text: 'Projects'),
@@ -87,9 +87,10 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.user});
+  const _ProfileHeader({required this.user, required this.isSelf});
 
   final GitLabUser user;
+  final bool isSelf;
 
   @override
   Widget build(BuildContext context) {
@@ -181,36 +182,172 @@ class _ProfileHeader extends StatelessWidget {
                 _Meta(
                   icon: Icons.people_outline,
                   text: '${user.followers} followers',
+                  onTap: () => _usersSheet(context, user.id, 'Followers'),
                 ),
               if (user.following != null)
                 _Meta(
                   icon: Icons.person_add_outlined,
                   text: '${user.following} following',
+                  onTap: () => _usersSheet(context, user.id, 'Following'),
                 ),
             ],
           ),
+          if (!isSelf) ...[
+            const SizedBox(height: Insets.md),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _FollowButton(userId: user.id),
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  void _usersSheet(BuildContext context, int userId, String title) {
+    unawaited(
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => _UsersSheet(
+          title: title,
+          provider: title == 'Followers'
+              ? userFollowersProvider(userId)
+              : userFollowingProvider(userId),
+        ),
       ),
     );
   }
 }
 
 class _Meta extends StatelessWidget {
-  const _Meta({required this.icon, required this.text});
+  const _Meta({required this.icon, required this.text, this.onTap});
 
   final IconData icon;
   final String text;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Row(
+    final row = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 14, color: colors.inkFaint),
         const SizedBox(width: Insets.xs),
         Text(text, style: Theme.of(context).textTheme.bodySmall),
       ],
+    );
+    if (onTap == null) {
+      return row;
+    }
+    return InkWell(onTap: onTap, child: row);
+  }
+}
+
+/// Follows or unfollows [userId], based on `myFollowedProvider`.
+class _FollowButton extends ConsumerWidget {
+  const _FollowButton({required this.userId});
+
+  final int userId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final followed = ref.watch(myFollowedProvider);
+    final following = followed.value?.contains(userId) ?? false;
+    return OutlinedButton.icon(
+      icon: Icon(
+        following ? Icons.person_remove_outlined : Icons.person_add_outlined,
+        size: 16,
+      ),
+      label: Text(following ? 'Unfollow' : 'Follow'),
+      onPressed: followed.value == null
+          ? null
+          : () => _toggle(context, ref, following),
+    );
+  }
+
+  Future<void> _toggle(
+    BuildContext context,
+    WidgetRef ref,
+    bool following,
+  ) async {
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      if (following) {
+        await repo.unfollowUser(userId);
+      } else {
+        await repo.followUser(userId);
+      }
+      ref
+        ..invalidate(myFollowedProvider)
+        ..invalidate(userProvider(userId));
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+}
+
+/// Bottom sheet listing followers or followed users.
+class _UsersSheet extends ConsumerWidget {
+  const _UsersSheet({required this.title, required this.provider});
+
+  final String title;
+  final FutureProvider<List<GitLabUser>> provider;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final users = ref.watch(provider);
+    final colors = context.colors;
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.55,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      builder: (context, controller) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          Expanded(
+            child: users.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('$e')),
+              data: (list) => list.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.people_outline,
+                      title: 'Nobody here yet',
+                    )
+                  : ListView.builder(
+                      controller: controller,
+                      itemCount: list.length,
+                      itemBuilder: (context, i) {
+                        final u = list[i];
+                        return ListTile(
+                          dense: true,
+                          leading: UserAvatar(
+                            name: u.name,
+                            avatarUrl: u.avatarUrl,
+                            radius: 16,
+                          ),
+                          title: Text(u.name),
+                          subtitle: Text(
+                            '@${u.username}',
+                            style: TextStyle(color: colors.inkMuted),
+                          ),
+                          onTap: () => context.push(Routes.user(u.id)),
+                        );
+                      },
+                    ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
