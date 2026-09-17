@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/widgets/note_card.dart';
+import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 
@@ -83,6 +84,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     final theme = Theme.of(context);
     final d = widget.discussion;
     final position = d.position?.label;
+    final myId = ref.watch(sessionProvider).value?.user.id;
 
     return Container(
       margin: const EdgeInsets.only(bottom: Insets.md),
@@ -146,6 +148,16 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                 for (final note in d.notes.where((n) => !n.system))
                   NoteCard(
                     note: note,
+                    onEdit: note.author?.id == myId
+                        ? (body) => ref
+                              .read(mrDiscussionsProvider(widget.loc).notifier)
+                              .editNote(d.id, note.id, body)
+                        : null,
+                    onDelete: note.author?.id == myId
+                        ? () => ref
+                              .read(mrDiscussionsProvider(widget.loc).notifier)
+                              .removeNote(d.id, note.id)
+                        : null,
                     footer: ReactionsRow(
                       loc: (
                         kind: 'mr',

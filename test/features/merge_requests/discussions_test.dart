@@ -232,6 +232,31 @@ void main() {
       expect(sent['body'], 'reply');
     });
 
+    test('updateDiscussionNote puts and deleteDiscussionNote deletes',
+        () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..put(
+          '/projects/42/merge_requests/7/discussions/abc123/notes/900',
+          const {'id': 900, 'body': 'edited'},
+        )
+        ..delete('/projects/42/merge_requests/7/discussions/abc123/notes/900');
+      final repo = MergeRequestsRepository(client);
+
+      final note = await repo.updateDiscussionNote(
+        42,
+        7,
+        'abc123',
+        900,
+        'edited',
+      );
+      expect(note.id, 900);
+      expect((adapter.lastRequest!.data as Map)['body'], 'edited');
+
+      await repo.deleteDiscussionNote(42, 7, 'abc123', 900);
+      expect(adapter.lastRequest!.method, 'DELETE');
+    });
+
     test('setDiscussionResolved puts the resolved flag', () async {
       final (client, adapter) = testClient();
       adapter

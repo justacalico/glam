@@ -116,6 +116,22 @@ class IssueNotesNotifier extends PagedListNotifier<Note> {
     ref.invalidate(issueParticipantsProvider(loc));
     return note;
   }
+
+  /// Edits a note then reloads the thread.
+  Future<void> editComment(int noteId, String body) async {
+    await ref
+        .read(issuesRepositoryProvider)
+        .updateNote(loc.project, loc.iid, noteId, body);
+    await refresh();
+  }
+
+  /// Deletes a note then reloads the thread.
+  Future<void> deleteComment(int noteId) async {
+    await ref
+        .read(issuesRepositoryProvider)
+        .deleteNote(loc.project, loc.iid, noteId);
+    await refresh();
+  }
 }
 
 /// Links between this issue and others (relates_to / blocks /

@@ -324,6 +324,33 @@ class MergeRequestsRepository {
     );
   }
 
+  /// Edits a note inside a thread.
+  Future<Note> updateDiscussionNote(
+    Object projectId,
+    int iid,
+    String discussionId,
+    int noteId,
+    String body,
+  ) {
+    return _client.put(
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId/notes/$noteId',
+      body: {'body': body},
+      decoder: (j) => Note.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Deletes a note inside a thread.
+  Future<void> deleteDiscussionNote(
+    Object projectId,
+    int iid,
+    String discussionId,
+    int noteId,
+  ) {
+    return _client.delete(
+      '${_p(projectId)}/merge_requests/$iid/discussions/$discussionId/notes/$noteId',
+    );
+  }
+
   /// Replies inside an existing thread.
   Future<Note> replyToDiscussion(
     Object projectId,

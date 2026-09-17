@@ -180,6 +180,42 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
     _replace(updated);
   }
 
+  /// Edits a note inside a thread, then reloads that thread.
+  Future<void> editNote(String discussionId, int noteId, String body) async {
+    final repo = ref.read(mrRepositoryProvider);
+    await repo.updateDiscussionNote(
+      loc.project,
+      loc.iid,
+      discussionId,
+      noteId,
+      body,
+    );
+    final updated = await repo.discussion(loc.project, loc.iid, discussionId);
+    _replace(updated);
+  }
+
+  /// Deletes a note inside a thread, then reloads that thread. Deleting
+  /// the last note deletes the thread itself, so a 404 just drops it.
+  Future<void> removeNote(String discussionId, int noteId) async {
+    final repo = ref.read(mrRepositoryProvider);
+    await repo.deleteDiscussionNote(loc.project, loc.iid, discussionId, noteId);
+    try {
+      final updated = await repo.discussion(loc.project, loc.iid, discussionId);
+      _replace(updated);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        updateItems(
+          (items) => [
+            for (final d in items)
+              if (d.id != discussionId) d,
+          ],
+        );
+      } else {
+        rethrow;
+      }
+    }
+  }
+
   Future<void> toggleResolved(Discussion discussion) async {
     if (!discussion.resolvable) {
       return;
