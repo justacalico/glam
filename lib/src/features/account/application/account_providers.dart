@@ -11,6 +11,10 @@ final sshKeysProvider = FutureProvider<List<SshKey>>(
   (ref) => ref.watch(accountRepositoryProvider).sshKeys(),
 );
 
+final gpgKeysProvider = FutureProvider<List<GpgKey>>(
+  (ref) => ref.watch(accountRepositoryProvider).gpgKeys(),
+);
+
 final personalAccessTokensProvider = FutureProvider<List<PersonalAccessToken>>(
   (ref) => ref.watch(accountRepositoryProvider).personalAccessTokens(),
 );
@@ -63,6 +67,16 @@ class AccountActions {
   Future<void> deleteSshKey(int keyId) async {
     await _repo.deleteSshKey(keyId);
     _ref.invalidate(sshKeysProvider);
+  }
+
+  Future<void> addGpgKey(String key) async {
+    await _repo.addGpgKey(key);
+    _ref.invalidate(gpgKeysProvider);
+  }
+
+  Future<void> deleteGpgKey(int keyId) async {
+    await _repo.deleteGpgKey(keyId);
+    _ref.invalidate(gpgKeysProvider);
   }
 
   Future<void> revokeToken(int tokenId) async {

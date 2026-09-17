@@ -46,6 +46,49 @@ class SshKey extends Equatable {
   List<Object?> get props => [id];
 }
 
+/// A GPG key on the account (`/user/gpg_keys`). The `key` field is
+/// the armored public key.
+class GpgKey extends Equatable {
+  const GpgKey({
+    required this.id,
+    required this.key,
+    this.createdAt,
+    this.emails = const [],
+    this.subkeyIds = const [],
+  });
+
+  factory GpgKey.fromJson(Map<String, dynamic> json) {
+    final subkeys = json['subkeys'];
+    return GpgKey(
+      id: json['id'] as int? ?? 0,
+      key: json['key'] as String? ?? '',
+      createdAt: _date(json['created_at']),
+      emails: json['emails'] is List
+          ? (json['emails'] as List).map((e) => e.toString()).toList()
+          : const [],
+      subkeyIds: subkeys is List
+          ? subkeys
+                .whereType<Map<String, dynamic>>()
+                .map((s) => '${s['keyid'] ?? s['fingerprint'] ?? ''}')
+                .where((s) => s.isNotEmpty)
+                .toList()
+          : const [],
+    );
+  }
+
+  final int id;
+  final String key;
+  final DateTime? createdAt;
+  final List<String> emails;
+  final List<String> subkeyIds;
+
+  static DateTime? _date(Object? v) =>
+      v is String ? DateTime.tryParse(v)?.toLocal() : null;
+
+  @override
+  List<Object?> get props => [id];
+}
+
 /// A personal access token (`/personal_access_tokens`). The token
 /// string itself is never returned on list, only metadata.
 class PersonalAccessToken extends Equatable {

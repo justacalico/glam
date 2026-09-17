@@ -1,0 +1,17 @@
+[
+  {
+    "id": 20,
+    "key": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nmQINBFakeKeyMaterial\n-----END PGP PUBLIC KEY BLOCK-----",
+    "created_at": "2024-03-01T08:00:00.000Z",
+    "emails": ["calico@example.com"],
+    "subkeys": [
+      {
+        "id": 21,
+        "keyid": "A1B2C3D4E5F60708",
+        "fingerprint": "A1B2C3D4E5F60708A1B2C3D4E5F60708A1B2C3D4",
+        "can_encrypt": false,
+        "can_sign": true
+      }
+    ]
+  }
+]
