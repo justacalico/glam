@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/profile/domain/membership.dart';
 
 /// Validates credentials against `GET /user` and fetches the signed-in
 /// profile.
@@ -102,6 +103,15 @@ class AuthRepository {
     return _client.getAll(
       '/users/$id/followed_users',
       decoder: (j) => GitLabUser.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Groups and projects the signed-in user belongs to
+  /// (`/user/memberships`).
+  Future<List<Membership>> userMemberships() {
+    return _client.getAll(
+      '/user/memberships',
+      decoder: (j) => Membership.fromJson(j! as Map<String, dynamic>),
     );
   }
 

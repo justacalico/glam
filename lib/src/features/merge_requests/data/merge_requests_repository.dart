@@ -533,6 +533,14 @@ class MergeRequestsRepository {
     );
   }
 
+  /// MRs related to this one (`/related_merge_requests`).
+  Future<List<MergeRequest>> relatedMergeRequests(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/related_merge_requests',
+      decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// Toggles the user's subscription on the MR.
   Future<MergeRequest> setSubscribed(
     Object projectId,
