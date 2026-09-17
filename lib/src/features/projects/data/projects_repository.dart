@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/audit_event.dart';
@@ -11,6 +13,7 @@ import 'package:glam/src/features/projects/domain/freeze_period.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/domain/project_export.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
@@ -763,6 +766,31 @@ class ProjectsRepository {
     return _client.getAll(
       '/projects/${GitLabApiClient.encodeProject(id)}/audit_events',
       decoder: (j) => AuditEvent.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Current export status (`GET /projects/:id/export`); 404 when the
+  /// project was never exported, which callers map to `none`.
+  Future<ProjectExport> exportStatus(Object id) {
+    return _client.get(
+      '/projects/${GitLabApiClient.encodeProject(id)}/export',
+      decoder: (j) => ProjectExport.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Queues a new export (`POST /projects/:id/export`).
+  Future<void> requestExport(Object id) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/export',
+      decoder: (_) {},
+    );
+  }
+
+  /// Downloads the finished export tarball.
+  Future<Uint8List> exportDownload(Object id) {
+    return _client.getBytes(
+      '/projects/${GitLabApiClient.encodeProject(id)}/export/download',
+      maxBytes: 500 * 1024 * 1024,
     );
   }
 

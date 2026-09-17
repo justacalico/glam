@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
@@ -431,6 +434,32 @@ void main() {
       expect(events.single.targetDetails, 'glam');
     });
 
+    test('export status, request and download', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/export', {
+          'id': 3,
+          'export_status': 'finished',
+          'created_at': '2024-06-01T10:00:00.000Z',
+        })
+        ..post('/projects/42/export', {})
+        ..get(
+          '/projects/42/export/download',
+          Uint8List.fromList('tar'.codeUnits),
+        );
+      final repo = ProjectsRepository(client);
+
+      final status = await repo.exportStatus(42);
+      expect(status.finished, isTrue);
+      expect(status.statusLabel, 'Ready to download');
+
+      await repo.requestExport(42);
+      expect(adapter.requestsTo('POST', '/projects/42/export'), hasLength(1));
+
+      final bytes = await repo.exportDownload(42);
+      expect(utf8.decode(bytes), 'tar');
+    });
+
     test('deploy tokens list, create keeps the secret, revoke', () async {
       final (client, adapter) = testClient();
       adapter
@@ -799,6 +828,15 @@ void main() {
       );
 
       expect(events, isEmpty);
+    });
+
+    test('projectExportProvider maps 404 to no export', () async {
+      adapter.fail('/projects/42/export', status: 404);
+
+      final status = await container.read(projectExportProvider(42).future);
+
+      expect(status.status, 'none');
+      expect(status.statusLabel, 'No export yet');
     });
   });
 }
