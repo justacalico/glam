@@ -1,0 +1,32 @@
+{
+  "total_time": 61.5,
+  "total_count": 4,
+  "success_count": 2,
+  "failed_count": 1,
+  "skipped_count": 1,
+  "error_count": 0,
+  "test_suites": [
+    {
+      "name": "rspec",
+      "total_time": 40.2,
+      "total_count": 3,
+      "success_count": 2,
+      "failed_count": 1,
+      "skipped_count": 0,
+      "error_count": 0,
+      "build_ids": [66004],
+      "suite_error": null
+    },
+    {
+      "name": "flutter",
+      "total_time": 21.3,
+      "total_count": 1,
+      "success_count": 0,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "error_count": 0,
+      "build_ids": [66005, 66006],
+      "suite_error": null
+    }
+  ]
+}
