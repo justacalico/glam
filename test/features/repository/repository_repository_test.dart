@@ -631,5 +631,31 @@ void main() {
         'description': 'notes',
       });
     });
+
+    test('updateRelease puts and deleteRelease deletes', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..put(
+          '/projects/42/releases/v1%2F0',
+          (fixtureJson('releases') as List).first,
+        )
+        ..delete('/projects/42/releases/v1%2F0');
+      final repo = RepositoryRepository(client);
+
+      final r = await repo.updateRelease(
+        42,
+        'v1/0',
+        name: 'Renamed',
+        description: 'new notes',
+      );
+      expect(r.tagName, isNotEmpty);
+      expect(adapter.lastRequest!.data, {
+        'name': 'Renamed',
+        'description': 'new notes',
+      });
+
+      await repo.deleteRelease(42, 'v1/0');
+      expect(adapter.lastRequest!.method, 'DELETE');
+    });
   });
 }

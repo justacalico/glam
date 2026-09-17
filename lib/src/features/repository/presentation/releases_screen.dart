@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
@@ -54,8 +57,10 @@ class ReleasesScreen extends ConsumerWidget {
                 icon: Icons.new_releases_outlined,
                 title: 'No releases yet',
               ),
-              itemBuilder: (context, index) =>
-                  _ReleaseCard(release: data.items[index]),
+              itemBuilder: (context, index) => _ReleaseCard(
+                projectId: projectId,
+                release: data.items[index],
+              ),
             ),
           ),
         ),
@@ -126,17 +131,115 @@ class ReleasesScreen extends ConsumerWidget {
   }
 }
 
-class _ReleaseCard extends StatefulWidget {
-  const _ReleaseCard({required this.release});
+class _ReleaseCard extends ConsumerStatefulWidget {
+  const _ReleaseCard({required this.projectId, required this.release});
 
+  final String projectId;
   final Release release;
 
   @override
-  State<_ReleaseCard> createState() => _ReleaseCardState();
+  ConsumerState<_ReleaseCard> createState() => _ReleaseCardState();
 }
 
-class _ReleaseCardState extends State<_ReleaseCard> {
+class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
   var _expanded = false;
+
+  Future<void> _showEdit() async {
+    final release = widget.release;
+    final name = TextEditingController(text: release.name ?? '');
+    final description = TextEditingController(text: release.description ?? '');
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit ${release.tagName}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: name,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Release name'),
+            ),
+            const SizedBox(height: Insets.md),
+            TextField(
+              controller: description,
+              minLines: 3,
+              maxLines: 6,
+              decoration: const InputDecoration(
+                labelText: 'Release notes',
+                alignLabelWithHint: true,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (saved != true || !mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(repositoryRepositoryProvider)
+          .updateRelease(
+            widget.projectId,
+            release.tagName,
+            name: name.text.trim(),
+            description: description.text.trim(),
+          );
+      ref.invalidate(releasesProvider);
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete ${widget.release.tagName}?'),
+        content: const Text('The release is removed; the tag stays.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(repositoryRepositoryProvider)
+          .deleteRelease(widget.projectId, widget.release.tagName);
+      ref.invalidate(releasesProvider);
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,6 +294,22 @@ class _ReleaseCardState extends State<_ReleaseCard> {
                         ),
                       ],
                     ),
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: 'Release actions',
+                    iconSize: 18,
+                    icon: Icon(Icons.more_vert, color: colors.inkFaint),
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'edit', child: Text('Edit')),
+                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    ],
+                    onSelected: (v) {
+                      if (v == 'edit') {
+                        unawaited(_showEdit());
+                      } else if (v == 'delete') {
+                        unawaited(_confirmDelete());
+                      }
+                    },
                   ),
                   Icon(
                     _expanded ? Icons.expand_less : Icons.expand_more,

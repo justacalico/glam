@@ -335,6 +335,31 @@ class RepositoryRepository {
     );
   }
 
+  /// Edits a release's name, notes, or release date.
+  Future<Release> updateRelease(
+    Object projectId,
+    String tag, {
+    String? name,
+    String? description,
+    DateTime? releasedAt,
+  }) {
+    return _client.put(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}',
+      body: {
+        'name': ?name,
+        'description': ?description,
+        'released_at': ?releasedAt?.toIso8601String(),
+      },
+      decoder: (j) => Release.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteRelease(Object projectId, String tag) {
+    return _client.delete(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}',
+    );
+  }
+
   /// The rendered README for the project overview.
   Future<RepoFile?> readme(Object projectId, {String? ref}) async {
     const candidates = [
