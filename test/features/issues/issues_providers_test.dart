@@ -1,11 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glam/src/features/groups/application/groups_providers.dart';
-import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
-import 'package:glam/src/features/projects/application/projects_providers.dart';
-import 'package:glam/src/features/projects/data/projects_repository.dart';
 
 import '../../helpers/fake_dio_adapter.dart';
 import '../../helpers/fixtures.dart';
@@ -21,10 +17,6 @@ void main() {
     container = ProviderContainer(
       overrides: [
         issuesRepositoryProvider.overrideWithValue(IssuesRepository(client)),
-        projectsRepositoryProvider.overrideWithValue(
-          ProjectsRepository(client),
-        ),
-        groupsRepositoryProvider.overrideWithValue(GroupsRepository(client)),
       ],
     );
   });
@@ -148,28 +140,5 @@ void main() {
     final users = await container.read(issueParticipantsProvider(loc).future);
     expect(users, hasLength(2));
     expect(users.last.username, 'max');
-  });
-
-  test('issueIterationsProvider resolves the parent group', () async {
-    final project = fixtureJson('project') as Map<String, dynamic>;
-    adapter
-      ..get('/projects/9', {
-        ...project,
-        'namespace': {...project['namespace'] as Map, 'kind': 'group'},
-      })
-      ..get('/groups/calico/iterations', fixtureJson('iterations'));
-
-    final items = await container.read(issueIterationsProvider(9).future);
-
-    expect(items, hasLength(2));
-    expect(items.first.title, 'Sprint 12');
-    expect(adapter.lastRequest!.queryParameters['state'], 'opened');
-  });
-
-  test('issueIterationsProvider is empty for user namespaces', () async {
-    adapter.get('/projects/9', fixtureJson('project'));
-
-    final items = await container.read(issueIterationsProvider(9).future);
-    expect(items, isEmpty);
   });
 }

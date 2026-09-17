@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/models/iteration.dart';
+import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
@@ -44,17 +46,19 @@ class GroupDetailScreen extends ConsumerWidget {
         value: group,
         onRetry: () => ref.invalidate(groupProvider(groupId)),
         data: (g) => DefaultTabController(
-          length: 5,
+          length: 6,
           child: Column(
             children: [
               _GroupHeader(group: g),
               const TabBar(
+                isScrollable: true,
                 tabs: [
                   Tab(text: 'Projects'),
                   Tab(text: 'Subgroups'),
                   Tab(text: 'Members'),
                   Tab(text: 'Milestones'),
                   Tab(text: 'Labels'),
+                  Tab(text: 'Iterations'),
                 ],
               ),
               Expanded(
@@ -65,6 +69,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     MembersList(id: groupId, isProject: false),
                     MilestonesTab(scope: (id: groupId, isProject: false)),
                     LabelsTab(scope: (id: groupId, isProject: false)),
+                    _IterationsTab(groupId: groupId),
                   ],
                 ),
               ),
@@ -156,6 +161,63 @@ class _ProjectsTab extends ConsumerWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _IterationsTab extends ConsumerWidget {
+  const _IterationsTab({required this.groupId});
+
+  final Object groupId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final iterations = ref.watch(groupIterationsProvider(groupId));
+
+    return AsyncValueWidget<List<Iteration>>(
+      value: iterations,
+      onRetry: () => ref.invalidate(groupIterationsProvider(groupId)),
+      data: (items) {
+        if (items.isEmpty) {
+          return const EmptyState(
+            icon: Icons.event_repeat_outlined,
+            title: 'No iterations',
+            message: 'Iterations need a Premium group with a cadence.',
+          );
+        }
+        return ListView.separated(
+          padding: Insets.pagePadding,
+          itemCount: items.length,
+          separatorBuilder: (_, _) => Divider(color: colors.border, height: 1),
+          itemBuilder: (context, index) {
+            final it = items[index];
+            return ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.event_repeat_outlined, size: 18),
+              title: Text(it.label),
+              subtitle: it.state.isEmpty
+                  ? null
+                  : Text(
+                      it.state,
+                      style: TextStyle(
+                        color: it.state == 'current'
+                            ? colors.success
+                            : colors.inkMuted,
+                      ),
+                    ),
+              trailing: it.webUrl == null
+                  ? null
+                  : IconButton(
+                      tooltip: 'Open in browser',
+                      icon: const Icon(Icons.open_in_new, size: 16),
+                      onPressed: () => unawaited(launchExternal(it.webUrl!)),
+                    ),
+            );
+          },
+        );
+      },
     );
   }
 }

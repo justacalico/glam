@@ -4,6 +4,7 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/data/groups_repository.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 
+import '../../helpers/fake_dio_adapter.dart';
 import '../../helpers/fixtures.dart';
 import '../../helpers/test_client.dart';
 
@@ -75,6 +76,12 @@ void main() {
 
       expect(items, hasLength(2));
       expect(items.first.title, 'Sprint 12');
+      // `state` arrives as an int enum: 2 = current, 1 = upcoming.
+      expect(items.first.state, 'current');
+      expect(items.last.state, 'upcoming');
+      // Untitled iterations fall back to the date range.
+      expect(items.last.title, isNull);
+      expect(items.last.label, contains('Apr 28'));
       expect(items.first.dueDate, isNotNull);
       expect(adapter.lastRequest!.queryParameters['state'], 'opened');
     });
@@ -127,10 +134,12 @@ void main() {
   });
 
   group('providers', () {
+    late FakeDioAdapter adapter;
     late ProviderContainer container;
 
     setUp(() {
       final (client, a) = testClient();
+      adapter = a;
       a
         ..get('/groups', fixtureJson('groups'))
         ..get('/groups/9', (fixtureJson('groups') as List).first);
@@ -151,6 +160,32 @@ void main() {
     test('groupProvider loads one group', () async {
       final g = await container.read(groupProvider(9).future);
       expect(g.name, 'calico');
+    });
+
+    test('groupIterationsProvider lists every state', () async {
+      adapter.get('/groups/9/iterations', fixtureJson('iterations'));
+
+      final items = await container.read(groupIterationsProvider(9).future);
+
+      expect(items, hasLength(2));
+      expect(adapter.lastRequest!.queryParameters['state'], 'all');
+    });
+
+    test(
+      'groupIterationsProvider is empty when the route is missing',
+      () async {
+        adapter.fail('/groups/9/iterations', status: 404);
+
+        final items = await container.read(groupIterationsProvider(9).future);
+        expect(items, isEmpty);
+      },
+    );
+
+    test('groupIterationsProvider encodes nested group paths', () async {
+      adapter.get('/groups/a%2Fb/iterations', fixtureJson('iterations'));
+
+      final items = await container.read(groupIterationsProvider('a/b').future);
+      expect(items, hasLength(2));
     });
   });
 }
