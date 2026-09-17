@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
@@ -337,6 +338,106 @@ void main() {
       expect(users, hasLength(2));
       expect(users.first.username, 'jane');
     });
+
+    test('draft notes CRUD and publish hit their paths', () async {
+      final (client, adapter) = testClient();
+      final draft = (fixtureJson('draft_notes') as List).first;
+      adapter
+        ..get(
+          '/projects/42/merge_requests/7/draft_notes',
+          fixtureJson('draft_notes'),
+        )
+        ..post('/projects/42/merge_requests/7/draft_notes', draft)
+        ..put('/projects/42/merge_requests/7/draft_notes/301', {
+          ...draft as Map<String, dynamic>,
+          'note': 'edited',
+        })
+        ..delete('/projects/42/merge_requests/7/draft_notes/301')
+        ..post('/projects/42/merge_requests/7/draft_notes/301/publish', {
+          'id': 1,
+          'body': 'x',
+          'author': {
+            'id': 7,
+            'username': 'jane',
+            'name': 'Jane Doe',
+          },
+        })
+        ..post('/projects/42/merge_requests/7/draft_notes/bulk_publish', {});
+
+      final repo = MergeRequestsRepository(client);
+
+      final drafts = await repo.draftNotes(42, 7);
+      expect(drafts, hasLength(2));
+      expect(drafts.first.position?.newLine, 12);
+      expect(drafts.last.resolveDiscussion, isTrue);
+
+      final created = await repo.createDraftNote(42, 7, 'note text');
+      expect(created.id, 301);
+      final sent = adapter.requests
+          .where((r) => r.method == 'POST' && r.path.endsWith('draft_notes'))
+          .single;
+      expect((sent.data as Map)['note'], 'note text');
+
+      final edited = await repo.updateDraftNote(42, 7, 301, 'edited');
+      expect(edited.note, 'edited');
+
+      await repo.deleteDraftNote(42, 7, 301);
+      await repo.publishDraftNote(42, 7, 301);
+      await repo.publishAllDraftNotes(42, 7);
+
+      expect(
+        adapter.requestsTo(
+          'POST',
+          '/projects/42/merge_requests/7/draft_notes/bulk_publish',
+        ),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo(
+          'POST',
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+        ),
+        hasLength(1),
+      );
+      expect(
+        adapter.requestsTo(
+          'DELETE',
+          '/projects/42/merge_requests/7/draft_notes/301',
+        ),
+        hasLength(1),
+      );
+    });
+
+    test('createDraftNote sends the position body', () async {
+      final (client, adapter) = testClient();
+      adapter.post(
+        '/projects/42/merge_requests/7/draft_notes',
+        (fixtureJson('draft_notes') as List).first,
+      );
+      final repo = MergeRequestsRepository(client);
+
+      await repo.createDraftNote(
+        42,
+        7,
+        'pinned',
+        position: const NotePosition(
+          baseSha: 'a',
+          startSha: 'a',
+          headSha: 'b',
+          oldPath: 'lib/a.dart',
+          newPath: 'lib/a.dart',
+          newLine: 12,
+        ),
+      );
+
+      final sent = adapter.requests
+          .where((r) => r.method == 'POST' && r.path.endsWith('draft_notes'))
+          .single;
+      final position = (sent.data as Map)['position'] as Map;
+      expect(position['position_type'], 'text');
+      expect(position['new_line'], 12);
+      expect(position.containsKey('old_line'), isFalse);
+    });
   });
 
   group('providers', () {
@@ -415,6 +516,75 @@ void main() {
 
       expect(pipelines, hasLength(2));
       expect(people, hasLength(2));
+    });
+
+    test('mrDraftNotesProvider queues, edits, removes and publishes', () async {
+      final drafts = fixtureJson('draft_notes') as List;
+      adapter
+        ..get('/projects/42/merge_requests/7/draft_notes', drafts)
+        ..get('/projects/42/merge_requests/7/discussions', const [])
+        ..get(
+          '/projects/42/merge_requests/7/participants',
+          fixtureJson('participants'),
+        )
+        ..post('/projects/42/merge_requests/7/draft_notes', {
+          ...drafts.first as Map<String, dynamic>,
+          'id': 303,
+          'note': 'queued',
+        })
+        ..put('/projects/42/merge_requests/7/draft_notes/301', {
+          ...drafts.first as Map<String, dynamic>,
+          'note': 'edited',
+        })
+        ..delete('/projects/42/merge_requests/7/draft_notes/301')
+        ..post(
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+          {'id': 1, 'body': 'x'},
+        )
+        ..post(
+          '/projects/42/merge_requests/7/draft_notes/bulk_publish',
+          {},
+        );
+
+      const loc = (project: 42, iid: 7);
+      final notifier = container.read(mrDraftNotesProvider(loc).notifier);
+      var state = await container.read(mrDraftNotesProvider(loc).future);
+      expect(state, hasLength(2));
+
+      await notifier.add('queued');
+      state = container.read(mrDraftNotesProvider(loc)).value!;
+      expect(state, hasLength(3));
+
+      await notifier.edit(state.first, 'edited');
+      state = container.read(mrDraftNotesProvider(loc)).value!;
+      expect(state.first.note, 'edited');
+      expect(state, hasLength(3));
+
+      await notifier.publish(only: state.first);
+      state = container.read(mrDraftNotesProvider(loc)).value!;
+      expect(state, hasLength(2));
+      expect(
+        adapter.requestsTo(
+          'POST',
+          '/projects/42/merge_requests/7/draft_notes/301/publish',
+        ),
+        hasLength(1),
+      );
+
+      await notifier.remove(state.first);
+      state = container.read(mrDraftNotesProvider(loc)).value!;
+      expect(state, hasLength(1));
+
+      await notifier.publish();
+      state = container.read(mrDraftNotesProvider(loc)).value!;
+      expect(state, isEmpty);
+      expect(
+        adapter.requestsTo(
+          'POST',
+          '/projects/42/merge_requests/7/draft_notes/bulk_publish',
+        ),
+        hasLength(1),
+      );
     });
   });
 }

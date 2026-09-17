@@ -1,0 +1,39 @@
+[
+  {
+    "id": 301,
+    "author": {
+      "id": 7,
+      "username": "jane",
+      "name": "Jane Doe",
+      "state": "active",
+      "avatar_url": null,
+      "web_url": "https://gitlab.example.com/jane"
+    },
+    "note": "Rename this helper",
+    "resolve_discussion": false,
+    "position": {
+      "base_sha": "abc",
+      "start_sha": "abc",
+      "head_sha": "def",
+      "position_type": "text",
+      "old_path": "lib/a.dart",
+      "new_path": "lib/a.dart",
+      "old_line": null,
+      "new_line": 12
+    }
+  },
+  {
+    "id": 302,
+    "author": {
+      "id": 7,
+      "username": "jane",
+      "name": "Jane Doe",
+      "state": "active",
+      "avatar_url": null,
+      "web_url": "https://gitlab.example.com/jane"
+    },
+    "note": "General review note",
+    "resolve_discussion": true,
+    "position": null
+  }
+]
