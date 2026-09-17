@@ -189,14 +189,20 @@ void main() {
         ..get('/projects/42/packages', fixtureJson('packages'))
         ..delete('/projects/42/packages/901');
 
-      final state = await container.read(projectPackagesProvider(42).future);
+      const filter = (project: 42, type: null, name: null);
+      final state = await container.read(
+        projectPackagesProvider(filter).future,
+      );
       expect(state.items, hasLength(2));
 
       await container
-          .read(projectPackagesProvider(42).notifier)
+          .read(projectPackagesProvider(filter).notifier)
           .deletePackage(901);
 
-      final items = container.read(projectPackagesProvider(42)).value!.items;
+      final items = container
+          .read(projectPackagesProvider(filter))
+          .value!
+          .items;
       expect(items.single.id, 902);
       expect(adapter.requestsTo('GET', '/projects/42/packages'), hasLength(1));
     });

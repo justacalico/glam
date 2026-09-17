@@ -6,6 +6,8 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/widgets/filter_menu.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
@@ -14,50 +16,110 @@ String _label(GitLabPackage p) =>
     p.version.isEmpty ? p.name : '${p.name} ${p.version}';
 
 /// Published packages for a project.
-class ProjectPackagesTab extends ConsumerWidget {
+class ProjectPackagesTab extends ConsumerStatefulWidget {
   const ProjectPackagesTab({required this.projectId, super.key});
 
   final Object projectId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    final state = ref.watch(projectPackagesProvider(projectId));
-    final notifier = ref.read(projectPackagesProvider(projectId).notifier);
+  ConsumerState<ProjectPackagesTab> createState() => _ProjectPackagesTabState();
+}
 
-    return AsyncValueWidget(
-      value: state,
-      onRetry: notifier.refresh,
-      data: (data) => PagedListView<GitLabPackage>(
-        state: data,
-        onLoadMore: notifier.loadMore,
-        onRefresh: notifier.refresh,
-        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-        separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
-          icon: Icons.inventory_2_outlined,
-          title: 'No packages',
+class _ProjectPackagesTabState extends ConsumerState<ProjectPackagesTab> {
+  String? _type;
+  String? _name;
+
+  static const _types = [
+    'composer',
+    'conan',
+    'debian',
+    'generic',
+    'golang',
+    'helm',
+    'maven',
+    'npm',
+    'nuget',
+    'pypi',
+    'rpm',
+    'rubygems',
+    'terraform_module',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final filter = (project: widget.projectId, type: _type, name: _name);
+    final state = ref.watch(projectPackagesProvider(filter));
+    final notifier = ref.read(projectPackagesProvider(filter).notifier);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: SearchField(
+                  hint: 'Search packages',
+                  onChanged: (v) => setState(() => _name = v),
+                ),
+              ),
+              const SizedBox(width: Insets.sm),
+              FilterMenu(
+                title: 'Type',
+                current: _type,
+                options: _types,
+                onSelect: (v) => setState(() => _type = v),
+              ),
+            ],
+          ),
         ),
-        itemBuilder: (context, index) {
-          final p = data.items[index];
-          return ListTile(
-            leading: const Icon(Icons.inventory_2_outlined, size: 20),
-            title: Text(_label(p)),
-            subtitle: Text(
-              [
-                p.packageType,
-                if (p.status != 'default') p.status,
-                if (p.createdAt != null) Format.date(p.createdAt!),
-              ].join(' · '),
+        Expanded(
+          child: AsyncValueWidget(
+            value: state,
+            onRetry: notifier.refresh,
+            data: (data) => PagedListView<GitLabPackage>(
+              state: data,
+              onLoadMore: notifier.loadMore,
+              onRefresh: notifier.refresh,
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              separator: Divider(
+                height: 1,
+                color: colors.border,
+                indent: Insets.lg,
+              ),
+              empty: const EmptyState(
+                icon: Icons.inventory_2_outlined,
+                title: 'No packages',
+              ),
+              itemBuilder: (context, index) {
+                final p = data.items[index];
+                return ListTile(
+                  leading: const Icon(Icons.inventory_2_outlined, size: 20),
+                  title: Text(_label(p)),
+                  subtitle: Text(
+                    [
+                      p.packageType,
+                      if (p.status != 'default') p.status,
+                      if (p.createdAt != null) Format.date(p.createdAt!),
+                    ].join(' · '),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    onPressed: () => _delete(context, ref, p),
+                  ),
+                  onTap: () => _files(context, p),
+                );
+              },
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18),
-              onPressed: () => _delete(context, ref, p),
-            ),
-            onTap: () => _files(context, p),
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -68,7 +130,7 @@ class ProjectPackagesTab extends ConsumerWidget {
         title: Text(_label(p)),
         content: SizedBox(
           width: 460,
-          child: _PackageFiles(projectId: projectId, pkg: p),
+          child: _PackageFiles(projectId: widget.projectId, pkg: p),
         ),
         actions: [
           TextButton(
@@ -107,7 +169,13 @@ class ProjectPackagesTab extends ConsumerWidget {
     }
     try {
       await ref
-          .read(projectPackagesProvider(projectId).notifier)
+          .read(
+            projectPackagesProvider((
+              project: widget.projectId,
+              type: _type,
+              name: _name,
+            )).notifier,
+          )
           .deletePackage(p.id);
     } on ApiException catch (e) {
       if (context.mounted) {
