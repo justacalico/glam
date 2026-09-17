@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/wiki/domain/wiki_page.dart';
@@ -64,5 +67,21 @@ class WikiRepository {
 
   Future<void> delete(Object projectId, String slug) {
     return _client.delete('${_base(projectId)}/${Uri.encodeComponent(slug)}');
+  }
+
+  /// Uploads a file to `/wikis/attachments`; returns the ready-made
+  /// markdown link for insertion into the page body.
+  Future<String> uploadAttachment(
+    Object projectId,
+    Uint8List bytes,
+    String filename,
+  ) {
+    return _client.post(
+      '${_base(projectId)}/attachments',
+      body: FormData.fromMap({
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+      }),
+      decoder: (j) => (j! as Map<String, dynamic>)['markdown'] as String? ?? '',
+    );
   }
 }

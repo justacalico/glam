@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glam/src/features/wiki/application/wiki_providers.dart';
@@ -46,6 +49,28 @@ void main() {
       adapter.requestsTo('DELETE', '/projects/42/wikis/home'),
       hasLength(1),
     );
+  });
+
+  test('uploadAttachment posts multipart and returns markdown', () async {
+    final (client, adapter) = testClient();
+    adapter.post('/projects/42/wikis/attachments', {
+      'file_name': 'img.png',
+      'markdown': '![img](uploads/abc/img.png)',
+    });
+    final repo = WikiRepository(client);
+
+    final md = await repo.uploadAttachment(
+      42,
+      Uint8List.fromList([1, 2, 3]),
+      'img.png',
+    );
+
+    expect(md, '![img](uploads/abc/img.png)');
+    expect(
+      adapter.requestsTo('POST', '/projects/42/wikis/attachments'),
+      hasLength(1),
+    );
+    expect(adapter.lastRequest!.data, isA<FormData>());
   });
 
   test('wikiPagesProvider loads pages', () async {
