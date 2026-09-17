@@ -13,6 +13,7 @@ import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_environment.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
+import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/core/models/webhook.dart';
 
@@ -689,6 +690,61 @@ class ProjectsRepository {
   Future<void> unshareGroup(Object id, int groupId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/share/$groupId',
+    );
+  }
+
+  /// Pull mirrors (`/projects/:id/remote_mirrors`).
+  Future<List<RemoteMirror>> remoteMirrors(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/remote_mirrors',
+      decoder: (j) => RemoteMirror.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<RemoteMirror> createRemoteMirror(
+    Object id, {
+    required String url,
+    bool enabled = true,
+    bool onlyProtectedBranches = false,
+    bool keepDivergentRefs = false,
+    String? mirrorBranchRegex,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/remote_mirrors',
+      body: {
+        'url': url,
+        'enabled': enabled,
+        'only_protected_branches': onlyProtectedBranches,
+        'keep_divergent_refs': keepDivergentRefs,
+        'mirror_branch_regex': ?mirrorBranchRegex,
+      },
+      decoder: (j) => RemoteMirror.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<RemoteMirror> updateRemoteMirror(
+    Object id,
+    int mirrorId, {
+    bool? enabled,
+    bool? onlyProtectedBranches,
+    bool? keepDivergentRefs,
+    String? mirrorBranchRegex,
+  }) {
+    return _client.put(
+      '/projects/${GitLabApiClient.encodeProject(id)}/remote_mirrors/$mirrorId',
+      body: {
+        'enabled': ?enabled,
+        'only_protected_branches': ?onlyProtectedBranches,
+        'keep_divergent_refs': ?keepDivergentRefs,
+        'mirror_branch_regex': ?mirrorBranchRegex,
+      },
+      decoder: (j) => RemoteMirror.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteRemoteMirror(Object id, int mirrorId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/remote_mirrors/$mirrorId',
     );
   }
 
