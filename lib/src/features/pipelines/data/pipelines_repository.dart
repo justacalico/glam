@@ -30,6 +30,7 @@ class PipelinesRepository {
     String? ref,
     String? status,
     String? source,
+    String? username,
     int page = 1,
     int perPage = 20,
   }) {
@@ -39,6 +40,7 @@ class PipelinesRepository {
         'ref': ?ref,
         'status': ?status,
         'source': ?source,
+        'username': ?username,
         'order_by': 'id',
         'sort': 'desc',
       },

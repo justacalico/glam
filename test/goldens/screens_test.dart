@@ -167,7 +167,10 @@ void main() {
       'pipelines',
       const PipelinesScreen(projectId: 42),
       size: phone,
-      stubs: (a) => a.get('/projects/42/pipelines', fixtureJson('pipelines')),
+      stubs: (a) => a
+        ..get('/projects/42/pipelines', fixtureJson('pipelines'))
+        ..get('/projects/42/members/all', fixtureJson('members'))
+        ..get('/projects/42/repository/branches', fixtureJson('branches')),
     );
   });
 

@@ -640,6 +640,7 @@ void main() {
           status: null,
           source: null,
           ref: null,
+          username: null,
         )).future,
       );
 
@@ -656,6 +657,7 @@ void main() {
           status: 'failed',
           source: null,
           ref: null,
+          username: null,
         )).future,
       );
 
@@ -671,6 +673,7 @@ void main() {
           status: null,
           source: 'schedule',
           ref: null,
+          username: null,
         )).future,
       );
 
@@ -686,10 +689,27 @@ void main() {
           status: null,
           source: null,
           ref: 'main',
+          username: null,
         )).future,
       );
 
       expect(adapter.lastRequest!.queryParameters['ref'], 'main');
+    });
+
+    test('pipelinesProvider forwards the username filter', () async {
+      adapter.get('/projects/42/pipelines', fixtureJson('pipelines'));
+
+      await container.read(
+        pipelinesProvider((
+          project: 42,
+          status: null,
+          source: null,
+          ref: null,
+          username: 'octocat',
+        )).future,
+      );
+
+      expect(adapter.lastRequest!.queryParameters['username'], 'octocat');
     });
 
     test('pipelineJobsProvider loads jobs', () async {
