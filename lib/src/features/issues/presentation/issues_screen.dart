@@ -574,7 +574,14 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(icon: Icons.task_alt, title: 'No issues'),
+              empty: EmptyState(
+                icon: Icons.task_alt,
+                title: 'No issues',
+                actionLabel: 'New issue',
+                onAction: () => unawaited(
+                  IssueFormScreen.show(context, projectId: widget.projectId),
+                ),
+              ),
               itemBuilder: (context, index) {
                 final issue = data.items[index];
                 return IssueTile(

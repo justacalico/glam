@@ -111,6 +111,7 @@ class _CommentComposerState extends State<CommentComposer> {
               minLines: 1,
               maxLines: 5,
               textInputAction: TextInputAction.newline,
+              onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
                 hintText: widget.hint ?? 'Write a comment',
                 isDense: true,
@@ -140,14 +141,22 @@ class _CommentComposerState extends State<CommentComposer> {
                   : Icon(Icons.attach_file, color: colors.inkMuted, size: 20),
             ),
           IconButton(
-            onPressed: _sending ? null : _send,
+            onPressed: _sending || _controller.text.trim().isEmpty
+                ? null
+                : _send,
             icon: _sending
                 ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(Icons.send, color: colors.accent, size: 20),
+                : Icon(
+                    Icons.send,
+                    color: _controller.text.trim().isEmpty
+                        ? colors.inkFaint
+                        : colors.accent,
+                    size: 20,
+                  ),
           ),
         ],
       ),

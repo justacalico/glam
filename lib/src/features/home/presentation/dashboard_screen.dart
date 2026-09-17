@@ -48,64 +48,68 @@ class DashboardScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: ListView(
-        padding: Insets.pagePadding,
-        children: [
-          const _BroadcastBanner(),
-          if (user != null) ...[
-            Text(
-              _greeting(),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.inkMuted,
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(myCountsProvider.future).then((_) {}),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: Insets.pagePadding,
+          children: [
+            const _BroadcastBanner(),
+            if (user != null) ...[
+              Text(
+                _greeting(),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.inkMuted,
+                ),
               ),
-            ),
-            Text(user.name, style: theme.textTheme.displaySmall),
-            const SizedBox(height: Insets.xl),
-          ],
-          _ShortcutGrid(
-            items: [
-              _Shortcut(
-                icon: Icons.folder_outlined,
-                label: 'Projects',
-                subtitle: 'Browse your work',
-                onTap: () => context.go(Routes.projects),
-              ),
-              _Shortcut(
-                icon: Icons.merge,
-                label: 'Merge requests',
-                subtitle: 'Review and merge',
-                count: counts?.mrBadge,
-                onTap: () => context.go(Routes.mergeRequests),
-              ),
-              _Shortcut(
-                icon: Icons.adjust,
-                label: 'Issues',
-                subtitle: 'Assigned to you',
-                count: counts?.assignedIssues,
-                onTap: () => context.go(Routes.issues),
-              ),
-              _Shortcut(
-                icon: Icons.checklist,
-                label: 'To-dos',
-                subtitle: 'Your task list',
-                count: counts?.todos,
-                onTap: () => context.go(Routes.todos),
-              ),
-              _Shortcut(
-                icon: Icons.search,
-                label: 'Search',
-                subtitle: 'Across the instance',
-                onTap: () => context.go(Routes.search),
-              ),
-              _Shortcut(
-                icon: Icons.history,
-                label: 'Activity',
-                subtitle: 'What happened lately',
-                onTap: () => context.go(Routes.activity),
-              ),
+              Text(user.name, style: theme.textTheme.displaySmall),
+              const SizedBox(height: Insets.xl),
             ],
-          ),
-        ],
+            _ShortcutGrid(
+              items: [
+                _Shortcut(
+                  icon: Icons.folder_outlined,
+                  label: 'Projects',
+                  subtitle: 'Browse your work',
+                  onTap: () => context.go(Routes.projects),
+                ),
+                _Shortcut(
+                  icon: Icons.merge,
+                  label: 'Merge requests',
+                  subtitle: 'Review and merge',
+                  count: counts?.mrBadge,
+                  onTap: () => context.go(Routes.mergeRequests),
+                ),
+                _Shortcut(
+                  icon: Icons.adjust,
+                  label: 'Issues',
+                  subtitle: 'Assigned to you',
+                  count: counts?.assignedIssues,
+                  onTap: () => context.go(Routes.issues),
+                ),
+                _Shortcut(
+                  icon: Icons.checklist,
+                  label: 'To-dos',
+                  subtitle: 'Your task list',
+                  count: counts?.todos,
+                  onTap: () => context.go(Routes.todos),
+                ),
+                _Shortcut(
+                  icon: Icons.search,
+                  label: 'Search',
+                  subtitle: 'Across the instance',
+                  onTap: () => context.go(Routes.search),
+                ),
+                _Shortcut(
+                  icon: Icons.history,
+                  label: 'Activity',
+                  subtitle: 'What happened lately',
+                  onTap: () => context.go(Routes.activity),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

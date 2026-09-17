@@ -502,9 +502,13 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.merge,
                 title: 'No merge requests',
+                actionLabel: 'New merge request',
+                onAction: () => unawaited(
+                  MrFormScreen.show(context, projectId: widget.projectId),
+                ),
               ),
               itemBuilder: (context, index) {
                 final mr = data.items[index];
