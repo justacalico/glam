@@ -120,6 +120,36 @@ void main() {
       expect(changes.first.newPath, 'lib/main.dart');
     });
 
+    test('versions decodes the list with shortSha', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/versions',
+        fixtureJson('mr_versions'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final versions = await repo.versions(42, 7);
+
+      expect(versions, hasLength(2));
+      expect(versions.first.shortSha, '11be37ce');
+      expect(versions.first.state, 'head');
+      expect(versions.last.id, 128);
+    });
+
+    test('versionDiffs decodes the embedded diffs', () async {
+      final (client, adapter) = testClient();
+      adapter.get(
+        '/projects/42/merge_requests/7/versions/128',
+        fixtureJson('mr_version_diff'),
+      );
+      final repo = MergeRequestsRepository(client);
+
+      final diffs = await repo.versionDiffs(42, 7, 128);
+
+      expect(diffs, hasLength(1));
+      expect(diffs.first.newPath, 'lib/main.dart');
+    });
+
     test('merge puts the merge options', () async {
       final (client, adapter) = testClient();
       adapter.put(
@@ -493,6 +523,27 @@ void main() {
 
       expect(mr.sourceBranch, 'feature/files');
       expect(changes, hasLength(2));
+    });
+
+    test('mrVersionsProvider and mrVersionDiffsProvider load', () async {
+      adapter
+        ..get(
+          '/projects/42/merge_requests/7/versions',
+          fixtureJson('mr_versions'),
+        )
+        ..get(
+          '/projects/42/merge_requests/7/versions/128',
+          fixtureJson('mr_version_diff'),
+        );
+
+      const loc = (project: 42, iid: 7);
+      final versions = await container.read(mrVersionsProvider(loc).future);
+      final diffs = await container.read(
+        mrVersionDiffsProvider((mr: loc, versionId: 128)).future,
+      );
+
+      expect(versions, hasLength(2));
+      expect(diffs, hasLength(1));
     });
 
     test('mrPipelinesProvider and mrParticipantsProvider load', () async {

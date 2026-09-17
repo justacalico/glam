@@ -116,6 +116,37 @@ class MergeRequestsRepository {
     );
   }
 
+  /// Diff versions of the MR, newest first — each push since the MR
+  /// opened produces one (`/merge_requests/:iid/versions`).
+  Future<List<MrVersion>> versions(Object projectId, int iid) {
+    return _client.getAll(
+      '${_p(projectId)}/merge_requests/$iid/versions',
+      decoder: (j) => MrVersion.fromJson(j as Map<String, dynamic>),
+    );
+  }
+
+  /// Diffs pinned to one version's SHAs (`/versions/:id` embeds the
+  /// `diffs` array in the detail payload).
+  Future<List<ChangeEntry>> versionDiffs(
+    Object projectId,
+    int iid,
+    int versionId,
+  ) {
+    return _client.get(
+      '${_p(projectId)}/merge_requests/$iid/versions/$versionId',
+      decoder: (j) {
+        final diffs = (j! as Map<String, dynamic>)['diffs'];
+        if (diffs is! List) {
+          return const <ChangeEntry>[];
+        }
+        return diffs
+            .whereType<Map<String, dynamic>>()
+            .map(ChangeEntry.fromJson)
+            .toList();
+      },
+    );
+  }
+
   /// Commits on the source branch since the merge base.
   Future<Paginated<Commit>> commits(
     Object projectId,

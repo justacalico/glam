@@ -93,6 +93,21 @@ final mrChangesProvider = FutureProvider.family<List<ChangeEntry>, MrRef>(
   (ref, loc) => ref.watch(mrRepositoryProvider).changes(loc.project, loc.iid),
 );
 
+/// Diff versions of the MR, newest first.
+final mrVersionsProvider = FutureProvider.family<List<MrVersion>, MrRef>(
+  (ref, loc) => ref.watch(mrRepositoryProvider).versions(loc.project, loc.iid),
+);
+
+typedef VersionRef = ({MrRef mr, int versionId});
+
+/// Diffs pinned to one version's SHAs.
+final mrVersionDiffsProvider =
+    FutureProvider.family<List<ChangeEntry>, VersionRef>(
+      (ref, loc) => ref
+          .watch(mrRepositoryProvider)
+          .versionDiffs(loc.mr.project, loc.mr.iid, loc.versionId),
+    );
+
 final mrApprovalsProvider = FutureProvider.family<ApprovalState, MrRef>(
   (ref, loc) => ref.watch(mrRepositoryProvider).approvals(loc.project, loc.iid),
 );
