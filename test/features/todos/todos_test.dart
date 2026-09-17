@@ -46,12 +46,17 @@ void main() {
       adapter.get('/todos', fixtureJson('todos'));
       final repo = TodosRepository(client);
 
-      final page = await repo.todos(state: 'pending', action: 'mentioned');
+      final page = await repo.todos(
+        state: 'pending',
+        action: 'mentioned',
+        type: 'MergeRequest',
+      );
 
       expect(page.items, hasLength(2));
       final query = adapter.lastRequest!.queryParameters;
       expect(query['state'], 'pending');
       expect(query['action'], 'mentioned');
+      expect(query['type'], 'MergeRequest');
     });
 
     test('mark done endpoints post to the right paths', () async {
@@ -84,7 +89,7 @@ void main() {
       addTearDown(container.dispose);
 
       final state = await container.read(
-        todosProvider((state: 'pending', action: null)).future,
+        todosProvider((state: 'pending', action: null, type: null)).future,
       );
       expect(state.items, hasLength(2));
     });
