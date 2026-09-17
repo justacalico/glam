@@ -111,12 +111,16 @@ void main() {
         42,
         state: 'merged',
         targetBranch: 'main',
+        labels: 'bug',
+        milestone: 'v1',
       );
 
       expect(page.items, hasLength(2));
       final query = adapter.lastRequest!.queryParameters;
       expect(query['state'], 'merged');
       expect(query['target_branch'], 'main');
+      expect(query['labels'], 'bug');
+      expect(query['milestone'], 'v1');
     });
 
     test('time tracking posts the duration endpoints', () async {
