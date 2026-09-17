@@ -7,6 +7,7 @@ import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/issues/data/issues_repository.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
+import 'package:glam/src/features/issues/domain/issue_statistics.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 final issuesRepositoryProvider = Provider<IssuesRepository>(
@@ -80,6 +81,13 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
         );
   }
 }
+
+/// Open/closed counts for the project issues tab.
+final projectIssueStatsProvider =
+    FutureProvider.family<IssueStatistics, Object>(
+      (ref, project) =>
+          ref.watch(issuesRepositoryProvider).projectIssuesStatistics(project),
+    );
 
 /// (project, iid) for a single issue.
 typedef IssueRef = ({Object project, int iid});

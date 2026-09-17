@@ -578,6 +578,21 @@ void main() {
       expect(sent['tag_name'], 'v1.3.0');
       expect(sent['description'], 'notes');
     });
+
+    test('releaseEvidence decodes sha and collected_at', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/releases/v1.2.0/evidence', {
+        'sha': '760d9cdfb8',
+        'filepath': 'releases/v1.2.0-evidence.json',
+        'collected_at': '2024-03-01T10:20:30.000Z',
+      });
+      final repo = RepositoryRepository(client);
+
+      final ev = await repo.releaseEvidence(42, 'v1.2.0');
+
+      expect(ev.sha, '760d9cdfb8');
+      expect(ev.collectedAt, isNotNull);
+    });
   });
 
   group('readme', () {

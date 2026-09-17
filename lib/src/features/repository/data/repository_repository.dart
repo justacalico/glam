@@ -409,6 +409,14 @@ class RepositoryRepository {
     );
   }
 
+  /// Evidence collected for the release; 404 when none was gathered.
+  Future<ReleaseEvidence> releaseEvidence(Object projectId, String tag) {
+    return _client.get(
+      '${_p(projectId)}/releases/${Uri.encodeComponent(tag)}/evidence',
+      decoder: (j) => ReleaseEvidence.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   /// The rendered README for the project overview.
   Future<RepoFile?> readme(Object projectId, {String? ref}) async {
     const candidates = [

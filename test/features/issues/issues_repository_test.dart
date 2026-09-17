@@ -59,6 +59,22 @@ void main() {
   });
 
   group('issue', () {
+    test('projectIssuesStatistics decodes state counts', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/issues_statistics', {
+        'statistics': {
+          'counts': {'all': 20, 'opened': 14, 'closed': 6},
+        },
+      });
+      final repo = IssuesRepository(client);
+
+      final stats = await repo.projectIssuesStatistics(42);
+
+      expect(stats.opened, 14);
+      expect(stats.closed, 6);
+      expect(stats.all, 20);
+    });
+
     test('fetches one issue by iid', () async {
       final (client, adapter) = testClient();
       adapter.get(
