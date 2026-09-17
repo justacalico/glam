@@ -129,4 +129,16 @@ void main() {
     final mrs = await container.read(issueRelatedMrsProvider(loc).future);
     expect(mrs, hasLength(2));
   });
+
+  test('issueParticipantsProvider loads participants', () async {
+    adapter.get(
+      '/projects/9/issues/12/participants',
+      fixtureJson('participants'),
+    );
+
+    const loc = (project: 9, iid: 12);
+    final users = await container.read(issueParticipantsProvider(loc).future);
+    expect(users, hasLength(2));
+    expect(users.last.username, 'max');
+  });
 }

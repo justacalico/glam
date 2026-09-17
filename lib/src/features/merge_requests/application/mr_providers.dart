@@ -4,8 +4,10 @@ import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/core/models/discussion.dart';
 import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
+import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
 final mrRepositoryProvider = Provider<MergeRequestsRepository>(
@@ -140,6 +142,7 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body);
     updateItems((items) => [...items, d]);
+    ref.invalidate(mrParticipantsProvider(loc));
   }
 
   /// Comment pinned to a diff line.
@@ -148,6 +151,7 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
         .read(mrRepositoryProvider)
         .addDiscussion(loc.project, loc.iid, body, position: position);
     updateItems((items) => [...items, d]);
+    ref.invalidate(mrParticipantsProvider(loc));
   }
 
   /// Replies in a thread, then reloads just that thread so pages
@@ -180,3 +184,13 @@ class MrDiscussionsNotifier extends PagedListNotifier<Discussion> {
     );
   }
 }
+
+final mrPipelinesProvider = FutureProvider.family<List<Pipeline>, MrRef>(
+  (ref, loc) =>
+      ref.watch(mrRepositoryProvider).mrPipelines(loc.project, loc.iid),
+);
+
+final mrParticipantsProvider = FutureProvider.family<List<GitLabUser>, MrRef>(
+  (ref, loc) =>
+      ref.watch(mrRepositoryProvider).participants(loc.project, loc.iid),
+);

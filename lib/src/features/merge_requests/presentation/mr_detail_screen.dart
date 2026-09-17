@@ -30,12 +30,14 @@ import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/presentation/discussion_card.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
+import 'package:glam/src/features/merge_requests/presentation/mr_pipelines_tab.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 
-/// MR detail with three tabs: overview (desc + activity), changed
-/// files, and the commit list. Merge actions live in a bottom sheet.
+/// MR detail with four tabs: overview (desc + activity), changed
+/// files, the commit list, and pipelines. Merge actions live in a
+/// bottom sheet.
 class MrDetailScreen extends ConsumerWidget {
   const MrDetailScreen({required this.projectId, required this.iid, super.key});
 
@@ -76,7 +78,7 @@ class _MrBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
         children: [
           const TabBar(
@@ -84,6 +86,7 @@ class _MrBody extends StatelessWidget {
               Tab(text: 'Overview'),
               Tab(text: 'Changes'),
               Tab(text: 'Commits'),
+              Tab(text: 'Pipelines'),
             ],
           ),
           Expanded(
@@ -92,6 +95,7 @@ class _MrBody extends StatelessWidget {
                 _OverviewTab(mr: mr, loc: loc),
                 _ChangesTab(loc: loc),
                 _CommitsTab(loc: loc),
+                MrPipelinesTab(mr: mr, loc: loc),
               ],
             ),
           ),
@@ -127,7 +131,7 @@ class _OverviewTab extends ConsumerWidget {
             child: ListView(
               padding: Insets.pagePadding,
               children: [
-                _MrHeader(mr: mr),
+                _MrHeader(mr: mr, loc: loc),
                 const SizedBox(height: Insets.lg),
                 if (mr.isOpen) _MergeBox(mr: mr, loc: loc),
                 if (mr.description?.isNotEmpty ?? false) ...[
@@ -219,9 +223,10 @@ class _OverviewTab extends ConsumerWidget {
 }
 
 class _MrHeader extends StatelessWidget {
-  const _MrHeader({required this.mr});
+  const _MrHeader({required this.mr, required this.loc});
 
   final MergeRequest mr;
+  final MrRef loc;
 
   @override
   Widget build(BuildContext context) {
@@ -341,6 +346,7 @@ class _MrHeader extends StatelessWidget {
             ],
           ),
         ],
+        MrParticipantsRow(loc: loc),
       ],
     );
   }

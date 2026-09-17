@@ -269,6 +269,20 @@ void main() {
     expect(mrs.first.title, isNotEmpty);
   });
 
+  test('participants decodes users', () async {
+    final (client, adapter) = testClient();
+    adapter.get(
+      '/projects/42/issues/12/participants',
+      fixtureJson('participants'),
+    );
+    final repo = IssuesRepository(client);
+
+    final users = await repo.participants(42, 12);
+
+    expect(users, hasLength(2));
+    expect(users.first.username, 'jane');
+  });
+
   group('Issue model', () {
     test('closed issue parses closed_by and confidentiality', () {
       final closed = Issue.fromJson(
