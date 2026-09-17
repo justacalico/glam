@@ -76,6 +76,7 @@ class MergeRequestsRepository {
     String? targetBranch,
     String? milestone,
     int? milestoneId,
+    int? assigneeId,
     int page = 1,
     int perPage = 20,
   }) {
@@ -85,6 +86,7 @@ class MergeRequestsRepository {
       'labels': ?labels,
       'target_branch': ?targetBranch,
       'milestone': ?milestone ?? milestoneId?.toString(),
+      'assignee_id': ?assigneeId?.toString(),
     };
     if (scope == MrScope.review) {
       query['scope'] = 'all';

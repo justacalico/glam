@@ -148,6 +148,16 @@ void main() {
       );
     });
 
+    test('projectMergeRequests forwards assignee_id', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/merge_requests', fixtureJson('mrs'));
+      final repo = MergeRequestsRepository(client);
+
+      await repo.projectMergeRequests(42, assigneeId: 7);
+
+      expect(adapter.lastRequest!.queryParameters['assignee_id'], '7');
+    });
+
     test('time tracking posts the duration endpoints', () async {
       final (client, adapter) = testClient();
       adapter
