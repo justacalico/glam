@@ -72,6 +72,8 @@ class ProjectsRepository {
     bool? mergeRequestsEnabled,
     bool? wikiEnabled,
     bool? snippetsEnabled,
+    bool? sharedRunnersEnabled,
+    bool? groupRunnersEnabled,
   }) {
     return _client.put(
       '/projects/${GitLabApiClient.encodeProject(id)}',
@@ -84,6 +86,8 @@ class ProjectsRepository {
         'merge_requests_enabled': ?mergeRequestsEnabled,
         'wiki_enabled': ?wikiEnabled,
         'snippets_enabled': ?snippetsEnabled,
+        'shared_runners_enabled': ?sharedRunnersEnabled,
+        'group_runners_enabled': ?groupRunnersEnabled,
       },
       decoder: _decodeOne,
     );
@@ -363,25 +367,9 @@ class ProjectsRepository {
     );
   }
 
-  /// Shared runners available to this project but not yet enabled.
-  Future<List<Runner>> availableRunners(Object id) {
-    return _client.getAll(
-      '/projects/${GitLabApiClient.encodeProject(id)}/runners/all',
-      query: {'type': 'instance_type'},
-      decoder: (j) => Runner.fromJson(j! as Map<String, dynamic>),
-    );
-  }
-
-  /// Enables a shared or group runner for this project.
-  Future<void> enableRunner(Object id, int runnerId) {
-    return _client.post(
-      '/projects/${GitLabApiClient.encodeProject(id)}/runners',
-      body: {'runner_id': runnerId},
-      decoder: (_) {},
-    );
-  }
-
-  /// Removes a shared or group runner from this project.
+  /// Removes a project-type runner's association with this project.
+  /// Shared and group runners can't be unassigned this way — those are
+  /// controlled by `shared_runners_enabled` / `group_runners_enabled`.
   Future<void> disableRunner(Object id, int runnerId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/runners/$runnerId',

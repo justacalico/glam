@@ -9,8 +9,9 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 
-/// CI/CD runners: assigned runners with unassign, plus available shared
-/// runners that can be enabled for the project.
+/// CI/CD runners: shared/group enablement switches plus the runners
+/// available to this project. Only project-type runners can be removed
+/// here — shared and group runners follow the switches above.
 class RunnersSection extends ConsumerWidget {
   const RunnersSection({required this.project, super.key});
 
@@ -20,12 +21,40 @@ class RunnersSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final runners = ref.watch(projectRunnersProvider(project.id));
-    final available = ref.watch(projectAvailableRunnersProvider(project.id));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SectionLabel('Runners'),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: Radii.borderMd,
+            border: Border.all(color: colors.border),
+          ),
+          child: Column(
+            children: [
+              SwitchListTile(
+                dense: true,
+                title: const Text('Shared runners'),
+                subtitle: const Text('Allow instance runners to pick up jobs'),
+                value: project.sharedRunnersEnabled,
+                onChanged: (v) =>
+                    _setFlags(context, ref, sharedRunnersEnabled: v),
+              ),
+              Divider(height: 1, color: colors.border, indent: Insets.lg),
+              SwitchListTile(
+                dense: true,
+                title: const Text('Group runners'),
+                subtitle: const Text('Allow group runners to pick up jobs'),
+                value: project.groupRunnersEnabled,
+                onChanged: (v) =>
+                    _setFlags(context, ref, groupRunnersEnabled: v),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: Insets.md),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -46,7 +75,7 @@ class RunnersSection extends ConsumerWidget {
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.smart_toy_outlined,
-                      title: 'No runners enabled',
+                      title: 'No runners available',
                     ),
                   )
                 : Column(
@@ -54,69 +83,41 @@ class RunnersSection extends ConsumerWidget {
                       for (final r in list)
                         _RunnerTile(
                           runner: r,
-                          trailing: r.runnerType == 'project_type'
-                              ? null
-                              : IconButton(
+                          trailing: r.isProjectRunner
+                              ? IconButton(
                                   icon: const Icon(
                                     Icons.remove_circle_outline,
                                     size: 18,
                                   ),
                                   tooltip: 'Remove from project',
                                   onPressed: () => _disable(context, ref, r),
-                                ),
+                                )
+                              : null,
                         ),
                     ],
                   ),
           ),
         ),
-        available.maybeWhen(
-          data: (list) => list.isEmpty
-              ? const SizedBox.shrink()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: Insets.md),
-                    Text(
-                      'Available shared runners',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: Insets.sm),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: colors.surface,
-                        borderRadius: Radii.borderMd,
-                        border: Border.all(color: colors.border),
-                      ),
-                      child: Column(
-                        children: [
-                          for (final r in list)
-                            _RunnerTile(
-                              runner: r,
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.add_circle_outline,
-                                  size: 18,
-                                ),
-                                tooltip: 'Enable for this project',
-                                onPressed: () => _enable(context, ref, r),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-          orElse: () => const SizedBox.shrink(),
-        ),
       ],
     );
   }
 
-  Future<void> _enable(BuildContext context, WidgetRef ref, Runner r) async {
+  Future<void> _setFlags(
+    BuildContext context,
+    WidgetRef ref, {
+    bool? sharedRunnersEnabled,
+    bool? groupRunnersEnabled,
+  }) async {
     try {
       await ref
-          .read(projectAdminActionsProvider)
-          .enableRunner(project.id, r.id);
+          .read(projectsRepositoryProvider)
+          .updateProject(
+            project.id,
+            sharedRunnersEnabled: sharedRunnersEnabled,
+            groupRunnersEnabled: groupRunnersEnabled,
+          );
+      ref.invalidate(projectProvider(project.id.toString()));
+      ref.invalidate(projectRunnersProvider(project.id));
     } on ApiException catch (e) {
       if (context.mounted) {
         showAdminError(context, e.message);
@@ -156,11 +157,13 @@ class _RunnerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final dotColor = switch (runner.online) {
-      true => colors.success,
-      false => colors.danger,
-      null => colors.inkFaint,
-    };
+    final dotColor = runner.paused
+        ? colors.inkFaint
+        : switch (runner.status) {
+            'online' => colors.success,
+            'offline' || 'stale' => colors.danger,
+            _ => colors.inkFaint,
+          };
     return ListTile(
       dense: true,
       leading: Icon(Icons.circle, size: 10, color: dotColor),

@@ -35,6 +35,8 @@ class Project extends Equatable {
     this.wikiEnabled = true,
     this.snippetsEnabled = true,
     this.jobsEnabled = true,
+    this.sharedRunnersEnabled = true,
+    this.groupRunnersEnabled = true,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -84,6 +86,8 @@ class Project extends Equatable {
       wikiEnabled: json['wiki_enabled'] as bool? ?? true,
       snippetsEnabled: json['snippets_enabled'] as bool? ?? true,
       jobsEnabled: json['jobs_enabled'] as bool? ?? true,
+      sharedRunnersEnabled: json['shared_runners_enabled'] as bool? ?? true,
+      groupRunnersEnabled: json['group_runners_enabled'] as bool? ?? true,
     );
   }
 
@@ -118,6 +122,8 @@ class Project extends Equatable {
   final bool wikiEnabled;
   final bool snippetsEnabled;
   final bool jobsEnabled;
+  final bool sharedRunnersEnabled;
+  final bool groupRunnersEnabled;
 
   /// Display name: `namespace / project`.
   String get displayName => nameWithNamespace ?? pathWithNamespace;

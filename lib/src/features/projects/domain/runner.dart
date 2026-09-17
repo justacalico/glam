@@ -9,10 +9,8 @@ class Runner extends Equatable {
     this.description = '',
     this.name = '',
     this.runnerType = 'project_type',
-    this.active = true,
     this.paused = false,
-    this.online,
-    this.status = '',
+    this.status = 'never_contacted',
     this.tagList = const [],
   });
 
@@ -22,10 +20,8 @@ class Runner extends Equatable {
       description: json['description'] as String? ?? '',
       name: json['name'] as String? ?? '',
       runnerType: json['runner_type'] as String? ?? 'project_type',
-      active: json['active'] as bool? ?? true,
       paused: json['paused'] as bool? ?? false,
-      online: json['online'] as bool?,
-      status: json['status'] as String? ?? '',
+      status: json['status'] as String? ?? 'never_contacted',
       tagList: json['tag_list'] is List
           ? (json['tag_list'] as List).map((e) => e.toString()).toList()
           : const [],
@@ -36,15 +32,13 @@ class Runner extends Equatable {
   final String description;
   final String name;
   final String runnerType;
-  final bool active;
   final bool paused;
 
-  /// null means the runner has never contacted GitLab.
-  final bool? online;
+  /// `online`, `offline`, `stale`, or `never_contacted`.
   final String status;
   final List<String> tagList;
 
-  bool get isShared => runnerType == 'instance_type';
+  bool get isProjectRunner => runnerType == 'project_type';
 
   String get typeLabel => switch (runnerType) {
     'instance_type' => 'Shared',
@@ -56,10 +50,13 @@ class Runner extends Equatable {
     if (paused) {
       return 'Paused';
     }
-    if (online == null) {
-      return 'Never contacted';
-    }
-    return online! ? 'Online' : 'Offline';
+    return switch (status) {
+      'online' => 'Online',
+      'offline' => 'Offline',
+      'stale' => 'Stale',
+      'never_contacted' => 'Never contacted',
+      _ => status.isEmpty ? 'Unknown' : status,
+    };
   }
 
   @override
