@@ -61,6 +61,14 @@ class PipelinesRepository {
     );
   }
 
+  /// CI/CD variables this pipeline ran with.
+  Future<List<ScheduleVariable>> pipelineVariables(Object projectId, int id) {
+    return _client.getAll(
+      '${_p(projectId)}/pipelines/$id/variables',
+      decoder: (j) => ScheduleVariable.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Pipeline> createPipeline(Object projectId, String ref) {
     return _client.post(
       '${_p(projectId)}/pipeline',

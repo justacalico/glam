@@ -139,6 +139,21 @@ void main() {
       expect(report.suites.last.skippedCount, 1);
     });
 
+    test('pipelineVariables decodes key/value rows', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/pipelines/900/variables', [
+        {'key': 'DEPLOY_ENV', 'value': 'prod', 'variable_type': 'env_var'},
+        {'key': 'CONFIG', 'value': 'x', 'variable_type': 'file'},
+      ]);
+      final repo = PipelinesRepository(client);
+
+      final vars = await repo.pipelineVariables(42, 900);
+
+      expect(vars, hasLength(2));
+      expect(vars.first.key, 'DEPLOY_ENV');
+      expect(vars.last.variableType, 'file');
+    });
+
     test('jobTrace returns raw text', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/jobs/5001/trace', 'line1\nline2');
