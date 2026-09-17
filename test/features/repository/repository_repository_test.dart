@@ -186,6 +186,18 @@ void main() {
       expect(result.diffs, isEmpty);
     });
 
+    test('mergeBase sends refs[] and decodes the ancestor commit', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/repository/merge_base', fixtureJson('commit'));
+      final repo = RepositoryRepository(client);
+
+      final base = await repo.mergeBase(42, ['main', 'feature/x']);
+
+      expect(base.title, 'Sanitize for network graph');
+      final query = adapter.lastRequest!.queryParameters;
+      expect(query['refs[]'], ['main', 'feature/x']);
+    });
+
     test('commitDiff decodes change entries', () async {
       final (client, adapter) = testClient();
       adapter.get(

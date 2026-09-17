@@ -197,6 +197,40 @@ void main() {
       final sent = adapter.requestsTo('PUT', '/projects/42/transfer').single;
       expect((sent.data as Map)['namespace'], 9);
     });
+
+    test('statistics requests the flag and decodes sizes', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42', {
+        'id': 42,
+        'statistics': {
+          'commit_count': 321,
+          'storage_size': 10485760,
+          'repository_size': 5242880,
+          'job_artifacts_size': 2097152,
+        },
+      });
+      final repo = ProjectsRepository(client);
+
+      final stats = await repo.statistics(42);
+
+      expect(stats.commitCount, 321);
+      expect(stats.repositorySize, 5242880);
+      expect(stats.jobArtifactsSize, 2097152);
+      expect(adapter.lastRequest!.queryParameters['statistics'], isTrue);
+    });
+
+    test('housekeeping posts to the endpoint with an optional task', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/housekeeping', const {});
+      final repo = ProjectsRepository(client);
+
+      await repo.housekeeping(42, task: 'eager');
+
+      final sent = adapter
+          .requestsTo('POST', '/projects/42/housekeeping')
+          .single;
+      expect((sent.data as Map)['task'], 'eager');
+    });
   });
 
   group('variables', () {

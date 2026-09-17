@@ -22,6 +22,7 @@ import 'package:glam/src/features/projects/presentation/merge_settings_section.d
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
 import 'package:glam/src/features/projects/presentation/sharing_section.dart';
+import 'package:glam/src/features/projects/presentation/storage_section.dart';
 import 'package:glam/src/features/projects/presentation/triggers_section.dart';
 import 'package:glam/src/features/projects/presentation/webhooks_section.dart';
 
@@ -85,6 +86,8 @@ class ProjectSettingsScreen extends ConsumerWidget {
             AuditEventsSection(project: p),
             const SizedBox(height: Insets.xl),
             ExportSection(project: p),
+            const SizedBox(height: Insets.xl),
+            StorageSection(project: p),
             const SizedBox(height: Insets.xl),
             _DangerSection(project: p),
             const SizedBox(height: Insets.xl),
