@@ -316,11 +316,22 @@ class TokensSection extends ConsumerWidget {
                               'used ${Format.date(t.lastUsedAt!)}',
                           ].join(' · '),
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.block, size: 18),
-                          tooltip: 'Revoke',
-                          onPressed: () =>
-                              _revoke(context, ref, t, t.id == currentId),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (t.id == currentId)
+                              IconButton(
+                                icon: const Icon(Icons.refresh, size: 18),
+                                tooltip: 'Rotate',
+                                onPressed: () => _rotate(context, ref, t),
+                              ),
+                            IconButton(
+                              icon: const Icon(Icons.block, size: 18),
+                              tooltip: 'Revoke',
+                              onPressed: () =>
+                                  _revoke(context, ref, t, t.id == currentId),
+                            ),
+                          ],
                         ),
                       ),
                   ],
@@ -328,6 +339,57 @@ class TokensSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Rotates the session token, persists the replacement, and shows
+  /// the new cleartext once.
+  Future<void> _rotate(
+    BuildContext context,
+    WidgetRef ref,
+    PersonalAccessToken t,
+  ) async {
+    final ok = await _confirm(
+      context,
+      title: 'Rotate token?',
+      body:
+          '"${t.name}" stops working immediately. A replacement is '
+          'created and stored.',
+    );
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      final rotated = await ref
+          .read(accountActionsProvider)
+          .rotateCurrentToken();
+      final cleartext = rotated.token;
+      if (cleartext == null) {
+        throw const ApiException(
+          kind: ApiErrorKind.unknown,
+          message: 'GitLab did not return a token',
+        );
+      }
+      await ref.read(sessionProvider.notifier).replaceToken(cleartext);
+      if (context.mounted) {
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Token rotated'),
+            content: SelectableText('New token (shown once):\n\n$cleartext'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Done'),
+              ),
+            ],
+          ),
+        );
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        _error(context, e.message);
+      }
+    }
   }
 
   Future<void> _revoke(
