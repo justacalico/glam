@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/widgets/description_template_picker.dart';
 import 'package:glam/src/core/widgets/members_picker.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
@@ -203,6 +204,12 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
             ),
           ),
           const SizedBox(height: Insets.md),
+          if (!_editing)
+            DescriptionTemplatePicker(
+              projectId: widget.projectId,
+              type: 'merge_requests',
+              onApply: (content) => setState(() => _description.text = content),
+            ),
           TextField(
             controller: _description,
             minLines: 4,

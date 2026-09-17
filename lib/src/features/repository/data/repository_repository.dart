@@ -152,6 +152,15 @@ class RepositoryRepository {
     );
   }
 
+  /// Issue/MR description templates under `.gitlab/` (`/templates/:type`,
+  /// where type is `issues` or `merge_requests`).
+  Future<List<DescriptionTemplate>> templates(Object projectId, String type) {
+    return _client.getAll(
+      '${_p(projectId)}/templates/$type',
+      decoder: (j) => DescriptionTemplate.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Commit> commit(Object projectId, String sha) {
     return _client.get(
       '${_p(projectId)}/repository/commits/$sha',

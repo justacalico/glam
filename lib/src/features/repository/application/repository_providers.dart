@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -118,6 +119,25 @@ final commitStatusesProvider =
           .watch(repositoryRepositoryProvider)
           .commitStatuses(loc.project, loc.sha),
     );
+
+/// Description templates for issues or merge requests; empty when the
+/// repo has none (or the endpoint 404s).
+final descriptionTemplatesProvider =
+    FutureProvider.family<
+      List<DescriptionTemplate>,
+      ({Object project, String type})
+    >((ref, loc) async {
+      try {
+        return await ref
+            .watch(repositoryRepositoryProvider)
+            .templates(loc.project, loc.type);
+      } on ApiException catch (e) {
+        if (e.statusCode == 404) {
+          return const [];
+        }
+        rethrow;
+      }
+    });
 
 /// Merge requests containing a commit.
 final commitMergeRequestsProvider =
