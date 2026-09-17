@@ -55,6 +55,7 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           const SshKeysSection(),
+          const GpgKeysSection(),
           const TokensSection(),
           const NotificationSection(),
           _Section(

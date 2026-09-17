@@ -36,6 +36,27 @@ class AccountRepository {
     return _client.delete('/user/keys/$keyId');
   }
 
+  /// GPG keys used to verify commits (`/user/gpg_keys`).
+  Future<List<GpgKey>> gpgKeys() {
+    return _client.getAll(
+      '/user/gpg_keys',
+      decoder: (j) => GpgKey.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Adds an armored public key.
+  Future<GpgKey> addGpgKey(String key) {
+    return _client.post(
+      '/user/gpg_keys',
+      body: {'key': key},
+      decoder: (j) => GpgKey.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> deleteGpgKey(int keyId) {
+    return _client.delete('/user/gpg_keys/$keyId');
+  }
+
   Future<List<PersonalAccessToken>> personalAccessTokens({
     bool activeOnly = true,
   }) {

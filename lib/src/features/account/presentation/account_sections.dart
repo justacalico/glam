@@ -146,6 +146,134 @@ class SshKeysSection extends ConsumerWidget {
   }
 }
 
+/// GPG keys used for commit signing, with add / delete.
+class GpgKeysSection extends ConsumerWidget {
+  const GpgKeysSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final keys = ref.watch(gpgKeysProvider);
+
+    return _Section(
+      label: 'GPG keys',
+      trailing: TextButton.icon(
+        icon: const Icon(Icons.add, size: 16),
+        label: const Text('Add'),
+        onPressed: () => _addKey(context, ref),
+      ),
+      children: [
+        keys.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, _) => _ErrorTile(error: e),
+          data: (list) => list.isEmpty
+              ? const ListTile(dense: true, title: Text('No GPG keys'))
+              : Column(
+                  children: [
+                    for (final k in list)
+                      ListTile(
+                        dense: true,
+                        leading: const Icon(
+                          Icons.verified_user_outlined,
+                          size: 18,
+                        ),
+                        title: Text(
+                          k.emails.isEmpty
+                              ? 'GPG key #${k.id}'
+                              : k.emails.first,
+                        ),
+                        subtitle: Text(
+                          [
+                            if (k.subkeyIds.isNotEmpty) k.subkeyIds.first,
+                            if (k.createdAt != null)
+                              'added ${Format.date(k.createdAt!)}',
+                          ].join(' · '),
+                          style: const TextStyle(
+                            fontFamily: 'JetBrains Mono',
+                            fontSize: 11,
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          onPressed: () => _deleteKey(context, ref, k),
+                        ),
+                      ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _addKey(BuildContext context, WidgetRef ref) async {
+    final key = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add GPG key'),
+        content: SizedBox(
+          width: 420,
+          child: TextField(
+            controller: key,
+            autofocus: true,
+            minLines: 4,
+            maxLines: 8,
+            decoration: const InputDecoration(
+              labelText: 'Public key',
+              hintText: '-----BEGIN PGP PUBLIC KEY BLOCK-----',
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (key.text.trim().isNotEmpty) {
+                Navigator.pop(context, true);
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    final k = key.text.trim();
+    key.dispose();
+    if (ok != true || k.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(accountActionsProvider).addGpgKey(k);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        _error(context, e.message);
+      }
+    }
+  }
+
+  Future<void> _deleteKey(BuildContext context, WidgetRef ref, GpgKey k) async {
+    final label = k.emails.isEmpty ? 'key #${k.id}' : k.emails.first;
+    final ok = await _confirm(context, title: 'Remove GPG key?', body: label);
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(accountActionsProvider).deleteGpgKey(k.id);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        _error(context, e.message);
+      }
+    }
+  }
+}
+
 /// Personal access tokens (list + revoke — tokens are created on
 /// the GitLab site, the API only exposes list/revoke).
 class TokensSection extends ConsumerWidget {

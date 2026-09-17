@@ -91,6 +91,26 @@ void main() {
       expect(adapter.requestsTo('DELETE', '/user/keys/10'), hasLength(1));
     });
 
+    test('gpg keys list, add and delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/user/gpg_keys', fixtureJson('gpg_keys'))
+        ..post('/user/gpg_keys', (fixtureJson('gpg_keys') as List).first)
+        ..delete('/user/gpg_keys/20');
+      final repo = AccountRepository(client);
+
+      final keys = await repo.gpgKeys();
+      expect(keys, hasLength(1));
+      expect(keys.first.emails, ['calico@example.com']);
+      expect(keys.first.subkeyIds.first, 'A1B2C3D4E5F60708');
+
+      await repo.addGpgKey('armored-key');
+      expect((adapter.lastRequest!.data as Map)['key'], 'armored-key');
+
+      await repo.deleteGpgKey(20);
+      expect(adapter.requestsTo('DELETE', '/user/gpg_keys/20'), hasLength(1));
+    });
+
     test('addSshKey sends the expiry date as YYYY-MM-DD', () async {
       final (client, adapter) = testClient();
       adapter.post('/user/keys', (fixtureJson('ssh_keys') as List).first);
