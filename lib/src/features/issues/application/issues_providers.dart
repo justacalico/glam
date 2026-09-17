@@ -71,6 +71,7 @@ typedef ProjectIssueFilter = ({
   String? label,
   String? milestone,
   String? issueType,
+  int? assigneeId,
 });
 
 final projectIssuesProvider =
@@ -96,6 +97,7 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           labels: filter.label,
           milestone: filter.milestone,
           issueType: filter.issueType,
+          assigneeId: filter.assigneeId,
           page: page,
         );
   }

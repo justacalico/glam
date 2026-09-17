@@ -60,6 +60,7 @@ void main() {
       label: null,
       milestone: null,
       issueType: null,
+      assigneeId: null,
     );
     final state = await container.read(projectIssuesProvider(filter).future);
 
@@ -77,12 +78,30 @@ void main() {
       label: 'bug',
       milestone: 'v1',
       issueType: null,
+      assigneeId: null,
     );
     await container.read(projectIssuesProvider(filter).future);
 
     final query = adapter.lastRequest!.queryParameters;
     expect(query['labels'], 'bug');
     expect(query['milestone'], 'v1');
+  });
+
+  test('projectIssuesProvider forwards the assignee filter', () async {
+    adapter.get('/projects/9/issues', fixtureJson('issues'));
+
+    const filter = (
+      project: 9,
+      state: null,
+      search: null,
+      label: null,
+      milestone: null,
+      issueType: null,
+      assigneeId: 7,
+    );
+    await container.read(projectIssuesProvider(filter).future);
+
+    expect(adapter.lastRequest!.queryParameters['assignee_id'], '7');
   });
 
   test('issueProvider loads a single issue', () async {
