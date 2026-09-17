@@ -169,7 +169,7 @@ class PipelinesRepository {
   Future<CiLintResult> ciLint(Object projectId, String content) {
     return _client.post(
       '${_p(projectId)}/ci/lint',
-      body: {'content': content},
+      body: {'content': content, 'include_jobs': true},
       decoder: (j) => CiLintResult.fromJson(j! as Map<String, dynamic>),
     );
   }
