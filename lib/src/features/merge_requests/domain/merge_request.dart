@@ -43,6 +43,8 @@ class MergeRequest extends Equatable {
     this.sourceProjectId,
     this.targetProjectId,
     this.subscribed = false,
+    this.timeEstimate,
+    this.timeSpent,
   });
 
   factory MergeRequest.fromJson(Map<String, dynamic> json) {
@@ -101,6 +103,8 @@ class MergeRequest extends Equatable {
       sourceProjectId: json['source_project_id'] as int?,
       targetProjectId: json['target_project_id'] as int?,
       subscribed: json['subscribed'] as bool? ?? false,
+      timeEstimate: _timeStat(json, 'time_estimate'),
+      timeSpent: _timeStat(json, 'total_time_spent'),
     );
   }
 
@@ -145,6 +149,10 @@ class MergeRequest extends Equatable {
   final int? targetProjectId;
   final bool subscribed;
 
+  /// Seconds. `time_estimate` / `total_time_spent` from `time_stats`.
+  final int? timeEstimate;
+  final int? timeSpent;
+
   bool get isOpen => state == 'opened';
   bool get isMerged => state == 'merged';
 
@@ -163,6 +171,14 @@ class MergeRequest extends Equatable {
     'checking' || 'unchecked' => 'Checking…',
     _ => mergeStatus == 'can_be_merged' ? 'Ready to merge' : 'Unknown',
   };
+
+  static int? _timeStat(Map<String, dynamic> json, String key) {
+    final stats = json['time_stats'];
+    if (stats is Map<String, dynamic>) {
+      return stats[key] as int?;
+    }
+    return json[key] as int?;
+  }
 
   static GitLabUser? _user(Object? v) =>
       v is Map<String, dynamic> ? GitLabUser.fromJson(v) : null;

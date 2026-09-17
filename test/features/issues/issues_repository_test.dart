@@ -145,6 +145,8 @@ void main() {
       final issue = await repo.issue(42, 12);
       expect(issue.iteration?.id, 9001);
       expect(issue.iteration?.title, 'Sprint 12');
+      expect(issue.timeEstimate, 7200);
+      expect(issue.timeSpent, 3600);
     });
 
     test('clone and move return the resulting issue', () async {

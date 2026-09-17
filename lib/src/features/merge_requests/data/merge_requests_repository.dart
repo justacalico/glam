@@ -522,4 +522,28 @@ class MergeRequestsRepository {
       decoder: (j) => MergeRequest.fromJson(j! as Map<String, dynamic>),
     );
   }
+
+  /// `2h`, `1d`, ... GitLab duration format.
+  Future<void> setTimeEstimate(Object projectId, int iid, String duration) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/time_estimate',
+      query: {'duration': duration},
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> addTimeSpent(Object projectId, int iid, String duration) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/add_spent_time',
+      query: {'duration': duration},
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> resetTimeSpent(Object projectId, int iid) {
+    return _client.post(
+      '${_p(projectId)}/merge_requests/$iid/reset_spent_time',
+      decoder: (_) {},
+    );
+  }
 }

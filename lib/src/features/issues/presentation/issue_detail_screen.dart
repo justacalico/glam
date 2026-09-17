@@ -13,6 +13,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/core/widgets/comment_composer.dart';
+import 'package:glam/src/core/widgets/duration_dialog.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
@@ -271,29 +272,7 @@ class _IssueActions extends ConsumerWidget {
     required String title,
     required Future<void> Function(String) onSubmit,
   }) async {
-    final controller = TextEditingController();
-    final duration = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'e.g. 2h, 1d 4h, 30m'),
-          onSubmitted: (v) => Navigator.pop(context, v.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
+    final duration = await promptDuration(context, title: title);
     if (duration != null && duration.isNotEmpty) {
       await onSubmit(duration);
       ref.invalidate(issueProvider(loc));

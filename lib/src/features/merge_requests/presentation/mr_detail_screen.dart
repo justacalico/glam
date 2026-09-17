@@ -16,6 +16,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/core/widgets/comment_composer.dart';
 import 'package:glam/src/core/widgets/diff_viewer.dart';
+import 'package:glam/src/core/widgets/duration_dialog.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
@@ -318,6 +319,12 @@ class _MrHeader extends StatelessWidget {
               ),
             if (mr.milestone != null)
               Text(mr.milestone!.title, style: theme.textTheme.bodySmall),
+            if ((mr.timeEstimate ?? 0) > 0 || (mr.timeSpent ?? 0) > 0)
+              Text(
+                '${Format.humanDuration(mr.timeSpent)} spent'
+                ' of ${Format.humanDuration(mr.timeEstimate)}',
+                style: theme.textTheme.bodySmall,
+              ),
             if (mr.mergedBy != null)
               Text(
                 'Merged by ${mr.mergedBy!.name} '
@@ -818,6 +825,18 @@ class _MrActions extends ConsumerWidget {
                 loc.iid,
                 subscribed: !mr.subscribed,
               );
+            case 'estimate':
+              final d = await promptDuration(context, title: 'Time estimate');
+              if (d != null && d.isNotEmpty) {
+                await repo.setTimeEstimate(loc.project, loc.iid, d);
+              }
+            case 'spent':
+              final d = await promptDuration(context, title: 'Add time spent');
+              if (d != null && d.isNotEmpty) {
+                await repo.addTimeSpent(loc.project, loc.iid, d);
+              }
+            case 'reset_spent':
+              await repo.resetTimeSpent(loc.project, loc.iid);
             case 'rebase':
               await repo.rebase(loc.project, loc.iid);
             case 'cherry_pick':
@@ -880,6 +899,16 @@ class _MrActions extends ConsumerWidget {
           value: 'subscribe',
           child: Text(mr.subscribed ? 'Unsubscribe' : 'Subscribe'),
         ),
+        const PopupMenuItem(
+          value: 'estimate',
+          child: Text('Set time estimate'),
+        ),
+        const PopupMenuItem(value: 'spent', child: Text('Add time spent')),
+        if ((mr.timeSpent ?? 0) > 0)
+          const PopupMenuItem(
+            value: 'reset_spent',
+            child: Text('Reset time spent'),
+          ),
         const PopupMenuItem(value: 'edit', child: Text('Edit')),
         const PopupMenuItem(value: 'copy', child: Text('Copy link')),
         const PopupMenuItem(value: 'open', child: Text('Open in browser')),

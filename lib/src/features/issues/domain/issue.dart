@@ -89,8 +89,8 @@ class Issue extends Equatable {
           ? (json['references'] as Map<String, dynamic>)['full'] as String?
           : null,
       subscribed: json['subscribed'] as bool? ?? false,
-      timeEstimate: json['time_estimate'] as int?,
-      timeSpent: json['total_time_spent'] as int?,
+      timeEstimate: _timeStat(json, 'time_estimate'),
+      timeSpent: _timeStat(json, 'total_time_spent'),
       iteration: json['iteration'] is Map<String, dynamic>
           ? Iteration.fromJson(json['iteration'] as Map<String, dynamic>)
           : null,
@@ -141,6 +141,16 @@ class Issue extends Equatable {
   final Iteration? iteration;
 
   bool get isOpen => state == 'opened' || state == 'reopened';
+
+  /// `time_stats` holds the real values; flat keys show up in some
+  /// embeds, so check both.
+  static int? _timeStat(Map<String, dynamic> json, String key) {
+    final stats = json['time_stats'];
+    if (stats is Map<String, dynamic>) {
+      return stats[key] as int?;
+    }
+    return json[key] as int?;
+  }
 
   static DateTime? _date(Object? v) =>
       v is String ? DateTime.tryParse(v)?.toLocal() : null;
