@@ -187,10 +187,8 @@ class _IssueActions extends ConsumerWidget {
       ref.invalidate(issuesProvider);
       if (context.mounted) {
         // The issue now lives under the destination project.
-        unawaited(
-          context.pushReplacement(
-            Routes.projectIssue(moved.projectId, moved.iid),
-          ),
+        context.pushReplacement(
+          Routes.projectIssue(moved.projectId, moved.iid),
         );
       }
     } on ApiException catch (e) {
@@ -332,10 +330,8 @@ class _IssueActions extends ConsumerWidget {
             final copy = await repo.cloneIssue(loc.project, loc.iid);
             ref.invalidate(issuesProvider);
             if (context.mounted) {
-              unawaited(
-                context.pushReplacement(
-                  Routes.projectIssue(copy.projectId, copy.iid),
-                ),
+              context.pushReplacement(
+                Routes.projectIssue(copy.projectId, copy.iid),
               );
             }
             return;

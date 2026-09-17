@@ -171,6 +171,31 @@ void main() {
       );
     });
 
+    test('cherry-pick posts the branch and revert posts empty', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post(
+          '/projects/42/merge_requests/7/cherry_pick',
+          fixtureJson('commit'),
+        )
+        ..post(
+          '/projects/42/merge_requests/7/revert',
+          (fixtureJson('mrs') as List).first,
+        );
+      final repo = MergeRequestsRepository(client);
+
+      final commit = await repo.cherryPick(42, 7, branch: 'stable');
+      expect(commit.id, isNotEmpty);
+      expect((adapter.lastRequest!.data as Map)['branch'], 'stable');
+
+      final reverted = await repo.revert(42, 7);
+      expect(reverted.iid, greaterThan(0));
+      expect(
+        adapter.requestsTo('POST', '/projects/42/merge_requests/7/revert'),
+        hasLength(1),
+      );
+    });
+
     test('approve and unapprove post to the right paths', () async {
       final (client, adapter) = testClient();
       adapter

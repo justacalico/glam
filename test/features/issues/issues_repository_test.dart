@@ -133,6 +133,30 @@ void main() {
       await repo.updateIssue(42, 12, weight: 3);
       expect((adapter.lastRequest!.data as Map)['weight'], 3);
     });
+
+    test('clone and move return the resulting issue', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post(
+          '/projects/42/issues/12/clone',
+          (fixtureJson('issues') as List).first,
+        )
+        ..post(
+          '/projects/42/issues/12/move',
+          (fixtureJson('issues') as List).first,
+        );
+      final repo = IssuesRepository(client);
+
+      final copy = await repo.cloneIssue(42, 12);
+      expect(copy.title, isNotEmpty);
+
+      final moved = await repo.moveIssue(42, 12, 'group/other');
+      expect(moved.title, isNotEmpty);
+      expect(
+        (adapter.lastRequest!.data as Map)['to_project_id'],
+        'group/other',
+      );
+    });
   });
 
   group('notes', () {
