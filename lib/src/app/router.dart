@@ -47,6 +47,8 @@ abstract final class Routes {
   static String projectPipeline(Object id, int pid) =>
       '/projects/$id/pipelines/$pid';
   static String projectJob(Object id, int jid) => '/projects/$id/jobs/$jid';
+  static String projectJobArtifacts(Object id, int jid) =>
+      '/projects/$id/jobs/$jid/artifacts';
   static String projectMilestones(Object id) => '/projects/$id/milestones';
   static String projectLabels(Object id) => '/projects/$id/labels';
   static String projectWiki(Object id) => '/projects/$id/wiki';

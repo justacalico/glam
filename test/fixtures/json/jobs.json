@@ -9,13 +9,20 @@
     "finished_at": "2025-07-12T10:02:00.000+00:00",
     "duration": 90.0,
     "allow_failure": false,
-    "tag_list": ["flutter", "docker"],
+    "tag_list": [
+      "flutter",
+      "docker"
+    ],
     "user": {
       "id": 7,
       "name": "Jane Doe",
       "username": "jane"
     },
-    "web_url": "https://gitlab.example.com/calico/glam/-/jobs/5001"
+    "web_url": "https://gitlab.example.com/calico/glam/-/jobs/5001",
+    "artifacts_file": {
+      "filename": "artifacts.zip",
+      "size": 20480
+    }
   },
   {
     "id": 5002,
