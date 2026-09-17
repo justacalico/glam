@@ -7,6 +7,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/domain/protected_branch.dart';
 import 'package:glam/src/features/projects/domain/protected_tag.dart';
+import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/domain/webhook.dart';
 
 /// Talks to `/projects` and related endpoints.
@@ -351,6 +352,39 @@ class ProjectsRepository {
   Future<void> deleteDeployToken(Object id, int tokenId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/deploy_tokens/$tokenId',
+    );
+  }
+
+  /// Runners currently enabled on this project.
+  Future<List<Runner>> projectRunners(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/runners',
+      decoder: (j) => Runner.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Shared runners available to this project but not yet enabled.
+  Future<List<Runner>> availableRunners(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/runners/all',
+      query: {'type': 'instance_type'},
+      decoder: (j) => Runner.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  /// Enables a shared or group runner for this project.
+  Future<void> enableRunner(Object id, int runnerId) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/runners',
+      body: {'runner_id': runnerId},
+      decoder: (_) {},
+    );
+  }
+
+  /// Removes a shared or group runner from this project.
+  Future<void> disableRunner(Object id, int runnerId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/runners/$runnerId',
     );
   }
 
