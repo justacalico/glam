@@ -470,6 +470,132 @@ class NotificationSection extends ConsumerWidget {
   }
 }
 
+/// Email addresses on the account, with add / remove.
+class EmailsSection extends ConsumerWidget {
+  const EmailsSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emails = ref.watch(emailsProvider);
+    final colors = context.colors;
+
+    return _Section(
+      label: 'Emails',
+      trailing: TextButton.icon(
+        icon: const Icon(Icons.add, size: 16),
+        label: const Text('Add'),
+        onPressed: () => _addEmail(context, ref),
+      ),
+      children: [
+        emails.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, _) => _ErrorTile(error: e),
+          data: (list) => list.isEmpty
+              ? const ListTile(dense: true, title: Text('No emails'))
+              : Column(
+                  children: [
+                    for (final m in list)
+                      ListTile(
+                        dense: true,
+                        leading: const Icon(Icons.mail_outline, size: 18),
+                        title: Text(m.email),
+                        subtitle: Text(
+                          [
+                            if (m.primary) 'primary',
+                            m.confirmed ? 'confirmed' : 'unconfirmed',
+                          ].join(' · '),
+                        ),
+                        trailing: m.primary
+                            ? null
+                            : IconButton(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: colors.danger,
+                                ),
+                                onPressed: () => _deleteEmail(context, ref, m),
+                              ),
+                      ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _addEmail(BuildContext context, WidgetRef ref) async {
+    final email = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add email'),
+        content: SizedBox(
+          width: 420,
+          child: TextField(
+            controller: email,
+            autofocus: true,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              hintText: 'you@example.com',
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (email.text.trim().isEmpty) {
+                return;
+              }
+              Navigator.pop(context, true);
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    final e = email.text.trim();
+    email.dispose();
+    if (ok != true || e.isEmpty || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(accountActionsProvider).addEmail(e);
+    } on ApiException catch (err) {
+      if (context.mounted) {
+        _error(context, err.message);
+      }
+    }
+  }
+
+  Future<void> _deleteEmail(
+    BuildContext context,
+    WidgetRef ref,
+    UserEmail m,
+  ) async {
+    final ok = await _confirm(context, title: 'Remove email?', body: m.email);
+    if (ok != true || !context.mounted) {
+      return;
+    }
+    try {
+      await ref.read(accountActionsProvider).deleteEmail(m.id);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        _error(context, e.message);
+      }
+    }
+  }
+}
+
 class _Section extends StatelessWidget {
   const _Section({required this.label, required this.children, this.trailing});
 

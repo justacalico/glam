@@ -111,6 +111,34 @@ void main() {
       expect(adapter.requestsTo('DELETE', '/user/gpg_keys/20'), hasLength(1));
     });
 
+    test('emails list, add and delete', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/user/emails', [
+          {'id': 3, 'email': 'calico@example.com', 'primary': true},
+          {
+            'id': 4,
+            'email': 'alt@example.com',
+            'confirmed_at': '2024-01-01T00:00:00.000Z',
+          },
+        ])
+        ..post('/user/emails', {'id': 5, 'email': 'new@example.com'})
+        ..delete('/user/emails/4');
+      final repo = AccountRepository(client);
+
+      final emails = await repo.emails();
+      expect(emails, hasLength(2));
+      expect(emails.first.primary, isTrue);
+      expect(emails.first.confirmed, isFalse);
+      expect(emails.last.confirmed, isTrue);
+
+      await repo.addEmail('new@example.com');
+      expect((adapter.lastRequest!.data as Map)['email'], 'new@example.com');
+
+      await repo.deleteEmail(4);
+      expect(adapter.requestsTo('DELETE', '/user/emails/4'), hasLength(1));
+    });
+
     test('addSshKey sends the expiry date as YYYY-MM-DD', () async {
       final (client, adapter) = testClient();
       adapter.post('/user/keys', (fixtureJson('ssh_keys') as List).first);
