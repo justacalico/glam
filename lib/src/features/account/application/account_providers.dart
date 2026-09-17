@@ -33,6 +33,14 @@ final projectNotificationProvider =
           .projectNotificationSettings(projectId),
     );
 
+/// Per-group notification level and custom events.
+final groupNotificationProvider =
+    FutureProvider.family<NotificationSettings, Object>(
+      (ref, groupId) => ref
+          .watch(accountRepositoryProvider)
+          .groupNotificationSettings(groupId),
+    );
+
 /// Account mutations; each refetches its list on success.
 final accountActionsProvider = Provider<AccountActions>(AccountActions.new);
 
@@ -90,5 +98,19 @@ class AccountActions {
       events: {event: on},
     );
     _ref.invalidate(projectNotificationProvider(projectId));
+  }
+
+  Future<void> setGroupNotificationLevel(Object groupId, String level) async {
+    await _repo.updateGroupNotificationSettings(groupId, level: level);
+    _ref.invalidate(groupNotificationProvider(groupId));
+  }
+
+  Future<void> toggleGroupNotificationEvent(
+    Object groupId,
+    String event,
+    bool on,
+  ) async {
+    await _repo.updateGroupNotificationSettings(groupId, events: {event: on});
+    _ref.invalidate(groupNotificationProvider(groupId));
   }
 }

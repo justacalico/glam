@@ -7,15 +7,17 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/domain/account_models.dart';
-import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 
-/// Project-scoped notification preferences shown as a bottom sheet.
-class ProjectNotificationSheet extends ConsumerWidget {
-  const ProjectNotificationSheet({required this.projectId, super.key});
+/// A project or group id for scoped notification settings.
+typedef NotificationScope = ({Object id, bool isProject});
 
-  final Object projectId;
+/// Notification preferences for a project or group, shown as a bottom sheet.
+class ScopedNotificationSheet extends ConsumerWidget {
+  const ScopedNotificationSheet({required this.scope, super.key});
 
-  static Future<void> show(BuildContext context, Object projectId) {
+  final NotificationScope scope;
+
+  static Future<void> show(BuildContext context, NotificationScope scope) {
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -25,7 +27,7 @@ class ProjectNotificationSheet extends ConsumerWidget {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: ProjectNotificationSheet(projectId: projectId),
+          child: ScopedNotificationSheet(scope: scope),
         ),
       ),
     );
@@ -52,7 +54,11 @@ class ProjectNotificationSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(projectNotificationProvider(projectId));
+    final settings = ref.watch(
+      scope.isProject
+          ? projectNotificationProvider(scope.id)
+          : groupNotificationProvider(scope.id),
+    );
     final theme = Theme.of(context);
 
     return settings.when(
@@ -119,12 +125,15 @@ class ProjectNotificationSheet extends ConsumerWidget {
     String level,
   ) async {
     try {
-      await ref
-          .read(accountActionsProvider)
-          .setProjectNotificationLevel(projectId, level);
+      final actions = ref.read(accountActionsProvider);
+      if (scope.isProject) {
+        await actions.setProjectNotificationLevel(scope.id, level);
+      } else {
+        await actions.setGroupNotificationLevel(scope.id, level);
+      }
     } on ApiException catch (e) {
       if (context.mounted) {
-        showAdminError(context, e.message);
+        _error(context, e.message);
       }
     }
   }
@@ -136,13 +145,22 @@ class ProjectNotificationSheet extends ConsumerWidget {
     bool on,
   ) async {
     try {
-      await ref
-          .read(accountActionsProvider)
-          .toggleProjectNotificationEvent(projectId, event, on);
+      final actions = ref.read(accountActionsProvider);
+      if (scope.isProject) {
+        await actions.toggleProjectNotificationEvent(scope.id, event, on);
+      } else {
+        await actions.toggleGroupNotificationEvent(scope.id, event, on);
+      }
     } on ApiException catch (e) {
       if (context.mounted) {
-        showAdminError(context, e.message);
+        _error(context, e.message);
       }
     }
+  }
+
+  void _error(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

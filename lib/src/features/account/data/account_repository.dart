@@ -101,4 +101,24 @@ class AccountRepository {
       decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
     );
   }
+
+  /// Group-scoped notification settings (`/groups/:id/notification_settings`).
+  Future<NotificationSettings> groupNotificationSettings(Object groupId) {
+    return _client.get(
+      '/groups/${GitLabApiClient.encodeProject(groupId)}/notification_settings',
+      decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<NotificationSettings> updateGroupNotificationSettings(
+    Object groupId, {
+    String? level,
+    Map<String, bool> events = const {},
+  }) {
+    return _client.put(
+      '/groups/${GitLabApiClient.encodeProject(groupId)}/notification_settings',
+      body: {'level': ?level, ...events},
+      decoder: (j) => NotificationSettings.fromJson(j! as Map<String, dynamic>),
+    );
+  }
 }

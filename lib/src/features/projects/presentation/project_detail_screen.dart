@@ -10,6 +10,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
+import 'package:glam/src/core/widgets/notification_sheet.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
 import 'package:glam/src/features/environments/presentation/environments_screen.dart';
@@ -23,7 +24,6 @@ import 'package:glam/src/features/registry/presentation/packages_tab.dart';
 import 'package:glam/src/features/registry/presentation/registry_tab.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
-import 'package:glam/src/features/projects/presentation/notification_sheet.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
 import 'package:glam/src/features/repository/presentation/branches_screen.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
@@ -278,7 +278,10 @@ class _ProjectHeader extends ConsumerWidget {
                 icon: Icons.notifications_outlined,
                 label: 'Notifications',
                 onTap: () => unawaited(
-                  ProjectNotificationSheet.show(context, project.id),
+                  ScopedNotificationSheet.show(context, (
+                    id: project.id,
+                    isProject: true,
+                  )),
                 ),
               ),
               if (project.webUrl != null)
