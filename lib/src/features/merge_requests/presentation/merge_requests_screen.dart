@@ -68,6 +68,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                       search: f.search,
                       wip: f.wip,
                       myReactionEmoji: f.myReactionEmoji,
+                      updatedDays: f.updatedDays,
                       orderBy: f.orderBy,
                       sort: f.sort,
                     ),
@@ -90,6 +91,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                             search: v,
                             wip: f.wip,
                             myReactionEmoji: f.myReactionEmoji,
+                            updatedDays: f.updatedDays,
                             orderBy: f.orderBy,
                             sort: f.sort,
                           ),
@@ -106,6 +108,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           search: f.search,
                           wip: f.wip,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -124,6 +127,31 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           search: f.search,
                           wip: w,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
+                          orderBy: f.orderBy,
+                          sort: f.sort,
+                        ),
+                      ),
+                    ),
+                    FilterMenu(
+                      title: 'Activity',
+                      current: filter.updatedDays == null
+                          ? null
+                          : '${filter.updatedDays}',
+                      options: const ['1', '7', '30'],
+                      labels: const {
+                        '1': 'Last 24h',
+                        '7': 'Last week',
+                        '30': 'Last month',
+                      },
+                      onSelect: (v) => _setFilter(
+                        (f) => (
+                          scope: f.scope,
+                          state: f.state,
+                          search: f.search,
+                          wip: f.wip,
+                          myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: v == null ? null : int.parse(v),
                           orderBy: f.orderBy,
                           sort: f.sort,
                         ),
@@ -140,6 +168,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                           search: f.search,
                           wip: f.wip,
                           myReactionEmoji: f.myReactionEmoji,
+                          updatedDays: f.updatedDays,
                           orderBy: o.orderBy,
                           sort: o.sort,
                         ),
@@ -259,6 +288,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   int? _authorId;
   String? _wip;
   String? _myReaction;
+  int? _updatedDays;
   String? _orderBy;
   String? _sort;
 
@@ -284,6 +314,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
       authorId: _authorId,
       wip: _wip,
       myReactionEmoji: _myReaction,
+      updatedDays: _updatedDays,
       orderBy: _orderBy,
       sort: _sort,
     );
@@ -447,6 +478,19 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 options: _reactions,
                 labels: _reactionLabels,
                 onSelect: (v) => setState(() => _myReaction = v),
+              ),
+              FilterMenu(
+                title: 'Activity',
+                current: _updatedDays == null ? null : '$_updatedDays',
+                options: const ['1', '7', '30'],
+                labels: const {
+                  '1': 'Last 24h',
+                  '7': 'Last week',
+                  '30': 'Last month',
+                },
+                onSelect: (v) => setState(
+                  () => _updatedDays = v == null ? null : int.parse(v),
+                ),
               ),
               SortMenu(
                 orderBy: _orderBy,

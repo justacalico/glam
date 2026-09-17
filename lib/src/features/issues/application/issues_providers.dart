@@ -27,6 +27,7 @@ typedef IssueFilter = ({
   bool? confidential,
   String? dueDate,
   String? myReactionEmoji,
+  int? updatedDays,
   String? orderBy,
   String? sort,
 });
@@ -39,6 +40,7 @@ const defaultIssueFilter = (
   confidential: null,
   dueDate: null,
   myReactionEmoji: null,
+  updatedDays: null,
   orderBy: null,
   sort: null,
 );
@@ -73,6 +75,9 @@ class IssuesNotifier extends PagedListNotifier<Issue> {
           confidential: filter.confidential,
           dueDate: filter.dueDate,
           myReactionEmoji: filter.myReactionEmoji,
+          updatedAfter: filter.updatedDays == null
+              ? null
+              : DateTime.now().subtract(Duration(days: filter.updatedDays!)),
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,
@@ -93,6 +98,7 @@ typedef ProjectIssueFilter = ({
   bool? confidential,
   String? dueDate,
   String? myReactionEmoji,
+  int? updatedDays,
   String? orderBy,
   String? sort,
 });
@@ -125,6 +131,9 @@ class ProjectIssuesNotifier extends PagedListNotifier<Issue> {
           confidential: filter.confidential,
           dueDate: filter.dueDate,
           myReactionEmoji: filter.myReactionEmoji,
+          updatedAfter: filter.updatedDays == null
+              ? null
+              : DateTime.now().subtract(Duration(days: filter.updatedDays!)),
           orderBy: filter.orderBy,
           sort: filter.sort,
           page: page,

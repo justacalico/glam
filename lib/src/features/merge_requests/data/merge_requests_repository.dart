@@ -49,6 +49,7 @@ class MergeRequestsRepository {
     String? search,
     String? wip,
     String? myReactionEmoji,
+    DateTime? updatedAfter,
     String? orderBy,
     String? sort,
     int page = 1,
@@ -61,6 +62,7 @@ class MergeRequestsRepository {
       'search': ?search,
       'wip': ?wip,
       'my_reaction_emoji': ?myReactionEmoji,
+      'updated_after': ?updatedAfter?.toIso8601String(),
       'order_by': ?orderBy,
       'sort': ?sort,
     };
@@ -93,6 +95,7 @@ class MergeRequestsRepository {
     int? authorId,
     String? wip,
     String? myReactionEmoji,
+    DateTime? updatedAfter,
     String? orderBy,
     String? sort,
     int page = 1,
@@ -108,6 +111,7 @@ class MergeRequestsRepository {
       'author_id': ?authorId?.toString(),
       'wip': ?wip,
       'my_reaction_emoji': ?myReactionEmoji,
+      'updated_after': ?updatedAfter?.toIso8601String(),
       'order_by': ?orderBy,
       'sort': ?sort,
     };

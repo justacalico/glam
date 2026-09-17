@@ -688,6 +688,7 @@ void main() {
         search: 'x',
         wip: null,
         myReactionEmoji: null,
+        updatedDays: null,
         orderBy: null,
         sort: null,
       ));
@@ -705,6 +706,7 @@ void main() {
         search: null,
         wip: null,
         myReactionEmoji: null,
+        updatedDays: null,
         orderBy: 'title',
         sort: 'asc',
       ));
@@ -724,6 +726,7 @@ void main() {
         search: null,
         wip: 'yes',
         myReactionEmoji: null,
+        updatedDays: null,
         orderBy: null,
         sort: null,
       ));
@@ -741,6 +744,7 @@ void main() {
         search: null,
         wip: null,
         myReactionEmoji: 'thumbsup',
+        updatedDays: null,
         orderBy: null,
         sort: null,
       ));
@@ -750,6 +754,27 @@ void main() {
         adapter.lastRequest!.queryParameters['my_reaction_emoji'],
         'thumbsup',
       );
+    });
+
+    test('filter forwards updated_after from the activity preset', () async {
+      adapter.get('/merge_requests', fixtureJson('mrs'));
+
+      container.read(mrFilterProvider.notifier).update((
+        scope: MrScope.assigned,
+        state: null,
+        search: null,
+        wip: null,
+        myReactionEmoji: null,
+        updatedDays: 30,
+        orderBy: null,
+        sort: null,
+      ));
+      await container.read(mergeRequestsProvider.future);
+
+      final sent = DateTime.parse(
+        adapter.lastRequest!.queryParameters['updated_after'] as String,
+      );
+      expect(DateTime.now().difference(sent).inDays, inInclusiveRange(29, 30));
     });
 
     test('mrProvider and mrChangesProvider fetch detail', () async {
