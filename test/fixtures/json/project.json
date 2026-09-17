@@ -22,7 +22,10 @@
     "full_path": "calico"
   },
   "archived": false,
-  "topics": ["flutter", "gitlab"],
+  "topics": [
+    "flutter",
+    "gitlab"
+  ],
   "ssh_url_to_repo": "git@gitlab.example.com:calico/glam.git",
   "http_url_to_repo": "https://gitlab.example.com/calico/glam.git",
   "readme_url": "https://gitlab.example.com/calico/glam/-/blob/main/README.md",
@@ -38,5 +41,15 @@
   "merge_requests_enabled": true,
   "wiki_enabled": true,
   "snippets_enabled": true,
-  "jobs_enabled": true
+  "jobs_enabled": true,
+  "merge_method": "rebase_merge",
+  "squash_option": "default_on",
+  "only_allow_merge_if_pipeline_succeeds": true,
+  "allow_merge_on_skipped_pipeline": false,
+  "only_allow_merge_if_all_discussions_are_resolved": true,
+  "remove_source_branch_after_merge": true,
+  "approvals_before_merge": 2,
+  "merge_commit_template": "Merge %{source_branch} into %{target_branch}",
+  "squash_commit_template": "%{title}",
+  "suggestion_commit_message": "Apply suggestion"
 }
