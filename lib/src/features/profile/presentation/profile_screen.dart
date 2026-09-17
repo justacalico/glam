@@ -13,6 +13,7 @@ import 'package:glam/src/core/utils/url_launcher.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/core/widgets/users_sheet.dart';
 import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
@@ -212,15 +213,12 @@ class _ProfileHeader extends StatelessWidget {
 
   void _usersSheet(BuildContext context, int userId, String title) {
     unawaited(
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) => _UsersSheet(
-          title: title,
-          provider: title == 'Followers'
-              ? userFollowersProvider(userId)
-              : userFollowingProvider(userId),
-        ),
+      UsersSheet.show(
+        context,
+        title: title,
+        provider: title == 'Followers'
+            ? userFollowersProvider(userId)
+            : userFollowingProvider(userId),
       ),
     );
   }
@@ -385,66 +383,6 @@ class _Cell extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(1.5),
-      ),
-    );
-  }
-}
-
-/// Bottom sheet listing followers or followed users.
-class _UsersSheet extends ConsumerWidget {
-  const _UsersSheet({required this.title, required this.provider});
-
-  final String title;
-  final FutureProvider<List<GitLabUser>> provider;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(provider);
-    final colors = context.colors;
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.55,
-      minChildSize: 0.35,
-      maxChildSize: 0.9,
-      builder: (context, controller) => Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(Insets.lg),
-            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-          ),
-          Expanded(
-            child: users.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('$e')),
-              data: (list) => list.isEmpty
-                  ? const EmptyState(
-                      icon: Icons.people_outline,
-                      title: 'Nobody here yet',
-                    )
-                  : ListView.builder(
-                      controller: controller,
-                      itemCount: list.length,
-                      itemBuilder: (context, i) {
-                        final u = list[i];
-                        return ListTile(
-                          dense: true,
-                          leading: UserAvatar(
-                            name: u.name,
-                            avatarUrl: u.avatarUrl,
-                            radius: 16,
-                          ),
-                          title: Text(u.name),
-                          subtitle: Text(
-                            '@${u.username}',
-                            style: TextStyle(color: colors.inkMuted),
-                          ),
-                          onTap: () => context.push(Routes.user(u.id)),
-                        );
-                      },
-                    ),
-            ),
-          ),
-        ],
       ),
     );
   }
