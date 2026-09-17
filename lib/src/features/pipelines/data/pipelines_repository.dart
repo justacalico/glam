@@ -29,12 +29,19 @@ class PipelinesRepository {
     Object projectId, {
     String? ref,
     String? status,
+    String? source,
     int page = 1,
     int perPage = 20,
   }) {
     return _client.getPage(
       '${_p(projectId)}/pipelines',
-      query: {'ref': ?ref, 'status': ?status, 'order_by': 'id', 'sort': 'desc'},
+      query: {
+        'ref': ?ref,
+        'status': ?status,
+        'source': ?source,
+        'order_by': 'id',
+        'sort': 'desc',
+      },
       page: page,
       perPage: perPage,
       decoder: (j) => Pipeline.fromJson(j! as Map<String, dynamic>),
