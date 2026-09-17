@@ -18,6 +18,7 @@ import 'package:glam/src/core/widgets/users_sheet.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/boards/presentation/boards_screen.dart';
+import 'package:glam/src/features/alerts/presentation/alerts_tab.dart';
 import 'package:glam/src/features/environments/presentation/environments_screen.dart';
 import 'package:glam/src/features/environments/presentation/feature_flags_tab.dart';
 import 'package:glam/src/features/issues/presentation/issues_screen.dart';
@@ -104,6 +105,7 @@ class _ProjectBody extends ConsumerWidget {
         builder: () => EnvironmentsScreen(projectId: project.id),
       ),
       (label: 'Flags', builder: () => FeatureFlagsTab(projectId: project.id)),
+      (label: 'Alerts', builder: () => AlertsTab(projectId: project.id)),
       (
         label: 'Members',
         builder: () => MembersList(id: project.id, isProject: true),

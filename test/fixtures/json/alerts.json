@@ -1,0 +1,33 @@
+[
+  {
+    "iid": 1,
+    "title": "CPU usage above 90%",
+    "status": "triggered",
+    "severity": "critical",
+    "monitoring_tool": "prometheus",
+    "service": "web",
+    "started_at": "2024-05-01T10:00:00Z",
+    "event_count": 12,
+    "hosts": ["web-1", "web-2"],
+    "issue_iid": 14,
+    "assignees": [
+      {
+        "id": 7,
+        "username": "lin",
+        "name": "Lin",
+        "state": "active",
+        "avatar_url": null
+      }
+    ]
+  },
+  {
+    "iid": 2,
+    "title": "Disk space low",
+    "status": "acknowledged",
+    "severity": "medium",
+    "monitoring_tool": "prometheus",
+    "started_at": "2024-05-02T08:30:00Z",
+    "event_count": 3,
+    "hosts": []
+  }
+]
