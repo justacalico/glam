@@ -675,3 +675,148 @@ Future<bool?> _confirm(
     ),
   );
 }
+
+/// GitLab-side account preferences (`/user/preferences`) — the ones the
+/// app doesn't manage locally.
+class PreferencesSection extends ConsumerWidget {
+  const PreferencesSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(userPreferencesProvider);
+
+    return _Section(
+      label: 'GitLab preferences',
+      children: [
+        prefs.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Insets.lg),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, _) => _ErrorTile(error: e),
+          data: (p) => Column(
+            children: [
+              _toggle(
+                context,
+                ref,
+                'Show whitespace changes in diffs',
+                p.showWhitespaceInDiffs,
+                'show_whitespace_in_diffs',
+              ),
+              _toggle(
+                context,
+                ref,
+                'Show one file at a time in diffs',
+                p.viewDiffsFileByFile,
+                'view_diffs_file_by_file',
+              ),
+              _toggle(
+                context,
+                ref,
+                'Include unstaged changes in diffs',
+                p.passUnstagedChangesInDiff,
+                'pass_unstaged_changes_in_diff',
+              ),
+              _toggle(
+                context,
+                ref,
+                'Markdown surrounds selection',
+                p.markdownSurroundSelection,
+                'markdown_surround_selection',
+              ),
+              _toggle(
+                context,
+                ref,
+                'Automatic markdown lists',
+                p.markdownAutomaticLists,
+                'markdown_automatic_lists',
+              ),
+              _choice(
+                context,
+                ref,
+                'Layout width',
+                p.layoutWidth,
+                const {'fixed': 'Fixed', 'fluid': 'Fluid'},
+                'layout_width',
+              ),
+              _choice(
+                context,
+                ref,
+                'Default projects view',
+                p.projectsView,
+                const {
+                  'activity': 'Activity',
+                  'starred': 'Starred',
+                  'trending': 'Trending',
+                },
+                'projects_view',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _toggle(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    bool value,
+    String field,
+  ) {
+    return SwitchListTile(
+      dense: true,
+      title: Text(title),
+      value: value,
+      onChanged: (v) => unawaited(_set(context, ref, {field: v})),
+    );
+  }
+
+  Widget _choice(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    String? current,
+    Map<String, String> options,
+    String field,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
+      child: Row(
+        children: [
+          Expanded(child: Text(title)),
+          DropdownButton<String>(
+            value: options.containsKey(current) ? current : null,
+            hint: const Text('Default'),
+            items: [
+              for (final e in options.entries)
+                DropdownMenuItem(value: e.key, child: Text(e.value)),
+            ],
+            onChanged: (v) {
+              if (v != null) {
+                unawaited(_set(context, ref, {field: v}));
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _set(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> fields,
+  ) async {
+    try {
+      await ref.read(accountActionsProvider).updateUserPreference(fields);
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        _error(context, e.message);
+      }
+    }
+  }
+}

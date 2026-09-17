@@ -233,3 +233,55 @@ class NotificationSettings extends Equatable {
     ...events.entries.map((e) => '${e.key}=${e.value}'),
   ];
 }
+
+/// The account's IDE-agnostic preferences (`/user/preferences`).
+class UserPreferences extends Equatable {
+  const UserPreferences({
+    this.viewDiffsFileByFile = false,
+    this.showWhitespaceInDiffs = true,
+    this.passUnstagedChangesInDiff = false,
+    this.markdownSurroundSelection = true,
+    this.markdownAutomaticLists = true,
+    this.layoutWidth,
+    this.projectsView,
+  });
+
+  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
+      UserPreferences(
+        viewDiffsFileByFile:
+            json['view_diffs_file_by_file'] as bool? ?? false,
+        showWhitespaceInDiffs:
+            json['show_whitespace_in_diffs'] as bool? ?? true,
+        passUnstagedChangesInDiff:
+            json['pass_unstaged_changes_in_diff'] as bool? ?? false,
+        markdownSurroundSelection:
+            json['markdown_surround_selection'] as bool? ?? true,
+        markdownAutomaticLists:
+            json['markdown_automatic_lists'] as bool? ?? true,
+        layoutWidth: json['layout_width'] as String?,
+        projectsView: json['projects_view'] as String?,
+      );
+
+  final bool viewDiffsFileByFile;
+  final bool showWhitespaceInDiffs;
+  final bool passUnstagedChangesInDiff;
+  final bool markdownSurroundSelection;
+  final bool markdownAutomaticLists;
+
+  /// `fixed` or `fluid`.
+  final String? layoutWidth;
+
+  /// `activity`, `starred`, `trending`, ...
+  final String? projectsView;
+
+  @override
+  List<Object?> get props => [
+    viewDiffsFileByFile,
+    showWhitespaceInDiffs,
+    passUnstagedChangesInDiff,
+    markdownSurroundSelection,
+    markdownAutomaticLists,
+    layoutWidth,
+    projectsView,
+  ];
+}
