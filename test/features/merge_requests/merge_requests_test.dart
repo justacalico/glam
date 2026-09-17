@@ -537,6 +537,7 @@ void main() {
           'note': 'edited',
         })
         ..delete('/projects/42/merge_requests/7/draft_notes/301')
+        ..delete('/projects/42/merge_requests/7/draft_notes/302')
         ..post(
           '/projects/42/merge_requests/7/draft_notes/301/publish',
           {'id': 1, 'body': 'x'},
