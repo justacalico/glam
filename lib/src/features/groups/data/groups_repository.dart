@@ -1,5 +1,6 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
+import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/models/iteration.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
@@ -240,6 +241,14 @@ class GroupsRepository {
 
   Future<void> deleteHook(Object groupId, int hookId) {
     return _client.delete('${_g(groupId)}/hooks/$hookId');
+  }
+
+  /// Audit events (`/groups/:id/audit_events`); premium-gated upstream.
+  Future<List<AuditEvent>> auditEvents(Object groupId) {
+    return _client.getAll(
+      '${_g(groupId)}/audit_events',
+      decoder: (j) => AuditEvent.fromJson(j! as Map<String, dynamic>),
+    );
   }
 
   /// Group members.

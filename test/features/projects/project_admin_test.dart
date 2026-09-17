@@ -389,6 +389,48 @@ void main() {
       );
     });
 
+    test('starrers decodes the users list', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/starrers', [
+        {'id': 7, 'name': 'Ada', 'username': 'ada'},
+        {'id': 8, 'name': 'Bo', 'username': 'bo'},
+      ]);
+      final repo = ProjectsRepository(client);
+
+      final users = await repo.starrers(42);
+
+      expect(users, hasLength(2));
+      expect(users.first.username, 'ada');
+    });
+
+    test('auditEvents decodes detail fields', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/projects/42/audit_events', [
+        {
+          'id': 5,
+          'author_id': 1,
+          'entity_id': 42,
+          'entity_type': 'Project',
+          'details': {
+            'change': 'project created',
+            'author_name': 'Administrator',
+            'target_type': 'Project',
+            'target_details': 'glam',
+            'ip_address': '127.0.0.1',
+          },
+          'created_at': '2024-06-01T10:00:00.000Z',
+        },
+      ]);
+      final repo = ProjectsRepository(client);
+
+      final events = await repo.auditEvents(42);
+
+      expect(events.single.authorName, 'Administrator');
+      expect(events.single.change, 'project created');
+      expect(events.single.ipAddress, '127.0.0.1');
+      expect(events.single.targetDetails, 'glam');
+    });
+
     test('deploy tokens list, create keeps the secret, revoke', () async {
       final (client, adapter) = testClient();
       adapter
@@ -722,6 +764,41 @@ void main() {
         hasLength(1),
       );
       expect(adapter.requestsTo('GET', '/projects/42/runners'), hasLength(2));
+    });
+
+    test('projectStarrersProvider loads the users list', () async {
+      adapter.get('/projects/42/starrers', [
+        {'id': 7, 'name': 'Ada', 'username': 'ada'},
+      ]);
+
+      final users = await container.read(projectStarrersProvider(42).future);
+
+      expect(users.single.name, 'Ada');
+    });
+
+    test('projectAuditEventsProvider loads events', () async {
+      adapter.get('/projects/42/audit_events', [
+        {
+          'id': 5,
+          'details': {'change': 'member added'},
+        },
+      ]);
+
+      final events = await container.read(
+        projectAuditEventsProvider(42).future,
+      );
+
+      expect(events.single.change, 'member added');
+    });
+
+    test('projectAuditEventsProvider is empty when premium-gated', () async {
+      adapter.fail('/projects/42/audit_events', status: 403);
+
+      final events = await container.read(
+        projectAuditEventsProvider(42).future,
+      );
+
+      expect(events, isEmpty);
     });
   });
 }

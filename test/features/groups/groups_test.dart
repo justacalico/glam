@@ -170,6 +170,29 @@ void main() {
       expect(adapter.requestsTo('DELETE', '/groups/9/hooks/7'), hasLength(1));
     });
 
+    test('auditEvents decodes detail fields', () async {
+      final (client, adapter) = testClient();
+      adapter.get('/groups/9/audit_events', [
+        {
+          'id': 3,
+          'entity_type': 'Group',
+          'details': {
+            'change': 'member added',
+            'author_name': 'Administrator',
+            'target_details': 'ada@x.test',
+          },
+          'created_at': '2024-06-01T10:00:00.000Z',
+        },
+      ]);
+      final repo = GroupsRepository(client);
+
+      final events = await repo.auditEvents(9);
+
+      expect(events.single.authorName, 'Administrator');
+      expect(events.single.change, 'member added');
+      expect(events.single.entityType, 'Group');
+    });
+
     test('create and delete groups hit the /groups paths', () async {
       final (client, adapter) = testClient();
       adapter
@@ -347,6 +370,27 @@ void main() {
 
       final vars = await container.read(groupVariablesProvider(9).future);
       expect(vars, isNotEmpty);
+    });
+
+    test('groupAuditEventsProvider loads events', () async {
+      adapter.get('/groups/9/audit_events', [
+        {
+          'id': 3,
+          'details': {'change': 'member added'},
+        },
+      ]);
+
+      final events = await container.read(groupAuditEventsProvider(9).future);
+
+      expect(events.single.change, 'member added');
+    });
+
+    test('groupAuditEventsProvider is empty when premium-gated', () async {
+      adapter.fail('/groups/9/audit_events', status: 403);
+
+      final events = await container.read(groupAuditEventsProvider(9).future);
+
+      expect(events, isEmpty);
     });
   });
 }
