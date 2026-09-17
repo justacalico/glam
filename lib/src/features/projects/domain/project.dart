@@ -47,6 +47,7 @@ class Project extends Equatable {
     this.mergeCommitTemplate,
     this.squashCommitTemplate,
     this.suggestionCommitMessage,
+    this.sharedWithGroups = const [],
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -112,6 +113,7 @@ class Project extends Equatable {
       mergeCommitTemplate: json['merge_commit_template'] as String?,
       squashCommitTemplate: json['squash_commit_template'] as String?,
       suggestionCommitMessage: json['suggestion_commit_message'] as String?,
+      sharedWithGroups: _sharedWithGroups(json['shared_with_groups']),
     );
   }
 
@@ -165,6 +167,9 @@ class Project extends Equatable {
   final String? squashCommitTemplate;
   final String? suggestionCommitMessage;
 
+  /// Groups this project is shared with (`shared_with_groups`).
+  final List<SharedGroup> sharedWithGroups;
+
   /// Display name: `namespace / project`.
   String get displayName => nameWithNamespace ?? pathWithNamespace;
 
@@ -176,6 +181,13 @@ class Project extends Equatable {
   static List<String> _strings(Object? value) =>
       value is List ? value.map((e) => e.toString()).toList() : const [];
 
+  static List<SharedGroup> _sharedWithGroups(Object? value) => value is List
+      ? value
+            .whereType<Map<String, dynamic>>()
+            .map(SharedGroup.fromJson)
+            .toList()
+      : const [];
+
   @override
   List<Object?> get props => [
     id,
@@ -186,4 +198,46 @@ class Project extends Equatable {
     lastActivityAt,
     archived,
   ];
+}
+
+/// One entry of a project's `shared_with_groups` list.
+class SharedGroup extends Equatable {
+  const SharedGroup({
+    required this.groupId,
+    this.groupName,
+    this.groupFullPath,
+    this.accessLevel = 0,
+    this.expiresAt,
+  });
+
+  factory SharedGroup.fromJson(Map<String, dynamic> json) {
+    return SharedGroup(
+      groupId: json['group_id'] as int? ?? 0,
+      groupName: json['group_name'] as String?,
+      groupFullPath: json['group_full_path'] as String?,
+      accessLevel: json['group_access_level'] as int? ?? 0,
+      expiresAt: Project._date(json['expires_at']),
+    );
+  }
+
+  final int groupId;
+  final String? groupName;
+  final String? groupFullPath;
+  final int accessLevel;
+  final DateTime? expiresAt;
+
+  String get displayName => groupFullPath ?? groupName ?? 'group $groupId';
+
+  String get roleLabel => switch (accessLevel) {
+    10 => 'Guest',
+    15 => 'Planner',
+    20 => 'Reporter',
+    30 => 'Developer',
+    40 => 'Maintainer',
+    50 => 'Owner',
+    _ => 'level $accessLevel',
+  };
+
+  @override
+  List<Object?> get props => [groupId];
 }

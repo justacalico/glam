@@ -29,6 +29,8 @@ void main() {
       expect(project.onlyAllowMergeIfAllDiscussionsAreResolved, isTrue);
       expect(project.removeSourceBranchAfterMerge, isTrue);
       expect(project.mergeCommitTemplate, contains('source_branch'));
+      expect(project.sharedWithGroups.single.displayName, 'platform');
+      expect(project.sharedWithGroups.single.roleLabel, 'Developer');
     });
 
     test('tolerates a minimal payload', () {

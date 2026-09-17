@@ -328,6 +328,74 @@ void main() {
         hasLength(1),
       );
     });
+
+    test('access tokens list, create keeps the secret, revoke', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..get('/projects/42/access_tokens', fixtureJson('access_tokens'))
+        ..post('/projects/42/access_tokens', {
+          'id': 243,
+          'name': 'deploy-bot',
+          'scopes': ['api'],
+          'access_level': 30,
+          'active': true,
+          'revoked': false,
+          'token': 'glpat-secret',
+        })
+        ..delete('/projects/42/access_tokens/241');
+      final repo = ProjectsRepository(client);
+
+      final tokens = await repo.accessTokens(42);
+      expect(tokens, hasLength(2));
+      expect(tokens.first.roleLabel, 'Developer');
+      expect(tokens.last.revoked, isTrue);
+      expect(tokens.last.expired, isTrue);
+
+      final created = await repo.createAccessToken(
+        42,
+        name: 'deploy-bot',
+        scopes: const ['api'],
+        accessLevel: 30,
+        expiresAt: DateTime.utc(2099),
+      );
+      expect(created.token, 'glpat-secret');
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['scopes'], ['api']);
+      expect(sent['access_level'], 30);
+      expect(sent['expires_at'], '2099-01-01');
+
+      await repo.revokeAccessToken(42, 241);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/access_tokens/241'),
+        hasLength(1),
+      );
+    });
+
+    test('shareGroup posts the share body and unshareGroup deletes', () async {
+      final (client, adapter) = testClient();
+      adapter
+        ..post('/projects/42/share', {'id': 42})
+        ..delete('/projects/42/share/4');
+      final repo = ProjectsRepository(client);
+
+      await repo.shareGroup(
+        42,
+        groupId: 4,
+        accessLevel: 30,
+        expiresAt: DateTime.utc(2099),
+      );
+      expect(adapter.lastRequest!.data, {
+        'group_id': 4,
+        'group_access': 30,
+        'expires_at': '2099-01-01',
+      });
+
+      await repo.unshareGroup(42, 4);
+      expect(
+        adapter.requestsTo('DELETE', '/projects/42/share/4'),
+        hasLength(1),
+      );
+    });
   });
 
   group('projectAdminActionsProvider', () {

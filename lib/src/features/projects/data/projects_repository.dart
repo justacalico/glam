@@ -1,6 +1,7 @@
 import 'package:glam/src/core/api/gitlab_api_client.dart';
 import 'package:glam/src/core/api/paginated_response.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
+import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/deploy_token.dart';
@@ -445,6 +446,67 @@ class ProjectsRepository {
   Future<void> deleteApprovalRule(Object id, int ruleId) {
     return _client.delete(
       '/projects/${GitLabApiClient.encodeProject(id)}/approval_rules/$ruleId',
+    );
+  }
+
+  /// Project access tokens; their `token` secret is only in the create
+  /// response.
+  Future<List<ProjectAccessToken>> accessTokens(Object id) {
+    return _client.getAll(
+      '/projects/${GitLabApiClient.encodeProject(id)}/access_tokens',
+      decoder: (j) => ProjectAccessToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<ProjectAccessToken> createAccessToken(
+    Object id, {
+    required String name,
+    required List<String> scopes,
+    required int accessLevel,
+    DateTime? expiresAt,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/access_tokens',
+      body: {
+        'name': name,
+        'scopes': scopes,
+        'access_level': accessLevel,
+        if (expiresAt != null)
+          'expires_at': expiresAt.toIso8601String().substring(0, 10),
+      },
+      decoder: (j) => ProjectAccessToken.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
+  Future<void> revokeAccessToken(Object id, int tokenId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/access_tokens/$tokenId',
+    );
+  }
+
+  /// Shares the project with a group at [accessLevel]. Callers refetch
+  /// the project to pick up `shared_with_groups`.
+  Future<void> shareGroup(
+    Object id, {
+    required int groupId,
+    required int accessLevel,
+    DateTime? expiresAt,
+  }) {
+    return _client.post(
+      '/projects/${GitLabApiClient.encodeProject(id)}/share',
+      body: {
+        'group_id': groupId,
+        'group_access': accessLevel,
+        if (expiresAt != null)
+          'expires_at': expiresAt.toIso8601String().substring(0, 10),
+      },
+      decoder: (_) {},
+    );
+  }
+
+  Future<void> unshareGroup(Object id, int groupId) {
+    return _client.delete(
+      '/projects/${GitLabApiClient.encodeProject(id)}/share/$groupId',
     );
   }
 

@@ -7,12 +7,14 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/ci_variable.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/features/projects/presentation/access_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/approval_rules_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_keys_section.dart';
 import 'package:glam/src/features/projects/presentation/deploy_tokens_section.dart';
 import 'package:glam/src/features/projects/presentation/merge_settings_section.dart';
 import 'package:glam/src/features/projects/presentation/protected_refs_section.dart';
 import 'package:glam/src/features/projects/presentation/runners_section.dart';
+import 'package:glam/src/features/projects/presentation/sharing_section.dart';
 import 'package:glam/src/features/projects/presentation/triggers_section.dart';
 import 'package:glam/src/features/projects/presentation/webhooks_section.dart';
 
@@ -56,6 +58,10 @@ class ProjectSettingsScreen extends ConsumerWidget {
             ApprovalRulesSection(project: p),
             const SizedBox(height: Insets.xl),
             MergeSettingsSection(project: p),
+            const SizedBox(height: Insets.xl),
+            SharingSection(project: p),
+            const SizedBox(height: Insets.xl),
+            AccessTokensSection(project: p),
             const SizedBox(height: Insets.xl),
             TriggersSection(project: p),
             const SizedBox(height: Insets.xl),
