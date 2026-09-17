@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
@@ -13,6 +14,8 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
+import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
+import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/pipelines/presentation/schedules_tab.dart';
 
 /// Pipeline history + schedules for a project — the CI/CD tab.
@@ -41,18 +44,32 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
             Insets.lg,
             0,
           ),
-          child: SegmentedButton<_CicdTab>(
-            showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: _CicdTab.runs, label: Text('Runs')),
-              ButtonSegment(value: _CicdTab.jobs, label: Text('Jobs')),
-              ButtonSegment(
-                value: _CicdTab.schedules,
-                label: Text('Schedules'),
+          child: Row(
+            children: [
+              Expanded(
+                child: SegmentedButton<_CicdTab>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(value: _CicdTab.runs, label: Text('Runs')),
+                    ButtonSegment(value: _CicdTab.jobs, label: Text('Jobs')),
+                    ButtonSegment(
+                      value: _CicdTab.schedules,
+                      label: Text('Schedules'),
+                    ),
+                  ],
+                  selected: {_tab},
+                  onSelectionChanged: (s) => setState(() => _tab = s.first),
+                ),
+              ),
+              TextButton.icon(
+                icon: const Icon(Icons.checklist_outlined, size: 16),
+                label: const Text('Lint'),
+                onPressed: () => CiLintSheet.show(
+                  context,
+                  projectId: widget.projectId,
+                ),
               ),
             ],
-            selected: {_tab},
-            onSelectionChanged: (s) => setState(() => _tab = s.first),
           ),
         ),
         Expanded(
@@ -371,6 +388,171 @@ class PipelineTile extends StatelessWidget {
                   ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// `.gitlab-ci.yml` validation against `POST /projects/:id/ci/lint`.
+/// Prefills from the repo's `.gitlab-ci.yml` when it exists.
+class CiLintSheet extends ConsumerStatefulWidget {
+  const CiLintSheet({required this.projectId, super.key});
+
+  final Object projectId;
+
+  static Future<void> show(BuildContext context, {required Object projectId}) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => CiLintSheet(projectId: projectId),
+    );
+  }
+
+  @override
+  ConsumerState<CiLintSheet> createState() => _CiLintSheetState();
+}
+
+class _CiLintSheetState extends ConsumerState<CiLintSheet> {
+  final _content = TextEditingController();
+  bool _loading = false;
+  CiLintResult? _result;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_prefill());
+  }
+
+  Future<void> _prefill() async {
+    try {
+      final yaml = await ref
+          .read(repositoryRepositoryProvider)
+          .rawFile(widget.projectId, '.gitlab-ci.yml');
+      if (mounted && _content.text.isEmpty) {
+        _content.text = yaml;
+      }
+    } on ApiException {
+      // No .gitlab-ci.yml (or no access) — the field stays empty.
+    }
+  }
+
+  @override
+  void dispose() {
+    _content.dispose();
+    super.dispose();
+  }
+
+  Future<void> _lint() async {
+    if (_content.text.trim().isEmpty) {
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _result = null;
+      _error = null;
+    });
+    try {
+      final result = await ref
+          .read(pipelinesRepositoryProvider)
+          .ciLint(widget.projectId, _content.text);
+      if (mounted) {
+        setState(() => _result = result);
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() => _error = e.message);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          Insets.lg,
+          0,
+          Insets.lg,
+          Insets.lg + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('CI lint', style: theme.textTheme.titleMedium),
+            const SizedBox(height: Insets.sm),
+            TextField(
+              controller: _content,
+              maxLines: 8,
+              style: const TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+              ),
+              decoration: const InputDecoration(
+                hintText: 'stages:\n  - build',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: Insets.sm),
+            Row(
+              children: [
+                FilledButton.icon(
+                  onPressed: _loading ? null : _lint,
+                  icon: const Icon(Icons.check, size: 16),
+                  label: Text(_loading ? 'Checking…' : 'Validate'),
+                ),
+                const SizedBox(width: Insets.md),
+                if (_result != null)
+                  StateChip(
+                    label: _result!.valid ? 'valid' : 'invalid',
+                    tone: _result!.valid
+                        ? ChipTone.success
+                        : ChipTone.danger,
+                  ),
+                if (_result != null && _result!.jobs.isNotEmpty) ...[
+                  const SizedBox(width: Insets.sm),
+                  Text(
+                    '${_result!.jobs.length} jobs',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ],
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: Insets.sm),
+              Text(_error!, style: TextStyle(color: colors.danger)),
+            ],
+            if (_result != null) ...[
+              for (final e in _result!.errors)
+                Padding(
+                  padding: const EdgeInsets.only(top: Insets.xs),
+                  child: Text(
+                    e,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.danger,
+                    ),
+                  ),
+                ),
+              for (final w in _result!.warnings)
+                Padding(
+                  padding: const EdgeInsets.only(top: Insets.xs),
+                  child: Text(
+                    w,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+            ],
           ],
         ),
       ),

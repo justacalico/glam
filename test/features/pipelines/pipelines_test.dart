@@ -481,6 +481,28 @@ void main() {
       expect(sent['variable_type'], 'env_var');
     });
 
+    test('ciLint posts content and decodes validity', () async {
+      final (client, adapter) = testClient();
+      adapter.post('/projects/42/ci/lint', {
+        'valid': false,
+        'errors': ['jobs:build config contains unknown keys'],
+        'warnings': ['deprecated keyword'],
+        'jobs': [
+          {'name': 'build'},
+        ],
+      });
+      final repo = PipelinesRepository(client);
+
+      final result = await repo.ciLint(42, 'stages:\n  - build');
+
+      final sent = adapter.lastRequest!.data as Map;
+      expect(sent['content'], 'stages:\n  - build');
+      expect(sent['include_jobs'], true);
+      expect(result.valid, isFalse);
+      expect(result.errors.single, contains('unknown keys'));
+      expect(result.jobs, ['build']);
+    });
+
     test('projectJobs forwards the scope filter', () async {
       final (client, adapter) = testClient();
       adapter.get('/projects/42/jobs', fixtureJson('jobs'));
