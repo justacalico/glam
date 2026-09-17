@@ -216,7 +216,9 @@ class _RefPicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final branches = ref.watch(branchesProvider(projectId));
+    final branches = ref.watch(
+      branchesProvider((project: projectId, search: null)),
+    );
     final names =
         branches.value?.items.map((b) => b.name).toList() ??
         (currentRef == null ? <String>[] : [currentRef!]);

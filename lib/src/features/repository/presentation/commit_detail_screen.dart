@@ -229,7 +229,11 @@ class _CommitActions extends ConsumerWidget {
 
   Future<String?> _pickBranch(BuildContext context, WidgetRef ref) {
     final branches =
-        ref.read(branchesProvider(projectId)).value?.items ?? const [];
+        ref
+            .read(branchesProvider((project: projectId, search: null)))
+            .value
+            ?.items ??
+        const [];
     final names = [for (final b in branches) b.name];
     return showDialog<String>(
       context: context,

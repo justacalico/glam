@@ -199,23 +199,25 @@ final projectContributorsProvider =
       (ref, id) => ref.watch(repositoryRepositoryProvider).contributors(id),
     );
 
+typedef BranchFilter = ({Object project, String? search});
+
 final branchesProvider =
     AsyncNotifierProvider.family<
       BranchesNotifier,
       PagedListState<Branch>,
-      Object
+      BranchFilter
     >(BranchesNotifier.new);
 
 class BranchesNotifier extends PagedListNotifier<Branch> {
-  BranchesNotifier(this.project);
+  BranchesNotifier(this.filter);
 
-  final Object project;
+  final BranchFilter filter;
 
   @override
   Future<Paginated<Branch>> fetchPage(int page) {
     return ref
         .watch(repositoryRepositoryProvider)
-        .branches(project, page: page);
+        .branches(filter.project, page: page, search: filter.search);
   }
 }
 

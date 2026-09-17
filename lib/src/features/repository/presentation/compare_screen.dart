@@ -49,7 +49,9 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final branches = ref.watch(branchesProvider(widget.projectId));
+    final branches = ref.watch(
+      branchesProvider((project: widget.projectId, search: null)),
+    );
     final tags = ref.watch(tagsProvider(widget.projectId));
     final branchItems = branches.value?.items ?? const <Branch>[];
     final tagItems = tags.value?.items ?? const <Tag>[];

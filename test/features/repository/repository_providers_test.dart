@@ -88,10 +88,23 @@ void main() {
   test('branchesProvider loads branches', () async {
     adapter.get('/projects/7/repository/branches', fixtureJson('branches'));
 
-    final state = await container.read(branchesProvider(7).future);
+    final state = await container.read(
+      branchesProvider((project: 7, search: null)).future,
+    );
 
     expect(state.items, hasLength(2));
     expect(state.items.first.isDefault, isTrue);
+  });
+
+  test('branchesProvider forwards the search filter', () async {
+    adapter.get('/projects/7/repository/branches', fixtureJson('branches'));
+
+    final state = await container.read(
+      branchesProvider((project: 7, search: 'fix')).future,
+    );
+
+    expect(state.items, hasLength(2));
+    expect(adapter.lastRequest!.queryParameters['search'], 'fix');
   });
 
   test('tagsProvider loads tags', () async {

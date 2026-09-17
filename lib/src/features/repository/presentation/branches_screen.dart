@@ -10,23 +10,45 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 
 /// Branch list with default/protected indicators.
-class BranchesScreen extends ConsumerWidget {
+class BranchesScreen extends ConsumerStatefulWidget {
   const BranchesScreen({required this.projectId, super.key});
 
   final String projectId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BranchesScreen> createState() => _BranchesScreenState();
+}
+
+class _BranchesScreenState extends ConsumerState<BranchesScreen> {
+  String? _search;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final state = ref.watch(branchesProvider(projectId));
-    final notifier = ref.read(branchesProvider(projectId).notifier);
+    final projectId = widget.projectId;
+    final filter = (project: projectId, search: _search);
+    final state = ref.watch(branchesProvider(filter));
+    final notifier = ref.read(branchesProvider(filter).notifier);
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search branches',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: Padding(
@@ -122,7 +144,7 @@ class BranchesScreen extends ConsumerWidget {
       await ref
           .read(repositoryRepositoryProvider)
           .createBranch(
-            projectId,
+            widget.projectId,
             branch: name.text.trim(),
             ref: source.text.trim().isEmpty ? 'HEAD' : source.text.trim(),
           );

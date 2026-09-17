@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
-import 'package:glam/src/core/utils/debouncer.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
+import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_form_screen.dart';
@@ -25,16 +25,6 @@ class MergeRequestsScreen extends ConsumerStatefulWidget {
 }
 
 class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
-  final _search = TextEditingController();
-  final _debouncer = Debouncer();
-
-  @override
-  void dispose() {
-    _search.dispose();
-    _debouncer.dispose();
-    super.dispose();
-  }
-
   void _setFilter(MrFilter Function(MrFilter) update) {
     final current = ref.read(mrFilterProvider);
     ref.read(mrFilterProvider.notifier).update(update(current));
@@ -74,32 +64,10 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 38,
-                        child: TextField(
-                          controller: _search,
-                          textInputAction: TextInputAction.search,
-                          onChanged: (v) => _debouncer(
-                            () => _setFilter(
-                              (f) => (
-                                scope: f.scope,
-                                state: f.state,
-                                search: v.isEmpty ? null : v,
-                              ),
-                            ),
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Search merge requests',
-                            prefixIcon: const Icon(Icons.search, size: 18),
-                            isDense: true,
-                            filled: true,
-                            fillColor: colors.surfaceMuted,
-                            border: OutlineInputBorder(
-                              borderRadius: Radii.borderMd,
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
+                      child: SearchField(
+                        hint: 'Search merge requests',
+                        onChanged: (v) => _setFilter(
+                          (f) => (scope: f.scope, state: f.state, search: v),
                         ),
                       ),
                     ),
@@ -206,11 +174,12 @@ class ProjectMrsTab extends ConsumerStatefulWidget {
 
 class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _state = 'opened';
+  String? _search;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filter = (project: widget.projectId, state: _state, search: null);
+    final filter = (project: widget.projectId, state: _state, search: _search);
     final list = ref.watch(projectMrsProvider(filter));
     final notifier = ref.read(projectMrsProvider(filter).notifier);
     const states = {
@@ -222,6 +191,18 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Insets.lg,
+            Insets.sm,
+            Insets.lg,
+            0,
+          ),
+          child: SearchField(
+            hint: 'Search merge requests',
+            onChanged: (v) => setState(() => _search = v),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             Insets.lg,
