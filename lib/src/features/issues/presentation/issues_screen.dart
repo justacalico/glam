@@ -17,6 +17,8 @@ import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_tile.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/core/models/milestone.dart';
+import 'package:glam/src/features/groups/application/groups_providers.dart';
+import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
 
 /// Global issues list with scope/state/search filters.
@@ -205,6 +207,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
   String? _label;
   String? _milestone;
   String? _issueType;
+  int? _assigneeId;
 
   @override
   Widget build(BuildContext context) {
@@ -216,6 +219,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
       label: _label,
       milestone: _milestone,
       issueType: _issueType,
+      assigneeId: _assigneeId,
     );
     final list = ref.watch(projectIssuesProvider(filter));
     final notifier = ref.read(projectIssuesProvider(filter).notifier);
@@ -242,6 +246,18 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
             )
             .value ??
         const <Label>[];
+    final members =
+        ref
+            .watch(
+              membersProvider((
+                id: widget.projectId,
+                isProject: true,
+                query: null,
+              )),
+            )
+            .value
+            ?.items ??
+        const <Member>[];
     const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
     final counts = {
       'opened': stats?.opened,
@@ -287,6 +303,24 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 const SizedBox(width: Insets.sm),
               ],
               const Spacer(),
+              FilterMenu(
+                title: 'Assignee',
+                current: _assigneeId == null
+                    ? null
+                    : members
+                          .where((m) => m.id == _assigneeId)
+                          .firstOrNull
+                          ?.username,
+                options: [for (final m in members) m.username],
+                onSelect: (v) => setState(
+                  () => _assigneeId = v == null
+                      ? null
+                      : members
+                            .where((m) => m.username == v)
+                            .firstOrNull
+                            ?.id,
+                ),
+              ),
               FilterMenu(
                 title: 'Label',
                 current: _label,
