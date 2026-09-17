@@ -104,7 +104,7 @@ void main() {
 
   test('forks lists forked projects', () async {
     final (client, adapter) = testClient();
-    adapter.get('/projects/42/forks', fixtureJson('projects'));
+    adapter.get('/projects/42/forks', fixtureList('project'));
     final repo = ProjectsRepository(client);
 
     final page = await repo.forks(42);

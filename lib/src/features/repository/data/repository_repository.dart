@@ -133,6 +133,15 @@ class RepositoryRepository {
     );
   }
 
+  /// Commit authors ranked by commit count (`/repository/contributors`).
+  Future<List<Contributor>> contributors(Object projectId, {String? ref}) {
+    return _client.getAll(
+      '${_p(projectId)}/repository/contributors',
+      query: {'ref': ?ref},
+      decoder: (j) => Contributor.fromJson(j! as Map<String, dynamic>),
+    );
+  }
+
   Future<Commit> commit(Object projectId, String sha) {
     return _client.get(
       '${_p(projectId)}/repository/commits/$sha',

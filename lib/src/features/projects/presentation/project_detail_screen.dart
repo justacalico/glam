@@ -29,6 +29,7 @@ import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_overview_tab.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
+import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/presentation/branches_screen.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:glam/src/features/repository/presentation/files_screen.dart';
@@ -108,6 +109,11 @@ class _ProjectBody extends ConsumerWidget {
       ),
       if (project.forksCount > 0)
         (label: 'Forks', builder: () => _ForksTab(projectId: project.id)),
+      if (!project.emptyRepo)
+        (
+          label: 'Contributors',
+          builder: () => _ContributorsTab(projectId: project.id),
+        ),
       (
         label: 'Packages',
         builder: () => ProjectPackagesTab(projectId: project.id),
@@ -388,6 +394,68 @@ class _ProjectHeader extends ConsumerWidget {
         context,
       ).showSnackBar(const SnackBar(content: Text('Clone URL copied')));
     }
+  }
+}
+
+/// Commit authors ranked by commit count (`/repository/contributors`).
+class _ContributorsTab extends ConsumerWidget {
+  const _ContributorsTab({required this.projectId});
+
+  final Object projectId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final contributors = ref.watch(projectContributorsProvider(projectId));
+    final theme = Theme.of(context);
+
+    return AsyncValueWidget(
+      value: contributors,
+      onRetry: () => ref.invalidate(projectContributorsProvider(projectId)),
+      data: (items) => items.isEmpty
+          ? const EmptyState(
+              icon: Icons.people_outline,
+              title: 'No contributors',
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+              itemCount: items.length,
+              separatorBuilder: (_, _) =>
+                  Divider(height: 1, color: colors.border, indent: Insets.lg),
+              itemBuilder: (context, i) {
+                final c = items[i];
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 14,
+                    child: Text(
+                      c.name.isEmpty ? '?' : c.name.characters.first,
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ),
+                  title: Text(c.name, style: theme.textTheme.bodyMedium),
+                  subtitle: c.email.isEmpty
+                      ? null
+                      : Text(c.email, style: theme.textTheme.bodySmall),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${c.commits} commits',
+                        style: theme.textTheme.labelSmall,
+                      ),
+                      Text(
+                        '+${c.additions} -${c.deletions}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.inkFaint,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+    );
   }
 }
 
