@@ -225,10 +225,10 @@ class _VariableTile extends StatelessWidget {
       subtitle: Text(
         [
           if (variable.protected_) 'protected',
-          if (variable.masked) 'masked',
+          if (variable.masked) context.l10n.varMasked,
           if (variable.environmentScope != '*')
-            'env: ${variable.environmentScope}',
-          if (variable.variableType == 'file') 'file',
+            context.l10n.envScope(variable.environmentScope),
+          if (variable.variableType == 'file') context.l10n.varFile,
         ].join(' · '),
         style: theme.textTheme.labelSmall,
       ),

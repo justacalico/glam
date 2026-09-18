@@ -65,7 +65,7 @@ class NoteCard extends StatelessWidget {
                   ),
                 const SizedBox(width: Insets.sm),
                 Text(
-                  note.author?.name ?? 'deleted user',
+                  note.author?.name ?? context.l10n.deletedUser,
                   style: theme.textTheme.labelLarge,
                 ),
                 const SizedBox(width: Insets.sm),

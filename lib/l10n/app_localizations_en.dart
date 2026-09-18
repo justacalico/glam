@@ -273,7 +273,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varProtected => 'Protected';
 
   @override
-  String get varMasked => 'Masked';
+  String get varMasked => 'masked';
 
   @override
   String varDeleteConfirm(Object key) {
@@ -3006,4 +3006,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stateLocked => 'Locked';
+
+  @override
+  String p0StopsWorkingImmediately(Object p0) {
+    return '\"$p0\" stops working immediately.';
+  }
+
+  @override
+  String stateEventLine(Object p0, Object p1, Object p2) {
+    return '$p0 $p1$p2';
+  }
+
+  @override
+  String milestoneEventLine(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0 milestone $p1 $p2$p3';
+  }
+
+  @override
+  String labelEventLine(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0 label $p1 $p2$p3';
+  }
+
+  @override
+  String byUser(Object p0) {
+    return 'by $p0 ';
+  }
+
+  @override
+  String get eventReopened => 'reopened';
+
+  @override
+  String get eventRemoved => 'removed';
+
+  @override
+  String get eventAdded => 'added';
+
+  @override
+  String get deletedUser => 'deleted user';
+
+  @override
+  String runnerId(Object p0) {
+    return 'Runner #$p0';
+  }
+
+  @override
+  String envScope(Object p0) {
+    return 'env: $p0';
+  }
+
+  @override
+  String get varFile => 'file';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String get commitsTitle => 'Commits';
 }

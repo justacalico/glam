@@ -297,7 +297,7 @@ class DeployTokensSection extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.tokenDeployRevokeConfirm),
-        content: Text('"${t.name}" stops working immediately.'),
+        content: Text(context.l10n.p0StopsWorkingImmediately(t.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

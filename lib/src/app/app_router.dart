@@ -36,6 +36,7 @@ import 'package:glam/src/features/snippets/presentation/snippet_detail_screen.da
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/features/todos/presentation/todos_screen.dart';
 import 'package:glam/src/features/wiki/presentation/wiki_screen.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// go_router wiring. The shell is a [StatefulShellRoute] so each top
 /// section keeps its own stack and scroll position.
@@ -95,7 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'tree',
                         builder: (context, state) => Scaffold(
-                          appBar: AppBar(title: const Text('Files')),
+                          appBar: AppBar(title: Text(context.l10n.tabFiles)),
                           body: FilesScreen(
                             projectId: state.pathParameters['id']!,
                             defaultRef: state.uri.queryParameters['ref'],
@@ -117,8 +118,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                           appBar: AppBar(
                             title: Text(
                               state.uri.queryParameters['path'] != null
-                                  ? 'History'
-                                  : 'Commits',
+                                  ? context.l10n.historyTitle
+                                  : context.l10n.commitsTitle,
                             ),
                           ),
                           body: CommitsScreen(

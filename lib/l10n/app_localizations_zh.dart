@@ -273,7 +273,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get varProtected => '受保护';
 
   @override
-  String get varMasked => '已掩码';
+  String get varMasked => '已脱敏';
 
   @override
   String varDeleteConfirm(Object key) {
@@ -2966,4 +2966,60 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stateLocked => '已锁定';
+
+  @override
+  String p0StopsWorkingImmediately(Object p0) {
+    return '“$p0”将立即停止工作。';
+  }
+
+  @override
+  String stateEventLine(Object p0, Object p1, Object p2) {
+    return '$p0 $p1$p2';
+  }
+
+  @override
+  String milestoneEventLine(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0里程碑 $p1 $p2$p3';
+  }
+
+  @override
+  String labelEventLine(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0标签 $p1 $p2$p3';
+  }
+
+  @override
+  String byUser(Object p0) {
+    return '由 $p0 ';
+  }
+
+  @override
+  String get eventReopened => '重新打开';
+
+  @override
+  String get eventRemoved => '移除';
+
+  @override
+  String get eventAdded => '添加';
+
+  @override
+  String get deletedUser => '已注销用户';
+
+  @override
+  String runnerId(Object p0) {
+    return 'Runner #$p0';
+  }
+
+  @override
+  String envScope(Object p0) {
+    return '环境：$p0';
+  }
+
+  @override
+  String get varFile => '文件';
+
+  @override
+  String get historyTitle => '历史';
+
+  @override
+  String get commitsTitle => '提交';
 }

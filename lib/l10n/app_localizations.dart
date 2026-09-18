@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @varMasked.
   ///
   /// In en, this message translates to:
-  /// **'Masked'**
+  /// **'masked'**
   String get varMasked;
 
   /// No description provided for @varDeleteConfirm.
@@ -5659,6 +5659,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Locked'**
   String get stateLocked;
+
+  /// No description provided for @p0StopsWorkingImmediately.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" stops working immediately.'**
+  String p0StopsWorkingImmediately(Object p0);
+
+  /// No description provided for @stateEventLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} {p1}{p2}'**
+  String stateEventLine(Object p0, Object p1, Object p2);
+
+  /// No description provided for @milestoneEventLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} milestone {p1} {p2}{p3}'**
+  String milestoneEventLine(Object p0, Object p1, Object p2, Object p3);
+
+  /// No description provided for @labelEventLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} label {p1} {p2}{p3}'**
+  String labelEventLine(Object p0, Object p1, Object p2, Object p3);
+
+  /// No description provided for @byUser.
+  ///
+  /// In en, this message translates to:
+  /// **'by {p0} '**
+  String byUser(Object p0);
+
+  /// No description provided for @eventReopened.
+  ///
+  /// In en, this message translates to:
+  /// **'reopened'**
+  String get eventReopened;
+
+  /// No description provided for @eventRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'removed'**
+  String get eventRemoved;
+
+  /// No description provided for @eventAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'added'**
+  String get eventAdded;
+
+  /// No description provided for @deletedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted user'**
+  String get deletedUser;
+
+  /// No description provided for @runnerId.
+  ///
+  /// In en, this message translates to:
+  /// **'Runner #{p0}'**
+  String runnerId(Object p0);
+
+  /// No description provided for @envScope.
+  ///
+  /// In en, this message translates to:
+  /// **'env: {p0}'**
+  String envScope(Object p0);
+
+  /// No description provided for @varFile.
+  ///
+  /// In en, this message translates to:
+  /// **'file'**
+  String get varFile;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// No description provided for @commitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commits'**
+  String get commitsTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Status-dotted runner row shared by the project runners section and
 /// the group Runners tab.
@@ -25,7 +26,7 @@ class RunnerTile extends StatelessWidget {
       leading: Icon(Icons.circle, size: 10, color: dotColor),
       title: Text(
         runner.description.isEmpty
-            ? 'Runner #${runner.id}'
+            ? context.l10n.runnerId(runner.id)
             : runner.description,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
