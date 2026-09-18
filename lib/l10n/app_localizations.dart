@@ -5581,6 +5581,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New wiki page'**
   String get newWikiPage;
+
+  /// No description provided for @searchSnippets.
+  ///
+  /// In en, this message translates to:
+  /// **'Search snippets'**
+  String get searchSnippets;
+
+  /// No description provided for @newSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'New snippet'**
+  String get newSnippet;
+
+  /// No description provided for @noSnippetsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No snippets yet'**
+  String get noSnippetsYet;
+
+  /// No description provided for @noSnippets.
+  ///
+  /// In en, this message translates to:
+  /// **'No snippets'**
+  String get noSnippets;
+
+  /// No description provided for @snippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Snippet'**
+  String get snippet;
+
+  /// No description provided for @deleteSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete snippet?'**
+  String get deleteSnippet;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get linkCopied;
+
+  /// No description provided for @fileName.
+  ///
+  /// In en, this message translates to:
+  /// **'File name'**
+  String get fileName;
+
+  /// No description provided for @createSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create snippet'**
+  String get createSnippet;
+
+  /// No description provided for @fileNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'File name is required'**
+  String get fileNameRequired;
+
+  /// No description provided for @snippetSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the snippet'**
+  String get snippetSaveFailed;
+
+  /// No description provided for @editSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit snippet'**
+  String get editSnippet;
 }
 
 class _AppLocalizationsDelegate

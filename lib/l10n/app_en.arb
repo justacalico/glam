@@ -913,5 +913,17 @@
   "contentRequired": "Content is required",
   "pageSaveFailed": "Could not save the page",
   "editPage": "Edit page",
-  "newWikiPage": "New wiki page"
+  "newWikiPage": "New wiki page",
+  "searchSnippets": "Search snippets",
+  "newSnippet": "New snippet",
+  "noSnippetsYet": "No snippets yet",
+  "noSnippets": "No snippets",
+  "snippet": "Snippet",
+  "deleteSnippet": "Delete snippet?",
+  "linkCopied": "Link copied",
+  "fileName": "File name",
+  "createSnippet": "Create snippet",
+  "fileNameRequired": "File name is required",
+  "snippetSaveFailed": "Could not save the snippet",
+  "editSnippet": "Edit snippet"
 }

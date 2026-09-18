@@ -2967,4 +2967,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newWikiPage => 'New wiki page';
+
+  @override
+  String get searchSnippets => 'Search snippets';
+
+  @override
+  String get newSnippet => 'New snippet';
+
+  @override
+  String get noSnippetsYet => 'No snippets yet';
+
+  @override
+  String get noSnippets => 'No snippets';
+
+  @override
+  String get snippet => 'Snippet';
+
+  @override
+  String get deleteSnippet => 'Delete snippet?';
+
+  @override
+  String get linkCopied => 'Link copied';
+
+  @override
+  String get fileName => 'File name';
+
+  @override
+  String get createSnippet => 'Create snippet';
+
+  @override
+  String get fileNameRequired => 'File name is required';
+
+  @override
+  String get snippetSaveFailed => 'Could not save the snippet';
+
+  @override
+  String get editSnippet => 'Edit snippet';
 }

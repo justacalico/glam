@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_form_screen.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Personal + public snippets with search and a create button.
 class SnippetsScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Snippets'),
+        title: Text(context.l10n.snippetsTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(104),
           child: Column(
@@ -53,14 +54,14 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
                 child: SegmentedButton<SnippetScope>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: SnippetScope.mine,
-                      label: Text('Yours'),
+                      label: Text(context.l10n.scopeYours),
                     ),
                     ButtonSegment(
                       value: SnippetScope.public,
-                      label: Text('Explore'),
+                      label: Text(context.l10n.scopeExplore),
                     ),
                   ],
                   selected: {_scope},
@@ -80,7 +81,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                       () => setState(() => _query = v.isEmpty ? null : v),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Search snippets',
+                      hintText: context.l10n.searchSnippets,
                       prefixIcon: const Icon(Icons.search, size: 18),
                       isDense: true,
                       filled: true,
@@ -100,7 +101,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'New snippet',
+        tooltip: context.l10n.newSnippet,
         onPressed: () => unawaited(
           SnippetFormScreen.show(context).then((saved) {
             if (saved) {
@@ -123,9 +124,9 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
             color: colors.border,
             indent: Insets.lg,
           ),
-          empty: const EmptyState(
+          empty: EmptyState(
             icon: Icons.notes_outlined,
-            title: 'No snippets yet',
+            title: context.l10n.noSnippetsYet,
           ),
           itemBuilder: (context, index) =>
               SnippetTile(snippet: data.items[index]),
@@ -159,7 +160,7 @@ class ProjectSnippetsTab extends ConsumerWidget {
               Insets.xs,
             ),
             child: IconButton(
-              tooltip: 'New snippet',
+              tooltip: context.l10n.newSnippet,
               icon: const Icon(Icons.add),
               onPressed: () => unawaited(
                 SnippetFormScreen.show(context, projectId: projectId).then((
@@ -187,9 +188,9 @@ class ProjectSnippetsTab extends ConsumerWidget {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.notes_outlined,
-                title: 'No snippets',
+                title: context.l10n.noSnippets,
               ),
               itemBuilder: (context, index) =>
                   SnippetTile(snippet: data.items[index]),

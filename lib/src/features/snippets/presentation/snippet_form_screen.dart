@@ -7,6 +7,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Create/edit form for a snippet. Dialog on wide screens, sheet on
 /// phones.
@@ -100,9 +101,9 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
     if (title.isEmpty || fileName.isEmpty || _saving) {
       setState(
         () => _error = title.isEmpty
-            ? 'Title is required'
+            ? context.l10n.titleRequired
             : fileName.isEmpty
-            ? 'File name is required'
+            ? context.l10n.fileNameRequired
             : null,
       );
       return;
@@ -146,7 +147,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the snippet';
+        _error = context.l10n.snippetSaveFailed;
       });
     }
   }
@@ -168,23 +169,23 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit snippet' : 'New snippet',
+            _editing ? context.l10n.editSnippet : context.l10n.newSnippet,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
           TextField(
             controller: _fileName,
-            decoration: const InputDecoration(
-              labelText: 'File name',
+            decoration: InputDecoration(
+              labelText: context.l10n.fileName,
               hintText: 'main.dart',
               border: OutlineInputBorder(),
             ),
@@ -192,8 +193,8 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
           const SizedBox(height: Insets.md),
           TextField(
             controller: _description,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldDescription,
               border: OutlineInputBorder(),
             ),
           ),
@@ -203,18 +204,27 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
             minLines: 8,
             maxLines: 16,
             style: const TextStyle(fontFamily: GlamFonts.mono),
-            decoration: const InputDecoration(
-              labelText: 'Content',
+            decoration: InputDecoration(
+              labelText: context.l10n.content,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'private', label: Text('Private')),
-              ButtonSegment(value: 'internal', label: Text('Internal')),
-              ButtonSegment(value: 'public', label: Text('Public')),
+            segments: [
+              ButtonSegment(
+                value: 'private',
+                label: Text(context.l10n.visibilityPrivate),
+              ),
+              ButtonSegment(
+                value: 'internal',
+                label: Text(context.l10n.visibilityInternal),
+              ),
+              ButtonSegment(
+                value: 'public',
+                label: Text(context.l10n.visibilityPublic),
+              ),
             ],
             selected: {_visibility},
             onSelectionChanged: (s) => setState(() => _visibility = s.first),
@@ -231,7 +241,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -242,7 +252,11 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create snippet'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createSnippet,
+                      ),
               ),
             ],
           ),

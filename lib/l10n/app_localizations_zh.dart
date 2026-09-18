@@ -2927,4 +2927,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get newWikiPage => '新建 wiki 页面';
+
+  @override
+  String get searchSnippets => '搜索代码片段';
+
+  @override
+  String get newSnippet => '新建代码片段';
+
+  @override
+  String get noSnippetsYet => '暂无代码片段';
+
+  @override
+  String get noSnippets => '没有代码片段';
+
+  @override
+  String get snippet => '代码片段';
+
+  @override
+  String get deleteSnippet => '删除代码片段？';
+
+  @override
+  String get linkCopied => '链接已复制';
+
+  @override
+  String get fileName => '文件名';
+
+  @override
+  String get createSnippet => '创建代码片段';
+
+  @override
+  String get fileNameRequired => '文件名必填';
+
+  @override
+  String get snippetSaveFailed => '无法保存代码片段';
+
+  @override
+  String get editSnippet => '编辑代码片段';
 }
