@@ -5161,6 +5161,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'files'**
   String get filePlural;
+
+  /// No description provided for @searchTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Search tags'**
+  String get searchTags;
+
+  /// No description provided for @newTag.
+  ///
+  /// In en, this message translates to:
+  /// **'New tag'**
+  String get newTag;
+
+  /// No description provided for @tagName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag name'**
+  String get tagName;
+
+  /// No description provided for @sourceRefBranchOrSha.
+  ///
+  /// In en, this message translates to:
+  /// **'Source ref (branch or sha)'**
+  String get sourceRefBranchOrSha;
+
+  /// No description provided for @messageOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get messageOptional;
+
+  /// No description provided for @deleteTagP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete tag {p0}?'**
+  String deleteTagP0(Object p0);
+
+  /// No description provided for @downloadArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Download archive'**
+  String get downloadArchive;
+
+  /// No description provided for @generateChangelog.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate changelog'**
+  String get generateChangelog;
+
+  /// No description provided for @deleteTag2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete tag'**
+  String get deleteTag2;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @fromRefOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'From ref (optional)'**
+  String get fromRefOptional;
+
+  /// No description provided for @toRefOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'To ref (optional)'**
+  String get toRefOptional;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @changelogCommitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog committed'**
+  String get changelogCommitted;
+
+  /// No description provided for @newRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'New release'**
+  String get newRelease;
+
+  /// No description provided for @noReleasesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No releases yet'**
+  String get noReleasesYet;
+
+  /// No description provided for @tagNewOrExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag (new or existing)'**
+  String get tagNewOrExisting;
+
+  /// No description provided for @releaseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Release name'**
+  String get releaseName;
+
+  /// No description provided for @releaseNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Release notes'**
+  String get releaseNotes;
+
+  /// No description provided for @theReleaseIsRemovedTheTag.
+  ///
+  /// In en, this message translates to:
+  /// **'The release is removed; the tag stays.'**
+  String get theReleaseIsRemovedTheTag;
+
+  /// No description provided for @addAssetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Add asset link'**
+  String get addAssetLink;
+
+  /// No description provided for @editLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit link'**
+  String get editLink;
+
+  /// No description provided for @runbook.
+  ///
+  /// In en, this message translates to:
+  /// **'Runbook'**
+  String get runbook;
+
+  /// No description provided for @image.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get image;
+
+  /// No description provided for @package.
+  ///
+  /// In en, this message translates to:
+  /// **'Package'**
+  String get package;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @filepathOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Filepath (optional)'**
+  String get filepathOptional;
+
+  /// No description provided for @onlyTheLinkIsRemovedAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the link is removed; assets stay.'**
+  String get onlyTheLinkIsRemovedAssets;
+
+  /// No description provided for @evidenceP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence · {p0}'**
+  String evidenceP0(Object p0);
+
+  /// No description provided for @shaP0.
+  ///
+  /// In en, this message translates to:
+  /// **'SHA: {p0}'**
+  String shaP0(Object p0);
+
+  /// No description provided for @fileP0.
+  ///
+  /// In en, this message translates to:
+  /// **'File: {p0}'**
+  String fileP0(Object p0);
+
+  /// No description provided for @collectedP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected: {p0}'**
+  String collectedP0(Object p0);
+
+  /// No description provided for @releaseActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Release actions'**
+  String get releaseActions;
+
+  /// No description provided for @evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get evidence;
+
+  /// No description provided for @addLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Add link'**
+  String get addLink;
+
+  /// No description provided for @base.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get base;
+
+  /// No description provided for @swapRefs.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap refs'**
+  String get swapRefs;
+
+  /// No description provided for @pickTwoRefs.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick two refs'**
+  String get pickTwoRefs;
+
+  /// No description provided for @branchesTagsOrCommitShas.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches, tags, or commit SHAs'**
+  String get branchesTagsOrCommitShas;
+
+  /// No description provided for @enterARef.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a ref'**
+  String get enterARef;
+
+  /// No description provided for @branchTagOrCommitSha.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch, tag, or commit SHA'**
+  String get branchTagOrCommitSha;
+
+  /// No description provided for @useRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Use ref'**
+  String get useRef;
+
+  /// No description provided for @theseRefsPointAtTheSame.
+  ///
+  /// In en, this message translates to:
+  /// **'These refs point at the same commit'**
+  String get theseRefsPointAtTheSame;
+
+  /// No description provided for @comparisonTimedOutResultsMayBe.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison timed out; results may be incomplete'**
+  String get comparisonTimedOutResultsMayBe;
+
+  /// No description provided for @nothingNewOnTheCompareRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing new on the compare ref'**
+  String get nothingNewOnTheCompareRef;
+
+  /// No description provided for @nothingToBlame.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to blame'**
+  String get nothingToBlame;
+
+  /// No description provided for @mergeBasePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge base '**
+  String get mergeBasePrefix;
+
+  /// No description provided for @titleSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' · {p0}'**
+  String titleSuffix(Object p0);
+
+  /// No description provided for @tagReleasedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} · {p1}'**
+  String tagReleasedAt(Object p0, Object p1);
+
+  /// No description provided for @noEvidenceCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence collected'**
+  String get noEvidenceCollected;
 }
 
 class _AppLocalizationsDelegate

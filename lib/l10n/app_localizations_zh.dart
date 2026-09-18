@@ -2699,4 +2699,168 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get filePlural => '个文件';
+
+  @override
+  String get searchTags => '搜索标签';
+
+  @override
+  String get newTag => '新建标签';
+
+  @override
+  String get tagName => '标签名';
+
+  @override
+  String get sourceRefBranchOrSha => '源引用（分支或 sha）';
+
+  @override
+  String get messageOptional => '消息（可选）';
+
+  @override
+  String deleteTagP0(Object p0) {
+    return '删除标签 $p0？';
+  }
+
+  @override
+  String get downloadArchive => '下载归档';
+
+  @override
+  String get generateChangelog => '生成更新日志';
+
+  @override
+  String get deleteTag2 => '删除标签';
+
+  @override
+  String get version => '版本';
+
+  @override
+  String get fromRefOptional => '起始引用（可选）';
+
+  @override
+  String get toRefOptional => '目标引用（可选）';
+
+  @override
+  String get preview => '预览';
+
+  @override
+  String get changelogCommitted => '更新日志已提交';
+
+  @override
+  String get newRelease => '新建发布';
+
+  @override
+  String get noReleasesYet => '暂无发布';
+
+  @override
+  String get tagNewOrExisting => '标签（新建或已有）';
+
+  @override
+  String get releaseName => '发布名称';
+
+  @override
+  String get releaseNotes => '发布说明';
+
+  @override
+  String get theReleaseIsRemovedTheTag => '发布被移除；标签保留。';
+
+  @override
+  String get addAssetLink => '添加资产链接';
+
+  @override
+  String get editLink => '编辑链接';
+
+  @override
+  String get runbook => '运行手册';
+
+  @override
+  String get image => '镜像';
+
+  @override
+  String get package => '包';
+
+  @override
+  String get other => '其他';
+
+  @override
+  String get filepathOptional => '文件路径（可选）';
+
+  @override
+  String get onlyTheLinkIsRemovedAssets => '仅移除链接；资产保留。';
+
+  @override
+  String evidenceP0(Object p0) {
+    return '证据 · $p0';
+  }
+
+  @override
+  String shaP0(Object p0) {
+    return 'SHA：$p0';
+  }
+
+  @override
+  String fileP0(Object p0) {
+    return '文件：$p0';
+  }
+
+  @override
+  String collectedP0(Object p0) {
+    return '收集于：$p0';
+  }
+
+  @override
+  String get releaseActions => '发布操作';
+
+  @override
+  String get evidence => '证据';
+
+  @override
+  String get addLink => '添加链接';
+
+  @override
+  String get base => '基准';
+
+  @override
+  String get swapRefs => '交换引用';
+
+  @override
+  String get pickTwoRefs => '选择两个引用';
+
+  @override
+  String get branchesTagsOrCommitShas => '分支、标签或提交 SHA';
+
+  @override
+  String get enterARef => '输入引用';
+
+  @override
+  String get branchTagOrCommitSha => '分支、标签或提交 SHA';
+
+  @override
+  String get useRef => '使用引用';
+
+  @override
+  String get theseRefsPointAtTheSame => '这两个引用指向同一个提交';
+
+  @override
+  String get comparisonTimedOutResultsMayBe => '比较超时；结果可能不完整';
+
+  @override
+  String get nothingNewOnTheCompareRef => '比较引用上没有新内容';
+
+  @override
+  String get nothingToBlame => '没有可 blame 的内容';
+
+  @override
+  String get mergeBasePrefix => '合并基准 ';
+
+  @override
+  String titleSuffix(Object p0) {
+    return ' · $p0';
+  }
+
+  @override
+  String tagReleasedAt(Object p0, Object p1) {
+    return '$p0 · $p1';
+  }
+
+  @override
+  String get noEvidenceCollected => '未收集到证据';
 }

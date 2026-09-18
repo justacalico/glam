@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// `git blame` for one file: each hunk gets a commit banner followed by
 /// its numbered lines.
@@ -68,7 +69,7 @@ class _BlameList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (hunks.isEmpty) {
-      return const Center(child: Text('Nothing to blame'));
+      return Center(child: Text(context.l10n.nothingToBlame));
     }
     // Line numbers run continuously across hunks.
     final starts = <int>[];

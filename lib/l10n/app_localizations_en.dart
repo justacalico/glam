@@ -2735,4 +2735,171 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filePlural => 'files';
+
+  @override
+  String get searchTags => 'Search tags';
+
+  @override
+  String get newTag => 'New tag';
+
+  @override
+  String get tagName => 'Tag name';
+
+  @override
+  String get sourceRefBranchOrSha => 'Source ref (branch or sha)';
+
+  @override
+  String get messageOptional => 'Message (optional)';
+
+  @override
+  String deleteTagP0(Object p0) {
+    return 'Delete tag $p0?';
+  }
+
+  @override
+  String get downloadArchive => 'Download archive';
+
+  @override
+  String get generateChangelog => 'Generate changelog';
+
+  @override
+  String get deleteTag2 => 'Delete tag';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get fromRefOptional => 'From ref (optional)';
+
+  @override
+  String get toRefOptional => 'To ref (optional)';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get changelogCommitted => 'Changelog committed';
+
+  @override
+  String get newRelease => 'New release';
+
+  @override
+  String get noReleasesYet => 'No releases yet';
+
+  @override
+  String get tagNewOrExisting => 'Tag (new or existing)';
+
+  @override
+  String get releaseName => 'Release name';
+
+  @override
+  String get releaseNotes => 'Release notes';
+
+  @override
+  String get theReleaseIsRemovedTheTag =>
+      'The release is removed; the tag stays.';
+
+  @override
+  String get addAssetLink => 'Add asset link';
+
+  @override
+  String get editLink => 'Edit link';
+
+  @override
+  String get runbook => 'Runbook';
+
+  @override
+  String get image => 'Image';
+
+  @override
+  String get package => 'Package';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get filepathOptional => 'Filepath (optional)';
+
+  @override
+  String get onlyTheLinkIsRemovedAssets =>
+      'Only the link is removed; assets stay.';
+
+  @override
+  String evidenceP0(Object p0) {
+    return 'Evidence · $p0';
+  }
+
+  @override
+  String shaP0(Object p0) {
+    return 'SHA: $p0';
+  }
+
+  @override
+  String fileP0(Object p0) {
+    return 'File: $p0';
+  }
+
+  @override
+  String collectedP0(Object p0) {
+    return 'Collected: $p0';
+  }
+
+  @override
+  String get releaseActions => 'Release actions';
+
+  @override
+  String get evidence => 'Evidence';
+
+  @override
+  String get addLink => 'Add link';
+
+  @override
+  String get base => 'Base';
+
+  @override
+  String get swapRefs => 'Swap refs';
+
+  @override
+  String get pickTwoRefs => 'Pick two refs';
+
+  @override
+  String get branchesTagsOrCommitShas => 'Branches, tags, or commit SHAs';
+
+  @override
+  String get enterARef => 'Enter a ref';
+
+  @override
+  String get branchTagOrCommitSha => 'Branch, tag, or commit SHA';
+
+  @override
+  String get useRef => 'Use ref';
+
+  @override
+  String get theseRefsPointAtTheSame => 'These refs point at the same commit';
+
+  @override
+  String get comparisonTimedOutResultsMayBe =>
+      'Comparison timed out; results may be incomplete';
+
+  @override
+  String get nothingNewOnTheCompareRef => 'Nothing new on the compare ref';
+
+  @override
+  String get nothingToBlame => 'Nothing to blame';
+
+  @override
+  String get mergeBasePrefix => 'Merge base ';
+
+  @override
+  String titleSuffix(Object p0) {
+    return ' · $p0';
+  }
+
+  @override
+  String tagReleasedAt(Object p0, Object p1) {
+    return '$p0 · $p1';
+  }
+
+  @override
+  String get noEvidenceCollected => 'No evidence collected';
 }

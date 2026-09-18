@@ -13,6 +13,7 @@ import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Compare two refs: the commits `to` adds over `from` plus the diff.
 /// `from`/`to` arrive via route query params; both are editable here.
@@ -74,7 +75,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     }.toList()..sort();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Compare')),
+      appBar: AppBar(title: Text(context.l10n.compare)),
       body: Column(
         children: [
           Padding(
@@ -88,14 +89,14 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
               children: [
                 Expanded(
                   child: _RefPicker(
-                    label: 'Base',
+                    label: context.l10n.base,
                     value: _from,
                     refs: refs,
                     onChanged: (v) => setState(() => _from = v),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Swap refs',
+                  tooltip: context.l10n.swapRefs,
                   icon: const Icon(Icons.swap_horiz, size: 18),
                   onPressed: _from == null || _to == null
                       ? null
@@ -107,7 +108,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
                 ),
                 Expanded(
                   child: _RefPicker(
-                    label: 'Compare',
+                    label: context.l10n.compare,
                     value: _to,
                     refs: refs,
                     onChanged: (v) => setState(() => _to = v),
@@ -126,10 +127,10 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     final from = _from;
     final to = _to;
     if (from == null || to == null) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.compare_arrows,
-        title: 'Pick two refs',
-        message: 'Branches, tags, or commit SHAs',
+        title: context.l10n.pickTwoRefs,
+        message: context.l10n.branchesTagsOrCommitShas,
       );
     }
     final loc = (project: widget.projectId as Object, from: from, to: to);
@@ -161,23 +162,23 @@ class _RefPicker extends StatelessWidget {
     final ref = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Enter a ref'),
+        title: Text(context.l10n.enterARef),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Branch, tag, or commit SHA',
+          decoration: InputDecoration(
+            labelText: context.l10n.branchTagOrCommitSha,
           ),
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Use ref'),
+            child: Text(context.l10n.useRef),
           ),
         ],
       ),
@@ -222,7 +223,7 @@ class _RefPicker extends StatelessWidget {
           ),
         ),
         IconButton(
-          tooltip: 'Enter a ref',
+          tooltip: context.l10n.enterARef,
           iconSize: 16,
           icon: const Icon(Icons.edit_outlined),
           onPressed: () => _enterCustom(context),
@@ -254,13 +255,13 @@ class _CompareResult extends ConsumerWidget {
         if (result.compareSameRef)
           _Banner(
             icon: Icons.check_circle_outline,
-            text: 'These refs point at the same commit',
+            text: context.l10n.theseRefsPointAtTheSame,
             color: colors.success,
           ),
         if (result.compareTimeout)
           _Banner(
             icon: Icons.timer_outlined,
-            text: 'Comparison timed out; results may be incomplete',
+            text: context.l10n.comparisonTimedOutResultsMayBe,
             color: colors.warning,
           ),
         if (mergeBase != null && !result.compareSameRef)
@@ -274,13 +275,13 @@ class _CompareResult extends ConsumerWidget {
               child: Text.rich(
                 TextSpan(
                   children: [
-                    const TextSpan(text: 'Merge base '),
+                    TextSpan(text: context.l10n.mergeBasePrefix),
                     TextSpan(
                       text: mergeBase.shortId,
                       style: const TextStyle(fontFamily: GlamFonts.mono),
                     ),
                     if (mergeBase.title.isNotEmpty)
-                      TextSpan(text: ' · ${mergeBase.title}'),
+                      TextSpan(text: context.l10n.titleSuffix(mergeBase.title)),
                   ],
                 ),
                 style: theme.textTheme.bodySmall,
@@ -297,7 +298,7 @@ class _CompareResult extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: Insets.md),
             child: Text(
-              'Nothing new on the compare ref',
+              context.l10n.nothingNewOnTheCompareRef,
               style: theme.textTheme.bodySmall,
             ),
           )
