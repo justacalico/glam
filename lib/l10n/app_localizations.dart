@@ -2365,6 +2365,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Archived'**
   String get archived;
+
+  /// No description provided for @sshKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'SSH keys'**
+  String get sshKeys;
+
+  /// No description provided for @noSshKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'No SSH keys'**
+  String get noSshKeys;
+
+  /// No description provided for @addSshKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add SSH key'**
+  String get addSshKey;
+
+  /// No description provided for @removeSshKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove SSH key?'**
+  String get removeSshKey;
+
+  /// No description provided for @gpgKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'GPG keys'**
+  String get gpgKeys;
+
+  /// No description provided for @noGpgKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'No GPG keys'**
+  String get noGpgKeys;
+
+  /// No description provided for @addGpgKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add GPG key'**
+  String get addGpgKey;
+
+  /// No description provided for @removeGpgKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove GPG key?'**
+  String get removeGpgKey;
+
+  /// No description provided for @accessTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Access tokens'**
+  String get accessTokens;
+
+  /// No description provided for @noActiveTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'No active tokens'**
+  String get noActiveTokens;
+
+  /// No description provided for @rotate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate'**
+  String get rotate;
+
+  /// No description provided for @rotateToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate token?'**
+  String get rotateToken;
+
+  /// No description provided for @gitlabDidNotReturnAToken.
+  ///
+  /// In en, this message translates to:
+  /// **'GitLab did not return a token'**
+  String get gitlabDidNotReturnAToken;
+
+  /// No description provided for @tokenRotated.
+  ///
+  /// In en, this message translates to:
+  /// **'Token rotated'**
+  String get tokenRotated;
+
+  /// No description provided for @revokeToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke token?'**
+  String get revokeToken;
+
+  /// No description provided for @emails.
+  ///
+  /// In en, this message translates to:
+  /// **'Emails'**
+  String get emails;
+
+  /// No description provided for @noEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'No emails'**
+  String get noEmails;
+
+  /// No description provided for @addEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add email'**
+  String get addEmail;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @youExampleCom.
+  ///
+  /// In en, this message translates to:
+  /// **'you@example.com'**
+  String get youExampleCom;
+
+  /// No description provided for @removeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove email?'**
+  String get removeEmail;
+
+  /// No description provided for @gitlabPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'GitLab preferences'**
+  String get gitlabPreferences;
+
+  /// No description provided for @newTokenShownOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'New token (shown once):\\n\\n{p0}'**
+  String newTokenShownOnce(Object p0);
+
+  /// No description provided for @eventNewComments.
+  ///
+  /// In en, this message translates to:
+  /// **'New comments'**
+  String get eventNewComments;
+
+  /// No description provided for @eventNewIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'New issues'**
+  String get eventNewIssues;
+
+  /// No description provided for @eventReopenedIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopened issues'**
+  String get eventReopenedIssues;
+
+  /// No description provided for @eventClosedIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed issues'**
+  String get eventClosedIssues;
+
+  /// No description provided for @eventReassignedIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassigned issues'**
+  String get eventReassignedIssues;
+
+  /// No description provided for @eventIssueDueDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue due dates'**
+  String get eventIssueDueDates;
+
+  /// No description provided for @eventNewMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'New merge requests'**
+  String get eventNewMrs;
+
+  /// No description provided for @eventPushesToMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Pushes to merge requests'**
+  String get eventPushesToMrs;
+
+  /// No description provided for @eventReopenedMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopened merge requests'**
+  String get eventReopenedMrs;
+
+  /// No description provided for @eventClosedMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed merge requests'**
+  String get eventClosedMrs;
+
+  /// No description provided for @eventReassignedMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassigned merge requests'**
+  String get eventReassignedMrs;
+
+  /// No description provided for @eventMergedMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged merge requests'**
+  String get eventMergedMrs;
+
+  /// No description provided for @eventFailedPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed pipelines'**
+  String get eventFailedPipelines;
+
+  /// No description provided for @eventFixedPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed pipelines'**
+  String get eventFixedPipelines;
+
+  /// No description provided for @eventSuccessfulPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Successful pipelines'**
+  String get eventSuccessfulPipelines;
+
+  /// No description provided for @eventMovedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved projects'**
+  String get eventMovedProjects;
+
+  /// No description provided for @eventNewEpics.
+  ///
+  /// In en, this message translates to:
+  /// **'New epics'**
+  String get eventNewEpics;
+
+  /// No description provided for @gpgKeyId.
+  ///
+  /// In en, this message translates to:
+  /// **'GPG key #{p0}'**
+  String gpgKeyId(int p0);
 }
 
 class _AppLocalizationsDelegate

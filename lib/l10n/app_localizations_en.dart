@@ -1186,4 +1186,131 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get archived => 'Archived';
+
+  @override
+  String get sshKeys => 'SSH keys';
+
+  @override
+  String get noSshKeys => 'No SSH keys';
+
+  @override
+  String get addSshKey => 'Add SSH key';
+
+  @override
+  String get removeSshKey => 'Remove SSH key?';
+
+  @override
+  String get gpgKeys => 'GPG keys';
+
+  @override
+  String get noGpgKeys => 'No GPG keys';
+
+  @override
+  String get addGpgKey => 'Add GPG key';
+
+  @override
+  String get removeGpgKey => 'Remove GPG key?';
+
+  @override
+  String get accessTokens => 'Access tokens';
+
+  @override
+  String get noActiveTokens => 'No active tokens';
+
+  @override
+  String get rotate => 'Rotate';
+
+  @override
+  String get rotateToken => 'Rotate token?';
+
+  @override
+  String get gitlabDidNotReturnAToken => 'GitLab did not return a token';
+
+  @override
+  String get tokenRotated => 'Token rotated';
+
+  @override
+  String get revokeToken => 'Revoke token?';
+
+  @override
+  String get emails => 'Emails';
+
+  @override
+  String get noEmails => 'No emails';
+
+  @override
+  String get addEmail => 'Add email';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get youExampleCom => 'you@example.com';
+
+  @override
+  String get removeEmail => 'Remove email?';
+
+  @override
+  String get gitlabPreferences => 'GitLab preferences';
+
+  @override
+  String newTokenShownOnce(Object p0) {
+    return 'New token (shown once):\\n\\n$p0';
+  }
+
+  @override
+  String get eventNewComments => 'New comments';
+
+  @override
+  String get eventNewIssues => 'New issues';
+
+  @override
+  String get eventReopenedIssues => 'Reopened issues';
+
+  @override
+  String get eventClosedIssues => 'Closed issues';
+
+  @override
+  String get eventReassignedIssues => 'Reassigned issues';
+
+  @override
+  String get eventIssueDueDates => 'Issue due dates';
+
+  @override
+  String get eventNewMrs => 'New merge requests';
+
+  @override
+  String get eventPushesToMrs => 'Pushes to merge requests';
+
+  @override
+  String get eventReopenedMrs => 'Reopened merge requests';
+
+  @override
+  String get eventClosedMrs => 'Closed merge requests';
+
+  @override
+  String get eventReassignedMrs => 'Reassigned merge requests';
+
+  @override
+  String get eventMergedMrs => 'Merged merge requests';
+
+  @override
+  String get eventFailedPipelines => 'Failed pipelines';
+
+  @override
+  String get eventFixedPipelines => 'Fixed pipelines';
+
+  @override
+  String get eventSuccessfulPipelines => 'Successful pipelines';
+
+  @override
+  String get eventMovedProjects => 'Moved projects';
+
+  @override
+  String get eventNewEpics => 'New epics';
+
+  @override
+  String gpgKeyId(int p0) {
+    return 'GPG key #$p0';
+  }
 }

@@ -454,5 +454,53 @@
     }
   },
   "auditEvents": "Audit events",
-  "archived": "Archived"
+  "archived": "Archived",
+  "sshKeys": "SSH keys",
+  "noSshKeys": "No SSH keys",
+  "addSshKey": "Add SSH key",
+  "removeSshKey": "Remove SSH key?",
+  "gpgKeys": "GPG keys",
+  "noGpgKeys": "No GPG keys",
+  "addGpgKey": "Add GPG key",
+  "removeGpgKey": "Remove GPG key?",
+  "accessTokens": "Access tokens",
+  "noActiveTokens": "No active tokens",
+  "rotate": "Rotate",
+  "rotateToken": "Rotate token?",
+  "gitlabDidNotReturnAToken": "GitLab did not return a token",
+  "tokenRotated": "Token rotated",
+  "revokeToken": "Revoke token?",
+  "emails": "Emails",
+  "noEmails": "No emails",
+  "addEmail": "Add email",
+  "email": "Email",
+  "youExampleCom": "you@example.com",
+  "removeEmail": "Remove email?",
+  "gitlabPreferences": "GitLab preferences",
+  "newTokenShownOnce": "New token (shown once):\\n\\n{p0}",
+  "eventNewComments": "New comments",
+  "eventNewIssues": "New issues",
+  "eventReopenedIssues": "Reopened issues",
+  "eventClosedIssues": "Closed issues",
+  "eventReassignedIssues": "Reassigned issues",
+  "eventIssueDueDates": "Issue due dates",
+  "eventNewMrs": "New merge requests",
+  "eventPushesToMrs": "Pushes to merge requests",
+  "eventReopenedMrs": "Reopened merge requests",
+  "eventClosedMrs": "Closed merge requests",
+  "eventReassignedMrs": "Reassigned merge requests",
+  "eventMergedMrs": "Merged merge requests",
+  "eventFailedPipelines": "Failed pipelines",
+  "eventFixedPipelines": "Fixed pipelines",
+  "eventSuccessfulPipelines": "Successful pipelines",
+  "eventMovedProjects": "Moved projects",
+  "eventNewEpics": "New epics",
+  "gpgKeyId": "GPG key #{p0}",
+  "@gpgKeyId": {
+    "placeholders": {
+      "p0": {
+        "type": "int"
+      }
+    }
+  }
 }

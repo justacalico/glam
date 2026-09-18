@@ -1174,4 +1174,131 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get archived => '已归档';
+
+  @override
+  String get sshKeys => 'SSH 密钥';
+
+  @override
+  String get noSshKeys => '没有 SSH 密钥';
+
+  @override
+  String get addSshKey => '添加 SSH 密钥';
+
+  @override
+  String get removeSshKey => '移除 SSH 密钥？';
+
+  @override
+  String get gpgKeys => 'GPG 密钥';
+
+  @override
+  String get noGpgKeys => '没有 GPG 密钥';
+
+  @override
+  String get addGpgKey => '添加 GPG 密钥';
+
+  @override
+  String get removeGpgKey => '移除 GPG 密钥？';
+
+  @override
+  String get accessTokens => '访问令牌';
+
+  @override
+  String get noActiveTokens => '没有启用的令牌';
+
+  @override
+  String get rotate => '轮换';
+
+  @override
+  String get rotateToken => '轮换令牌？';
+
+  @override
+  String get gitlabDidNotReturnAToken => 'GitLab 未返回令牌';
+
+  @override
+  String get tokenRotated => '令牌已轮换';
+
+  @override
+  String get revokeToken => '吊销令牌？';
+
+  @override
+  String get emails => '邮箱';
+
+  @override
+  String get noEmails => '没有邮箱';
+
+  @override
+  String get addEmail => '添加邮箱';
+
+  @override
+  String get email => '邮箱';
+
+  @override
+  String get youExampleCom => 'you@example.com';
+
+  @override
+  String get removeEmail => '移除邮箱？';
+
+  @override
+  String get gitlabPreferences => 'GitLab 偏好设置';
+
+  @override
+  String newTokenShownOnce(Object p0) {
+    return '新令牌（仅显示一次）：\n\n$p0';
+  }
+
+  @override
+  String get eventNewComments => '新评论';
+
+  @override
+  String get eventNewIssues => '新议题';
+
+  @override
+  String get eventReopenedIssues => '重新打开的议题';
+
+  @override
+  String get eventClosedIssues => '已关闭的议题';
+
+  @override
+  String get eventReassignedIssues => '重新分配的议题';
+
+  @override
+  String get eventIssueDueDates => '议题截止日期';
+
+  @override
+  String get eventNewMrs => '新合并请求';
+
+  @override
+  String get eventPushesToMrs => '合并请求推送';
+
+  @override
+  String get eventReopenedMrs => '重新打开的合并请求';
+
+  @override
+  String get eventClosedMrs => '已关闭的合并请求';
+
+  @override
+  String get eventReassignedMrs => '重新分配的合并请求';
+
+  @override
+  String get eventMergedMrs => '已合并的合并请求';
+
+  @override
+  String get eventFailedPipelines => '失败的流水线';
+
+  @override
+  String get eventFixedPipelines => '修复的流水线';
+
+  @override
+  String get eventSuccessfulPipelines => '成功的流水线';
+
+  @override
+  String get eventMovedProjects => '移动的项目';
+
+  @override
+  String get eventNewEpics => '新 epic';
+
+  @override
+  String gpgKeyId(int p0) {
+    return 'GPG 密钥 #$p0';
+  }
 }
