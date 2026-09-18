@@ -2045,4 +2045,99 @@ class AppLocalizationsZh extends AppLocalizations {
   String commentOnLine(Object p0, Object p1) {
     return '评论 $p0:$p1';
   }
+
+  @override
+  String get searchMilestones => '搜索里程碑';
+
+  @override
+  String get newMilestone => '新建里程碑';
+
+  @override
+  String get noMilestones => '没有里程碑';
+
+  @override
+  String get milestone => '里程碑';
+
+  @override
+  String get active => '进行中';
+
+  @override
+  String get startDate => '开始日期';
+
+  @override
+  String get dueDate => '截止日期';
+
+  @override
+  String get createMilestone => '创建里程碑';
+
+  @override
+  String get searchLabels => '搜索标签';
+
+  @override
+  String get newLabel => '新建标签';
+
+  @override
+  String get noLabels => '没有标签';
+
+  @override
+  String p0Issues(Object p0) {
+    return '$p0 个议题';
+  }
+
+  @override
+  String get promoteToGroup => '提升到群组';
+
+  @override
+  String promoteP0(Object p0) {
+    return '提升 $p0？';
+  }
+
+  @override
+  String get promote => '提升';
+
+  @override
+  String get theLabelIsRemovedFromEvery => '该标签将从每个议题和 MR 上移除。';
+
+  @override
+  String get bugOrPriorityHigh => 'bug 或 priority::high';
+
+  @override
+  String get color => '颜色';
+
+  @override
+  String get createLabel => '创建标签';
+
+  @override
+  String get labelPromoteBody => '标签将移动到父群组，并在使用它的每个议题和 MR 上被替换。';
+
+  @override
+  String startsOn(Object p0) {
+    return '$p0 开始';
+  }
+
+  @override
+  String dueOn(Object p0) {
+    return '$p0 截止';
+  }
+
+  @override
+  String get milestoneSaveFailed => '无法保存里程碑';
+
+  @override
+  String get editMilestone => '编辑里程碑';
+
+  @override
+  String get nameRequired => '名称必填';
+
+  @override
+  String get labelSaveFailed => '无法保存标签';
+
+  @override
+  String get editLabel => '编辑标签';
+
+  @override
+  String get labelPreview => '标签预览';
+
+  @override
+  String get stateActive => '进行中';
 }

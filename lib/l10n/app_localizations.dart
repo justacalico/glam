@@ -3973,6 +3973,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comment on {p0}:{p1}'**
   String commentOnLine(Object p0, Object p1);
+
+  /// No description provided for @searchMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'Search milestones'**
+  String get searchMilestones;
+
+  /// No description provided for @newMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'New milestone'**
+  String get newMilestone;
+
+  /// No description provided for @noMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'No milestones'**
+  String get noMilestones;
+
+  /// No description provided for @milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone'**
+  String get milestone;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get startDate;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get dueDate;
+
+  /// No description provided for @createMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Create milestone'**
+  String get createMilestone;
+
+  /// No description provided for @searchLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Search labels'**
+  String get searchLabels;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New label'**
+  String get newLabel;
+
+  /// No description provided for @noLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'No labels'**
+  String get noLabels;
+
+  /// No description provided for @p0Issues.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} issues'**
+  String p0Issues(Object p0);
+
+  /// No description provided for @promoteToGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote to group'**
+  String get promoteToGroup;
+
+  /// No description provided for @promoteP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote {p0}?'**
+  String promoteP0(Object p0);
+
+  /// No description provided for @promote.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote'**
+  String get promote;
+
+  /// No description provided for @theLabelIsRemovedFromEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'The label is removed from every issue and MR.'**
+  String get theLabelIsRemovedFromEvery;
+
+  /// No description provided for @bugOrPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'bug or priority::high'**
+  String get bugOrPriorityHigh;
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @createLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Create label'**
+  String get createLabel;
+
+  /// No description provided for @labelPromoteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The label moves to the parent group and is replaced on every issue and MR that uses it.'**
+  String get labelPromoteBody;
+
+  /// No description provided for @startsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {p0}'**
+  String startsOn(Object p0);
+
+  /// No description provided for @dueOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {p0}'**
+  String dueOn(Object p0);
+
+  /// No description provided for @milestoneSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the milestone'**
+  String get milestoneSaveFailed;
+
+  /// No description provided for @editMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit milestone'**
+  String get editMilestone;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequired;
+
+  /// No description provided for @labelSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the label'**
+  String get labelSaveFailed;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit label'**
+  String get editLabel;
+
+  /// No description provided for @labelPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Label preview'**
+  String get labelPreview;
+
+  /// No description provided for @stateActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get stateActive;
 }
 
 class _AppLocalizationsDelegate

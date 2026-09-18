@@ -38,7 +38,11 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
     final filter = (scope: widget.scope, state: _state, search: _search);
     final list = ref.watch(milestonesProvider(filter));
     final notifier = ref.read(milestonesProvider(filter).notifier);
-    const states = {'active': 'Active', 'closed': 'Closed', null: 'All'};
+    final states = {
+      'active': context.l10n.stateActive,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
+    };
 
     return Column(
       children: [
@@ -106,7 +110,7 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.flag_outlined,
                 title: context.l10n.noMilestones,
               ),
@@ -146,10 +150,10 @@ class _MilestoneTile extends StatelessWidget {
       subtitle: Text(
         [
           if (milestone.startDate != null)
-            'Starts ${Format.date(milestone.startDate)}',
+            context.l10n.startsOn(Format.date(milestone.startDate!)),
           if (milestone.dueDate != null)
-            'Due ${Format.date(milestone.dueDate)}',
-          if (!milestone.isActive) 'Closed',
+            context.l10n.dueOn(Format.date(milestone.dueDate!)),
+          if (!milestone.isActive) context.l10n.stateClosed,
         ].join(' · '),
         maxLines: 1,
         style: theme.textTheme.bodySmall?.copyWith(
@@ -220,7 +224,11 @@ class MilestoneDetailScreen extends ConsumerWidget {
                       children: [
                         if (m.state != null)
                           Chip(
-                            label: Text(m.isActive ? context.l10n.active : context.l10n.stateClosed),
+                            label: Text(
+                              m.isActive
+                                  ? context.l10n.active
+                                  : context.l10n.stateClosed,
+                            ),
                             visualDensity: VisualDensity.compact,
                           ),
                         const SizedBox(width: Insets.sm),
@@ -242,7 +250,7 @@ class MilestoneDetailScreen extends ConsumerWidget {
                 ),
               ),
               Divider(height: 1, color: colors.border),
-              const TabBar(
+              TabBar(
                 tabs: [
                   Tab(text: context.l10n.issuesTitle),
                   Tab(text: context.l10n.mrsTitle),
@@ -275,7 +283,7 @@ class _MilestoneIssues extends ConsumerWidget {
     return AsyncValueWidget(
       value: issues,
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.task_alt, title: context.l10n.noIssues)
+          ? EmptyState(icon: Icons.task_alt, title: context.l10n.noIssues)
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               itemCount: items.length,
@@ -304,7 +312,7 @@ class _MilestoneMrs extends ConsumerWidget {
     return AsyncValueWidget(
       value: mrs,
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.merge, title: context.l10n.noMergeRequests)
+          ? EmptyState(icon: Icons.merge, title: context.l10n.noMergeRequests)
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               itemCount: items.length,
@@ -402,7 +410,9 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
   Future<void> _save() async {
     final title = _title.text.trim();
     if (title.isEmpty || _saving) {
-      setState(() => _error = title.isEmpty ? 'Title is required' : null);
+      setState(
+        () => _error = title.isEmpty ? context.l10n.titleRequired : null,
+      );
       return;
     }
     setState(() {
@@ -444,7 +454,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the milestone';
+        _error = context.l10n.milestoneSaveFailed;
       });
     }
   }
@@ -477,14 +487,14 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit milestone' : 'New milestone',
+            _editing ? context.l10n.editMilestone : context.l10n.newMilestone,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
@@ -494,7 +504,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
             controller: _description,
             minLines: 3,
             maxLines: 6,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: context.l10n.fieldDescription,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
@@ -531,7 +541,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text(context.l10n.actionCancel),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -542,7 +552,11 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? context.l10n.actionSave : context.l10n.createMilestone),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createMilestone,
+                      ),
               ),
             ],
           ),

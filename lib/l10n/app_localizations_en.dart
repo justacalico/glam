@@ -2073,4 +2073,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String commentOnLine(Object p0, Object p1) {
     return 'Comment on $p0:$p1';
   }
+
+  @override
+  String get searchMilestones => 'Search milestones';
+
+  @override
+  String get newMilestone => 'New milestone';
+
+  @override
+  String get noMilestones => 'No milestones';
+
+  @override
+  String get milestone => 'Milestone';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get startDate => 'Start date';
+
+  @override
+  String get dueDate => 'Due date';
+
+  @override
+  String get createMilestone => 'Create milestone';
+
+  @override
+  String get searchLabels => 'Search labels';
+
+  @override
+  String get newLabel => 'New label';
+
+  @override
+  String get noLabels => 'No labels';
+
+  @override
+  String p0Issues(Object p0) {
+    return '$p0 issues';
+  }
+
+  @override
+  String get promoteToGroup => 'Promote to group';
+
+  @override
+  String promoteP0(Object p0) {
+    return 'Promote $p0?';
+  }
+
+  @override
+  String get promote => 'Promote';
+
+  @override
+  String get theLabelIsRemovedFromEvery =>
+      'The label is removed from every issue and MR.';
+
+  @override
+  String get bugOrPriorityHigh => 'bug or priority::high';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get createLabel => 'Create label';
+
+  @override
+  String get labelPromoteBody =>
+      'The label moves to the parent group and is replaced on every issue and MR that uses it.';
+
+  @override
+  String startsOn(Object p0) {
+    return 'Starts $p0';
+  }
+
+  @override
+  String dueOn(Object p0) {
+    return 'Due $p0';
+  }
+
+  @override
+  String get milestoneSaveFailed => 'Could not save the milestone';
+
+  @override
+  String get editMilestone => 'Edit milestone';
+
+  @override
+  String get nameRequired => 'Name is required';
+
+  @override
+  String get labelSaveFailed => 'Could not save the label';
+
+  @override
+  String get editLabel => 'Edit label';
+
+  @override
+  String get labelPreview => 'Label preview';
+
+  @override
+  String get stateActive => 'Active';
 }

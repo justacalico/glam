@@ -660,10 +660,19 @@
   "p0Issues": "{p0} issues",
   "promoteToGroup": "Promote to group",
   "promoteP0": "Promote {p0}?",
-  "theLabelMovesToTheParent": "The label moves to the parent group and is replaced on every ",
   "promote": "Promote",
   "theLabelIsRemovedFromEvery": "The label is removed from every issue and MR.",
   "bugOrPriorityHigh": "bug or priority::high",
   "color": "Color",
-  "createLabel": "Create label"
+  "createLabel": "Create label",
+  "labelPromoteBody": "The label moves to the parent group and is replaced on every issue and MR that uses it.",
+  "startsOn": "Starts {p0}",
+  "dueOn": "Due {p0}",
+  "milestoneSaveFailed": "Could not save the milestone",
+  "editMilestone": "Edit milestone",
+  "nameRequired": "Name is required",
+  "labelSaveFailed": "Could not save the label",
+  "editLabel": "Edit label",
+  "labelPreview": "Label preview",
+  "stateActive": "Active"
 }
