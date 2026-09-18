@@ -4147,6 +4147,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active'**
   String get stateActive;
+
+  /// No description provided for @runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs'**
+  String get runs;
+
+  /// No description provided for @schedules.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedules'**
+  String get schedules;
+
+  /// No description provided for @source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get source;
+
+  /// No description provided for @ref.
+  ///
+  /// In en, this message translates to:
+  /// **'Ref'**
+  String get ref;
+
+  /// No description provided for @user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// No description provided for @noPipelinesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No pipelines yet'**
+  String get noPipelinesYet;
+
+  /// No description provided for @scope.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get scope;
+
+  /// No description provided for @noJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs'**
+  String get noJobs;
+
+  /// No description provided for @ciLint.
+  ///
+  /// In en, this message translates to:
+  /// **'CI lint'**
+  String get ciLint;
+
+  /// No description provided for @stagesNBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'stages:\\n  - build'**
+  String get stagesNBuild;
+
+  /// No description provided for @checking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get checking;
+
+  /// No description provided for @validate.
+  ///
+  /// In en, this message translates to:
+  /// **'Validate'**
+  String get validate;
+
+  /// No description provided for @p0Jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} jobs'**
+  String p0Jobs(Object p0);
+
+  /// No description provided for @pipelineStatusRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get pipelineStatusRunning;
+
+  /// No description provided for @pipelineStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pipelineStatusPending;
+
+  /// No description provided for @pipelineStatusSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get pipelineStatusSuccess;
+
+  /// No description provided for @pipelineStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get pipelineStatusFailed;
+
+  /// No description provided for @pipelineStatusCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get pipelineStatusCanceled;
+
+  /// No description provided for @pipelineStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get pipelineStatusSkipped;
+
+  /// No description provided for @pipelineStatusManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get pipelineStatusManual;
+
+  /// No description provided for @pipelineSourcePush.
+  ///
+  /// In en, this message translates to:
+  /// **'Push'**
+  String get pipelineSourcePush;
+
+  /// No description provided for @pipelineSourceWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get pipelineSourceWeb;
+
+  /// No description provided for @pipelineSourceSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get pipelineSourceSchedule;
+
+  /// No description provided for @pipelineSourceApi.
+  ///
+  /// In en, this message translates to:
+  /// **'API'**
+  String get pipelineSourceApi;
+
+  /// No description provided for @pipelineSourceTrigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger'**
+  String get pipelineSourceTrigger;
+
+  /// No description provided for @pipelineSourceMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge request'**
+  String get pipelineSourceMr;
+
+  /// No description provided for @pipelineSourcePipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline'**
+  String get pipelineSourcePipeline;
+
+  /// No description provided for @pipelineSourceChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get pipelineSourceChat;
 }
 
 class _AppLocalizationsDelegate

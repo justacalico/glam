@@ -2140,4 +2140,90 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stateActive => '进行中';
+
+  @override
+  String get runs => '运行';
+
+  @override
+  String get schedules => '调度';
+
+  @override
+  String get source => '来源';
+
+  @override
+  String get ref => '引用';
+
+  @override
+  String get user => '用户';
+
+  @override
+  String get noPipelinesYet => '暂无流水线';
+
+  @override
+  String get scope => '范围';
+
+  @override
+  String get noJobs => '没有作业';
+
+  @override
+  String get ciLint => 'CI Lint';
+
+  @override
+  String get stagesNBuild => 'stages:\n  - build';
+
+  @override
+  String get checking => '检查中…';
+
+  @override
+  String get validate => '验证';
+
+  @override
+  String p0Jobs(Object p0) {
+    return '$p0 个作业';
+  }
+
+  @override
+  String get pipelineStatusRunning => '运行中';
+
+  @override
+  String get pipelineStatusPending => '等待中';
+
+  @override
+  String get pipelineStatusSuccess => '已通过';
+
+  @override
+  String get pipelineStatusFailed => '失败';
+
+  @override
+  String get pipelineStatusCanceled => '已取消';
+
+  @override
+  String get pipelineStatusSkipped => '已跳过';
+
+  @override
+  String get pipelineStatusManual => '手动';
+
+  @override
+  String get pipelineSourcePush => '推送';
+
+  @override
+  String get pipelineSourceWeb => 'Web';
+
+  @override
+  String get pipelineSourceSchedule => '调度';
+
+  @override
+  String get pipelineSourceApi => 'API';
+
+  @override
+  String get pipelineSourceTrigger => '触发器';
+
+  @override
+  String get pipelineSourceMr => '合并请求';
+
+  @override
+  String get pipelineSourcePipeline => '流水线';
+
+  @override
+  String get pipelineSourceChat => '聊天';
 }

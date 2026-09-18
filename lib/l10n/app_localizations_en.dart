@@ -2170,4 +2170,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stateActive => 'Active';
+
+  @override
+  String get runs => 'Runs';
+
+  @override
+  String get schedules => 'Schedules';
+
+  @override
+  String get source => 'Source';
+
+  @override
+  String get ref => 'Ref';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get noPipelinesYet => 'No pipelines yet';
+
+  @override
+  String get scope => 'Scope';
+
+  @override
+  String get noJobs => 'No jobs';
+
+  @override
+  String get ciLint => 'CI lint';
+
+  @override
+  String get stagesNBuild => 'stages:\\n  - build';
+
+  @override
+  String get checking => 'Checking…';
+
+  @override
+  String get validate => 'Validate';
+
+  @override
+  String p0Jobs(Object p0) {
+    return '$p0 jobs';
+  }
+
+  @override
+  String get pipelineStatusRunning => 'Running';
+
+  @override
+  String get pipelineStatusPending => 'Pending';
+
+  @override
+  String get pipelineStatusSuccess => 'Passed';
+
+  @override
+  String get pipelineStatusFailed => 'Failed';
+
+  @override
+  String get pipelineStatusCanceled => 'Canceled';
+
+  @override
+  String get pipelineStatusSkipped => 'Skipped';
+
+  @override
+  String get pipelineStatusManual => 'Manual';
+
+  @override
+  String get pipelineSourcePush => 'Push';
+
+  @override
+  String get pipelineSourceWeb => 'Web';
+
+  @override
+  String get pipelineSourceSchedule => 'Schedule';
+
+  @override
+  String get pipelineSourceApi => 'API';
+
+  @override
+  String get pipelineSourceTrigger => 'Trigger';
+
+  @override
+  String get pipelineSourceMr => 'Merge request';
+
+  @override
+  String get pipelineSourcePipeline => 'Pipeline';
+
+  @override
+  String get pipelineSourceChat => 'Chat';
 }
