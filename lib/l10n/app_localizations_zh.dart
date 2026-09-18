@@ -1859,4 +1859,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mrTileDraft => '草稿：';
+
+  @override
+  String get sourceBranch => '源分支';
+
+  @override
+  String get targetBranch => '目标分支';
+
+  @override
+  String get reviewers => '审查者';
+
+  @override
+  String get createMr => '创建 MR';
+
+  @override
+  String get titleRequired => '标题必填';
+
+  @override
+  String get mrPickBranches => '请选择源分支和目标分支';
+
+  @override
+  String get mrSaveFailed => '无法保存合并请求';
+
+  @override
+  String get editMr => '编辑合并请求';
+
+  @override
+  String get newMr => '新建合并请求';
 }

@@ -589,5 +589,14 @@
   "noPipelinesForThisMr": "No pipelines for this MR",
   "relatedMergeRequestP0": "Related merge request{p0}",
   "closesIssues": "Closes {p0} issue{p1}",
-  "mrTileDraft": "Draft: "
+  "mrTileDraft": "Draft: ",
+  "sourceBranch": "Source branch",
+  "targetBranch": "Target branch",
+  "reviewers": "Reviewers",
+  "createMr": "Create MR",
+  "titleRequired": "Title is required",
+  "mrPickBranches": "Pick a source and target branch",
+  "mrSaveFailed": "Could not save the merge request",
+  "editMr": "Edit merge request",
+  "newMr": "New merge request"
 }

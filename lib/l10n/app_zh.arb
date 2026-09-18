@@ -589,5 +589,14 @@
   "runPipeline": "运行流水线",
   "noPipelinesForThisMr": "此 MR 没有流水线",
   "closesIssues": "关闭 {p0} 个议题",
-  "relatedMergeRequestP0": "相关合并请求"
+  "relatedMergeRequestP0": "相关合并请求",
+  "sourceBranch": "源分支",
+  "targetBranch": "目标分支",
+  "reviewers": "审查者",
+  "createMr": "创建 MR",
+  "titleRequired": "标题必填",
+  "mrPickBranches": "请选择源分支和目标分支",
+  "mrSaveFailed": "无法保存合并请求",
+  "editMr": "编辑合并请求",
+  "newMr": "新建合并请求"
 }

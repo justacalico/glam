@@ -1883,4 +1883,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mrTileDraft => 'Draft: ';
+
+  @override
+  String get sourceBranch => 'Source branch';
+
+  @override
+  String get targetBranch => 'Target branch';
+
+  @override
+  String get reviewers => 'Reviewers';
+
+  @override
+  String get createMr => 'Create MR';
+
+  @override
+  String get titleRequired => 'Title is required';
+
+  @override
+  String get mrPickBranches => 'Pick a source and target branch';
+
+  @override
+  String get mrSaveFailed => 'Could not save the merge request';
+
+  @override
+  String get editMr => 'Edit merge request';
+
+  @override
+  String get newMr => 'New merge request';
 }

@@ -3637,6 +3637,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Draft: '**
   String get mrTileDraft;
+
+  /// No description provided for @sourceBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Source branch'**
+  String get sourceBranch;
+
+  /// No description provided for @targetBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Target branch'**
+  String get targetBranch;
+
+  /// No description provided for @reviewers.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewers'**
+  String get reviewers;
+
+  /// No description provided for @createMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Create MR'**
+  String get createMr;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get titleRequired;
+
+  /// No description provided for @mrPickBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a source and target branch'**
+  String get mrPickBranches;
+
+  /// No description provided for @mrSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the merge request'**
+  String get mrSaveFailed;
+
+  /// No description provided for @editMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit merge request'**
+  String get editMr;
+
+  /// No description provided for @newMr.
+  ///
+  /// In en, this message translates to:
+  /// **'New merge request'**
+  String get newMr;
 }
 
 class _AppLocalizationsDelegate
