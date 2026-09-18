@@ -235,4 +235,143 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get levelCustom => '自定义';
+
+  @override
+  String get auditEmpty => '暂无审计事件';
+
+  @override
+  String get auditEmptyHint => '审计事件可能需要付费版。';
+
+  @override
+  String get auditSomeone => '某人';
+
+  @override
+  String get auditMadeChange => '做了修改';
+
+  @override
+  String get varsTitle => 'CI/CD 变量';
+
+  @override
+  String get varsEmpty => '暂无变量';
+
+  @override
+  String get varAddTitle => '添加变量';
+
+  @override
+  String get varEditTitle => '编辑变量';
+
+  @override
+  String get fieldKey => '键';
+
+  @override
+  String get fieldValue => '值';
+
+  @override
+  String get varEnvScope => '环境范围';
+
+  @override
+  String get varProtected => '受保护';
+
+  @override
+  String get varMasked => '已掩码';
+
+  @override
+  String varDeleteConfirm(String key) {
+    return '删除 $key？';
+  }
+
+  @override
+  String get tokensDeployTitle => '部署令牌';
+
+  @override
+  String get tokensDeployEmpty => '暂无部署令牌';
+
+  @override
+  String get tokenDeployCreate => '创建部署令牌';
+
+  @override
+  String get fieldName => '名称';
+
+  @override
+  String get fieldUsernameOptional => '用户名（可选）';
+
+  @override
+  String get fieldExpiresDays => '有效天数（可选）';
+
+  @override
+  String get errorPositiveNumber => '必须是正数';
+
+  @override
+  String get tokenScopeRequired => '至少选择一个权限范围';
+
+  @override
+  String tokenValueTitle(String name) {
+    return '令牌 \"$name\"';
+  }
+
+  @override
+  String get tokenCopyNow => '请立即复制，之后将不再显示。';
+
+  @override
+  String get tokenDeployRevokeConfirm => '吊销部署令牌？';
+
+  @override
+  String get webhooksTitle => 'Webhooks';
+
+  @override
+  String get webhooksEmpty => '暂无 Webhook';
+
+  @override
+  String get webhookTestSent => '测试事件已发送';
+
+  @override
+  String get webhookDeleteConfirm => '删除 Webhook？';
+
+  @override
+  String get webhookTestSend => '发送测试事件';
+
+  @override
+  String get hookPushEvents => '推送事件';
+
+  @override
+  String get hookTagPush => '标签推送事件';
+
+  @override
+  String get hookIssues => '议题';
+
+  @override
+  String get hookComments => '评论';
+
+  @override
+  String get hookMergeRequests => '合并请求';
+
+  @override
+  String get hookPipeline => '流水线';
+
+  @override
+  String get hookJobs => '作业';
+
+  @override
+  String get hookWiki => 'Wiki 页面';
+
+  @override
+  String get hookDeployments => '部署';
+
+  @override
+  String get hookReleases => '发布';
+
+  @override
+  String get hookSubgroup => '子群组事件';
+
+  @override
+  String get webhookAddTitle => '添加 Webhook';
+
+  @override
+  String get webhookUrl => 'URL';
+
+  @override
+  String get webhookSecret => 'Secret 令牌（可选）';
+
+  @override
+  String get webhookSsl => 'SSL 验证';
 }

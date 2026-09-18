@@ -6,6 +6,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/models/webhook.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Editable fields from the webhook dialog.
 typedef HookDraft = ({
@@ -48,14 +49,14 @@ class WebhooksSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: Insets.sm),
                 child: Text(
-                  'Webhooks',
+                  context.l10n.webhooksTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _addHook(context),
             ),
           ],
@@ -76,11 +77,11 @@ class WebhooksSection extends StatelessWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(Insets.lg),
+                ? Padding(
+                    padding: const EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.webhook_outlined,
-                      title: 'No webhooks',
+                      title: context.l10n.webhooksEmpty,
                     ),
                   )
                 : Column(
@@ -91,7 +92,7 @@ class WebhooksSection extends StatelessWidget {
                           onTest: () => _run(
                             context,
                             () => onTest(h),
-                            success: 'Test event sent',
+                            success: context.l10n.webhookTestSent,
                           ),
                           onDelete: () => _confirmDelete(context, h),
                         ),
@@ -139,16 +140,16 @@ class WebhooksSection extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete webhook?'),
+        title: Text(context.l10n.webhookDeleteConfirm),
         content: Text(hook.url),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -188,7 +189,7 @@ class _HookTile extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.bolt_outlined, size: 18),
-            tooltip: 'Send test event',
+            tooltip: context.l10n.webhookTestSend,
             onPressed: onTest,
           ),
           IconButton(
@@ -220,18 +221,18 @@ class _HookDialogState extends State<_HookDialog> {
     const Webhook(id: 0, url: '').eventFlags,
   );
 
-  static const _labels = {
-    'push_events': 'Push events',
-    'tag_push_events': 'Tag push events',
-    'issues_events': 'Issues',
-    'note_events': 'Comments',
-    'merge_requests_events': 'Merge requests',
-    'pipeline_events': 'Pipeline',
-    'job_events': 'Jobs',
-    'wiki_page_events': 'Wiki pages',
-    'deployment_events': 'Deployments',
-    'releases_events': 'Releases',
-    'subgroup_events': 'Subgroup events',
+  Map<String, String> _labels(BuildContext context) => {
+    'push_events': context.l10n.hookPushEvents,
+    'tag_push_events': context.l10n.hookTagPush,
+    'issues_events': context.l10n.hookIssues,
+    'note_events': context.l10n.hookComments,
+    'merge_requests_events': context.l10n.hookMergeRequests,
+    'pipeline_events': context.l10n.hookPipeline,
+    'job_events': context.l10n.hookJobs,
+    'wiki_page_events': context.l10n.hookWiki,
+    'deployment_events': context.l10n.hookDeployments,
+    'releases_events': context.l10n.hookReleases,
+    'subgroup_events': context.l10n.hookSubgroup,
   };
 
   @override
@@ -252,7 +253,7 @@ class _HookDialogState extends State<_HookDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add webhook'),
+      title: Text(context.l10n.webhookAddTitle),
       content: SizedBox(
         width: 420,
         child: ListView(
@@ -262,9 +263,9 @@ class _HookDialogState extends State<_HookDialog> {
               controller: _url,
               autofocus: true,
               decoration: InputDecoration(
-                labelText: 'URL',
+                labelText: context.l10n.webhookUrl,
                 hintText: 'https://example.com/hook',
-                errorText: _urlError ? 'Required' : null,
+                errorText: _urlError ? context.l10n.errorRequired : null,
               ),
               onChanged: (_) {
                 if (_urlError) {
@@ -275,8 +276,8 @@ class _HookDialogState extends State<_HookDialog> {
             const SizedBox(height: Insets.sm),
             TextField(
               controller: _token,
-              decoration: const InputDecoration(
-                labelText: 'Secret token (optional)',
+              decoration: InputDecoration(
+                labelText: context.l10n.webhookSecret,
               ),
             ),
             const SizedBox(height: Insets.md),
@@ -285,7 +286,7 @@ class _HookDialogState extends State<_HookDialog> {
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text(_labels[e.key]!),
+                title: Text(_labels(context)[e.key]!),
                 value: e.value,
                 onChanged: (v) => setState(() => _events[e.key] = v ?? false),
               ),
@@ -293,7 +294,7 @@ class _HookDialogState extends State<_HookDialog> {
               dense: true,
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
-              title: const Text('SSL verification'),
+              title: Text(context.l10n.webhookSsl),
               value: _ssl,
               onChanged: (v) => setState(() => _ssl = v ?? true),
             ),
@@ -303,7 +304,7 @@ class _HookDialogState extends State<_HookDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () {
@@ -319,7 +320,7 @@ class _HookDialogState extends State<_HookDialog> {
               sslVerify: _ssl,
             ));
           },
-          child: const Text('Add'),
+          child: Text(context.l10n.actionAdd),
         ),
       ],
     );

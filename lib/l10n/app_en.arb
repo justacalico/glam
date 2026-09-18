@@ -94,5 +94,64 @@
   "levelParticipating": "Participate",
   "levelMention": "On mention",
   "levelDisabled": "Disabled",
-  "levelCustom": "Custom"
+  "levelCustom": "Custom",
+  "auditEmpty": "No audit events",
+  "auditEmptyHint": "Audit events may require a paid tier.",
+  "auditSomeone": "Someone",
+  "auditMadeChange": "made a change",
+  "varsTitle": "CI/CD variables",
+  "varsEmpty": "No variables",
+  "varAddTitle": "Add variable",
+  "varEditTitle": "Edit variable",
+  "fieldKey": "Key",
+  "fieldValue": "Value",
+  "varEnvScope": "Environment scope",
+  "varProtected": "Protected",
+  "varMasked": "Masked",
+  "varDeleteConfirm": "Delete {key}?",
+  "tokensDeployTitle": "Deploy tokens",
+  "tokensDeployEmpty": "No deploy tokens",
+  "tokenDeployCreate": "Create deploy token",
+  "fieldName": "Name",
+  "fieldUsernameOptional": "Username (optional)",
+  "fieldExpiresDays": "Expires in days (optional)",
+  "errorPositiveNumber": "Must be a positive number",
+  "tokenScopeRequired": "Pick at least one scope",
+  "tokenValueTitle": "Token \"{name}\"",
+  "tokenCopyNow": "Copy this now. It will not be shown again.",
+  "tokenDeployRevokeConfirm": "Revoke deploy token?",
+  "webhooksTitle": "Webhooks",
+  "webhooksEmpty": "No webhooks",
+  "webhookTestSent": "Test event sent",
+  "webhookDeleteConfirm": "Delete webhook?",
+  "webhookTestSend": "Send test event",
+  "hookPushEvents": "Push events",
+  "hookTagPush": "Tag push events",
+  "hookIssues": "Issues",
+  "hookComments": "Comments",
+  "hookMergeRequests": "Merge requests",
+  "hookPipeline": "Pipeline",
+  "hookJobs": "Jobs",
+  "hookWiki": "Wiki pages",
+  "hookDeployments": "Deployments",
+  "hookReleases": "Releases",
+  "hookSubgroup": "Subgroup events",
+  "webhookAddTitle": "Add webhook",
+  "webhookUrl": "URL",
+  "webhookSecret": "Secret token (optional)",
+  "webhookSsl": "SSL verification",
+  "@varDeleteConfirm": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "@tokenValueTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

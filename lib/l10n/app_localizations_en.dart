@@ -235,4 +235,143 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get levelCustom => 'Custom';
+
+  @override
+  String get auditEmpty => 'No audit events';
+
+  @override
+  String get auditEmptyHint => 'Audit events may require a paid tier.';
+
+  @override
+  String get auditSomeone => 'Someone';
+
+  @override
+  String get auditMadeChange => 'made a change';
+
+  @override
+  String get varsTitle => 'CI/CD variables';
+
+  @override
+  String get varsEmpty => 'No variables';
+
+  @override
+  String get varAddTitle => 'Add variable';
+
+  @override
+  String get varEditTitle => 'Edit variable';
+
+  @override
+  String get fieldKey => 'Key';
+
+  @override
+  String get fieldValue => 'Value';
+
+  @override
+  String get varEnvScope => 'Environment scope';
+
+  @override
+  String get varProtected => 'Protected';
+
+  @override
+  String get varMasked => 'Masked';
+
+  @override
+  String varDeleteConfirm(String key) {
+    return 'Delete $key?';
+  }
+
+  @override
+  String get tokensDeployTitle => 'Deploy tokens';
+
+  @override
+  String get tokensDeployEmpty => 'No deploy tokens';
+
+  @override
+  String get tokenDeployCreate => 'Create deploy token';
+
+  @override
+  String get fieldName => 'Name';
+
+  @override
+  String get fieldUsernameOptional => 'Username (optional)';
+
+  @override
+  String get fieldExpiresDays => 'Expires in days (optional)';
+
+  @override
+  String get errorPositiveNumber => 'Must be a positive number';
+
+  @override
+  String get tokenScopeRequired => 'Pick at least one scope';
+
+  @override
+  String tokenValueTitle(String name) {
+    return 'Token \"$name\"';
+  }
+
+  @override
+  String get tokenCopyNow => 'Copy this now. It will not be shown again.';
+
+  @override
+  String get tokenDeployRevokeConfirm => 'Revoke deploy token?';
+
+  @override
+  String get webhooksTitle => 'Webhooks';
+
+  @override
+  String get webhooksEmpty => 'No webhooks';
+
+  @override
+  String get webhookTestSent => 'Test event sent';
+
+  @override
+  String get webhookDeleteConfirm => 'Delete webhook?';
+
+  @override
+  String get webhookTestSend => 'Send test event';
+
+  @override
+  String get hookPushEvents => 'Push events';
+
+  @override
+  String get hookTagPush => 'Tag push events';
+
+  @override
+  String get hookIssues => 'Issues';
+
+  @override
+  String get hookComments => 'Comments';
+
+  @override
+  String get hookMergeRequests => 'Merge requests';
+
+  @override
+  String get hookPipeline => 'Pipeline';
+
+  @override
+  String get hookJobs => 'Jobs';
+
+  @override
+  String get hookWiki => 'Wiki pages';
+
+  @override
+  String get hookDeployments => 'Deployments';
+
+  @override
+  String get hookReleases => 'Releases';
+
+  @override
+  String get hookSubgroup => 'Subgroup events';
+
+  @override
+  String get webhookAddTitle => 'Add webhook';
+
+  @override
+  String get webhookUrl => 'URL';
+
+  @override
+  String get webhookSecret => 'Secret token (optional)';
+
+  @override
+  String get webhookSsl => 'SSL verification';
 }

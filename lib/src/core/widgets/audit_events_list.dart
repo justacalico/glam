@@ -5,6 +5,7 @@ import 'package:glam/src/core/models/audit_event.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Lists audit events for a project or group scope. Shows a friendly
 /// note when the instance or tier doesn't expose the endpoint.
@@ -20,10 +21,10 @@ class AuditEventsList extends StatelessWidget {
       value: events,
       data: (list) {
         if (list.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.history,
-            title: 'No audit events',
-            message: 'Audit events may require a paid tier.',
+            title: context.l10n.auditEmpty,
+            message: context.l10n.auditEmptyHint,
           );
         }
         return Column(
@@ -34,7 +35,8 @@ class AuditEventsList extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.history, size: 18, color: colors.inkMuted),
                 title: Text(
-                  '${e.authorName ?? 'Someone'} ${e.change ?? 'made a change'}',
+                  '${e.authorName ?? context.l10n.auditSomeone} '
+                  '${e.change ?? context.l10n.auditMadeChange}',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

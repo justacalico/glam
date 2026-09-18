@@ -541,6 +541,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom'**
   String get levelCustom;
+
+  /// No description provided for @auditEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit events'**
+  String get auditEmpty;
+
+  /// No description provided for @auditEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit events may require a paid tier.'**
+  String get auditEmptyHint;
+
+  /// No description provided for @auditSomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get auditSomeone;
+
+  /// No description provided for @auditMadeChange.
+  ///
+  /// In en, this message translates to:
+  /// **'made a change'**
+  String get auditMadeChange;
+
+  /// No description provided for @varsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CI/CD variables'**
+  String get varsTitle;
+
+  /// No description provided for @varsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No variables'**
+  String get varsEmpty;
+
+  /// No description provided for @varAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add variable'**
+  String get varAddTitle;
+
+  /// No description provided for @varEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit variable'**
+  String get varEditTitle;
+
+  /// No description provided for @fieldKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get fieldKey;
+
+  /// No description provided for @fieldValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get fieldValue;
+
+  /// No description provided for @varEnvScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment scope'**
+  String get varEnvScope;
+
+  /// No description provided for @varProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get varProtected;
+
+  /// No description provided for @varMasked.
+  ///
+  /// In en, this message translates to:
+  /// **'Masked'**
+  String get varMasked;
+
+  /// No description provided for @varDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {key}?'**
+  String varDeleteConfirm(String key);
+
+  /// No description provided for @tokensDeployTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deploy tokens'**
+  String get tokensDeployTitle;
+
+  /// No description provided for @tokensDeployEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No deploy tokens'**
+  String get tokensDeployEmpty;
+
+  /// No description provided for @tokenDeployCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create deploy token'**
+  String get tokenDeployCreate;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get fieldName;
+
+  /// No description provided for @fieldUsernameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Username (optional)'**
+  String get fieldUsernameOptional;
+
+  /// No description provided for @fieldExpiresDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in days (optional)'**
+  String get fieldExpiresDays;
+
+  /// No description provided for @errorPositiveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be a positive number'**
+  String get errorPositiveNumber;
+
+  /// No description provided for @tokenScopeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one scope'**
+  String get tokenScopeRequired;
+
+  /// No description provided for @tokenValueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Token \"{name}\"'**
+  String tokenValueTitle(String name);
+
+  /// No description provided for @tokenCopyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this now. It will not be shown again.'**
+  String get tokenCopyNow;
+
+  /// No description provided for @tokenDeployRevokeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke deploy token?'**
+  String get tokenDeployRevokeConfirm;
+
+  /// No description provided for @webhooksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhooks'**
+  String get webhooksTitle;
+
+  /// No description provided for @webhooksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No webhooks'**
+  String get webhooksEmpty;
+
+  /// No description provided for @webhookTestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test event sent'**
+  String get webhookTestSent;
+
+  /// No description provided for @webhookDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete webhook?'**
+  String get webhookDeleteConfirm;
+
+  /// No description provided for @webhookTestSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send test event'**
+  String get webhookTestSend;
+
+  /// No description provided for @hookPushEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Push events'**
+  String get hookPushEvents;
+
+  /// No description provided for @hookTagPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag push events'**
+  String get hookTagPush;
+
+  /// No description provided for @hookIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get hookIssues;
+
+  /// No description provided for @hookComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get hookComments;
+
+  /// No description provided for @hookMergeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge requests'**
+  String get hookMergeRequests;
+
+  /// No description provided for @hookPipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline'**
+  String get hookPipeline;
+
+  /// No description provided for @hookJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get hookJobs;
+
+  /// No description provided for @hookWiki.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki pages'**
+  String get hookWiki;
+
+  /// No description provided for @hookDeployments.
+  ///
+  /// In en, this message translates to:
+  /// **'Deployments'**
+  String get hookDeployments;
+
+  /// No description provided for @hookReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'Releases'**
+  String get hookReleases;
+
+  /// No description provided for @hookSubgroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Subgroup events'**
+  String get hookSubgroup;
+
+  /// No description provided for @webhookAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add webhook'**
+  String get webhookAddTitle;
+
+  /// No description provided for @webhookUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get webhookUrl;
+
+  /// No description provided for @webhookSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret token (optional)'**
+  String get webhookSecret;
+
+  /// No description provided for @webhookSsl.
+  ///
+  /// In en, this message translates to:
+  /// **'SSL verification'**
+  String get webhookSsl;
 }
 
 class _AppLocalizationsDelegate
