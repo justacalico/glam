@@ -2530,4 +2530,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteTag => '删除标签？';
+
+  @override
+  String get emptyDirectory => '空目录';
+
+  @override
+  String get downloadSource => '下载源码';
+
+  @override
+  String get newFile => '新建文件';
+
+  @override
+  String get switchBranch => '切换分支';
+
+  @override
+  String get editFile => '编辑文件';
+
+  @override
+  String get copyContents => '复制内容';
+
+  @override
+  String get fileHistory => '文件历史';
+
+  @override
+  String get viewBlame => '查看 blame';
+
+  @override
+  String get deleteFile => '删除文件';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get aCommitRemovingThisFileWill => '将创建一个删除此文件的提交。';
 }

@@ -792,5 +792,16 @@
   "p0AndAllItsTagsAre": "“{p0}”及其所有标签将被移除。",
   "filterTagsRegex": "过滤标签（正则）",
   "noTags": "没有标签",
-  "deleteTag": "删除标签？"
+  "deleteTag": "删除标签？",
+  "emptyDirectory": "空目录",
+  "downloadSource": "下载源码",
+  "newFile": "新建文件",
+  "switchBranch": "切换分支",
+  "editFile": "编辑文件",
+  "copyContents": "复制内容",
+  "fileHistory": "文件历史",
+  "viewBlame": "查看 blame",
+  "deleteFile": "删除文件",
+  "copiedToClipboard": "已复制到剪贴板",
+  "aCommitRemovingThisFileWill": "将创建一个删除此文件的提交。"
 }

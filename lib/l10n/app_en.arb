@@ -792,5 +792,16 @@
   "p0AndAllItsTagsAre": "\"{p0}\" and all its tags are removed.",
   "filterTagsRegex": "Filter tags (regex)",
   "noTags": "No tags",
-  "deleteTag": "Delete tag?"
+  "deleteTag": "Delete tag?",
+  "emptyDirectory": "Empty directory",
+  "downloadSource": "Download source",
+  "newFile": "New file",
+  "switchBranch": "Switch branch",
+  "editFile": "Edit file",
+  "copyContents": "Copy contents",
+  "fileHistory": "File history",
+  "viewBlame": "View blame",
+  "deleteFile": "Delete file",
+  "copiedToClipboard": "Copied to clipboard",
+  "aCommitRemovingThisFileWill": "A commit removing this file will be created."
 }

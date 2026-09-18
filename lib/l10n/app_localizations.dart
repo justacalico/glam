@@ -4855,6 +4855,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete tag?'**
   String get deleteTag;
+
+  /// No description provided for @emptyDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty directory'**
+  String get emptyDirectory;
+
+  /// No description provided for @downloadSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Download source'**
+  String get downloadSource;
+
+  /// No description provided for @newFile.
+  ///
+  /// In en, this message translates to:
+  /// **'New file'**
+  String get newFile;
+
+  /// No description provided for @switchBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch branch'**
+  String get switchBranch;
+
+  /// No description provided for @editFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit file'**
+  String get editFile;
+
+  /// No description provided for @copyContents.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy contents'**
+  String get copyContents;
+
+  /// No description provided for @fileHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'File history'**
+  String get fileHistory;
+
+  /// No description provided for @viewBlame.
+  ///
+  /// In en, this message translates to:
+  /// **'View blame'**
+  String get viewBlame;
+
+  /// No description provided for @deleteFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete file'**
+  String get deleteFile;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @aCommitRemovingThisFileWill.
+  ///
+  /// In en, this message translates to:
+  /// **'A commit removing this file will be created.'**
+  String get aCommitRemovingThisFileWill;
 }
 
 class _AppLocalizationsDelegate

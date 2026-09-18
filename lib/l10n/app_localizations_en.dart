@@ -2563,4 +2563,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteTag => 'Delete tag?';
+
+  @override
+  String get emptyDirectory => 'Empty directory';
+
+  @override
+  String get downloadSource => 'Download source';
+
+  @override
+  String get newFile => 'New file';
+
+  @override
+  String get switchBranch => 'Switch branch';
+
+  @override
+  String get editFile => 'Edit file';
+
+  @override
+  String get copyContents => 'Copy contents';
+
+  @override
+  String get fileHistory => 'File history';
+
+  @override
+  String get viewBlame => 'View blame';
+
+  @override
+  String get deleteFile => 'Delete file';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get aCommitRemovingThisFileWill =>
+      'A commit removing this file will be created.';
 }

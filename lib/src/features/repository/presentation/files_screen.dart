@@ -15,6 +15,7 @@ import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Repository file browser: folder listing with a breadcrumb and a
 /// branch/ref selector.
@@ -57,9 +58,9 @@ class FilesScreen extends ConsumerWidget {
                 onLoadMore: notifier.loadMore,
                 onRefresh: notifier.refresh,
                 padding: const EdgeInsets.symmetric(vertical: Insets.xs),
-                empty: const EmptyState(
+                empty: EmptyState(
                   icon: Icons.folder_open,
-                  title: 'Empty directory',
+                  title: context.l10n.emptyDirectory,
                 ),
                 itemBuilder: (context, index) => _TreeTile(
                   entry: sorted[index],
@@ -143,7 +144,7 @@ class _PathBar extends ConsumerWidget {
           ),
           if (ref != null)
             IconButton(
-              tooltip: 'Download source',
+              tooltip: context.l10n.downloadSource,
               icon: Icon(
                 Icons.download_outlined,
                 size: 18,
@@ -153,7 +154,7 @@ class _PathBar extends ConsumerWidget {
             ),
           if (ref != null)
             IconButton(
-              tooltip: 'New file',
+              tooltip: context.l10n.newFile,
               icon: Icon(Icons.add, size: 18, color: colors.inkMuted),
               onPressed: () async {
                 final committed = await FileEditorScreen.show(
@@ -225,7 +226,7 @@ class _RefPicker extends ConsumerWidget {
         (currentRef == null ? <String>[] : [currentRef!]);
 
     return PopupMenuButton<String>(
-      tooltip: 'Switch branch',
+      tooltip: context.l10n.switchBranch,
       onSelected: (name) =>
           context.go(Routes.projectTree(projectId, ref: name)),
       itemBuilder: (context) => [
