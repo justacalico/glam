@@ -148,15 +148,26 @@ class _InfoCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(rows[i].$1, size: 16, color: colors.inkMuted),
-                  const SizedBox(width: Insets.md),
-                  Text(rows[i].$2, style: theme.textTheme.bodySmall),
-                  const Spacer(),
-                  Flexible(
+                  SizedBox(
+                    width: 160,
+                    child: Row(
+                      children: [
+                        Icon(rows[i].$1, size: 16, color: colors.inkMuted),
+                        const SizedBox(width: Insets.md),
+                        Flexible(
+                          child: Text(
+                            rows[i].$2,
+                            style: theme.textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
                     child: Text(
                       rows[i].$3,
                       style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
