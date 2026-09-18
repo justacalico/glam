@@ -266,5 +266,13 @@
   "ruleName": "规则名称",
   "approvalsRequired": "所需审批数",
   "eligibleApprovers": "可审批成员",
-  "deleteApprovalRule": "删除审批规则？"
+  "deleteApprovalRule": "删除审批规则？",
+  "publicPipelines": "公开流水线",
+  "autoCancelRedundantPipelines": "自动取消冗余流水线",
+  "forwardDeploymentVariables": "转发部署变量",
+  "separateCachesPerBranch": "按分支隔离缓存",
+  "keepLatestArtifacts": "保留最新产物",
+  "jobTimeout": "作业超时",
+  "timeoutSeconds": "超时时间（秒）",
+  "ciCdConfigPath": "CI/CD 配置路径"
 }

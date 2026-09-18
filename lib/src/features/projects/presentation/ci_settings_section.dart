@@ -6,6 +6,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// CI/CD project settings: pipeline visibility, job timeout, caching and
 /// deployment options.
@@ -21,7 +22,7 @@ class CiSettingsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('CI/CD'),
+        SectionLabel('CI/CD'),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -31,7 +32,7 @@ class CiSettingsSection extends ConsumerWidget {
           child: Column(
             children: [
               _GateSwitch(
-                label: 'Public pipelines',
+                label: context.l10n.publicPipelines,
                 value: project.publicJobs ?? false,
                 onChanged: (v) => _set(context, ref, publicJobs: v),
               ),
@@ -42,7 +43,7 @@ class CiSettingsSection extends ConsumerWidget {
               ),
               _divider(colors),
               _ChoiceTile(
-                label: 'Auto-cancel redundant pipelines',
+                label: context.l10n.autoCancelRedundantPipelines,
                 value: project.autoCancelPendingPipelines ?? 'enabled',
                 options: const {'enabled': 'Enabled', 'disabled': 'Disabled'},
                 onChanged: (v) =>
@@ -50,20 +51,20 @@ class CiSettingsSection extends ConsumerWidget {
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Forward deployment variables',
+                label: context.l10n.forwardDeploymentVariables,
                 value: project.ciForwardDeploymentEnabled ?? false,
                 onChanged: (v) =>
                     _set(context, ref, ciForwardDeploymentEnabled: v),
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Separate caches per branch',
+                label: context.l10n.separateCachesPerBranch,
                 value: project.ciSeparatedCaches ?? false,
                 onChanged: (v) => _set(context, ref, ciSeparatedCaches: v),
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Keep latest artifacts',
+                label: context.l10n.keepLatestArtifacts,
                 value: project.keepLatestArtifact ?? false,
                 onChanged: (v) => _set(context, ref, keepLatestArtifact: v),
               ),
@@ -118,15 +119,15 @@ class CiSettingsSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Job timeout'),
+        title: Text(context.l10n.jobTimeout),
         content: SizedBox(
           width: 320,
           child: TextField(
             controller: controller,
             autofocus: true,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Timeout (seconds)',
+            decoration: InputDecoration(
+              labelText: context.l10n.timeoutSeconds,
               border: OutlineInputBorder(),
             ),
             onSubmitted: (_) => Navigator.pop(context, true),
@@ -135,11 +136,11 @@ class CiSettingsSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -157,7 +158,7 @@ class CiSettingsSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('CI/CD config path'),
+        title: Text(context.l10n.ciCdConfigPath),
         content: SizedBox(
           width: 420,
           child: TextField(
@@ -173,11 +174,11 @@ class CiSettingsSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -264,7 +265,7 @@ class _TimeoutTile extends StatelessWidget {
     final colors = context.colors;
     return ListTile(
       dense: true,
-      title: const Text('Job timeout'),
+      title: Text(context.l10n.jobTimeout),
       subtitle: Text(
         seconds == null ? 'Default' : '$seconds seconds',
         maxLines: 1,
@@ -287,7 +288,7 @@ class _PathTile extends StatelessWidget {
     final colors = context.colors;
     return ListTile(
       dense: true,
-      title: const Text('CI/CD config path'),
+      title: Text(context.l10n.ciCdConfigPath),
       subtitle: Text(
         value == null || value!.isEmpty ? '.gitlab-ci.yml' : value!,
         maxLines: 1,

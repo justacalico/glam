@@ -336,5 +336,13 @@
   "ruleName": "Rule name",
   "approvalsRequired": "Approvals required",
   "eligibleApprovers": "Eligible approvers",
-  "deleteApprovalRule": "Delete approval rule?"
+  "deleteApprovalRule": "Delete approval rule?",
+  "publicPipelines": "Public pipelines",
+  "autoCancelRedundantPipelines": "Auto-cancel redundant pipelines",
+  "forwardDeploymentVariables": "Forward deployment variables",
+  "separateCachesPerBranch": "Separate caches per branch",
+  "keepLatestArtifacts": "Keep latest artifacts",
+  "jobTimeout": "Job timeout",
+  "timeoutSeconds": "Timeout (seconds)",
+  "ciCdConfigPath": "CI/CD config path"
 }

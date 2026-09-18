@@ -835,4 +835,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteApprovalRule => 'Delete approval rule?';
+
+  @override
+  String get publicPipelines => 'Public pipelines';
+
+  @override
+  String get autoCancelRedundantPipelines => 'Auto-cancel redundant pipelines';
+
+  @override
+  String get forwardDeploymentVariables => 'Forward deployment variables';
+
+  @override
+  String get separateCachesPerBranch => 'Separate caches per branch';
+
+  @override
+  String get keepLatestArtifacts => 'Keep latest artifacts';
+
+  @override
+  String get jobTimeout => 'Job timeout';
+
+  @override
+  String get timeoutSeconds => 'Timeout (seconds)';
+
+  @override
+  String get ciCdConfigPath => 'CI/CD config path';
 }

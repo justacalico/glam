@@ -1699,6 +1699,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete approval rule?'**
   String get deleteApprovalRule;
+
+  /// No description provided for @publicPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Public pipelines'**
+  String get publicPipelines;
+
+  /// No description provided for @autoCancelRedundantPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-cancel redundant pipelines'**
+  String get autoCancelRedundantPipelines;
+
+  /// No description provided for @forwardDeploymentVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward deployment variables'**
+  String get forwardDeploymentVariables;
+
+  /// No description provided for @separateCachesPerBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate caches per branch'**
+  String get separateCachesPerBranch;
+
+  /// No description provided for @keepLatestArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep latest artifacts'**
+  String get keepLatestArtifacts;
+
+  /// No description provided for @jobTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Job timeout'**
+  String get jobTimeout;
+
+  /// No description provided for @timeoutSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeout (seconds)'**
+  String get timeoutSeconds;
+
+  /// No description provided for @ciCdConfigPath.
+  ///
+  /// In en, this message translates to:
+  /// **'CI/CD config path'**
+  String get ciCdConfigPath;
 }
 
 class _AppLocalizationsDelegate

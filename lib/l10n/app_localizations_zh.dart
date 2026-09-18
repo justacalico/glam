@@ -830,4 +830,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteApprovalRule => '删除审批规则？';
+
+  @override
+  String get publicPipelines => '公开流水线';
+
+  @override
+  String get autoCancelRedundantPipelines => '自动取消冗余流水线';
+
+  @override
+  String get forwardDeploymentVariables => '转发部署变量';
+
+  @override
+  String get separateCachesPerBranch => '按分支隔离缓存';
+
+  @override
+  String get keepLatestArtifacts => '保留最新产物';
+
+  @override
+  String get jobTimeout => '作业超时';
+
+  @override
+  String get timeoutSeconds => '超时时间（秒）';
+
+  @override
+  String get ciCdConfigPath => 'CI/CD 配置路径';
 }
