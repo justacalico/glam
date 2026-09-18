@@ -5,6 +5,7 @@ import 'package:glam/src/core/utils/extensions.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/icon_text.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// A project row: avatar, name, description, and a stats line.
 class ProjectTile extends StatelessWidget {
@@ -32,7 +33,7 @@ class ProjectTile extends StatelessWidget {
               tag: 'project-avatar-${project.id}',
               child: _ProjectAvatar(project: project),
             ),
-            const SizedBox(width: Insets.md),
+            SizedBox(width: Insets.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +49,10 @@ class ProjectTile extends StatelessWidget {
                         ),
                       ),
                       if (project.archived)
-                        _Badge(text: 'Archived', color: colors.warning),
+                        _Badge(
+                          text: context.l10n.archived,
+                          color: colors.warning,
+                        ),
                       if (project.visibility == 'private')
                         Padding(
                           padding: const EdgeInsets.only(left: Insets.xs),

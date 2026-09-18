@@ -376,5 +376,6 @@
   "pasteYourGitlabCiYmlHere": "在此粘贴 .gitlab-ci.yml",
   "lintJobsList": "作业：{p0}",
   "lint": "Lint",
-  "auditEvents": "审计事件"
+  "auditEvents": "审计事件",
+  "archived": "已归档"
 }

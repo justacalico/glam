@@ -96,7 +96,7 @@ class ProjectOverviewTab extends ConsumerWidget {
               );
             }).value ??
             const SizedBox.shrink(),
-        const SizedBox(height: Insets.xl),
+        SizedBox(height: Insets.xl),
       ],
     );
   }
@@ -263,9 +263,12 @@ class _LanguageBar extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: Insets.xs + 2),
+                    SizedBox(width: Insets.xs + 2),
                     Text(
-                      '${shown[i].key} ${Format.percent(shown[i].value)}',
+                      context.l10n.storageStatPair(
+                        shown[i].key,
+                        Format.percent(shown[i].value),
+                      ),
                       style: theme.textTheme.labelMedium,
                     ),
                   ],

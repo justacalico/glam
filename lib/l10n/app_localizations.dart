@@ -2359,6 +2359,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Audit events'**
   String get auditEvents;
+
+  /// No description provided for @archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archived;
 }
 
 class _AppLocalizationsDelegate

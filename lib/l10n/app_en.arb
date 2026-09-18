@@ -453,5 +453,6 @@
       }
     }
   },
-  "auditEvents": "Audit events"
+  "auditEvents": "Audit events",
+  "archived": "Archived"
 }

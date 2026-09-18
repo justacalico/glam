@@ -1171,4 +1171,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get auditEvents => '审计事件';
+
+  @override
+  String get archived => '已归档';
 }

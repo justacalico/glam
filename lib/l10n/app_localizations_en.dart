@@ -1183,4 +1183,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auditEvents => 'Audit events';
+
+  @override
+  String get archived => 'Archived';
 }
