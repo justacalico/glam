@@ -214,12 +214,14 @@ class _LanguageBar extends StatelessWidget {
         border: Border.all(color: colors.border),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ClipRRect(
             borderRadius: Radii.borderSm,
             child: SizedBox(
               height: 8,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < shown.length; i++)
                     Expanded(
@@ -232,6 +234,7 @@ class _LanguageBar extends StatelessWidget {
           ),
           const SizedBox(height: Insets.md),
           Wrap(
+            alignment: WrapAlignment.end,
             spacing: Insets.lg,
             runSpacing: Insets.sm,
             children: [
