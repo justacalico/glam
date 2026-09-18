@@ -1086,5 +1086,13 @@
   "issueTypeIssue": "议题",
   "issueTypeIncident": "事故",
   "issueTypeTask": "任务",
-  "issueTypeTestCase": "测试用例"
+  "issueTypeTestCase": "测试用例",
+  "draftsOnly": "仅草稿",
+  "noDrafts": "排除草稿",
+  "noMrsMatchFilter": "没有符合此筛选条件的合并请求",
+  "mrScopeAssigned": "指派给我",
+  "mrScopeCreated": "由我创建",
+  "mrScopeReview": "请我评审",
+  "scopeFilter": "范围",
+  "branchFilter": "分支"
 }

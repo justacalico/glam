@@ -49,7 +49,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Merge requests'),
+        title: Text(context.l10n.mrsTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(104),
           child: Column(
@@ -85,7 +85,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                     Expanded(
                       flex: 2,
                       child: SearchField(
-                        hint: 'Search merge requests',
+                        hint: context.l10n.searchMrs,
                         onChanged: (v) => _setFilter(
                           (f) => (
                             scope: f.scope,
@@ -108,13 +108,13 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                         child: Row(
                           children: [
                             FilterMenu(
-                              title: 'State',
+                              title: context.l10n.state,
                               current: filter.state,
                               options: const ['opened', 'merged', 'closed'],
-                              labels: const {
-                                'opened': 'Open',
-                                'merged': 'Merged',
-                                'closed': 'Closed',
+                              labels: {
+                                'opened': context.l10n.stateOpen,
+                                'merged': context.l10n.stateMerged,
+                                'closed': context.l10n.stateClosed,
                               },
                               onSelect: (s) => _setFilter(
                                 (f) => (
@@ -131,12 +131,12 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                             ),
                             const SizedBox(width: Insets.sm),
                             FilterMenu(
-                              title: 'Draft',
+                              title: context.l10n.draft,
                               current: filter.wip,
                               options: const ['yes', 'no'],
-                              labels: const {
-                                'yes': 'Drafts',
-                                'no': 'No drafts',
+                              labels: {
+                                'yes': context.l10n.draftsOnly,
+                                'no': context.l10n.noDrafts,
                               },
                               onSelect: (w) => _setFilter(
                                 (f) => (
@@ -152,15 +152,15 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                               ),
                             ),
                             FilterMenu(
-                              title: 'Activity',
+                              title: context.l10n.activityTitle,
                               current: filter.updatedDays == null
                                   ? null
                                   : '${filter.updatedDays}',
                               options: const ['1', '7', '30'],
-                              labels: const {
-                                '1': 'Last 24h',
-                                '7': 'Last week',
-                                '30': 'Last month',
+                              labels: {
+                                '1': context.l10n.last24h,
+                                '7': context.l10n.lastWeek,
+                                '30': context.l10n.lastMonth,
                               },
                               onSelect: (v) => _setFilter(
                                 (f) => (
@@ -217,9 +217,9 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
             color: colors.border,
             indent: Insets.lg,
           ),
-          empty: const EmptyState(
+          empty: EmptyState(
             icon: Icons.merge,
-            title: 'No merge requests match this filter',
+            title: context.l10n.noMrsMatchFilter,
           ),
           itemBuilder: (context, index) {
             final mr = data.items[index];
@@ -237,12 +237,12 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
 }
 
 const _reactions = ['thumbsup', 'thumbsdown', 'smile', 'tada', 'heart'];
-const _reactionLabels = {
-  'thumbsup': 'Thumbs up',
-  'thumbsdown': 'Thumbs down',
-  'smile': 'Smile',
-  'tada': 'Tada',
-  'heart': 'Heart',
+Map<String, String> _reactionLabels(AppLocalizations l10n) => {
+  'thumbsup': l10n.reactionThumbsup,
+  'thumbsdown': l10n.reactionThumbsdown,
+  'smile': l10n.reactionSmile,
+  'tada': l10n.reactionTada,
+  'heart': l10n.reactionHeart,
 };
 
 /// MRs tab inside project detail: state chips + new MR button.
@@ -270,11 +270,11 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
   String? _orderBy;
   String? _sort;
 
-  static const _scopes = {
-    MrScope.all: 'All',
-    MrScope.assigned: 'Assigned to me',
-    MrScope.created: 'Created by me',
-    MrScope.review: 'Review requested',
+  static Map<MrScope, String> _scopes(AppLocalizations l10n) => {
+    MrScope.all: l10n.stateAll,
+    MrScope.assigned: l10n.mrScopeAssigned,
+    MrScope.created: l10n.mrScopeCreated,
+    MrScope.review: l10n.mrScopeReview,
   };
 
   @override
@@ -338,11 +338,11 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
             .value
             ?.items ??
         const <Member>[];
-    const states = {
-      'opened': 'Open',
-      'merged': 'Merged',
-      'closed': 'Closed',
-      null: 'All',
+    final states = {
+      'opened': context.l10n.stateOpen,
+      'merged': context.l10n.stateMerged,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
     };
 
     return Column(
@@ -355,7 +355,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search merge requests',
+            hint: context.l10n.searchMrs,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -380,23 +380,25 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 const SizedBox(width: Insets.sm),
               ],
               FilterMenu(
-                title: 'Scope',
-                current: _scope == MrScope.all ? null : _scopes[_scope],
+                title: context.l10n.scopeFilter,
+                current: _scope == MrScope.all
+                    ? null
+                    : _scopes(context.l10n)[_scope],
                 options: [
-                  for (final e in _scopes.entries)
+                  for (final e in _scopes(context.l10n).entries)
                     if (e.key != MrScope.all) e.value,
                 ],
                 onSelect: (v) => setState(
-                  () => _scope = _scopes.entries
+                  () => _scope = _scopes(context.l10n).entries
                       .firstWhere(
                         (e) => e.value == v,
-                        orElse: () => const MapEntry(MrScope.all, 'All'),
+                        orElse: () => const MapEntry(MrScope.all, ''),
                       )
                       .key,
                 ),
               ),
               FilterMenu(
-                title: 'Assignee',
+                title: context.l10n.assignee,
                 current: _assigneeId == null
                     ? null
                     : members
@@ -411,7 +413,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 ),
               ),
               FilterMenu(
-                title: 'Author',
+                title: context.l10n.author,
                 current: _authorId == null
                     ? null
                     : members
@@ -426,45 +428,48 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 ),
               ),
               FilterMenu(
-                title: 'Label',
+                title: context.l10n.labelFilter,
                 current: _label,
                 options: [for (final l in labels) l.name],
                 onSelect: (v) => setState(() => _label = v),
               ),
               FilterMenu(
-                title: 'Milestone',
+                title: context.l10n.milestone,
                 current: _milestone,
                 options: [for (final m in milestones) m.title],
                 onSelect: (v) => setState(() => _milestone = v),
               ),
               FilterMenu(
-                title: 'Branch',
+                title: context.l10n.branchFilter,
                 current: _targetBranch,
                 options: [for (final b in branches) b.name],
                 onSelect: (v) => setState(() => _targetBranch = v),
               ),
               FilterMenu(
-                title: 'Draft',
+                title: context.l10n.draft,
                 current: _wip,
                 options: const ['yes', 'no'],
-                labels: const {'yes': 'Drafts', 'no': 'No drafts'},
+                labels: {
+                  'yes': context.l10n.draftsOnly,
+                  'no': context.l10n.noDrafts,
+                },
                 onSelect: (v) => setState(() => _wip = v),
               ),
               FilterMenu(
-                title: 'Reacted',
+                title: context.l10n.reactedFilter,
                 current: _myReaction,
                 options: _reactions,
-                labels: _reactionLabels,
+                labels: _reactionLabels(context.l10n),
                 onSelect: (v) => setState(() => _myReaction = v),
               ),
               FilterMenu(
-                title: 'Activity',
+                title: context.l10n.activityTitle,
                 current: _updatedDays == null ? null : '$_updatedDays',
                 options: const ['1', '7', '30'],
-                labels: const {
-                  '1': 'Last 24h',
-                  '7': 'Last week',
-                  '30': 'Last month',
+                labels: {
+                  '1': context.l10n.last24h,
+                  '7': context.l10n.lastWeek,
+                  '30': context.l10n.lastMonth,
                 },
                 onSelect: (v) => setState(
                   () => _updatedDays = v == null ? null : int.parse(v),
@@ -480,7 +485,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
                 }),
               ),
               IconButton(
-                tooltip: 'New merge request',
+                tooltip: context.l10n.newMr,
                 icon: const Icon(Icons.add),
                 onPressed: () => unawaited(
                   MrFormScreen.show(context, projectId: widget.projectId),
@@ -505,8 +510,8 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
               ),
               empty: EmptyState(
                 icon: Icons.merge,
-                title: 'No merge requests',
-                actionLabel: 'New merge request',
+                title: context.l10n.noMergeRequests,
+                actionLabel: context.l10n.newMr,
                 onAction: () => unawaited(
                   MrFormScreen.show(context, projectId: widget.projectId),
                 ),

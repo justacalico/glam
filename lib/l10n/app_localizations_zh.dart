@@ -3510,4 +3510,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get issueTypeTestCase => '测试用例';
+
+  @override
+  String get draftsOnly => '仅草稿';
+
+  @override
+  String get noDrafts => '排除草稿';
+
+  @override
+  String get noMrsMatchFilter => '没有符合此筛选条件的合并请求';
+
+  @override
+  String get mrScopeAssigned => '指派给我';
+
+  @override
+  String get mrScopeCreated => '由我创建';
+
+  @override
+  String get mrScopeReview => '请我评审';
+
+  @override
+  String get scopeFilter => '范围';
+
+  @override
+  String get branchFilter => '分支';
 }

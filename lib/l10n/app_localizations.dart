@@ -6619,6 +6619,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test case'**
   String get issueTypeTestCase;
+
+  /// No description provided for @draftsOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get draftsOnly;
+
+  /// No description provided for @noDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts'**
+  String get noDrafts;
+
+  /// No description provided for @noMrsMatchFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No merge requests match this filter'**
+  String get noMrsMatchFilter;
+
+  /// No description provided for @mrScopeAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to me'**
+  String get mrScopeAssigned;
+
+  /// No description provided for @mrScopeCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by me'**
+  String get mrScopeCreated;
+
+  /// No description provided for @mrScopeReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requested'**
+  String get mrScopeReview;
+
+  /// No description provided for @scopeFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get scopeFilter;
+
+  /// No description provided for @branchFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get branchFilter;
 }
 
 class _AppLocalizationsDelegate

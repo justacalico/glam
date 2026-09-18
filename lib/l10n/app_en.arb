@@ -1086,5 +1086,13 @@
   "issueTypeIssue": "Issue",
   "issueTypeIncident": "Incident",
   "issueTypeTask": "Task",
-  "issueTypeTestCase": "Test case"
+  "issueTypeTestCase": "Test case",
+  "draftsOnly": "Drafts",
+  "noDrafts": "No drafts",
+  "noMrsMatchFilter": "No merge requests match this filter",
+  "mrScopeAssigned": "Assigned to me",
+  "mrScopeCreated": "Created by me",
+  "mrScopeReview": "Review requested",
+  "scopeFilter": "Scope",
+  "branchFilter": "Branch"
 }

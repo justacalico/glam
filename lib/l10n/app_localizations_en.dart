@@ -3552,4 +3552,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get issueTypeTestCase => 'Test case';
+
+  @override
+  String get draftsOnly => 'Drafts';
+
+  @override
+  String get noDrafts => 'No drafts';
+
+  @override
+  String get noMrsMatchFilter => 'No merge requests match this filter';
+
+  @override
+  String get mrScopeAssigned => 'Assigned to me';
+
+  @override
+  String get mrScopeCreated => 'Created by me';
+
+  @override
+  String get mrScopeReview => 'Review requested';
+
+  @override
+  String get scopeFilter => 'Scope';
+
+  @override
+  String get branchFilter => 'Branch';
 }
