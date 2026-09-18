@@ -877,4 +877,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeDeployKey => 'Remove deploy key?';
+
+  @override
+  String get openSite => 'Open site';
+
+  @override
+  String get forceHttps => 'Force HTTPS';
+
+  @override
+  String get redirectAllPagesTrafficToHttps =>
+      'Redirect all Pages traffic to HTTPS';
+
+  @override
+  String get uniqueDomain => 'Unique domain';
+
+  @override
+  String get serveThisSiteOnAUnique =>
+      'Serve this site on a unique per-deployment domain';
+
+  @override
+  String get removeDomain => 'Remove domain';
+
+  @override
+  String get addDomain => 'Add domain';
+
+  @override
+  String get unpublishPages => 'Unpublish Pages?';
+
+  @override
+  String get addPagesDomain => 'Add Pages domain';
+
+  @override
+  String get exportProject => 'Export project';
+
+  @override
+  String get loadStatusError => 'Could not load status';
+
+  @override
+  String get removeDomainConfirm => 'Remove domain?';
 }

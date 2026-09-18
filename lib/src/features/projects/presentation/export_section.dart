@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project export: request a tarball export and download it once the
 /// instance finishes building it.
@@ -26,7 +27,7 @@ class ExportSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Export project'),
+        SectionLabel(context.l10n.exportProject),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(Insets.lg),
@@ -40,25 +41,31 @@ class ExportSection extends ConsumerWidget {
               Expanded(
                 child: Text(
                   status?.statusLabel ??
-                      (export.hasError ? 'Could not load status' : 'Loading…'),
+                      (export.hasError
+                          ? context.l10n.loadStatusError
+                          : context.l10n.miscLoading),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               if (status != null && status.finished)
                 TextButton.icon(
-                  icon: const Icon(Icons.download_outlined, size: 16),
-                  label: const Text('Download'),
+                  icon: Icon(Icons.download_outlined, size: 16),
+                  label: Text(context.l10n.actionDownload),
                   onPressed: () => _download(context, ref),
                 ),
               if (status != null && !status.running)
                 TextButton.icon(
-                  icon: const Icon(Icons.inventory_2_outlined, size: 16),
-                  label: Text(status.finished ? 'Re-export' : 'Export'),
+                  icon: Icon(Icons.inventory_2_outlined, size: 16),
+                  label: Text(
+                    status.finished
+                        ? context.l10n.actionReexport
+                        : context.l10n.actionExport,
+                  ),
                   onPressed: () => _request(context, ref),
                 ),
               if (status != null && status.running)
                 IconButton(
-                  tooltip: 'Refresh',
+                  tooltip: context.l10n.actionRefresh,
                   icon: Icon(Icons.refresh, size: 18, color: colors.inkMuted),
                   onPressed: () =>
                       ref.invalidate(projectExportProvider(project.id)),

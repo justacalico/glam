@@ -350,5 +350,17 @@
   "publicKey": "Public key",
   "sshEd25519Aaaa": "ssh-ed25519 AAAA…",
   "grantWriteAccess": "Grant write access",
-  "removeDeployKey": "Remove deploy key?"
+  "removeDeployKey": "Remove deploy key?",
+  "openSite": "Open site",
+  "forceHttps": "Force HTTPS",
+  "redirectAllPagesTrafficToHttps": "Redirect all Pages traffic to HTTPS",
+  "uniqueDomain": "Unique domain",
+  "serveThisSiteOnAUnique": "Serve this site on a unique per-deployment domain",
+  "removeDomain": "Remove domain",
+  "addDomain": "Add domain",
+  "unpublishPages": "Unpublish Pages?",
+  "addPagesDomain": "Add Pages domain",
+  "exportProject": "Export project",
+  "loadStatusError": "Could not load status",
+  "removeDomainConfirm": "Remove domain?"
 }

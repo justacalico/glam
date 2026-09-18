@@ -280,5 +280,17 @@
   "publicKey": "公钥",
   "sshEd25519Aaaa": "ssh-ed25519 AAAA…",
   "grantWriteAccess": "授予写权限",
-  "removeDeployKey": "移除部署密钥？"
+  "removeDeployKey": "移除部署密钥？",
+  "exportProject": "导出项目",
+  "loadStatusError": "无法加载状态",
+  "removeDomainConfirm": "移除域名？",
+  "openSite": "打开站点",
+  "forceHttps": "强制 HTTPS",
+  "redirectAllPagesTrafficToHttps": "将所有 Pages 流量重定向到 HTTPS",
+  "uniqueDomain": "独立域名",
+  "serveThisSiteOnAUnique": "在每次部署的独立域名上提供此站点",
+  "removeDomain": "移除域名",
+  "addDomain": "添加域名",
+  "unpublishPages": "取消发布 Pages？",
+  "addPagesDomain": "添加 Pages 域名"
 }

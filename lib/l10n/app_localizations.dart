@@ -1783,6 +1783,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove deploy key?'**
   String get removeDeployKey;
+
+  /// No description provided for @openSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open site'**
+  String get openSite;
+
+  /// No description provided for @forceHttps.
+  ///
+  /// In en, this message translates to:
+  /// **'Force HTTPS'**
+  String get forceHttps;
+
+  /// No description provided for @redirectAllPagesTrafficToHttps.
+  ///
+  /// In en, this message translates to:
+  /// **'Redirect all Pages traffic to HTTPS'**
+  String get redirectAllPagesTrafficToHttps;
+
+  /// No description provided for @uniqueDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique domain'**
+  String get uniqueDomain;
+
+  /// No description provided for @serveThisSiteOnAUnique.
+  ///
+  /// In en, this message translates to:
+  /// **'Serve this site on a unique per-deployment domain'**
+  String get serveThisSiteOnAUnique;
+
+  /// No description provided for @removeDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove domain'**
+  String get removeDomain;
+
+  /// No description provided for @addDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Add domain'**
+  String get addDomain;
+
+  /// No description provided for @unpublishPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpublish Pages?'**
+  String get unpublishPages;
+
+  /// No description provided for @addPagesDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Pages domain'**
+  String get addPagesDomain;
+
+  /// No description provided for @exportProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Export project'**
+  String get exportProject;
+
+  /// No description provided for @loadStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load status'**
+  String get loadStatusError;
+
+  /// No description provided for @removeDomainConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove domain?'**
+  String get removeDomainConfirm;
 }
 
 class _AppLocalizationsDelegate

@@ -872,4 +872,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeDeployKey => '移除部署密钥？';
+
+  @override
+  String get openSite => '打开站点';
+
+  @override
+  String get forceHttps => '强制 HTTPS';
+
+  @override
+  String get redirectAllPagesTrafficToHttps => '将所有 Pages 流量重定向到 HTTPS';
+
+  @override
+  String get uniqueDomain => '独立域名';
+
+  @override
+  String get serveThisSiteOnAUnique => '在每次部署的独立域名上提供此站点';
+
+  @override
+  String get removeDomain => '移除域名';
+
+  @override
+  String get addDomain => '添加域名';
+
+  @override
+  String get unpublishPages => '取消发布 Pages？';
+
+  @override
+  String get addPagesDomain => '添加 Pages 域名';
+
+  @override
+  String get exportProject => '导出项目';
+
+  @override
+  String get loadStatusError => '无法加载状态';
+
+  @override
+  String get removeDomainConfirm => '移除域名？';
 }
