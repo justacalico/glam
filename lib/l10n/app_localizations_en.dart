@@ -3429,4 +3429,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errBadArchive => 'Could not read the artifact archive';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get settingsSession => 'Session';
+
+  @override
+  String signedInAs(Object p0) {
+    return 'Signed in as @$p0';
+  }
+
+  @override
+  String get settingsAbout => 'About';
+
+  @override
+  String get aboutTagline => 'A GitLab client for desktop and mobile';
+
+  @override
+  String get aboutInstance => 'GitLab instance';
+
+  @override
+  String aboutVersion(Object p0) {
+    return 'Version $p0';
+  }
+
+  @override
+  String aboutVersionRev(Object p0, Object p1) {
+    return 'Version $p0 ($p1)';
+  }
+
+  @override
+  String get aboutVersionChecking => 'Checking version...';
+
+  @override
+  String get aboutVersionUnavailable => 'Version unavailable';
+
+  @override
+  String get signOutConfirmTitle => 'Sign out?';
+
+  @override
+  String get signOutConfirmBody => 'Your token is removed from this device.';
 }

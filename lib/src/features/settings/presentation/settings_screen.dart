@@ -21,12 +21,12 @@ class SettingsScreen extends ConsumerWidget {
     final session = ref.watch(sessionProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(context.l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: Insets.md),
         children: [
           _Section(
-            label: 'Appearance',
+            label: context.l10n.settingsAppearance,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -34,21 +34,21 @@ class SettingsScreen extends ConsumerWidget {
                   vertical: Insets.sm,
                 ),
                 child: SegmentedButton<ThemeMode>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: ThemeMode.system,
-                      icon: Icon(Icons.brightness_auto),
-                      label: Text('System'),
+                      icon: const Icon(Icons.brightness_auto),
+                      label: Text(context.l10n.languageSystem),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
-                      icon: Icon(Icons.light_mode_outlined),
-                      label: Text('Light'),
+                      icon: const Icon(Icons.light_mode_outlined),
+                      label: Text(context.l10n.themeLight),
                     ),
                     ButtonSegment(
                       value: ThemeMode.dark,
-                      icon: Icon(Icons.dark_mode_outlined),
-                      label: Text('Dark'),
+                      icon: const Icon(Icons.dark_mode_outlined),
+                      label: Text(context.l10n.themeDark),
                     ),
                   ],
                   selected: {themeMode},
@@ -90,42 +90,51 @@ class SettingsScreen extends ConsumerWidget {
           const NotificationSection(),
           const PreferencesSection(),
           _Section(
-            label: 'Session',
+            label: context.l10n.settingsSession,
             children: [
               if (session != null)
                 ListTile(
                   leading: Icon(Icons.dns_outlined, color: colors.inkMuted),
                   title: Text(session.baseUrl),
-                  subtitle: Text('Signed in as @${session.user.username}'),
+                  subtitle: Text(
+                    context.l10n.signedInAs(session.user.username),
+                  ),
                 ),
               ListTile(
                 leading: Icon(Icons.logout, color: colors.danger),
-                title: Text('Sign out', style: TextStyle(color: colors.danger)),
+                title: Text(
+                  context.l10n.actionSignOut,
+                  style: TextStyle(color: colors.danger),
+                ),
                 onTap: () => _confirmSignOut(context, ref),
               ),
             ],
           ),
           _Section(
-            label: 'About',
+            label: context.l10n.settingsAbout,
             children: [
-              const ListTile(
-                leading: Icon(Icons.info_outline),
-                title: Text('Glam'),
-                subtitle: Text('A GitLab client for desktop and mobile'),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Glam'),
+                subtitle: Text(context.l10n.aboutTagline),
               ),
               ListTile(
                 leading: const Icon(Icons.dns_outlined),
-                title: const Text('GitLab instance'),
+                title: Text(context.l10n.aboutInstance),
                 subtitle: ref
                     .watch(instanceVersionProvider)
                     .when(
                       data: (v) => Text(
                         v.revision.isEmpty
-                            ? 'Version ${v.version}'
-                            : 'Version ${v.version} (${v.revision})',
+                            ? context.l10n.aboutVersion(v.version)
+                            : context.l10n.aboutVersionRev(
+                                v.version,
+                                v.revision,
+                              ),
                       ),
-                      loading: () => const Text('Checking version...'),
-                      error: (_, _) => const Text('Version unavailable'),
+                      loading: () => Text(context.l10n.aboutVersionChecking),
+                      error: (_, _) =>
+                          Text(context.l10n.aboutVersionUnavailable),
                     ),
               ),
             ],
@@ -139,16 +148,16 @@ class SettingsScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sign out?'),
-        content: const Text('Your token is removed from this device.'),
+        title: Text(context.l10n.signOutConfirmTitle),
+        content: Text(context.l10n.signOutConfirmBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Sign out'),
+            child: Text(context.l10n.actionSignOut),
           ),
         ],
       ),

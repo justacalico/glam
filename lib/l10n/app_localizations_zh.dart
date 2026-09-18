@@ -3387,4 +3387,52 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errBadArchive => '无法读取产物归档';
+
+  @override
+  String get settingsAppearance => '外观';
+
+  @override
+  String get themeLight => '浅色';
+
+  @override
+  String get themeDark => '深色';
+
+  @override
+  String get settingsSession => '会话';
+
+  @override
+  String signedInAs(Object p0) {
+    return '已登录为 @$p0';
+  }
+
+  @override
+  String get settingsAbout => '关于';
+
+  @override
+  String get aboutTagline => '适用于桌面和移动端的 GitLab 客户端';
+
+  @override
+  String get aboutInstance => 'GitLab 实例';
+
+  @override
+  String aboutVersion(Object p0) {
+    return '版本 $p0';
+  }
+
+  @override
+  String aboutVersionRev(Object p0, Object p1) {
+    return '版本 $p0（$p1）';
+  }
+
+  @override
+  String get aboutVersionChecking => '正在检查版本…';
+
+  @override
+  String get aboutVersionUnavailable => '版本不可用';
+
+  @override
+  String get signOutConfirmTitle => '退出登录？';
+
+  @override
+  String get signOutConfirmBody => '你的令牌将从此设备移除。';
 }

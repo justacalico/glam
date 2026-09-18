@@ -6385,6 +6385,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not read the artifact archive'**
   String get errBadArchive;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @settingsSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Session'**
+  String get settingsSession;
+
+  /// No description provided for @signedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as @{p0}'**
+  String signedInAs(Object p0);
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAbout;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'A GitLab client for desktop and mobile'**
+  String get aboutTagline;
+
+  /// No description provided for @aboutInstance.
+  ///
+  /// In en, this message translates to:
+  /// **'GitLab instance'**
+  String get aboutInstance;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {p0}'**
+  String aboutVersion(Object p0);
+
+  /// No description provided for @aboutVersionRev.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {p0} ({p1})'**
+  String aboutVersionRev(Object p0, Object p1);
+
+  /// No description provided for @aboutVersionChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking version...'**
+  String get aboutVersionChecking;
+
+  /// No description provided for @aboutVersionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Version unavailable'**
+  String get aboutVersionUnavailable;
+
+  /// No description provided for @signOutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get signOutConfirmTitle;
+
+  /// No description provided for @signOutConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your token is removed from this device.'**
+  String get signOutConfirmBody;
 }
 
 class _AppLocalizationsDelegate

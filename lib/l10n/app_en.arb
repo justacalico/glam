@@ -1047,5 +1047,19 @@
   "errUnknown": "Something went wrong",
   "errFileTooLarge": "File is too large to show in the app",
   "errTooManyRedirects": "Too many redirects",
-  "errBadArchive": "Could not read the artifact archive"
+  "errBadArchive": "Could not read the artifact archive",
+  "settingsAppearance": "Appearance",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "settingsSession": "Session",
+  "signedInAs": "Signed in as @{p0}",
+  "settingsAbout": "About",
+  "aboutTagline": "A GitLab client for desktop and mobile",
+  "aboutInstance": "GitLab instance",
+  "aboutVersion": "Version {p0}",
+  "aboutVersionRev": "Version {p0} ({p1})",
+  "aboutVersionChecking": "Checking version...",
+  "aboutVersionUnavailable": "Version unavailable",
+  "signOutConfirmTitle": "Sign out?",
+  "signOutConfirmBody": "Your token is removed from this device."
 }
