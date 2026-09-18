@@ -22,6 +22,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/presentation/changes_list.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Commit detail: message, author, stats, and the per-file diffs.
 class CommitDetailScreen extends ConsumerWidget {
@@ -41,7 +42,7 @@ class CommitDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Commit'),
+        title: Text(context.l10n.commit),
         actions: [_CommitActions(projectId: projectId, sha: sha)],
       ),
       body: AsyncValueWidget<Commit>(
@@ -70,7 +71,7 @@ class CommitDetailScreen extends ConsumerWidget {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(Insets.lg),
-                child: Text('Could not load the diff: $e'),
+                child: Text(context.l10n.couldNotLoadTheDiffP0(e)),
               ),
               data: (changes) => ChangesList(
                 changes: changes,
@@ -120,7 +121,7 @@ class CommitDetailScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Comment on $path:$lineNo',
+                context.l10n.commentOnLine(path, lineNo),
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: Insets.sm),
@@ -129,7 +130,9 @@ class CommitDetailScreen extends ConsumerWidget {
                 autofocus: true,
                 minLines: 2,
                 maxLines: 5,
-                decoration: const InputDecoration(hintText: 'Write a comment…'),
+                decoration: InputDecoration(
+                  hintText: context.l10n.writeAComment,
+                ),
               ),
               const SizedBox(height: Insets.md),
               Align(
@@ -137,7 +140,7 @@ class CommitDetailScreen extends ConsumerWidget {
                 child: FilledButton(
                   onPressed: () =>
                       Navigator.pop(context, controller.text.trim()),
-                  child: const Text('Comment'),
+                  child: Text(context.l10n.comment),
                 ),
               ),
             ],
@@ -175,7 +178,7 @@ class CommitDetailScreen extends ConsumerWidget {
       } catch (_) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not post the comment')),
+            SnackBar(content: Text(context.l10n.couldNotPostTheComment)),
           );
         }
       }
@@ -207,8 +210,12 @@ class _CommitActions extends ConsumerWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    '${action == 'cherry' ? 'Cherry-picked' : 'Reverted'} '
-                    'as ${commit.shortId}',
+                    context.l10n.cherryRevertDone(
+                      action == 'cherry'
+                          ? context.l10n.cherryPicked
+                          : context.l10n.reverted,
+                      commit.shortId,
+                    ),
                   ),
                 ),
               );
@@ -218,12 +225,15 @@ class _CommitActions extends ConsumerWidget {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'cherry',
-          child: Text('Cherry-pick to branch'),
+          child: Text(context.l10n.cherryPickToBranch),
         ),
-        const PopupMenuItem(value: 'revert', child: Text('Revert on branch')),
-        const PopupMenuItem(value: 'copy', child: Text('Copy SHA')),
+        PopupMenuItem(
+          value: 'revert',
+          child: Text(context.l10n.revertOnBranch),
+        ),
+        PopupMenuItem(value: 'copy', child: Text(context.l10n.copySha)),
       ],
     );
   }
@@ -239,7 +249,7 @@ class _CommitActions extends ConsumerWidget {
     return showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text('Target branch'),
+        title: Text(context.l10n.targetBranch),
         children: [
           for (final name in names)
             SimpleDialogOption(
@@ -317,7 +327,7 @@ class _Meta extends StatelessWidget {
           if (commit.parentIds.isNotEmpty) ...[
             const SizedBox(height: Insets.xs),
             Text(
-              'Parents: ${commit.parentIds.map(shortSha).join(', ')}',
+              context.l10n.parentsP0(commit.parentIds.map(shortSha).join(', ')),
               style: theme.textTheme.bodySmall,
             ),
           ],
@@ -350,7 +360,7 @@ class _CommitStatuses extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Checks', style: theme.textTheme.titleMedium),
+            Text(context.l10n.checks, style: theme.textTheme.titleMedium),
             const SizedBox(height: Insets.sm),
             Container(
               decoration: BoxDecoration(
@@ -394,7 +404,7 @@ class _RelatedMrs extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Merge requests', style: theme.textTheme.titleMedium),
+            Text(context.l10n.mrsTitle, style: theme.textTheme.titleMedium),
             const SizedBox(height: Insets.sm),
             Container(
               decoration: BoxDecoration(
@@ -449,7 +459,7 @@ class _CommitRefs extends ConsumerWidget {
             runSpacing: Insets.xs,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text('On', style: theme.textTheme.bodySmall),
+              Text(context.l10n.on, style: theme.textTheme.bodySmall),
               for (final r in list)
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -525,7 +535,7 @@ class _RelatedMrTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text('!${mr.iid}', style: theme.textTheme.bodySmall),
+            Text(context.l10n.mrIid(mr.iid), style: theme.textTheme.bodySmall),
           ],
         ),
       ),
@@ -606,7 +616,7 @@ class _CommitComments extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Comments', style: theme.textTheme.titleMedium),
+        Text(context.l10n.hookComments, style: theme.textTheme.titleMedium),
         const SizedBox(height: Insets.sm),
         comments.when(
           loading: () => const Center(
@@ -617,7 +627,7 @@ class _CommitComments extends ConsumerWidget {
           ),
           error: (e, _) => TextButton.icon(
             icon: const Icon(Icons.refresh, size: 16),
-            label: Text('Could not load comments ($e)'),
+            label: Text(context.l10n.couldNotLoadCommentsP0(e)),
             onPressed: () => ref.invalidate(commitCommentsProvider(loc)),
           ),
           data: (list) => Column(
@@ -626,7 +636,7 @@ class _CommitComments extends ConsumerWidget {
         ),
         const SizedBox(height: Insets.sm),
         CommentComposer(
-          hint: 'Comment on this commit',
+          hint: context.l10n.commentOnThisCommit,
           onSend: (body) async {
             await ref
                 .read(repositoryRepositoryProvider)

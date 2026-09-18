@@ -5,6 +5,7 @@ import 'package:glam/src/core/utils/diff_parser.dart';
 import 'package:glam/src/core/widgets/diff_viewer.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// A list of changed files with a +/− summary and expandable per-file diffs.
 /// Shared by commit detail and the compare screen.
@@ -44,13 +45,24 @@ class ChangesList extends StatelessWidget {
         Row(
           children: [
             Text(
-              '${parsed.length} ${parsed.length == 1 ? 'file' : 'files'}',
+              context.l10n.storageStatPair(
+                parsed.length,
+                parsed.length == 1
+                    ? context.l10n.fileSingular
+                    : context.l10n.filePlural,
+              ),
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(width: Insets.md),
-            Text('+$additions', style: TextStyle(color: colors.diffAdd)),
+            Text(
+              context.l10n.moreCount(additions),
+              style: TextStyle(color: colors.diffAdd),
+            ),
             const SizedBox(width: Insets.xs),
-            Text('−$deletions', style: TextStyle(color: colors.diffRemove)),
+            Text(
+              context.l10n.deletionsMinus(deletions),
+              style: TextStyle(color: colors.diffRemove),
+            ),
           ],
         ),
         const SizedBox(height: Insets.md),
@@ -132,7 +144,10 @@ class _FileChangeTileState extends State<_FileChangeTile> {
                     ),
                   ),
                   Text(
-                    '+${widget.diff.additions} −${widget.diff.deletions}',
+                    context.l10n.diffStats(
+                      widget.diff.additions,
+                      widget.diff.deletions,
+                    ),
                     style: theme.textTheme.labelSmall,
                   ),
                   const SizedBox(width: Insets.sm),
@@ -150,7 +165,7 @@ class _FileChangeTileState extends State<_FileChangeTile> {
               Padding(
                 padding: const EdgeInsets.all(Insets.lg),
                 child: Text(
-                  'Diff too large or binary. View it on the web',
+                  context.l10n.diffTooLargeOrBinaryView,
                   style: theme.textTheme.bodySmall,
                 ),
               )

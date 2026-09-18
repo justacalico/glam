@@ -2633,4 +2633,70 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get templateDockerfile => 'Dockerfile';
+
+  @override
+  String couldNotLoadTheDiffP0(Object p0) {
+    return '无法加载 diff：$p0';
+  }
+
+  @override
+  String get couldNotPostTheComment => '无法发布评论';
+
+  @override
+  String get cherryPickToBranch => '拣选到分支';
+
+  @override
+  String get revertOnBranch => '在分支上还原';
+
+  @override
+  String get copySha => '复制 SHA';
+
+  @override
+  String parentsP0(Object p0) {
+    return '父提交：$p0';
+  }
+
+  @override
+  String get checks => '检查';
+
+  @override
+  String get on => '于';
+
+  @override
+  String couldNotLoadCommentsP0(Object p0) {
+    return '无法加载评论（$p0）';
+  }
+
+  @override
+  String get commentOnThisCommit => '评论此提交';
+
+  @override
+  String get diffTooLargeOrBinaryView => 'Diff 过大或为二进制文件。请在网页上查看';
+
+  @override
+  String deletionsMinus(Object p0) {
+    return '−$p0';
+  }
+
+  @override
+  String diffStats(Object p0, Object p1) {
+    return '+$p0 −$p1';
+  }
+
+  @override
+  String get cherryPicked => '已拣选';
+
+  @override
+  String get reverted => '已还原';
+
+  @override
+  String cherryRevertDone(Object p0, Object p1) {
+    return '$p0，提交为 $p1';
+  }
+
+  @override
+  String get fileSingular => '个文件';
+
+  @override
+  String get filePlural => '个文件';
 }

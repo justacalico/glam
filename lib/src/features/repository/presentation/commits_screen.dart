@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Commit history for a project (optionally pinned to a ref or to one
 /// file's history).
@@ -49,7 +50,7 @@ class CommitsScreen extends ConsumerWidget {
           endIndent: Insets.lg,
         ),
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-        empty: const EmptyState(icon: Icons.commit, title: 'No commits'),
+        empty: EmptyState(icon: Icons.commit, title: context.l10n.noCommits),
         itemBuilder: (context, index) =>
             CommitTile(commit: data.items[index], projectId: projectId),
       ),

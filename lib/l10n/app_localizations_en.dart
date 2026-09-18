@@ -2668,4 +2668,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get templateDockerfile => 'Dockerfile';
+
+  @override
+  String couldNotLoadTheDiffP0(Object p0) {
+    return 'Could not load the diff: $p0';
+  }
+
+  @override
+  String get couldNotPostTheComment => 'Could not post the comment';
+
+  @override
+  String get cherryPickToBranch => 'Cherry-pick to branch';
+
+  @override
+  String get revertOnBranch => 'Revert on branch';
+
+  @override
+  String get copySha => 'Copy SHA';
+
+  @override
+  String parentsP0(Object p0) {
+    return 'Parents: $p0';
+  }
+
+  @override
+  String get checks => 'Checks';
+
+  @override
+  String get on => 'On';
+
+  @override
+  String couldNotLoadCommentsP0(Object p0) {
+    return 'Could not load comments ($p0)';
+  }
+
+  @override
+  String get commentOnThisCommit => 'Comment on this commit';
+
+  @override
+  String get diffTooLargeOrBinaryView =>
+      'Diff too large or binary. View it on the web';
+
+  @override
+  String deletionsMinus(Object p0) {
+    return '−$p0';
+  }
+
+  @override
+  String diffStats(Object p0, Object p1) {
+    return '+$p0 −$p1';
+  }
+
+  @override
+  String get cherryPicked => 'Cherry-picked';
+
+  @override
+  String get reverted => 'Reverted';
+
+  @override
+  String cherryRevertDone(Object p0, Object p1) {
+    return '$p0 as $p1';
+  }
+
+  @override
+  String get fileSingular => 'file';
+
+  @override
+  String get filePlural => 'files';
 }

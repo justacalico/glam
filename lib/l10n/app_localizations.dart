@@ -5053,6 +5053,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dockerfile'**
   String get templateDockerfile;
+
+  /// No description provided for @couldNotLoadTheDiffP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the diff: {p0}'**
+  String couldNotLoadTheDiffP0(Object p0);
+
+  /// No description provided for @couldNotPostTheComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not post the comment'**
+  String get couldNotPostTheComment;
+
+  /// No description provided for @cherryPickToBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry-pick to branch'**
+  String get cherryPickToBranch;
+
+  /// No description provided for @revertOnBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert on branch'**
+  String get revertOnBranch;
+
+  /// No description provided for @copySha.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy SHA'**
+  String get copySha;
+
+  /// No description provided for @parentsP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Parents: {p0}'**
+  String parentsP0(Object p0);
+
+  /// No description provided for @checks.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks'**
+  String get checks;
+
+  /// No description provided for @on.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get on;
+
+  /// No description provided for @couldNotLoadCommentsP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load comments ({p0})'**
+  String couldNotLoadCommentsP0(Object p0);
+
+  /// No description provided for @commentOnThisCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment on this commit'**
+  String get commentOnThisCommit;
+
+  /// No description provided for @diffTooLargeOrBinaryView.
+  ///
+  /// In en, this message translates to:
+  /// **'Diff too large or binary. View it on the web'**
+  String get diffTooLargeOrBinaryView;
+
+  /// No description provided for @deletionsMinus.
+  ///
+  /// In en, this message translates to:
+  /// **'−{p0}'**
+  String deletionsMinus(Object p0);
+
+  /// No description provided for @diffStats.
+  ///
+  /// In en, this message translates to:
+  /// **'+{p0} −{p1}'**
+  String diffStats(Object p0, Object p1);
+
+  /// No description provided for @cherryPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry-picked'**
+  String get cherryPicked;
+
+  /// No description provided for @reverted.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverted'**
+  String get reverted;
+
+  /// No description provided for @cherryRevertDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} as {p1}'**
+  String cherryRevertDone(Object p0, Object p1);
+
+  /// No description provided for @fileSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'file'**
+  String get fileSingular;
+
+  /// No description provided for @filePlural.
+  ///
+  /// In en, this message translates to:
+  /// **'files'**
+  String get filePlural;
 }
 
 class _AppLocalizationsDelegate
