@@ -1003,6 +1003,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create a token under Preferences, Access Tokens, with the `api` scope.'**
   String get loginTokenHelp;
+
+  /// No description provided for @fieldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get fieldTitle;
+
+  /// No description provided for @fieldPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get fieldPath;
+
+  /// No description provided for @fieldRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get fieldRole;
+
+  /// No description provided for @fieldDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get fieldDescription;
+
+  /// No description provided for @fieldVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get fieldVisibility;
+
+  /// No description provided for @fieldDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Domain'**
+  String get fieldDomain;
+
+  /// No description provided for @roleGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get roleGuest;
+
+  /// No description provided for @roleReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get roleReporter;
+
+  /// No description provided for @roleDeveloper.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get roleDeveloper;
+
+  /// No description provided for @roleMaintainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintainer'**
+  String get roleMaintainer;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get roleOwner;
+
+  /// No description provided for @visibilityPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get visibilityPrivate;
+
+  /// No description provided for @visibilityInternal.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal'**
+  String get visibilityInternal;
+
+  /// No description provided for @visibilityPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get visibilityPublic;
+
+  /// No description provided for @stateEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get stateEnabled;
+
+  /// No description provided for @stateDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get stateDisabled;
+
+  /// No description provided for @stateEnabledShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get stateEnabledShort;
+
+  /// No description provided for @miscDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get miscDefault;
+
+  /// No description provided for @miscNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get miscNotSet;
+
+  /// No description provided for @miscLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get miscLoading;
+
+  /// No description provided for @miscSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get miscSaving;
+
+  /// No description provided for @miscSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} seconds'**
+  String miscSeconds(int count);
+
+  /// No description provided for @errorEnterNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number'**
+  String get errorEnterNumber;
+
+  /// No description provided for @emptyDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get emptyDefault;
+
+  /// No description provided for @actionRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get actionRemove;
+
+  /// No description provided for @actionDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get actionDownload;
+
+  /// No description provided for @actionOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get actionOpen;
+
+  /// No description provided for @actionUnpublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpublish'**
+  String get actionUnpublish;
+
+  /// No description provided for @actionTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get actionTransfer;
+
+  /// No description provided for @actionArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get actionArchive;
+
+  /// No description provided for @actionUnarchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive'**
+  String get actionUnarchive;
+
+  /// No description provided for @actionExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get actionExport;
+
+  /// No description provided for @actionReexport.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-export'**
+  String get actionReexport;
+
+  /// No description provided for @actionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get actionNew;
+
+  /// No description provided for @scopeYours.
+  ///
+  /// In en, this message translates to:
+  /// **'Yours'**
+  String get scopeYours;
+
+  /// No description provided for @scopeStarred.
+  ///
+  /// In en, this message translates to:
+  /// **'Starred'**
+  String get scopeStarred;
+
+  /// No description provided for @scopeExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get scopeExplore;
+
+  /// No description provided for @scopeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get scopeAll;
+
+  /// No description provided for @sortLastActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Last activity'**
+  String get sortLastActivity;
+
+  /// No description provided for @sortMostStars.
+  ///
+  /// In en, this message translates to:
+  /// **'Most stars'**
+  String get sortMostStars;
+
+  /// No description provided for @sortRecentlyCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently created'**
+  String get sortRecentlyCreated;
+
+  /// No description provided for @projectsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search projects'**
+  String get projectsSearchHint;
+
+  /// No description provided for @projectNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New project'**
+  String get projectNew;
+
+  /// No description provided for @searchClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close search'**
+  String get searchClose;
+
+  /// No description provided for @projectsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects'**
+  String get projectsEmpty;
+
+  /// No description provided for @projectsEmptyMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches \"{query}\"'**
+  String projectsEmptyMatch(String query);
+
+  /// No description provided for @projectsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects you have access to will show up here'**
+  String get projectsEmptyHint;
+
+  /// No description provided for @overviewLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages'**
+  String get overviewLanguages;
+
+  /// No description provided for @overviewDefaultBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Default branch'**
+  String get overviewDefaultBranch;
+
+  /// No description provided for @overviewCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get overviewCreated;
+
+  /// No description provided for @overviewLastActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Last activity'**
+  String get overviewLastActivity;
+
+  /// No description provided for @overviewOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get overviewOwner;
+
+  /// No description provided for @overviewForkedFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Forked from'**
+  String get overviewForkedFrom;
 }
 
 class _AppLocalizationsDelegate

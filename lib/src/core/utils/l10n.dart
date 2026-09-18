@@ -35,3 +35,24 @@ extension NavLabelL10n on AppLocalizations {
     _ => homeTitle,
   };
 }
+
+/// Labels for the projects-list scope chips, keyed by `ProjectScope.name`.
+extension ProjectScopeL10n on AppLocalizations {
+  String projectScope(String name) => switch (name) {
+    'starred' => scopeStarred,
+    'explored' => scopeExplore,
+    'all' => scopeAll,
+    _ => scopeYours,
+  };
+}
+
+/// Labels for `ProjectSort`, keyed by enum name.
+extension ProjectSortL10n on AppLocalizations {
+  String projectSort(String name) => switch (name) {
+    'name' => fieldName,
+    'stars' => sortMostStars,
+    'created' => sortRecentlyCreated,
+    'oldest' => sortOldest,
+    _ => sortLastActivity,
+  };
+}

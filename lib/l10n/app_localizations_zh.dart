@@ -470,4 +470,167 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginTokenHelp => '在「偏好设置 → 访问令牌」中创建具有 `api` 权限的令牌。';
+
+  @override
+  String get fieldTitle => '标题';
+
+  @override
+  String get fieldPath => '路径';
+
+  @override
+  String get fieldRole => '角色';
+
+  @override
+  String get fieldDescription => '描述';
+
+  @override
+  String get fieldVisibility => '可见性';
+
+  @override
+  String get fieldDomain => '域名';
+
+  @override
+  String get roleGuest => '访客';
+
+  @override
+  String get roleReporter => '报告者';
+
+  @override
+  String get roleDeveloper => '开发者';
+
+  @override
+  String get roleMaintainer => '维护者';
+
+  @override
+  String get roleOwner => '所有者';
+
+  @override
+  String get visibilityPrivate => '私有';
+
+  @override
+  String get visibilityInternal => '内部';
+
+  @override
+  String get visibilityPublic => '公开';
+
+  @override
+  String get stateEnabled => '启用';
+
+  @override
+  String get stateDisabled => '禁用';
+
+  @override
+  String get stateEnabledShort => '已启用';
+
+  @override
+  String get miscDefault => '默认';
+
+  @override
+  String get miscNotSet => '未设置';
+
+  @override
+  String get miscLoading => '加载中…';
+
+  @override
+  String get miscSaving => '保存中…';
+
+  @override
+  String miscSeconds(int count) {
+    return '$count 秒';
+  }
+
+  @override
+  String get errorEnterNumber => '请输入数字';
+
+  @override
+  String get emptyDefault => '暂无内容';
+
+  @override
+  String get actionRemove => '移除';
+
+  @override
+  String get actionDownload => '下载';
+
+  @override
+  String get actionOpen => '打开';
+
+  @override
+  String get actionUnpublish => '取消发布';
+
+  @override
+  String get actionTransfer => '转移';
+
+  @override
+  String get actionArchive => '归档';
+
+  @override
+  String get actionUnarchive => '取消归档';
+
+  @override
+  String get actionExport => '导出';
+
+  @override
+  String get actionReexport => '重新导出';
+
+  @override
+  String get actionNew => '新建';
+
+  @override
+  String get scopeYours => '你的';
+
+  @override
+  String get scopeStarred => '已加星';
+
+  @override
+  String get scopeExplore => '探索';
+
+  @override
+  String get scopeAll => '全部';
+
+  @override
+  String get sortLastActivity => '最近活动';
+
+  @override
+  String get sortMostStars => '最多星标';
+
+  @override
+  String get sortRecentlyCreated => '最近创建';
+
+  @override
+  String get projectsSearchHint => '搜索项目';
+
+  @override
+  String get projectNew => '新建项目';
+
+  @override
+  String get searchClose => '关闭搜索';
+
+  @override
+  String get projectsEmpty => '暂无项目';
+
+  @override
+  String projectsEmptyMatch(String query) {
+    return '没有匹配 \"$query\" 的结果';
+  }
+
+  @override
+  String get projectsEmptyHint => '你有权限的项目会显示在这里';
+
+  @override
+  String get overviewLanguages => '语言';
+
+  @override
+  String get overviewDefaultBranch => '默认分支';
+
+  @override
+  String get overviewCreated => '创建时间';
+
+  @override
+  String get overviewLastActivity => '最近活动';
+
+  @override
+  String get overviewOwner => '所有者';
+
+  @override
+  String get overviewForkedFrom => '派生自';
 }

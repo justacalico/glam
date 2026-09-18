@@ -185,5 +185,72 @@
   "loginHide": "Hide",
   "loginTokenRequired": "Paste a personal access token",
   "loginSignIn": "Sign in",
-  "loginTokenHelp": "Create a token under Preferences, Access Tokens, with the `api` scope."
+  "loginTokenHelp": "Create a token under Preferences, Access Tokens, with the `api` scope.",
+  "fieldTitle": "Title",
+  "fieldPath": "Path",
+  "fieldRole": "Role",
+  "fieldDescription": "Description",
+  "fieldVisibility": "Visibility",
+  "fieldDomain": "Domain",
+  "roleGuest": "Guest",
+  "roleReporter": "Reporter",
+  "roleDeveloper": "Developer",
+  "roleMaintainer": "Maintainer",
+  "roleOwner": "Owner",
+  "visibilityPrivate": "Private",
+  "visibilityInternal": "Internal",
+  "visibilityPublic": "Public",
+  "stateEnabled": "Enabled",
+  "stateDisabled": "Disabled",
+  "stateEnabledShort": "Enabled",
+  "miscDefault": "Default",
+  "miscNotSet": "Not set",
+  "miscLoading": "Loading…",
+  "miscSaving": "Saving…",
+  "miscSeconds": "{count} seconds",
+  "errorEnterNumber": "Enter a number",
+  "emptyDefault": "Nothing here yet",
+  "actionRemove": "Remove",
+  "actionDownload": "Download",
+  "actionOpen": "Open",
+  "actionUnpublish": "Unpublish",
+  "actionTransfer": "Transfer",
+  "actionArchive": "Archive",
+  "actionUnarchive": "Unarchive",
+  "actionExport": "Export",
+  "actionReexport": "Re-export",
+  "actionNew": "New",
+  "@miscSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scopeYours": "Yours",
+  "scopeStarred": "Starred",
+  "scopeExplore": "Explore",
+  "scopeAll": "All",
+  "sortLastActivity": "Last activity",
+  "sortMostStars": "Most stars",
+  "sortRecentlyCreated": "Recently created",
+  "projectsSearchHint": "Search projects",
+  "projectNew": "New project",
+  "searchClose": "Close search",
+  "projectsEmpty": "No projects",
+  "projectsEmptyMatch": "Nothing matches \"{query}\"",
+  "projectsEmptyHint": "Projects you have access to will show up here",
+  "overviewLanguages": "Languages",
+  "overviewDefaultBranch": "Default branch",
+  "overviewCreated": "Created",
+  "overviewLastActivity": "Last activity",
+  "overviewOwner": "Owner",
+  "overviewForkedFrom": "Forked from",
+  "@projectsEmptyMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  }
 }

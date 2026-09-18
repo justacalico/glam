@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/section_header.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// The Overview tab: metadata, language breakdown, rendered README.
 class ProjectOverviewTab extends ConsumerWidget {
@@ -60,7 +61,7 @@ class ProjectOverviewTab extends ConsumerWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SectionHeader(title: 'Languages'),
+                  SectionHeader(title: context.l10n.overviewLanguages),
                   _LanguageBar(languages: langs),
                 ],
               );
@@ -111,25 +112,37 @@ class _InfoCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = context.colors;
     final rows = <(IconData, String, String)>[
-      (Icons.folder_outlined, 'Path', project.pathWithNamespace),
+      (
+        Icons.folder_outlined,
+        context.l10n.fieldPath,
+        project.pathWithNamespace,
+      ),
       if (project.defaultBranch != null)
-        (Icons.account_tree_outlined, 'Default branch', project.defaultBranch!),
+        (
+          Icons.account_tree_outlined,
+          context.l10n.overviewDefaultBranch,
+          project.defaultBranch!,
+        ),
       if (project.createdAt != null)
         (
           Icons.calendar_today_outlined,
-          'Created',
+          context.l10n.overviewCreated,
           Format.date(project.createdAt),
         ),
       if (project.lastActivityAt != null)
         (
           Icons.schedule,
-          'Last activity',
+          context.l10n.overviewLastActivity,
           Format.relative(project.lastActivityAt),
         ),
       if (project.owner != null)
-        (Icons.person_outline, 'Owner', project.owner!.name),
+        (Icons.person_outline, context.l10n.roleOwner, project.owner!.name),
       if (project.forkedFromId != null)
-        (Icons.fork_right, 'Forked from', '#${project.forkedFromId}'),
+        (
+          Icons.fork_right,
+          context.l10n.overviewForkedFrom,
+          '#${project.forkedFromId}',
+        ),
     ];
     return Container(
       decoration: BoxDecoration(

@@ -471,4 +471,168 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loginTokenHelp =>
       'Create a token under Preferences, Access Tokens, with the `api` scope.';
+
+  @override
+  String get fieldTitle => 'Title';
+
+  @override
+  String get fieldPath => 'Path';
+
+  @override
+  String get fieldRole => 'Role';
+
+  @override
+  String get fieldDescription => 'Description';
+
+  @override
+  String get fieldVisibility => 'Visibility';
+
+  @override
+  String get fieldDomain => 'Domain';
+
+  @override
+  String get roleGuest => 'Guest';
+
+  @override
+  String get roleReporter => 'Reporter';
+
+  @override
+  String get roleDeveloper => 'Developer';
+
+  @override
+  String get roleMaintainer => 'Maintainer';
+
+  @override
+  String get roleOwner => 'Owner';
+
+  @override
+  String get visibilityPrivate => 'Private';
+
+  @override
+  String get visibilityInternal => 'Internal';
+
+  @override
+  String get visibilityPublic => 'Public';
+
+  @override
+  String get stateEnabled => 'Enabled';
+
+  @override
+  String get stateDisabled => 'Disabled';
+
+  @override
+  String get stateEnabledShort => 'Enabled';
+
+  @override
+  String get miscDefault => 'Default';
+
+  @override
+  String get miscNotSet => 'Not set';
+
+  @override
+  String get miscLoading => 'Loading…';
+
+  @override
+  String get miscSaving => 'Saving…';
+
+  @override
+  String miscSeconds(int count) {
+    return '$count seconds';
+  }
+
+  @override
+  String get errorEnterNumber => 'Enter a number';
+
+  @override
+  String get emptyDefault => 'Nothing here yet';
+
+  @override
+  String get actionRemove => 'Remove';
+
+  @override
+  String get actionDownload => 'Download';
+
+  @override
+  String get actionOpen => 'Open';
+
+  @override
+  String get actionUnpublish => 'Unpublish';
+
+  @override
+  String get actionTransfer => 'Transfer';
+
+  @override
+  String get actionArchive => 'Archive';
+
+  @override
+  String get actionUnarchive => 'Unarchive';
+
+  @override
+  String get actionExport => 'Export';
+
+  @override
+  String get actionReexport => 'Re-export';
+
+  @override
+  String get actionNew => 'New';
+
+  @override
+  String get scopeYours => 'Yours';
+
+  @override
+  String get scopeStarred => 'Starred';
+
+  @override
+  String get scopeExplore => 'Explore';
+
+  @override
+  String get scopeAll => 'All';
+
+  @override
+  String get sortLastActivity => 'Last activity';
+
+  @override
+  String get sortMostStars => 'Most stars';
+
+  @override
+  String get sortRecentlyCreated => 'Recently created';
+
+  @override
+  String get projectsSearchHint => 'Search projects';
+
+  @override
+  String get projectNew => 'New project';
+
+  @override
+  String get searchClose => 'Close search';
+
+  @override
+  String get projectsEmpty => 'No projects';
+
+  @override
+  String projectsEmptyMatch(String query) {
+    return 'Nothing matches \"$query\"';
+  }
+
+  @override
+  String get projectsEmptyHint =>
+      'Projects you have access to will show up here';
+
+  @override
+  String get overviewLanguages => 'Languages';
+
+  @override
+  String get overviewDefaultBranch => 'Default branch';
+
+  @override
+  String get overviewCreated => 'Created';
+
+  @override
+  String get overviewLastActivity => 'Last activity';
+
+  @override
+  String get overviewOwner => 'Owner';
+
+  @override
+  String get overviewForkedFrom => 'Forked from';
 }
