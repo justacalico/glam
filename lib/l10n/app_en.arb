@@ -21,5 +21,22 @@
   "actionSearch": "Search",
   "actionSignOut": "Sign out",
   "errorRequired": "Required",
-  "errorGeneric": "Something went wrong"
+  "errorGeneric": "Something went wrong",
+  "actionTryAgain": "Try again",
+  "filterBy": "Filter by {title}",
+  "filterAny": "Any {title}",
+  "@filterBy": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@filterAny": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

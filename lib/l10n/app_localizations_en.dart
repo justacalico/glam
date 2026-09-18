@@ -73,4 +73,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorGeneric => 'Something went wrong';
+
+  @override
+  String get actionTryAgain => 'Try again';
+
+  @override
+  String filterBy(String title) {
+    return 'Filter by $title';
+  }
+
+  @override
+  String filterAny(String title) {
+    return 'Any $title';
+  }
 }

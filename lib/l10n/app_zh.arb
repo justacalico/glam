@@ -21,5 +21,8 @@
   "actionSearch": "搜索",
   "actionSignOut": "退出登录",
   "errorRequired": "必填",
-  "errorGeneric": "出错了"
+  "errorGeneric": "出错了",
+  "actionTryAgain": "重试",
+  "filterBy": "按{title}筛选",
+  "filterAny": "全部{title}"
 }

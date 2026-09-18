@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Full-page error with a retry button.
 class ErrorView extends StatelessWidget {
@@ -15,7 +16,7 @@ class ErrorView extends StatelessWidget {
     final colors = context.colors;
     final message = switch (error) {
       ApiException(:final message) => message,
-      _ => 'Something went wrong',
+      _ => context.l10n.errorGeneric,
     };
     return Center(
       child: Padding(
@@ -35,7 +36,7 @@ class ErrorView extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Try again'),
+                label: Text(context.l10n.actionTryAgain),
               ),
             ],
           ],

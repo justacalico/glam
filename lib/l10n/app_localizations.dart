@@ -229,6 +229,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get errorGeneric;
+
+  /// No description provided for @actionTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get actionTryAgain;
+
+  /// No description provided for @filterBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by {title}'**
+  String filterBy(String title);
+
+  /// No description provided for @filterAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any {title}'**
+  String filterAny(String title);
 }
 
 class _AppLocalizationsDelegate

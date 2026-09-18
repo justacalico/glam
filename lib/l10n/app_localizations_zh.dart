@@ -73,4 +73,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorGeneric => '出错了';
+
+  @override
+  String get actionTryAgain => '重试';
+
+  @override
+  String filterBy(String title) {
+    return '按$title筛选';
+  }
+
+  @override
+  String filterAny(String title) {
+    return '全部$title';
+  }
 }
