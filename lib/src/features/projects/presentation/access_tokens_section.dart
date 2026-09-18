@@ -13,6 +13,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_access_token.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project access tokens with create / revoke. The secret is shown
 /// once after creation and never returned again.
@@ -41,7 +42,7 @@ class AccessTokensSection extends ConsumerWidget {
             const Expanded(child: SectionLabel('Project access tokens')),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _create(context, ref),
             ),
           ],
@@ -62,11 +63,11 @@ class AccessTokensSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.token_outlined,
-                      title: 'No project access tokens',
+                      title: context.l10n.noProjectAccessTokens,
                     ),
                   )
                 : Column(
@@ -96,7 +97,7 @@ class AccessTokensSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Create project access token'),
+          title: Text(context.l10n.createProjectAccessToken),
           content: SizedBox(
             width: 420,
             child: ListView(
@@ -106,7 +107,7 @@ class AccessTokensSection extends ConsumerWidget {
                   controller: name,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Name',
+                    labelText: context.l10n.fieldName,
                     errorText: nameError ? 'Required' : null,
                   ),
                   onChanged: (_) {
@@ -115,25 +116,39 @@ class AccessTokensSection extends ConsumerWidget {
                     }
                   },
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 DropdownButtonFormField<int>(
                   initialValue: accessLevel,
-                  decoration: const InputDecoration(labelText: 'Role'),
-                  items: const [
-                    DropdownMenuItem(value: 10, child: Text('Guest')),
-                    DropdownMenuItem(value: 20, child: Text('Reporter')),
-                    DropdownMenuItem(value: 30, child: Text('Developer')),
-                    DropdownMenuItem(value: 40, child: Text('Maintainer')),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldRole,
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      value: 10,
+                      child: Text(context.l10n.roleGuest),
+                    ),
+                    DropdownMenuItem(
+                      value: 20,
+                      child: Text(context.l10n.roleReporter),
+                    ),
+                    DropdownMenuItem(
+                      value: 30,
+                      child: Text(context.l10n.roleDeveloper),
+                    ),
+                    DropdownMenuItem(
+                      value: 40,
+                      child: Text(context.l10n.roleMaintainer),
+                    ),
                   ],
                   onChanged: (v) => setState(() => accessLevel = v ?? 30),
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 TextField(
                   controller: days,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                    labelText: 'Expires in days (optional)',
+                    labelText: context.l10n.fieldExpiresDays,
                     errorText: daysError ? 'Must be a positive number' : null,
                   ),
                   onChanged: (_) {
@@ -142,7 +157,7 @@ class AccessTokensSection extends ConsumerWidget {
                     }
                   },
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 for (final e in scopes.entries)
                   CheckboxListTile(
                     dense: true,
@@ -157,7 +172,7 @@ class AccessTokensSection extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: Insets.xs),
                     child: Text(
-                      'Pick at least one scope',
+                      context.l10n.tokenScopeRequired,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                         fontSize: 12,
@@ -170,7 +185,7 @@ class AccessTokensSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -191,7 +206,7 @@ class AccessTokensSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Create'),
+              child: Text(context.l10n.actionCreate),
             ),
           ],
         ),
@@ -242,12 +257,12 @@ class AccessTokensSection extends ConsumerWidget {
     return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Token "${token.name}"'),
+        title: Text(context.l10n.tokenCreatedTitle(token.name)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Copy this now — it will not be shown again.'),
+            Text(context.l10n.copyThisNowItWillNot),
             const SizedBox(height: Insets.sm),
             SelectableText(
               token.token ?? '',
@@ -258,19 +273,19 @@ class AccessTokensSection extends ConsumerWidget {
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.copy_outlined, size: 16),
-            label: const Text('Copy'),
+            label: Text(context.l10n.actionCopy),
             onPressed: () {
               unawaited(
                 Clipboard.setData(ClipboardData(text: token.token ?? '')),
               );
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Copied')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(context.l10n.actionCopied)),
+              );
             },
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            child: Text(context.l10n.actionDone),
           ),
         ],
       ),
@@ -284,7 +299,7 @@ class AccessTokensSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Revoke access token?',
+      title: context.l10n.revokeAccessToken,
       body: '"${t.name}" stops working immediately.',
     );
     if (ok != true || !context.mounted) {
@@ -335,8 +350,8 @@ class _AccessTokenTile extends StatelessWidget {
       trailing: t.revoked
           ? null
           : IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18),
-              tooltip: 'Revoke',
+              icon: Icon(Icons.delete_outline, size: 18),
+              tooltip: context.l10n.actionRevoke,
               onPressed: onRevoke,
             ),
     );

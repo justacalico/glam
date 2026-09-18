@@ -792,4 +792,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get initReadme => '使用 README 初始化';
+
+  @override
+  String get noProjectAccessTokens => '没有项目访问令牌';
+
+  @override
+  String get createProjectAccessToken => '创建项目访问令牌';
+
+  @override
+  String get copyThisNowItWillNot => '请立即复制，之后将无法再次查看。';
+
+  @override
+  String get revokeAccessToken => '吊销访问令牌？';
+
+  @override
+  String tokenCreatedTitle(Object p0) {
+    return '令牌“$p0”';
+  }
 }

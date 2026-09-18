@@ -1627,6 +1627,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Initialize with a README'**
   String get initReadme;
+
+  /// No description provided for @noProjectAccessTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'No project access tokens'**
+  String get noProjectAccessTokens;
+
+  /// No description provided for @createProjectAccessToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Create project access token'**
+  String get createProjectAccessToken;
+
+  /// No description provided for @copyThisNowItWillNot.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this now — it will not be shown again.'**
+  String get copyThisNowItWillNot;
+
+  /// No description provided for @revokeAccessToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke access token?'**
+  String get revokeAccessToken;
+
+  /// No description provided for @tokenCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Token \"{p0}\"'**
+  String tokenCreatedTitle(Object p0);
 }
 
 class _AppLocalizationsDelegate

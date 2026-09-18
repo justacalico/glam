@@ -796,4 +796,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get initReadme => 'Initialize with a README';
+
+  @override
+  String get noProjectAccessTokens => 'No project access tokens';
+
+  @override
+  String get createProjectAccessToken => 'Create project access token';
+
+  @override
+  String get copyThisNowItWillNot =>
+      'Copy this now — it will not be shown again.';
+
+  @override
+  String get revokeAccessToken => 'Revoke access token?';
+
+  @override
+  String tokenCreatedTitle(Object p0) {
+    return 'Token \"$p0\"';
+  }
 }

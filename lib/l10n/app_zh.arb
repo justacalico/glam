@@ -254,5 +254,10 @@
   "fieldPathHint": "默认使用名称",
   "fieldNamespace": "命名空间",
   "namespacePersonal": "个人命名空间",
-  "initReadme": "使用 README 初始化"
+  "initReadme": "使用 README 初始化",
+  "noProjectAccessTokens": "没有项目访问令牌",
+  "createProjectAccessToken": "创建项目访问令牌",
+  "tokenCreatedTitle": "令牌“{p0}”",
+  "copyThisNowItWillNot": "请立即复制，之后将无法再次查看。",
+  "revokeAccessToken": "吊销访问令牌？"
 }

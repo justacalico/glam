@@ -324,5 +324,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noProjectAccessTokens": "No project access tokens",
+  "createProjectAccessToken": "Create project access token",
+  "copyThisNowItWillNot": "Copy this now — it will not be shown again.",
+  "revokeAccessToken": "Revoke access token?",
+  "tokenCreatedTitle": "Token \"{p0}\""
 }
