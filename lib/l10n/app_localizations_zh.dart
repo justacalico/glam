@@ -947,4 +947,106 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get leaveEmptyToUseTheDefault => '留空则使用默认值';
+
+  @override
+  String get protectedBranches => '受保护分支';
+
+  @override
+  String get protect => '保护';
+
+  @override
+  String get noProtectedBranches => '没有受保护分支';
+
+  @override
+  String get protectBranch => '保护分支';
+
+  @override
+  String get branchOrWildcard => '分支或通配符';
+
+  @override
+  String get mainOrRelease => 'main 或 release-*';
+
+  @override
+  String get allowedToPush => '允许推送';
+
+  @override
+  String get allowedToMerge => '允许合并';
+
+  @override
+  String get allowForcePush => '允许强制推送';
+
+  @override
+  String get unprotectBranch => '取消分支保护？';
+
+  @override
+  String get noOne => '无人';
+
+  @override
+  String get developersMaintainers => '开发者 + 维护者';
+
+  @override
+  String get maintainers => '维护者';
+
+  @override
+  String get admins => '管理员';
+
+  @override
+  String get protectedTags => '受保护标签';
+
+  @override
+  String get noProtectedTags => '没有受保护标签';
+
+  @override
+  String get protectTag => '保护标签';
+
+  @override
+  String get tagOrWildcard => '标签或通配符';
+
+  @override
+  String get v100OrV => 'v1.0.0 或 v*';
+
+  @override
+  String get allowedToCreate => '允许创建';
+
+  @override
+  String get unprotectTag => '取消标签保护？';
+
+  @override
+  String get protectedEnvironments => '受保护环境';
+
+  @override
+  String get noProtectedEnvironments => '没有受保护环境';
+
+  @override
+  String get protectEnvironment => '保护环境';
+
+  @override
+  String get environmentOrWildcard => '环境或通配符';
+
+  @override
+  String get productionOrReview => 'production 或 review/*';
+
+  @override
+  String get runners => 'Runners';
+
+  @override
+  String get sharedRunners => '共享 Runners';
+
+  @override
+  String get allowInstanceRunnersToPickUp => '允许实例 Runner 拾取作业';
+
+  @override
+  String get groupRunners => '群组 Runners';
+
+  @override
+  String get allowGroupRunnersToPickUp => '允许群组 Runner 拾取作业';
+
+  @override
+  String get noRunnersAvailable => '没有可用的 Runner';
+
+  @override
+  String get removeFromProject => '从项目移除';
+
+  @override
+  String get removeRunner => '移除 Runner？';
 }

@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/domain/protected_tag.dart';
 import 'package:glam/src/features/projects/domain/remote_mirror.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Protected branch rules with protect / unprotect.
 class ProtectedBranchesSection extends ConsumerWidget {
@@ -31,10 +32,10 @@ class ProtectedBranchesSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Protected branches')),
+            Expanded(child: SectionLabel(context.l10n.protectedBranches)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Protect'),
+              label: Text(context.l10n.protect),
               onPressed: () => _protect(context, ref),
             ),
           ],
@@ -55,11 +56,11 @@ class ProtectedBranchesSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.shield_outlined,
-                      title: 'No protected branches',
+                      title: context.l10n.noProtectedBranches,
                     ),
                   )
                 : Column(
@@ -86,7 +87,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Protect branch'),
+          title: Text(context.l10n.protectBranch),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -95,19 +96,19 @@ class ProtectedBranchesSection extends ConsumerWidget {
                 TextField(
                   controller: name,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Branch or wildcard',
-                    hintText: 'main or release-*',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.branchOrWildcard,
+                    hintText: context.l10n.mainOrRelease,
                   ),
                 ),
-                const SizedBox(height: Insets.md),
+                SizedBox(height: Insets.md),
                 _LevelPicker(
-                  label: 'Allowed to push',
+                  label: context.l10n.allowedToPush,
                   value: pushLevel,
                   onChanged: (v) => setState(() => pushLevel = v),
                 ),
                 _LevelPicker(
-                  label: 'Allowed to merge',
+                  label: context.l10n.allowedToMerge,
                   value: mergeLevel,
                   onChanged: (v) => setState(() => mergeLevel = v),
                 ),
@@ -115,7 +116,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text('Allow force push'),
+                  title: Text(context.l10n.allowForcePush),
                   value: forcePush,
                   onChanged: (v) => setState(() => forcePush = v ?? false),
                 ),
@@ -125,7 +126,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -134,7 +135,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Protect'),
+              child: Text(context.l10n.protect),
             ),
           ],
         ),
@@ -169,7 +170,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Unprotect branch?',
+      title: context.l10n.unprotectBranch,
       body: '"${b.name}" will accept pushes again.',
     );
     if (ok != true || !context.mounted) {
@@ -245,14 +246,14 @@ class _LevelPicker extends StatelessWidget {
               onChanged(v);
             }
           },
-          items: const [
-            DropdownMenuItem(value: 0, child: Text('No one')),
+          items: [
+            DropdownMenuItem(value: 0, child: Text(context.l10n.noOne)),
             DropdownMenuItem(
               value: 30,
-              child: Text('Developers + maintainers'),
+              child: Text(context.l10n.developersMaintainers),
             ),
-            DropdownMenuItem(value: 40, child: Text('Maintainers')),
-            DropdownMenuItem(value: 60, child: Text('Admins')),
+            DropdownMenuItem(value: 40, child: Text(context.l10n.maintainers)),
+            DropdownMenuItem(value: 60, child: Text(context.l10n.admins)),
           ],
         ),
       ],
@@ -276,10 +277,10 @@ class ProtectedTagsSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Protected tags')),
+            Expanded(child: SectionLabel(context.l10n.protectedTags)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Protect'),
+              label: Text(context.l10n.protect),
               onPressed: () => _protect(context, ref),
             ),
           ],
@@ -300,11 +301,11 @@ class ProtectedTagsSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.sell_outlined,
-                      title: 'No protected tags',
+                      title: context.l10n.noProtectedTags,
                     ),
                   )
                 : Column(
@@ -329,7 +330,7 @@ class ProtectedTagsSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Protect tag'),
+          title: Text(context.l10n.protectTag),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -338,14 +339,14 @@ class ProtectedTagsSection extends ConsumerWidget {
                 TextField(
                   controller: name,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Tag or wildcard',
-                    hintText: 'v1.0.0 or v*',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.tagOrWildcard,
+                    hintText: context.l10n.v100OrV,
                   ),
                 ),
-                const SizedBox(height: Insets.md),
+                SizedBox(height: Insets.md),
                 _LevelPicker(
-                  label: 'Allowed to create',
+                  label: context.l10n.allowedToCreate,
                   value: createLevel,
                   onChanged: (v) => setState(() => createLevel = v),
                 ),
@@ -355,7 +356,7 @@ class ProtectedTagsSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -364,7 +365,7 @@ class ProtectedTagsSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Protect'),
+              child: Text(context.l10n.protect),
             ),
           ],
         ),
@@ -393,7 +394,7 @@ class ProtectedTagsSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Unprotect tag?',
+      title: context.l10n.unprotectTag,
       body: '"${tag.name}" can be created by anyone with push access.',
     );
     if (ok != true || !context.mounted) {
@@ -427,10 +428,10 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Protected environments')),
+            Expanded(child: SectionLabel(context.l10n.protectedEnvironments)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Protect'),
+              label: Text(context.l10n.protect),
               onPressed: () => _protect(context, ref),
             ),
           ],
@@ -451,11 +452,11 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.cloud_outlined,
-                      title: 'No protected environments',
+                      title: context.l10n.noProtectedEnvironments,
                     ),
                   )
                 : Column(
@@ -480,7 +481,7 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Protect environment'),
+          title: Text(context.l10n.protectEnvironment),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -489,9 +490,9 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
                 TextField(
                   controller: name,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Environment or wildcard',
-                    hintText: 'production or review/*',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.environmentOrWildcard,
+                    hintText: context.l10n.productionOrReview,
                   ),
                 ),
                 const SizedBox(height: Insets.md),

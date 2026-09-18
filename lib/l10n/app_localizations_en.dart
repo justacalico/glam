@@ -955,4 +955,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leaveEmptyToUseTheDefault => 'Leave empty to use the default';
+
+  @override
+  String get protectedBranches => 'Protected branches';
+
+  @override
+  String get protect => 'Protect';
+
+  @override
+  String get noProtectedBranches => 'No protected branches';
+
+  @override
+  String get protectBranch => 'Protect branch';
+
+  @override
+  String get branchOrWildcard => 'Branch or wildcard';
+
+  @override
+  String get mainOrRelease => 'main or release-*';
+
+  @override
+  String get allowedToPush => 'Allowed to push';
+
+  @override
+  String get allowedToMerge => 'Allowed to merge';
+
+  @override
+  String get allowForcePush => 'Allow force push';
+
+  @override
+  String get unprotectBranch => 'Unprotect branch?';
+
+  @override
+  String get noOne => 'No one';
+
+  @override
+  String get developersMaintainers => 'Developers + maintainers';
+
+  @override
+  String get maintainers => 'Maintainers';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get protectedTags => 'Protected tags';
+
+  @override
+  String get noProtectedTags => 'No protected tags';
+
+  @override
+  String get protectTag => 'Protect tag';
+
+  @override
+  String get tagOrWildcard => 'Tag or wildcard';
+
+  @override
+  String get v100OrV => 'v1.0.0 or v*';
+
+  @override
+  String get allowedToCreate => 'Allowed to create';
+
+  @override
+  String get unprotectTag => 'Unprotect tag?';
+
+  @override
+  String get protectedEnvironments => 'Protected environments';
+
+  @override
+  String get noProtectedEnvironments => 'No protected environments';
+
+  @override
+  String get protectEnvironment => 'Protect environment';
+
+  @override
+  String get environmentOrWildcard => 'Environment or wildcard';
+
+  @override
+  String get productionOrReview => 'production or review/*';
+
+  @override
+  String get runners => 'Runners';
+
+  @override
+  String get sharedRunners => 'Shared runners';
+
+  @override
+  String get allowInstanceRunnersToPickUp =>
+      'Allow instance runners to pick up jobs';
+
+  @override
+  String get groupRunners => 'Group runners';
+
+  @override
+  String get allowGroupRunnersToPickUp => 'Allow group runners to pick up jobs';
+
+  @override
+  String get noRunnersAvailable => 'No runners available';
+
+  @override
+  String get removeFromProject => 'Remove from project';
+
+  @override
+  String get removeRunner => 'Remove runner?';
 }

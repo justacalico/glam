@@ -9,6 +9,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/runner.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// CI/CD runners: shared/group enablement switches plus the runners
 /// available to this project. Only project-type runners can be removed
@@ -26,7 +27,7 @@ class RunnersSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Runners'),
+        SectionLabel(context.l10n.runners),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -37,8 +38,8 @@ class RunnersSection extends ConsumerWidget {
             children: [
               SwitchListTile(
                 dense: true,
-                title: const Text('Shared runners'),
-                subtitle: const Text('Allow instance runners to pick up jobs'),
+                title: Text(context.l10n.sharedRunners),
+                subtitle: Text(context.l10n.allowInstanceRunnersToPickUp),
                 value: project.sharedRunnersEnabled,
                 onChanged: (v) =>
                     _setFlags(context, ref, sharedRunnersEnabled: v),
@@ -46,8 +47,8 @@ class RunnersSection extends ConsumerWidget {
               Divider(height: 1, color: colors.border, indent: Insets.lg),
               SwitchListTile(
                 dense: true,
-                title: const Text('Group runners'),
-                subtitle: const Text('Allow group runners to pick up jobs'),
+                title: Text(context.l10n.groupRunners),
+                subtitle: Text(context.l10n.allowGroupRunnersToPickUp),
                 value: project.groupRunnersEnabled,
                 onChanged: (v) =>
                     _setFlags(context, ref, groupRunnersEnabled: v),
@@ -72,11 +73,11 @@ class RunnersSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.smart_toy_outlined,
-                      title: 'No runners available',
+                      title: context.l10n.noRunnersAvailable,
                     ),
                   )
                 : Column(
@@ -86,11 +87,11 @@ class RunnersSection extends ConsumerWidget {
                           runner: r,
                           trailing: r.isProjectRunner
                               ? IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.remove_circle_outline,
                                     size: 18,
                                   ),
-                                  tooltip: 'Remove from project',
+                                  tooltip: context.l10n.removeFromProject,
                                   onPressed: () => _disable(context, ref, r),
                                 )
                               : null,
@@ -130,7 +131,7 @@ class RunnersSection extends ConsumerWidget {
   Future<void> _disable(BuildContext context, WidgetRef ref, Runner r) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Remove runner?',
+      title: context.l10n.removeRunner,
       body:
           '"${r.name.isEmpty ? r.description : r.name}" will stop '
           "running this project's jobs.",

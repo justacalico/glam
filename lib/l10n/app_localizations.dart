@@ -1933,6 +1933,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leave empty to use the default'**
   String get leaveEmptyToUseTheDefault;
+
+  /// No description provided for @protectedBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected branches'**
+  String get protectedBranches;
+
+  /// No description provided for @protect.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect'**
+  String get protect;
+
+  /// No description provided for @noProtectedBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'No protected branches'**
+  String get noProtectedBranches;
+
+  /// No description provided for @protectBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect branch'**
+  String get protectBranch;
+
+  /// No description provided for @branchOrWildcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch or wildcard'**
+  String get branchOrWildcard;
+
+  /// No description provided for @mainOrRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'main or release-*'**
+  String get mainOrRelease;
+
+  /// No description provided for @allowedToPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed to push'**
+  String get allowedToPush;
+
+  /// No description provided for @allowedToMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed to merge'**
+  String get allowedToMerge;
+
+  /// No description provided for @allowForcePush.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow force push'**
+  String get allowForcePush;
+
+  /// No description provided for @unprotectBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Unprotect branch?'**
+  String get unprotectBranch;
+
+  /// No description provided for @noOne.
+  ///
+  /// In en, this message translates to:
+  /// **'No one'**
+  String get noOne;
+
+  /// No description provided for @developersMaintainers.
+  ///
+  /// In en, this message translates to:
+  /// **'Developers + maintainers'**
+  String get developersMaintainers;
+
+  /// No description provided for @maintainers.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintainers'**
+  String get maintainers;
+
+  /// No description provided for @admins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get admins;
+
+  /// No description provided for @protectedTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected tags'**
+  String get protectedTags;
+
+  /// No description provided for @noProtectedTags.
+  ///
+  /// In en, this message translates to:
+  /// **'No protected tags'**
+  String get noProtectedTags;
+
+  /// No description provided for @protectTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect tag'**
+  String get protectTag;
+
+  /// No description provided for @tagOrWildcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag or wildcard'**
+  String get tagOrWildcard;
+
+  /// No description provided for @v100OrV.
+  ///
+  /// In en, this message translates to:
+  /// **'v1.0.0 or v*'**
+  String get v100OrV;
+
+  /// No description provided for @allowedToCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed to create'**
+  String get allowedToCreate;
+
+  /// No description provided for @unprotectTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Unprotect tag?'**
+  String get unprotectTag;
+
+  /// No description provided for @protectedEnvironments.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected environments'**
+  String get protectedEnvironments;
+
+  /// No description provided for @noProtectedEnvironments.
+  ///
+  /// In en, this message translates to:
+  /// **'No protected environments'**
+  String get noProtectedEnvironments;
+
+  /// No description provided for @protectEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect environment'**
+  String get protectEnvironment;
+
+  /// No description provided for @environmentOrWildcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment or wildcard'**
+  String get environmentOrWildcard;
+
+  /// No description provided for @productionOrReview.
+  ///
+  /// In en, this message translates to:
+  /// **'production or review/*'**
+  String get productionOrReview;
+
+  /// No description provided for @runners.
+  ///
+  /// In en, this message translates to:
+  /// **'Runners'**
+  String get runners;
+
+  /// No description provided for @sharedRunners.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared runners'**
+  String get sharedRunners;
+
+  /// No description provided for @allowInstanceRunnersToPickUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow instance runners to pick up jobs'**
+  String get allowInstanceRunnersToPickUp;
+
+  /// No description provided for @groupRunners.
+  ///
+  /// In en, this message translates to:
+  /// **'Group runners'**
+  String get groupRunners;
+
+  /// No description provided for @allowGroupRunnersToPickUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow group runners to pick up jobs'**
+  String get allowGroupRunnersToPickUp;
+
+  /// No description provided for @noRunnersAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No runners available'**
+  String get noRunnersAvailable;
+
+  /// No description provided for @removeFromProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from project'**
+  String get removeFromProject;
+
+  /// No description provided for @removeRunner.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove runner?'**
+  String get removeRunner;
 }
 
 class _AppLocalizationsDelegate
