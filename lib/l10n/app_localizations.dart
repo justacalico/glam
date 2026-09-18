@@ -1855,6 +1855,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove domain?'**
   String get removeDomainConfirm;
+
+  /// No description provided for @integrations.
+  ///
+  /// In en, this message translates to:
+  /// **'Integrations'**
+  String get integrations;
+
+  /// No description provided for @noIntegrations.
+  ///
+  /// In en, this message translates to:
+  /// **'No integrations'**
+  String get noIntegrations;
+
+  /// No description provided for @secretValuesMayAppearMaskedFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret values may appear masked. Fields you do not change are left as they are.'**
+  String get secretValuesMayAppearMaskedFields;
+
+  /// No description provided for @mergeMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge method'**
+  String get mergeMethod;
+
+  /// No description provided for @squashCommits.
+  ///
+  /// In en, this message translates to:
+  /// **'Squash commits'**
+  String get squashCommits;
+
+  /// No description provided for @pipelinesMustSucceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipelines must succeed'**
+  String get pipelinesMustSucceed;
+
+  /// No description provided for @allowMergeOnSkippedPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow merge on skipped pipelines'**
+  String get allowMergeOnSkippedPipelines;
+
+  /// No description provided for @allThreadsMustBeResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'All threads must be resolved'**
+  String get allThreadsMustBeResolved;
+
+  /// No description provided for @deleteSourceBranchAfterMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete source branch after merge'**
+  String get deleteSourceBranchAfterMerge;
+
+  /// No description provided for @mergeCommitTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge commit template'**
+  String get mergeCommitTemplate;
+
+  /// No description provided for @squashCommitTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Squash commit template'**
+  String get squashCommitTemplate;
+
+  /// No description provided for @suggestionCommitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion commit message'**
+  String get suggestionCommitMessage;
+
+  /// No description provided for @leaveEmptyToUseTheDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the default'**
+  String get leaveEmptyToUseTheDefault;
 }
 
 class _AppLocalizationsDelegate

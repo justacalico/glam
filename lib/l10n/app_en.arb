@@ -362,5 +362,18 @@
   "addPagesDomain": "Add Pages domain",
   "exportProject": "Export project",
   "loadStatusError": "Could not load status",
-  "removeDomainConfirm": "Remove domain?"
+  "removeDomainConfirm": "Remove domain?",
+  "integrations": "Integrations",
+  "noIntegrations": "No integrations",
+  "secretValuesMayAppearMaskedFields": "Secret values may appear masked. Fields you do not change are left as they are.",
+  "mergeMethod": "Merge method",
+  "squashCommits": "Squash commits",
+  "pipelinesMustSucceed": "Pipelines must succeed",
+  "allowMergeOnSkippedPipelines": "Allow merge on skipped pipelines",
+  "allThreadsMustBeResolved": "All threads must be resolved",
+  "deleteSourceBranchAfterMerge": "Delete source branch after merge",
+  "mergeCommitTemplate": "Merge commit template",
+  "squashCommitTemplate": "Squash commit template",
+  "suggestionCommitMessage": "Suggestion commit message",
+  "leaveEmptyToUseTheDefault": "Leave empty to use the default"
 }

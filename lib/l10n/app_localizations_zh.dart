@@ -908,4 +908,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeDomainConfirm => '移除域名？';
+
+  @override
+  String get integrations => '集成';
+
+  @override
+  String get noIntegrations => '没有集成';
+
+  @override
+  String get secretValuesMayAppearMaskedFields => '密钥值可能会脱敏显示。未修改的字段将保持原样。';
+
+  @override
+  String get mergeMethod => '合并方式';
+
+  @override
+  String get squashCommits => '压缩提交';
+
+  @override
+  String get pipelinesMustSucceed => '流水线必须成功';
+
+  @override
+  String get allowMergeOnSkippedPipelines => '允许在跳过流水线时合并';
+
+  @override
+  String get allThreadsMustBeResolved => '所有讨论必须已解决';
+
+  @override
+  String get deleteSourceBranchAfterMerge => '合并后删除源分支';
+
+  @override
+  String get mergeCommitTemplate => '合并提交模板';
+
+  @override
+  String get squashCommitTemplate => '压缩提交模板';
+
+  @override
+  String get suggestionCommitMessage => '建议提交信息';
+
+  @override
+  String get leaveEmptyToUseTheDefault => '留空则使用默认值';
 }

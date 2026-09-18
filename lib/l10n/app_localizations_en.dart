@@ -915,4 +915,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeDomainConfirm => 'Remove domain?';
+
+  @override
+  String get integrations => 'Integrations';
+
+  @override
+  String get noIntegrations => 'No integrations';
+
+  @override
+  String get secretValuesMayAppearMaskedFields =>
+      'Secret values may appear masked. Fields you do not change are left as they are.';
+
+  @override
+  String get mergeMethod => 'Merge method';
+
+  @override
+  String get squashCommits => 'Squash commits';
+
+  @override
+  String get pipelinesMustSucceed => 'Pipelines must succeed';
+
+  @override
+  String get allowMergeOnSkippedPipelines => 'Allow merge on skipped pipelines';
+
+  @override
+  String get allThreadsMustBeResolved => 'All threads must be resolved';
+
+  @override
+  String get deleteSourceBranchAfterMerge => 'Delete source branch after merge';
+
+  @override
+  String get mergeCommitTemplate => 'Merge commit template';
+
+  @override
+  String get squashCommitTemplate => 'Squash commit template';
+
+  @override
+  String get suggestionCommitMessage => 'Suggestion commit message';
+
+  @override
+  String get leaveEmptyToUseTheDefault => 'Leave empty to use the default';
 }

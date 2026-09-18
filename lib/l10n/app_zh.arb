@@ -292,5 +292,18 @@
   "removeDomain": "移除域名",
   "addDomain": "添加域名",
   "unpublishPages": "取消发布 Pages？",
-  "addPagesDomain": "添加 Pages 域名"
+  "addPagesDomain": "添加 Pages 域名",
+  "integrations": "集成",
+  "noIntegrations": "没有集成",
+  "secretValuesMayAppearMaskedFields": "密钥值可能会脱敏显示。未修改的字段将保持原样。",
+  "mergeMethod": "合并方式",
+  "squashCommits": "压缩提交",
+  "pipelinesMustSucceed": "流水线必须成功",
+  "allowMergeOnSkippedPipelines": "允许在跳过流水线时合并",
+  "allThreadsMustBeResolved": "所有讨论必须已解决",
+  "deleteSourceBranchAfterMerge": "合并后删除源分支",
+  "mergeCommitTemplate": "合并提交模板",
+  "squashCommitTemplate": "压缩提交模板",
+  "suggestionCommitMessage": "建议提交信息",
+  "leaveEmptyToUseTheDefault": "留空则使用默认值"
 }
