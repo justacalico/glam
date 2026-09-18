@@ -1099,5 +1099,10 @@
   "todoDone": "已完成",
   "targetIssue": "议题",
   "targetMr": "合并请求",
-  "targetEpic": "史诗"
+  "targetEpic": "史诗",
+  "envAvailable": "可用",
+  "envStopped": "已停止",
+  "searchEnvironments": "搜索环境",
+  "newUserList": "新建用户列表",
+  "editNamed": "编辑 {p0}"
 }

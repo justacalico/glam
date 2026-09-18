@@ -33,7 +33,6 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
   String? _search;
 
   static const _stateValues = ['available', 'stopped'];
-  static const _stateLabels = {'available': 'Available', 'stopped': 'Stopped'};
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,7 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
             0,
           ),
           child: SearchField(
-            hint: 'Search environments',
+            hint: context.l10n.searchEnvironments,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -74,7 +73,10 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
                 title: context.l10n.state,
                 current: _states,
                 options: _stateValues,
-                labels: _stateLabels,
+                labels: {
+                  'available': context.l10n.envAvailable,
+                  'stopped': context.l10n.envStopped,
+                },
                 onSelect: (v) => setState(() => _states = v),
               ),
               TextButton.icon(

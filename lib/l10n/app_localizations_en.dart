@@ -3591,4 +3591,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get targetEpic => 'Epic';
+
+  @override
+  String get envAvailable => 'Available';
+
+  @override
+  String get envStopped => 'Stopped';
+
+  @override
+  String get searchEnvironments => 'Search environments';
+
+  @override
+  String get newUserList => 'New user list';
+
+  @override
+  String editNamed(Object p0) {
+    return 'Edit $p0';
+  }
 }

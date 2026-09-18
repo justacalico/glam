@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/features/boards/domain/board.dart';
 
 export 'package:glam/l10n/app_localizations.dart';
 
@@ -142,4 +143,14 @@ extension ApiExceptionL10n on ApiException {
       },
     };
   }
+}
+
+/// Localized board list titles — system lists localize, label lists keep
+/// their label name.
+extension BoardListL10n on BoardList {
+  String displayTitle(AppLocalizations l10n) => switch (listType) {
+    'backlog' => l10n.stateOpen,
+    'closed' => l10n.stateClosed,
+    _ => title,
+  };
 }

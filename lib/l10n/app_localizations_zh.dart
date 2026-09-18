@@ -3549,4 +3549,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get targetEpic => '史诗';
+
+  @override
+  String get envAvailable => '可用';
+
+  @override
+  String get envStopped => '已停止';
+
+  @override
+  String get searchEnvironments => '搜索环境';
+
+  @override
+  String get newUserList => '新建用户列表';
+
+  @override
+  String editNamed(Object p0) {
+    return '编辑 $p0';
+  }
 }

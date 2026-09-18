@@ -393,7 +393,9 @@ Future<_UserListDraft?> _userListForm(
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
         title: Text(
-          existing == null ? 'New user list' : 'Edit ${existing.name}',
+          existing == null
+              ? context.l10n.newUserList
+              : context.l10n.editNamed(existing.name),
         ),
         content: SizedBox(
           width: 380,
@@ -405,7 +407,7 @@ Future<_UserListDraft?> _userListForm(
                 autofocus: true,
                 decoration: InputDecoration(
                   labelText: context.l10n.fieldName,
-                  errorText: nameError ? 'Required' : null,
+                  errorText: nameError ? context.l10n.errorRequired : null,
                 ),
                 onChanged: (_) {
                   if (nameError) {

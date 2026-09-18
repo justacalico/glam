@@ -6697,6 +6697,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Epic'**
   String get targetEpic;
+
+  /// No description provided for @envAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get envAvailable;
+
+  /// No description provided for @envStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get envStopped;
+
+  /// No description provided for @searchEnvironments.
+  ///
+  /// In en, this message translates to:
+  /// **'Search environments'**
+  String get searchEnvironments;
+
+  /// No description provided for @newUserList.
+  ///
+  /// In en, this message translates to:
+  /// **'New user list'**
+  String get newUserList;
+
+  /// No description provided for @editNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {p0}'**
+  String editNamed(Object p0);
 }
 
 class _AppLocalizationsDelegate

@@ -1099,5 +1099,10 @@
   "todoDone": "Done",
   "targetIssue": "Issue",
   "targetMr": "Merge request",
-  "targetEpic": "Epic"
+  "targetEpic": "Epic",
+  "envAvailable": "Available",
+  "envStopped": "Stopped",
+  "searchEnvironments": "Search environments",
+  "newUserList": "New user list",
+  "editNamed": "Edit {p0}"
 }

@@ -45,7 +45,7 @@ class _BoardsTabState extends ConsumerState<BoardsTab> {
           return EmptyState(
             icon: Icons.view_kanban_outlined,
             title: context.l10n.noBoards,
-            actionLabel: 'New board',
+            actionLabel: context.l10n.newBoard,
             onAction: () => unawaited(_editBoard(null)),
           );
         }
@@ -411,7 +411,9 @@ class _Column extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.removeNamedConfirm(list.title)),
+        title: Text(
+          context.l10n.removeNamedConfirm(list.displayTitle(context.l10n)),
+        ),
         content: Text(context.l10n.issuesKeepTheirLabelOnlyThe),
         actions: [
           TextButton(
@@ -475,7 +477,7 @@ class _Column extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    list.title,
+                    list.displayTitle(context.l10n),
                     style: theme.textTheme.titleSmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
