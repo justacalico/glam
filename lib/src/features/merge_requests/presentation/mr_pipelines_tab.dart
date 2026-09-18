@@ -17,6 +17,7 @@ import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Pipelines attached to this MR plus a run button (open MRs only).
 class MrPipelinesTab extends ConsumerStatefulWidget {
@@ -53,16 +54,16 @@ class _MrPipelinesTabState extends ConsumerState<MrPipelinesTab> {
                   child: TextButton.icon(
                     onPressed: _busy ? null : _run,
                     icon: const Icon(Icons.play_arrow_outlined, size: 18),
-                    label: const Text('Run pipeline'),
+                    label: Text(context.l10n.runPipeline),
                   ),
                 ),
               ),
             if (list.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(Insets.xl),
                 child: EmptyState(
                   icon: Icons.rocket_launch_outlined,
-                  title: 'No pipelines for this MR',
+                  title: context.l10n.noPipelinesForThisMr,
                 ),
               )
             else
@@ -124,8 +125,10 @@ class MrClosesIssuesRow extends ConsumerWidget {
               children: [
                 const SizedBox(height: Insets.md),
                 Text(
-                  'Closes ${items.length} '
-                  'issue${items.length == 1 ? '' : 's'}',
+                  context.l10n.closesIssues(
+                    items.length,
+                    items.length == 1 ? '' : 's',
+                  ),
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 const SizedBox(height: Insets.xs),
@@ -192,7 +195,9 @@ class MrRelatedMrsRow extends ConsumerWidget {
               children: [
                 const SizedBox(height: Insets.md),
                 Text(
-                  'Related merge request${items.length == 1 ? '' : 's'}',
+                  context.l10n.relatedMergeRequestP0(
+                    items.length == 1 ? '' : 's',
+                  ),
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 const SizedBox(height: Insets.xs),

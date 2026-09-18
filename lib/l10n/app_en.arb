@@ -584,5 +584,10 @@
   "closedByName": "Closed by {p0}",
   "tasksStatus": "Tasks {p0}",
   "openedByAt": "{p0} opened {p1}",
-  "timeSpentOf": "{p0} spent of {p1}"
+  "timeSpentOf": "{p0} spent of {p1}",
+  "runPipeline": "Run pipeline",
+  "noPipelinesForThisMr": "No pipelines for this MR",
+  "relatedMergeRequestP0": "Related merge request{p0}",
+  "closesIssues": "Closes {p0} issue{p1}",
+  "mrTileDraft": "Draft: "
 }

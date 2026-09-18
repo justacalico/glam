@@ -1864,4 +1864,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String timeSpentOf(Object p0, Object p1) {
     return '$p0 spent of $p1';
   }
+
+  @override
+  String get runPipeline => 'Run pipeline';
+
+  @override
+  String get noPipelinesForThisMr => 'No pipelines for this MR';
+
+  @override
+  String relatedMergeRequestP0(Object p0) {
+    return 'Related merge request$p0';
+  }
+
+  @override
+  String closesIssues(Object p0, Object p1) {
+    return 'Closes $p0 issue$p1';
+  }
+
+  @override
+  String get mrTileDraft => 'Draft: ';
 }

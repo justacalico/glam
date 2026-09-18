@@ -1840,4 +1840,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String timeSpentOf(Object p0, Object p1) {
     return '已用 $p0 / 共 $p1';
   }
+
+  @override
+  String get runPipeline => '运行流水线';
+
+  @override
+  String get noPipelinesForThisMr => '此 MR 没有流水线';
+
+  @override
+  String relatedMergeRequestP0(Object p0) {
+    return '相关合并请求';
+  }
+
+  @override
+  String closesIssues(Object p0, Object p1) {
+    return '关闭 $p0 个议题';
+  }
+
+  @override
+  String get mrTileDraft => '草稿：';
 }

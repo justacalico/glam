@@ -584,5 +584,10 @@
   "closedByName": "由 {p0} 关闭",
   "tasksStatus": "任务 {p0}",
   "openedByAt": "{p0} 于 {p1} 打开",
-  "timeSpentOf": "已用 {p0} / 共 {p1}"
+  "timeSpentOf": "已用 {p0} / 共 {p1}",
+  "mrTileDraft": "草稿：",
+  "runPipeline": "运行流水线",
+  "noPipelinesForThisMr": "此 MR 没有流水线",
+  "closesIssues": "关闭 {p0} 个议题",
+  "relatedMergeRequestP0": "相关合并请求"
 }

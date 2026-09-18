@@ -3607,6 +3607,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{p0} spent of {p1}'**
   String timeSpentOf(Object p0, Object p1);
+
+  /// No description provided for @runPipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Run pipeline'**
+  String get runPipeline;
+
+  /// No description provided for @noPipelinesForThisMr.
+  ///
+  /// In en, this message translates to:
+  /// **'No pipelines for this MR'**
+  String get noPipelinesForThisMr;
+
+  /// No description provided for @relatedMergeRequestP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Related merge request{p0}'**
+  String relatedMergeRequestP0(Object p0);
+
+  /// No description provided for @closesIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes {p0} issue{p1}'**
+  String closesIssues(Object p0, Object p1);
+
+  /// No description provided for @mrTileDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft: '**
+  String get mrTileDraft;
 }
 
 class _AppLocalizationsDelegate
