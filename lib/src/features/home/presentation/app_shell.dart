@@ -8,6 +8,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/home/presentation/more_sheet.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One entry in the app's primary navigation.
 class NavDestination {
@@ -178,7 +179,7 @@ class _DesktopShell extends ConsumerWidget {
                 NavigationRailDestination(
                   icon: Icon(d.icon),
                   selectedIcon: Icon(d.selectedIcon),
-                  label: Text(d.label),
+                  label: Text(context.l10n.navLabel(d.path)),
                 ),
             ],
           ),
@@ -262,12 +263,12 @@ class _MobileShell extends StatelessWidget {
             NavigationDestination(
               icon: Icon(d.icon),
               selectedIcon: Icon(d.selectedIcon),
-              label: d.label,
+              label: context.l10n.navLabel(d.path),
             ),
-          const NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.more_horiz),
-            label: 'More',
+          NavigationDestination(
+            icon: const Icon(Icons.more_horiz),
+            selectedIcon: const Icon(Icons.more_horiz),
+            label: context.l10n.navMore,
           ),
         ],
       ),

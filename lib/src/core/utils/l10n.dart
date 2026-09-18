@@ -18,3 +18,20 @@ extension NotificationLevelL10n on AppLocalizations {
     _ => levelGlobal,
   };
 }
+
+/// Labels for the top-level nav destinations, keyed by route path.
+extension NavLabelL10n on AppLocalizations {
+  String navLabel(String path) => switch (path) {
+    '/home' => homeTitle,
+    '/projects' => projectsTitle,
+    '/issues' => issuesTitle,
+    '/merge-requests' => navMrs,
+    '/todos' => todosTitle,
+    '/activity' => activityTitle,
+    '/groups' => groupsTitle,
+    '/snippets' => snippetsTitle,
+    '/search' => searchTitle,
+    '/settings' => settingsTitle,
+    _ => homeTitle,
+  };
+}

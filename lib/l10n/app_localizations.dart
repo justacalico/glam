@@ -811,6 +811,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SSL verification'**
   String get webhookSsl;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTitle;
+
+  /// No description provided for @projectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get projectsTitle;
+
+  /// No description provided for @issuesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get issuesTitle;
+
+  /// No description provided for @mrsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge requests'**
+  String get mrsTitle;
+
+  /// No description provided for @navMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'MRs'**
+  String get navMrs;
+
+  /// No description provided for @todosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To-dos'**
+  String get todosTitle;
+
+  /// No description provided for @activityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTitle;
+
+  /// No description provided for @groupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groupsTitle;
+
+  /// No description provided for @snippetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Snippets'**
+  String get snippetsTitle;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTitle;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @navMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get navMore;
+
+  /// No description provided for @dashProjectsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse your work'**
+  String get dashProjectsSub;
+
+  /// No description provided for @dashMrsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and merge'**
+  String get dashMrsSub;
+
+  /// No description provided for @dashIssuesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to you'**
+  String get dashIssuesSub;
+
+  /// No description provided for @dashTodosSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your task list'**
+  String get dashTodosSub;
+
+  /// No description provided for @dashSearchSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Across the instance'**
+  String get dashSearchSub;
+
+  /// No description provided for @dashActivitySub.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened lately'**
+  String get dashActivitySub;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning,'**
+  String get greetingMorning;
+
+  /// No description provided for @greetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon,'**
+  String get greetingAfternoon;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening,'**
+  String get greetingEvening;
+
+  /// No description provided for @loginError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in. Check the instance URL.'**
+  String get loginError;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your GitLab instance'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginInstanceUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Instance URL'**
+  String get loginInstanceUrl;
+
+  /// No description provided for @loginInstanceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your GitLab instance'**
+  String get loginInstanceRequired;
+
+  /// No description provided for @loginToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal access token'**
+  String get loginToken;
+
+  /// No description provided for @loginPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get loginPaste;
+
+  /// No description provided for @loginShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get loginShow;
+
+  /// No description provided for @loginHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get loginHide;
+
+  /// No description provided for @loginTokenRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a personal access token'**
+  String get loginTokenRequired;
+
+  /// No description provided for @loginSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get loginSignIn;
+
+  /// No description provided for @loginTokenHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a token under Preferences, Access Tokens, with the `api` scope.'**
+  String get loginTokenHelp;
 }
 
 class _AppLocalizationsDelegate

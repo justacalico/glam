@@ -374,4 +374,100 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get webhookSsl => 'SSL 验证';
+
+  @override
+  String get homeTitle => '首页';
+
+  @override
+  String get projectsTitle => '项目';
+
+  @override
+  String get issuesTitle => '议题';
+
+  @override
+  String get mrsTitle => '合并请求';
+
+  @override
+  String get navMrs => '合并请求';
+
+  @override
+  String get todosTitle => '待办';
+
+  @override
+  String get activityTitle => '动态';
+
+  @override
+  String get groupsTitle => '群组';
+
+  @override
+  String get snippetsTitle => '代码片段';
+
+  @override
+  String get searchTitle => '搜索';
+
+  @override
+  String get settingsTitle => '设置';
+
+  @override
+  String get navMore => '更多';
+
+  @override
+  String get dashProjectsSub => '浏览你的项目';
+
+  @override
+  String get dashMrsSub => '审查与合并';
+
+  @override
+  String get dashIssuesSub => '指派给你';
+
+  @override
+  String get dashTodosSub => '你的任务列表';
+
+  @override
+  String get dashSearchSub => '全实例搜索';
+
+  @override
+  String get dashActivitySub => '最近动态';
+
+  @override
+  String get greetingMorning => '早上好，';
+
+  @override
+  String get greetingAfternoon => '下午好，';
+
+  @override
+  String get greetingEvening => '晚上好，';
+
+  @override
+  String get loginError => '登录失败，请检查实例地址。';
+
+  @override
+  String get loginSubtitle => '登录到你的 GitLab 实例';
+
+  @override
+  String get loginInstanceUrl => '实例地址';
+
+  @override
+  String get loginInstanceRequired => '请输入 GitLab 实例地址';
+
+  @override
+  String get loginToken => '个人访问令牌';
+
+  @override
+  String get loginPaste => '粘贴';
+
+  @override
+  String get loginShow => '显示';
+
+  @override
+  String get loginHide => '隐藏';
+
+  @override
+  String get loginTokenRequired => '请粘贴个人访问令牌';
+
+  @override
+  String get loginSignIn => '登录';
+
+  @override
+  String get loginTokenHelp => '在「偏好设置 → 访问令牌」中创建具有 `api` 权限的令牌。';
 }

@@ -10,6 +10,8 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/profile/application/profile_providers.dart';
+import 'package:glam/l10n/app_localizations.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Landing screen: greeting, quick stats, and shortcuts into the main
 /// sections.
@@ -26,10 +28,10 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(context.l10n.homeTitle),
         actions: [
           IconButton(
-            tooltip: 'Notifications',
+            tooltip: context.l10n.notificationsTitle,
             icon: const Icon(Icons.notifications_outlined, size: 20),
             onPressed: () => context.push(Routes.notifications),
           ),
@@ -57,7 +59,7 @@ class DashboardScreen extends ConsumerWidget {
             const _BroadcastBanner(),
             if (user != null) ...[
               Text(
-                _greeting(),
+                _greeting(context.l10n),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.inkMuted,
                 ),
@@ -69,41 +71,41 @@ class DashboardScreen extends ConsumerWidget {
               items: [
                 _Shortcut(
                   icon: Icons.folder_outlined,
-                  label: 'Projects',
-                  subtitle: 'Browse your work',
+                  label: context.l10n.projectsTitle,
+                  subtitle: context.l10n.dashProjectsSub,
                   onTap: () => context.go(Routes.projects),
                 ),
                 _Shortcut(
                   icon: Icons.merge,
-                  label: 'Merge requests',
-                  subtitle: 'Review and merge',
+                  label: context.l10n.mrsTitle,
+                  subtitle: context.l10n.dashMrsSub,
                   count: counts?.mrBadge,
                   onTap: () => context.go(Routes.mergeRequests),
                 ),
                 _Shortcut(
                   icon: Icons.adjust,
-                  label: 'Issues',
-                  subtitle: 'Assigned to you',
+                  label: context.l10n.issuesTitle,
+                  subtitle: context.l10n.dashIssuesSub,
                   count: counts?.assignedIssues,
                   onTap: () => context.go(Routes.issues),
                 ),
                 _Shortcut(
                   icon: Icons.checklist,
-                  label: 'To-dos',
-                  subtitle: 'Your task list',
+                  label: context.l10n.todosTitle,
+                  subtitle: context.l10n.dashTodosSub,
                   count: counts?.todos,
                   onTap: () => context.go(Routes.todos),
                 ),
                 _Shortcut(
                   icon: Icons.search,
-                  label: 'Search',
-                  subtitle: 'Across the instance',
+                  label: context.l10n.searchTitle,
+                  subtitle: context.l10n.dashSearchSub,
                   onTap: () => context.go(Routes.search),
                 ),
                 _Shortcut(
                   icon: Icons.history,
-                  label: 'Activity',
-                  subtitle: 'What happened lately',
+                  label: context.l10n.activityTitle,
+                  subtitle: context.l10n.dashActivitySub,
                   onTap: () => context.go(Routes.activity),
                 ),
               ],
@@ -114,15 +116,15 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  String _greeting() {
+  String _greeting(AppLocalizations l10n) {
     final hour = clock.now().hour;
     if (hour < 12) {
-      return 'Good morning,';
+      return l10n.greetingMorning;
     }
     if (hour < 18) {
-      return 'Good afternoon,';
+      return l10n.greetingAfternoon;
     }
-    return 'Good evening,';
+    return l10n.greetingEvening;
   }
 }
 

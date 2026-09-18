@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Sign-in with a GitLab instance URL and a personal access token.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } on Object {
-      setState(() => _error = 'Could not sign in. Check the instance URL.');
+      setState(() => _error = context.l10n.loginError);
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
@@ -91,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const _Wordmark(),
               const SizedBox(height: Insets.xs),
               Text(
-                'Sign in to your GitLab instance',
+                context.l10n.loginSubtitle,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.inkMuted,
                 ),
@@ -102,14 +103,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 enabled: !_submitting,
                 autocorrect: false,
                 keyboardType: TextInputType.url,
-                decoration: const InputDecoration(
-                  labelText: 'Instance URL',
+                decoration: InputDecoration(
+                  labelText: context.l10n.loginInstanceUrl,
                   hintText: 'gitlab.com or gitlab.example.com',
-                  prefixIcon: Icon(Icons.dns_outlined),
+                  prefixIcon: const Icon(Icons.dns_outlined),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Enter your GitLab instance';
+                    return context.l10n.loginInstanceRequired;
                   }
                   return null;
                 },
@@ -123,19 +124,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 obscureText: _obscure,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  labelText: 'Personal access token',
+                  labelText: context.l10n.loginToken,
                   hintText: 'glpat-…',
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        tooltip: 'Paste',
+                        tooltip: context.l10n.loginPaste,
                         icon: const Icon(Icons.paste_outlined, size: 18),
                         onPressed: _pasteToken,
                       ),
                       IconButton(
-                        tooltip: _obscure ? 'Show' : 'Hide',
+                        tooltip: _obscure
+                            ? context.l10n.loginShow
+                            : context.l10n.loginHide,
                         icon: Icon(
                           _obscure
                               ? Icons.visibility_outlined
@@ -149,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Paste a personal access token';
+                    return context.l10n.loginTokenRequired;
                   }
                   return null;
                 },
@@ -191,12 +194,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: context.colors.onAccent,
                         ),
                       )
-                    : const Text('Sign in'),
+                    : Text(context.l10n.loginSignIn),
               ),
               const SizedBox(height: Insets.md),
               Text(
-                'Create a token under Preferences → Access Tokens with the '
-                '`api` scope.',
+                context.l10n.loginTokenHelp,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall,
               ),

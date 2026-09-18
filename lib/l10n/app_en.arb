@@ -153,5 +153,37 @@
         "type": "String"
       }
     }
-  }
+  },
+  "homeTitle": "Home",
+  "projectsTitle": "Projects",
+  "issuesTitle": "Issues",
+  "mrsTitle": "Merge requests",
+  "navMrs": "MRs",
+  "todosTitle": "To-dos",
+  "activityTitle": "Activity",
+  "groupsTitle": "Groups",
+  "snippetsTitle": "Snippets",
+  "searchTitle": "Search",
+  "settingsTitle": "Settings",
+  "navMore": "More",
+  "dashProjectsSub": "Browse your work",
+  "dashMrsSub": "Review and merge",
+  "dashIssuesSub": "Assigned to you",
+  "dashTodosSub": "Your task list",
+  "dashSearchSub": "Across the instance",
+  "dashActivitySub": "What happened lately",
+  "greetingMorning": "Good morning,",
+  "greetingAfternoon": "Good afternoon,",
+  "greetingEvening": "Good evening,",
+  "loginError": "Could not sign in. Check the instance URL.",
+  "loginSubtitle": "Sign in to your GitLab instance",
+  "loginInstanceUrl": "Instance URL",
+  "loginInstanceRequired": "Enter your GitLab instance",
+  "loginToken": "Personal access token",
+  "loginPaste": "Paste",
+  "loginShow": "Show",
+  "loginHide": "Hide",
+  "loginTokenRequired": "Paste a personal access token",
+  "loginSignIn": "Sign in",
+  "loginTokenHelp": "Create a token under Preferences, Access Tokens, with the `api` scope."
 }

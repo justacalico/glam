@@ -374,4 +374,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webhookSsl => 'SSL verification';
+
+  @override
+  String get homeTitle => 'Home';
+
+  @override
+  String get projectsTitle => 'Projects';
+
+  @override
+  String get issuesTitle => 'Issues';
+
+  @override
+  String get mrsTitle => 'Merge requests';
+
+  @override
+  String get navMrs => 'MRs';
+
+  @override
+  String get todosTitle => 'To-dos';
+
+  @override
+  String get activityTitle => 'Activity';
+
+  @override
+  String get groupsTitle => 'Groups';
+
+  @override
+  String get snippetsTitle => 'Snippets';
+
+  @override
+  String get searchTitle => 'Search';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get navMore => 'More';
+
+  @override
+  String get dashProjectsSub => 'Browse your work';
+
+  @override
+  String get dashMrsSub => 'Review and merge';
+
+  @override
+  String get dashIssuesSub => 'Assigned to you';
+
+  @override
+  String get dashTodosSub => 'Your task list';
+
+  @override
+  String get dashSearchSub => 'Across the instance';
+
+  @override
+  String get dashActivitySub => 'What happened lately';
+
+  @override
+  String get greetingMorning => 'Good morning,';
+
+  @override
+  String get greetingAfternoon => 'Good afternoon,';
+
+  @override
+  String get greetingEvening => 'Good evening,';
+
+  @override
+  String get loginError => 'Could not sign in. Check the instance URL.';
+
+  @override
+  String get loginSubtitle => 'Sign in to your GitLab instance';
+
+  @override
+  String get loginInstanceUrl => 'Instance URL';
+
+  @override
+  String get loginInstanceRequired => 'Enter your GitLab instance';
+
+  @override
+  String get loginToken => 'Personal access token';
+
+  @override
+  String get loginPaste => 'Paste';
+
+  @override
+  String get loginShow => 'Show';
+
+  @override
+  String get loginHide => 'Hide';
+
+  @override
+  String get loginTokenRequired => 'Paste a personal access token';
+
+  @override
+  String get loginSignIn => 'Sign in';
+
+  @override
+  String get loginTokenHelp =>
+      'Create a token under Preferences, Access Tokens, with the `api` scope.';
 }
