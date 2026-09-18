@@ -6,6 +6,7 @@ import 'package:glam/src/core/widgets/audit_events_list.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Recent audit events on the project. Premium-gated upstream, so the
 /// list stays empty on Free tier rather than erroring.
@@ -20,7 +21,7 @@ class AuditEventsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Audit events'),
+        SectionLabel(context.l10n.auditEvents),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: Insets.lg),

@@ -7,6 +7,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/description_template_picker.dart';
 import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Create/edit form for an issue. Shows as a dialog on wide screens,
 /// a bottom sheet on phones.
@@ -95,7 +96,9 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
   Future<void> _save() async {
     final title = _title.text.trim();
     if (title.isEmpty || _saving) {
-      setState(() => _error = title.isEmpty ? 'Title is required' : null);
+      setState(
+        () => _error = title.isEmpty ? context.l10n.titleRequired : null,
+      );
       return;
     }
     setState(() {
@@ -141,7 +144,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the issue';
+        _error = context.l10n.issueSaveFailed;
       });
     }
   }
@@ -175,15 +178,15 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit issue' : 'New issue',
+            _editing ? context.l10n.editIssue : context.l10n.newIssue,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
           ),
@@ -198,9 +201,9 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
             controller: _description,
             minLines: 4,
             maxLines: 10,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              hintText: 'Markdown supported',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldDescription,
+              hintText: context.l10n.markdownSupported,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -208,9 +211,9 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
           const SizedBox(height: Insets.md),
           TextField(
             controller: _labels,
-            decoration: const InputDecoration(
-              labelText: 'Labels',
-              hintText: 'bug, frontend',
+            decoration: InputDecoration(
+              labelText: context.l10n.tabLabels,
+              hintText: context.l10n.bugFrontend,
               border: OutlineInputBorder(),
             ),
           ),
@@ -221,8 +224,8 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
                 child: TextField(
                   controller: _weight,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Weight',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.weight,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -234,7 +237,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
                   icon: const Icon(Icons.event_outlined, size: 18),
                   label: Text(
                     _dueDate == null
-                        ? 'Due date'
+                        ? context.l10n.dueDate
                         : _dueDate!.toIso8601String().substring(0, 10),
                   ),
                 ),
@@ -244,8 +247,8 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
           if (!_editing)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Confidential'),
-              subtitle: const Text('Only visible to members and assignees'),
+              title: Text(context.l10n.confidential),
+              subtitle: Text(context.l10n.onlyVisibleToMembersAndAssignees),
               value: _confidential,
               onChanged: (v) => setState(() => _confidential = v),
             ),
@@ -260,7 +263,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -271,7 +274,11 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create issue'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createIssue,
+                      ),
               ),
             ],
           ),

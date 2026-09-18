@@ -18,6 +18,7 @@ import 'package:glam/src/features/pipelines/domain/bridge.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Pipeline detail: meta header plus jobs grouped by stage, with
 /// retry/cancel actions. A Tests view appears when the pipeline
@@ -69,7 +70,7 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pipeline #${widget.pipelineId}'),
+        title: Text(context.l10n.pipelineP0(widget.pipelineId)),
         actions: [
           pipeline.maybeWhen(
             data: (p) => Row(
@@ -77,19 +78,19 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
               children: [
                 if (p.isRunning)
                   IconButton(
-                    tooltip: 'Cancel',
+                    tooltip: context.l10n.actionCancel,
                     icon: const Icon(Icons.stop_circle_outlined),
                     onPressed: () => unawaited(_cancel(context, ref)),
                   )
                 else if (p.status != 'success')
                   IconButton(
-                    tooltip: 'Retry',
+                    tooltip: context.l10n.actionRetry,
                     icon: const Icon(Icons.refresh),
                     onPressed: () => unawaited(_retry(context, ref)),
                   ),
                 if (p.webUrl != null)
                   IconButton(
-                    tooltip: 'Open in browser',
+                    tooltip: context.l10n.actionOpenBrowser,
                     icon: const Icon(Icons.open_in_new, size: 20),
                     onPressed: () => unawaited(launchExternal(p.webUrl!)),
                   ),
@@ -98,7 +99,9 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
             orElse: () => const SizedBox.shrink(),
           ),
           IconButton(
-            tooltip: _retried ? 'Hide retried jobs' : 'Show retried jobs',
+            tooltip: _retried
+                ? context.l10n.hideRetriedJobs
+                : context.l10n.showRetriedJobs,
             isSelected: _retried,
             icon: const Icon(Icons.replay, size: 20),
             onPressed: () => setState(() => _retried = !_retried),
@@ -123,27 +126,27 @@ class _PipelineDetailScreenState extends ConsumerState<PipelineDetailScreen> {
                   width: double.infinity,
                   child: SegmentedButton<_PipelineView>(
                     segments: [
-                      const ButtonSegment(
+                      ButtonSegment(
                         value: _PipelineView.stages,
-                        label: Text('Stages'),
+                        label: Text(context.l10n.stages),
                         icon: Icon(Icons.view_list_outlined, size: 16),
                       ),
                       if (hasReport)
-                        const ButtonSegment(
+                        ButtonSegment(
                           value: _PipelineView.tests,
-                          label: Text('Tests'),
+                          label: Text(context.l10n.tests),
                           icon: Icon(Icons.science_outlined, size: 16),
                         ),
                       if (hasVariables)
-                        const ButtonSegment(
+                        ButtonSegment(
                           value: _PipelineView.variables,
-                          label: Text('Variables'),
+                          label: Text(context.l10n.variables),
                           icon: Icon(Icons.tune, size: 16),
                         ),
                       if (hasBridges)
-                        const ButtonSegment(
+                        ButtonSegment(
                           value: _PipelineView.downstream,
-                          label: Text('Downstream'),
+                          label: Text(context.l10n.downstream),
                           icon: Icon(Icons.account_tree_outlined, size: 16),
                         ),
                     ],
@@ -248,12 +251,14 @@ class _PipelineHeader extends StatelessWidget {
           ),
           const SizedBox(height: Insets.sm),
           Text(
-            '${pipeline.ref ?? ''} @ '
-            '${pipeline.sha == null
-                ? ''
-                : pipeline.sha!.length > 8
-                ? pipeline.sha!.substring(0, 8)
-                : pipeline.sha!}',
+            context.l10n.refAtSha(
+              pipeline.ref ?? '',
+              pipeline.sha == null
+                  ? ''
+                  : pipeline.sha!.length > 8
+                  ? pipeline.sha!.substring(0, 8)
+                  : pipeline.sha!,
+            ),
             style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
           ),
           const SizedBox(height: Insets.xs),
@@ -281,9 +286,9 @@ class _StageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (jobs.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.work_outline,
-        title: 'No jobs in this pipeline',
+        title: context.l10n.noJobsInThisPipeline,
       );
     }
     // Keep stage order stable: first appearance wins.
@@ -351,7 +356,7 @@ class _JobTile extends ConsumerWidget {
                     Text(job.name, style: theme.textTheme.titleSmall),
                     if (job.allowFailure)
                       Text(
-                        'allowed to fail',
+                        context.l10n.allowedToFail,
                         style: theme.textTheme.labelSmall,
                       ),
                   ],
@@ -391,10 +396,13 @@ class _JobAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final (icon, action, tip) = switch (job.status) {
-      'manual' => (Icons.play_arrow, 'play', 'Run manual job'),
-      'running' || 'pending' => (Icons.stop, 'cancel', 'Cancel'),
-      'failed' || 'canceled' || 'skipped' => (Icons.refresh, 'retry', 'Retry'),
-      _ => (Icons.refresh, 'retry', 'Retry'),
+      'manual' => (Icons.play_arrow, 'play', context.l10n.runManualJob),
+      'running' ||
+      'pending' => (Icons.stop, 'cancel', context.l10n.actionCancel),
+      'failed' ||
+      'canceled' ||
+      'skipped' => (Icons.refresh, 'retry', context.l10n.actionRetry),
+      _ => (Icons.refresh, 'retry', context.l10n.actionRetry),
     };
     if (job.status == 'success') {
       return const SizedBox.shrink();
@@ -425,9 +433,9 @@ class _TestReportView extends ConsumerWidget {
       error: (e, _) => ErrorView(error: e),
       data: (r) {
         if (r.suites.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.science_outlined,
-            title: 'No test report',
+            title: context.l10n.noTestReport,
           );
         }
         final coverage = ref.watch(pipelineCoverageProvider(loc)).value;
@@ -438,27 +446,33 @@ class _TestReportView extends ConsumerWidget {
               spacing: Insets.md,
               runSpacing: Insets.xs,
               children: [
-                _Count(label: 'Total', value: r.totalCount),
-                _Count(label: 'Passed', value: r.successCount),
+                _Count(label: context.l10n.total, value: r.totalCount),
                 _Count(
-                  label: 'Failed',
+                  label: context.l10n.pipelineStatusSuccess,
+                  value: r.successCount,
+                ),
+                _Count(
+                  label: context.l10n.pipelineStatusFailed,
                   value: r.failedCount,
                   color: colors.danger,
                 ),
-                _Count(label: 'Skipped', value: r.skippedCount),
                 _Count(
-                  label: 'Errors',
+                  label: context.l10n.pipelineStatusSkipped,
+                  value: r.skippedCount,
+                ),
+                _Count(
+                  label: context.l10n.errors,
                   value: r.errorCount,
                   color: colors.warning,
                 ),
                 if (coverage != null)
                   _Count(
-                    label: 'Coverage',
+                    label: context.l10n.coverage,
                     value: coverage.round(),
                     suffix: '%',
                   ),
                 Text(
-                  'in ${r.totalTime.toStringAsFixed(1)}s',
+                  context.l10n.durationInSecs(r.totalTime.toStringAsFixed(1)),
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -481,21 +495,32 @@ class _TestReportView extends ConsumerWidget {
                       spacing: Insets.md,
                       runSpacing: Insets.xs,
                       children: [
-                        _Count(label: 'Total', value: suite.totalCount),
-                        _Count(label: 'Passed', value: suite.successCount),
                         _Count(
-                          label: 'Failed',
+                          label: context.l10n.total,
+                          value: suite.totalCount,
+                        ),
+                        _Count(
+                          label: context.l10n.pipelineStatusSuccess,
+                          value: suite.successCount,
+                        ),
+                        _Count(
+                          label: context.l10n.pipelineStatusFailed,
                           value: suite.failedCount,
                           color: colors.danger,
                         ),
-                        _Count(label: 'Skipped', value: suite.skippedCount),
                         _Count(
-                          label: 'Errors',
+                          label: context.l10n.pipelineStatusSkipped,
+                          value: suite.skippedCount,
+                        ),
+                        _Count(
+                          label: context.l10n.errors,
                           value: suite.errorCount,
                           color: colors.warning,
                         ),
                         Text(
-                          '${suite.totalTime.toStringAsFixed(1)}s',
+                          context.l10n.secsValue(
+                            suite.totalTime.toStringAsFixed(1),
+                          ),
                           style: theme.textTheme.bodySmall,
                         ),
                       ],
@@ -537,10 +562,10 @@ class _VariablesView extends ConsumerWidget {
       value: variables,
       onRetry: () => ref.invalidate(pipelineVariablesProvider(loc)),
       data: (items) => items.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.tune,
-              title: 'No variables',
-              message: 'This pipeline ran without extra variables.',
+              title: context.l10n.varsEmpty,
+              message: context.l10n.thisPipelineRanWithoutExtraVariables,
             )
           : ListView.separated(
               padding: const EdgeInsets.all(Insets.lg),
@@ -602,10 +627,10 @@ class _DownstreamView extends ConsumerWidget {
       value: bridges,
       onRetry: () => ref.invalidate(pipelineBridgesProvider(loc)),
       data: (items) => items.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.account_tree_outlined,
-              title: 'No downstream pipelines',
-              message: 'This pipeline did not trigger any child pipelines.',
+              title: context.l10n.noDownstreamPipelines,
+              message: context.l10n.thisPipelineDidNotTriggerAny,
             )
           : ListView.separated(
               padding: const EdgeInsets.all(Insets.lg),
@@ -667,7 +692,7 @@ class _Count extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Text(
-      '$label $value$suffix',
+      context.l10n.statText(label, value, suffix),
       style: theme.textTheme.bodySmall?.copyWith(color: color),
     );
   }

@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/todos/application/todos_providers.dart';
 import 'package:glam/src/features/todos/domain/todo.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// The user's to-do queue: pending items with swipe-to-done.
 class TodosScreen extends ConsumerStatefulWidget {
@@ -31,15 +32,19 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
     final filter = (state: _state, action: null, type: _type);
     final state = ref.watch(todosProvider(filter));
     final notifier = ref.read(todosProvider(filter).notifier);
-    const states = {'pending': 'Pending', 'done': 'Done', null: 'All'};
+    final states = {
+      'pending': context.l10n.todoPending,
+      'done': context.l10n.todoDone,
+      null: context.l10n.stateAll,
+    };
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-dos'),
+        title: Text(context.l10n.todosTitle),
         actions: [
           if (_state == 'pending')
             IconButton(
-              tooltip: 'Mark all done',
+              tooltip: context.l10n.markAllDone,
               icon: const Icon(Icons.done_all, size: 20),
               onPressed: () => unawaited(_markAllDone(ref)),
             ),
@@ -68,9 +73,15 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                 ],
                 const Spacer(),
                 FilterMenu(
-                  title: 'type',
+                  title: context.l10n.type,
                   current: _type,
                   options: const ['Issue', 'MergeRequest', 'Commit', 'Epic'],
+                  labels: {
+                    'Issue': context.l10n.targetIssue,
+                    'MergeRequest': context.l10n.targetMr,
+                    'Commit': context.l10n.commit,
+                    'Epic': context.l10n.targetEpic,
+                  },
                   onSelect: (t) => setState(() => _type = t),
                 ),
               ],
@@ -90,9 +101,9 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                   color: colors.border,
                   indent: Insets.lg,
                 ),
-                empty: const EmptyState(
+                empty: EmptyState(
                   icon: Icons.check_circle_outline,
-                  title: 'Nothing on your plate',
+                  title: context.l10n.nothingOnYourPlate,
                 ),
                 itemBuilder: (context, index) {
                   final todo = data.items[index];
@@ -178,7 +189,7 @@ class _TodoTile extends StatelessWidget {
             ),
             if (pending)
               IconButton(
-                tooltip: 'Mark done',
+                tooltip: context.l10n.markDone,
                 icon: Icon(
                   Icons.check_circle_outline,
                   size: 20,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Shared helpers for the project settings admin sections.
 
@@ -34,11 +35,11 @@ Future<bool?> confirmAdminAction(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Confirm'),
+          child: Text(context.l10n.actionConfirm),
         ),
       ],
     ),

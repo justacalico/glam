@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/models/ci_variable.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Editable fields from the variable dialog.
 typedef VariableFields = ({
@@ -43,14 +44,14 @@ class CiVariablesSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: Insets.sm),
                 child: Text(
-                  'CI/CD variables',
+                  context.l10n.varsTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _editVariable(context, null),
             ),
           ],
@@ -71,11 +72,11 @@ class CiVariablesSection extends StatelessWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(Insets.lg),
+                ? Padding(
+                    padding: const EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.key_outlined,
-                      title: 'No variables',
+                      title: context.l10n.varsEmpty,
                     ),
                   )
                 : Column(
@@ -107,36 +108,40 @@ class CiVariablesSection extends StatelessWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(existing == null ? 'Add variable' : 'Edit variable'),
+          title: Text(
+            existing == null
+                ? context.l10n.varAddTitle
+                : context.l10n.varEditTitle,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: key,
                 enabled: existing == null,
-                decoration: const InputDecoration(labelText: 'Key'),
+                decoration: InputDecoration(labelText: context.l10n.fieldKey),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: value,
-                decoration: const InputDecoration(labelText: 'Value'),
+                decoration: InputDecoration(labelText: context.l10n.fieldValue),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: scope,
-                decoration: const InputDecoration(
-                  labelText: 'Environment scope',
+                decoration: InputDecoration(
+                  labelText: context.l10n.varEnvScope,
                 ),
               ),
               CheckboxListTile(
-                title: const Text('Protected'),
+                title: Text(context.l10n.varProtected),
                 value: protected_,
                 onChanged: (v) => setState(() => protected_ = v!),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),
               CheckboxListTile(
-                title: const Text('Masked'),
+                title: Text(context.l10n.varMasked),
                 value: masked,
                 onChanged: (v) => setState(() => masked = v!),
                 dense: true,
@@ -147,11 +152,11 @@ class CiVariablesSection extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Save'),
+              child: Text(context.l10n.actionSave),
             ),
           ],
         ),
@@ -178,15 +183,15 @@ class CiVariablesSection extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${variable.key}?'),
+        title: Text(context.l10n.varDeleteConfirm(variable.key)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -220,10 +225,10 @@ class _VariableTile extends StatelessWidget {
       subtitle: Text(
         [
           if (variable.protected_) 'protected',
-          if (variable.masked) 'masked',
+          if (variable.masked) context.l10n.varMasked,
           if (variable.environmentScope != '*')
-            'env: ${variable.environmentScope}',
-          if (variable.variableType == 'file') 'file',
+            context.l10n.envScope(variable.environmentScope),
+          if (variable.variableType == 'file') context.l10n.varFile,
         ].join(' · '),
         style: theme.textTheme.labelSmall,
       ),

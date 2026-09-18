@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/models/deploy_token.dart';
 import 'package:glam/src/core/widgets/async_value_widget.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Fields collected by the create dialog.
 typedef DeployTokenDraft = ({
@@ -48,13 +49,13 @@ class DeployTokensSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Deploy tokens',
+                context.l10n.tokensDeployTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _create(context),
             ),
           ],
@@ -69,11 +70,11 @@ class DeployTokensSection extends StatelessWidget {
             value: tokens,
             onRetry: onRetry,
             data: (list) => list.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(Insets.lg),
+                ? Padding(
+                    padding: const EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.key_outlined,
-                      title: 'No deploy tokens',
+                      title: context.l10n.tokensDeployEmpty,
                     ),
                   )
                 : Column(
@@ -109,7 +110,7 @@ class DeployTokensSection extends StatelessWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Create deploy token'),
+          title: Text(context.l10n.tokenDeployCreate),
           content: SizedBox(
             width: 420,
             child: ListView(
@@ -119,8 +120,8 @@ class DeployTokensSection extends StatelessWidget {
                   controller: name,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Name',
-                    errorText: nameError ? 'Required' : null,
+                    labelText: context.l10n.fieldName,
+                    errorText: nameError ? context.l10n.errorRequired : null,
                   ),
                   onChanged: (_) {
                     if (nameError) {
@@ -131,8 +132,8 @@ class DeployTokensSection extends StatelessWidget {
                 const SizedBox(height: Insets.sm),
                 TextField(
                   controller: username,
-                  decoration: const InputDecoration(
-                    labelText: 'Username (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldUsernameOptional,
                   ),
                 ),
                 const SizedBox(height: Insets.sm),
@@ -141,8 +142,10 @@ class DeployTokensSection extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                    labelText: 'Expires in days (optional)',
-                    errorText: daysError ? 'Must be a positive number' : null,
+                    labelText: context.l10n.fieldExpiresDays,
+                    errorText: daysError
+                        ? context.l10n.errorPositiveNumber
+                        : null,
                   ),
                   onChanged: (_) {
                     if (daysError) {
@@ -165,7 +168,7 @@ class DeployTokensSection extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: Insets.xs),
                     child: Text(
-                      'Pick at least one scope',
+                      context.l10n.tokenScopeRequired,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                         fontSize: 12,
@@ -178,7 +181,7 @@ class DeployTokensSection extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -199,7 +202,7 @@ class DeployTokensSection extends StatelessWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Create'),
+              child: Text(context.l10n.actionCreate),
             ),
           ],
         ),
@@ -256,12 +259,12 @@ class DeployTokensSection extends StatelessWidget {
     return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Token "${token.name}"'),
+        title: Text(context.l10n.tokenValueTitle(token.name)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Copy this now — it will not be shown again.'),
+            Text(context.l10n.tokenCopyNow),
             const SizedBox(height: Insets.sm),
             SelectableText(
               pair,
@@ -272,17 +275,17 @@ class DeployTokensSection extends StatelessWidget {
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.copy_outlined, size: 16),
-            label: const Text('Copy'),
+            label: Text(context.l10n.actionCopy),
             onPressed: () {
               unawaited(Clipboard.setData(ClipboardData(text: pair)));
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Copied')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(context.l10n.actionCopied)),
+              );
             },
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            child: Text(context.l10n.actionDone),
           ),
         ],
       ),
@@ -293,16 +296,16 @@ class DeployTokensSection extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Revoke deploy token?'),
-        content: Text('"${t.name}" stops working immediately.'),
+        title: Text(context.l10n.tokenDeployRevokeConfirm),
+        content: Text(context.l10n.p0StopsWorkingImmediately(t.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Revoke'),
+            child: Text(context.l10n.actionRevoke),
           ),
         ],
       ),
@@ -354,7 +357,7 @@ class _DeployTokenTile extends StatelessWidget {
       ),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, size: 18),
-        tooltip: 'Revoke',
+        tooltip: context.l10n.actionRevoke,
         onPressed: onRevoke,
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Compact dropdown filter for a single-valued string dimension
 /// (label, milestone, ...). First entry clears the filter.
@@ -27,13 +28,13 @@ class FilterMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return PopupMenuButton<String?>(
-      tooltip: 'Filter by $title',
+      tooltip: context.l10n.filterBy(title),
       onSelected: onSelect,
       itemBuilder: (context) => [
         CheckedPopupMenuItem(
           value: null,
           checked: current == null,
-          child: Text('Any $title'),
+          child: Text(context.l10n.filterAny(title)),
         ),
         for (final o in options)
           CheckedPopupMenuItem(

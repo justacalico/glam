@@ -14,6 +14,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Tag list; tags with attached releases show the release name.
 class TagsScreen extends ConsumerStatefulWidget {
@@ -46,7 +47,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             0,
           ),
           child: SearchField(
-            hint: 'Search tags',
+            hint: context.l10n.searchTags,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -61,7 +62,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             ),
             child: TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('New tag'),
+              label: Text(context.l10n.newTag),
               onPressed: () => _showCreate(context, ref),
             ),
           ),
@@ -81,9 +82,9 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
                 endIndent: Insets.lg,
               ),
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.sell_outlined,
-                title: 'No tags',
+                title: context.l10n.noTags,
               ),
               itemBuilder: (context, index) =>
                   _TagTile(tag: data.items[index], projectId: projectId),
@@ -101,27 +102,27 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New tag'),
+        title: Text(context.l10n.newTag),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: name,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Tag name'),
+              decoration: InputDecoration(labelText: context.l10n.tagName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: source,
-              decoration: const InputDecoration(
-                labelText: 'Source ref (branch or sha)',
+              decoration: InputDecoration(
+                labelText: context.l10n.sourceRefBranchOrSha,
               ),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: message,
-              decoration: const InputDecoration(
-                labelText: 'Message (optional)',
+              decoration: InputDecoration(
+                labelText: context.l10n.messageOptional,
               ),
             ),
           ],
@@ -129,11 +130,11 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Create'),
+            child: Text(context.l10n.actionCreate),
           ),
         ],
       ),
@@ -263,15 +264,15 @@ class _TagTile extends ConsumerWidget {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Delete tag ${tag.name}?'),
+                    title: Text(context.l10n.deleteTagP0(tag.name)),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancel'),
+                        child: Text(context.l10n.actionCancel),
                       ),
                       FilledButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Delete'),
+                        child: Text(context.l10n.actionDelete),
                       ),
                     ],
                   ),
@@ -285,15 +286,18 @@ class _TagTile extends ConsumerWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'download',
-                child: Text('Download archive'),
+                child: Text(context.l10n.downloadArchive),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'changelog',
-                child: Text('Generate changelog'),
+                child: Text(context.l10n.generateChangelog),
               ),
-              const PopupMenuItem(value: 'delete', child: Text('Delete tag')),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text(context.l10n.deleteTag2),
+              ),
             ],
           ),
         ],
@@ -315,7 +319,7 @@ class _TagTile extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialog) => AlertDialog(
-          title: const Text('Generate changelog'),
+          title: Text(context.l10n.generateChangelog),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -323,20 +327,20 @@ class _TagTile extends ConsumerWidget {
               children: [
                 TextField(
                   controller: version,
-                  decoration: const InputDecoration(labelText: 'Version'),
+                  decoration: InputDecoration(labelText: context.l10n.version),
                 ),
                 const SizedBox(height: Insets.md),
                 TextField(
                   controller: from,
-                  decoration: const InputDecoration(
-                    labelText: 'From ref (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fromRefOptional,
                   ),
                 ),
                 const SizedBox(height: Insets.md),
                 TextField(
                   controller: to,
-                  decoration: const InputDecoration(
-                    labelText: 'To ref (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.toRefOptional,
                   ),
                 ),
                 if (preview.isNotEmpty) ...[
@@ -357,7 +361,7 @@ class _TagTile extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(context.l10n.actionClose),
             ),
             TextButton(
               onPressed: busy || version.text.trim().isEmpty
@@ -384,7 +388,7 @@ class _TagTile extends ConsumerWidget {
                         setDialog(() => busy = false);
                       }
                     },
-              child: const Text('Preview'),
+              child: Text(context.l10n.preview),
             ),
             FilledButton(
               onPressed: busy || version.text.trim().isEmpty
@@ -403,8 +407,8 @@ class _TagTile extends ConsumerWidget {
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Changelog committed'),
+                            SnackBar(
+                              content: Text(context.l10n.changelogCommitted),
                             ),
                           );
                         }
@@ -417,7 +421,7 @@ class _TagTile extends ConsumerWidget {
                         }
                       }
                     },
-              child: const Text('Commit'),
+              child: Text(context.l10n.commit),
             ),
           ],
         ),

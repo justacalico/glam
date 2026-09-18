@@ -12,6 +12,7 @@ import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 import 'package:go_router/go_router.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Container repositories published by a project.
 class ProjectRegistryTab extends ConsumerWidget {
@@ -34,9 +35,9 @@ class ProjectRegistryTab extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
+        empty: EmptyState(
           icon: Icons.layers_outlined,
-          title: 'No container images',
+          title: context.l10n.noContainerImages,
         ),
         itemBuilder: (context, index) {
           final repo = data.items[index];
@@ -85,16 +86,16 @@ class ProjectRegistryTab extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete repository?'),
-        content: Text('"${repo.path}" and all its tags are removed.'),
+        title: Text(context.l10n.deleteRepository),
+        content: Text(context.l10n.p0AndAllItsTagsAre(repo.path)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),

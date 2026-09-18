@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/groups/presentation/new_group_dialog.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Top-level groups list with search.
 class GroupsScreen extends ConsumerStatefulWidget {
@@ -41,10 +42,10 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Groups'),
+        title: Text(context.l10n.groupsTitle),
         actions: [
           IconButton(
-            tooltip: 'New group',
+            tooltip: context.l10n.newGroup,
             icon: const Icon(Icons.add),
             onPressed: () => unawaited(_newGroup()),
           ),
@@ -60,7 +61,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
               Insets.xs,
             ),
             child: SearchField(
-              hint: 'Search groups',
+              hint: context.l10n.searchGroups,
               onChanged: (v) => setState(() => _query = v),
             ),
           ),
@@ -78,9 +79,9 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                   color: colors.border,
                   indent: Insets.lg,
                 ),
-                empty: const EmptyState(
+                empty: EmptyState(
                   icon: Icons.workspaces_outlined,
-                  title: 'No groups found',
+                  title: context.l10n.noGroupsFound,
                 ),
                 itemBuilder: (context, index) =>
                     GroupTile(group: data.items[index]),

@@ -11,12 +11,18 @@ enum ApiErrorKind {
   unknown,
 }
 
+/// Client-generated messages with no server text behind them. Kept as an
+/// enum so the UI can localize them; raw server messages pass through.
+enum ApiMessageKey { none, fileTooLarge, tooManyRedirects, badArchive }
+
 /// A normalized error coming out of [GitLabApiClient].
 class ApiException implements Exception {
   const ApiException({
     required this.kind,
     required this.message,
     this.statusCode,
+    this.messageKey = ApiMessageKey.none,
+    this.isDefaultMessage = false,
   });
 
   factory ApiException.fromDio(DioException error) {
@@ -47,12 +53,15 @@ class ApiException implements Exception {
       kind: kind,
       statusCode: status,
       message: serverMessage ?? _defaultMessage(kind),
+      isDefaultMessage: serverMessage == null,
     );
   }
 
   final ApiErrorKind kind;
   final String message;
   final int? statusCode;
+  final ApiMessageKey messageKey;
+  final bool isDefaultMessage;
 
   static String _defaultMessage(ApiErrorKind kind) => switch (kind) {
     ApiErrorKind.network => 'Could not reach the server',

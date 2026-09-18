@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Branch list with default/protected indicators.
 class BranchesScreen extends ConsumerStatefulWidget {
@@ -46,7 +47,7 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
             0,
           ),
           child: SearchField(
-            hint: 'Search branches',
+            hint: context.l10n.searchBranches,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -64,18 +65,18 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
               children: [
                 TextButton.icon(
                   icon: const Icon(Icons.compare_arrows, size: 16),
-                  label: const Text('Compare'),
+                  label: Text(context.l10n.compare),
                   onPressed: () =>
                       context.push(Routes.projectCompare(projectId)),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.cleaning_services_outlined, size: 16),
-                  label: const Text('Delete merged'),
+                  label: Text(context.l10n.deleteMerged),
                   onPressed: () => _deleteMerged(context, ref),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('New branch'),
+                  label: Text(context.l10n.newBranch),
                   onPressed: () => _showCreate(context, ref),
                 ),
               ],
@@ -97,9 +98,9 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                 endIndent: Insets.lg,
               ),
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.account_tree_outlined,
-                title: 'No branches',
+                title: context.l10n.noBranches,
               ),
               itemBuilder: (context, index) =>
                   _BranchTile(branch: data.items[index], projectId: projectId),
@@ -116,20 +117,20 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New branch'),
+        title: Text(context.l10n.newBranch),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: name,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Branch name'),
+              decoration: InputDecoration(labelText: context.l10n.branchName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: source,
-              decoration: const InputDecoration(
-                labelText: 'Source ref (branch, tag, or sha)',
+              decoration: InputDecoration(
+                labelText: context.l10n.sourceRefBranchTagOrSha,
               ),
             ),
           ],
@@ -137,11 +138,11 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Create'),
+            child: Text(context.l10n.actionCreate),
           ),
         ],
       ),
@@ -162,19 +163,16 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete merged branches?'),
-        content: const Text(
-          'Every branch already merged into the default branch is '
-          'removed. Protected branches are kept.',
-        ),
+        title: Text(context.l10n.deleteMergedBranches),
+        content: Text(context.l10n.deleteMergedBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -276,15 +274,15 @@ class _BranchTile extends ConsumerWidget {
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Delete ${branch.name}?'),
+                      title: Text(context.l10n.deleteNamedConfirm(branch.name)),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
+                          child: Text(context.l10n.actionCancel),
                         ),
                         FilledButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Delete'),
+                          child: Text(context.l10n.actionDelete),
                         ),
                       ],
                     ),
@@ -299,11 +297,14 @@ class _BranchTile extends ConsumerWidget {
             },
             itemBuilder: (context) => [
               if (!branch.isDefault)
-                const PopupMenuItem(value: 'compare', child: Text('Compare')),
+                PopupMenuItem(
+                  value: 'compare',
+                  child: Text(context.l10n.compare),
+                ),
               if (!branch.isDefault && !branch.protected)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
-                  child: Text('Delete branch'),
+                  child: Text(context.l10n.deleteBranch),
                 ),
             ],
           ),

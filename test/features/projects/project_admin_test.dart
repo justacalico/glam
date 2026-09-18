@@ -292,12 +292,12 @@ void main() {
       final tags = await repo.protectedTags(42);
       expect(tags, hasLength(3));
       expect(tags.first.createLevels, [40]);
-      expect(tags.first.createLabels, ['Maintainers']);
+      expect(tags.first.createRules.single.level, 40);
       expect(tags[1].isWildcard, isFalse);
       expect(tags.first.isWildcard, isTrue);
       // Group-scoped rules carry a null level plus a description.
       expect(tags.last.createLevels, isEmpty);
-      expect(tags.last.createLabels, ['Release managers']);
+      expect(tags.last.createRules.single.description, 'Release managers');
 
       await repo.protectTag(42, name: 'v*', createAccessLevel: 0);
       final sent = adapter.lastRequest!.data as Map;

@@ -9,6 +9,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/home/presentation/app_shell.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Bottom sheet holding the secondary destinations on mobile.
 Future<void> showMoreSheet(
@@ -58,7 +59,7 @@ class _MoreSheet extends ConsumerWidget {
           for (final d in secondary)
             ListTile(
               leading: Icon(d.icon),
-              title: Text(d.label),
+              title: Text(context.l10n.navLabel(d.path)),
               onTap: () {
                 Navigator.of(context).pop();
                 shell.goBranch(d.branch);

@@ -6,6 +6,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Create or edit a repository file. Commits straight to [branch].
 class FileEditorScreen extends ConsumerStatefulWidget {
@@ -136,12 +137,16 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_creating ? 'New file' : 'Edit ${widget.path}'),
+        title: Text(
+          _creating
+              ? context.l10n.newFile
+              : context.l10n.editP0('${widget.path}'),
+        ),
         actions: [
           if (_creating)
             TextButton.icon(
               icon: const Icon(Icons.article_outlined, size: 16),
-              label: const Text('Template'),
+              label: Text(context.l10n.template),
               onPressed: _applyTemplate,
             ),
           Padding(
@@ -154,7 +159,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Commit'),
+                  : Text(context.l10n.commit),
             ),
           ),
         ],
@@ -165,13 +170,13 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           TextField(
             controller: _path,
             enabled: _creating,
-            decoration: const InputDecoration(labelText: 'File path'),
+            decoration: InputDecoration(labelText: context.l10n.filePath),
             style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 13),
           ),
           const SizedBox(height: Insets.md),
           TextField(
             controller: _message,
-            decoration: const InputDecoration(labelText: 'Commit message'),
+            decoration: InputDecoration(labelText: context.l10n.commitMessage),
           ),
           const SizedBox(height: Insets.md),
           Container(
@@ -185,8 +190,8 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
             child: TextField(
               controller: _content,
               maxLines: null,
-              decoration: const InputDecoration.collapsed(
-                hintText: 'File contents',
+              decoration: InputDecoration.collapsed(
+                hintText: context.l10n.fileContents,
               ),
               style: const TextStyle(
                 fontFamily: GlamFonts.mono,
@@ -197,7 +202,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           ),
           const SizedBox(height: Insets.sm),
           Text(
-            'Commits to ${widget.branch}',
+            context.l10n.commitsToP0(widget.branch),
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
@@ -213,11 +218,11 @@ class _TemplateSheet extends ConsumerStatefulWidget {
 
   final Object projectId;
 
-  static const _types = {
-    'gitignores': ('Gitignore', '.gitignore'),
-    'licenses': ('License', 'LICENSE'),
-    'gitlab_ci_ymls': ('GitLab CI', '.gitlab-ci.yml'),
-    'dockerfiles': ('Dockerfile', 'Dockerfile'),
+  static Map<String, (String, String)> _types(AppLocalizations l10n) => {
+    'gitignores': (l10n.templateGitignore, '.gitignore'),
+    'licenses': (l10n.templateLicense, 'LICENSE'),
+    'gitlab_ci_ymls': (l10n.templateGitlabCi, '.gitlab-ci.yml'),
+    'dockerfiles': (l10n.templateDockerfile, 'Dockerfile'),
   };
 
   static Future<({String filename, String content})?> show(
@@ -259,7 +264,7 @@ class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
             child: Wrap(
               spacing: Insets.sm,
               children: [
-                for (final e in _TemplateSheet._types.entries)
+                for (final e in _TemplateSheet._types(context.l10n).entries)
                   ChoiceChip(
                     label: Text(e.value.$1),
                     selected: _type == e.key,
@@ -275,9 +280,9 @@ class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('$e')),
               data: (list) => list.isEmpty
-                  ? const EmptyState(
+                  ? EmptyState(
                       icon: Icons.article_outlined,
-                      title: 'No templates',
+                      title: context.l10n.noTemplates,
                     )
                   : ListView.builder(
                       controller: controller,
@@ -310,7 +315,7 @@ class _TemplateSheetState extends ConsumerState<_TemplateSheet> {
           .fileTemplate(widget.projectId, _type, key);
       if (mounted) {
         Navigator.pop(context, (
-          filename: _TemplateSheet._types[_type]!.$2,
+          filename: _TemplateSheet._types(context.l10n)[_type]!.$2,
           content: content,
         ));
       }

@@ -15,6 +15,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/alerts/application/alerts_providers.dart';
 import 'package:glam/src/features/alerts/domain/alert.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Monitor > Alerts for a project.
 class AlertsTab extends ConsumerStatefulWidget {
@@ -50,7 +51,7 @@ class _AlertsTabState extends ConsumerState<AlertsTab> {
               0,
             ),
             child: FilterMenu(
-              title: 'Status',
+              title: context.l10n.status,
               current: _status,
               options: _statuses,
               onSelect: (v) => setState(() => _status = v),
@@ -71,10 +72,10 @@ class _AlertsTabState extends ConsumerState<AlertsTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.notifications_none,
-                title: 'No alerts',
-                message: 'Alerts from Prometheus and other tools appear here.',
+                title: context.l10n.noAlerts,
+                message: context.l10n.alertsFromPrometheusAndOtherTools,
               ),
               itemBuilder: (context, index) =>
                   _AlertTile(alert: data.items[index], filter: filter),
@@ -109,7 +110,7 @@ class _AlertTile extends ConsumerWidget {
         ].join(' · '),
       ),
       trailing: PopupMenuButton<String>(
-        tooltip: 'Set status',
+        tooltip: context.l10n.setStatus,
         onSelected: (v) => unawaited(
           ref
               .read(projectAlertsProvider(filter).notifier)
@@ -171,7 +172,7 @@ class _AlertTile extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(alert.title, style: theme.textTheme.titleMedium),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 Wrap(
                   spacing: Insets.sm,
                   runSpacing: Insets.xs,
@@ -180,20 +181,26 @@ class _AlertTile extends ConsumerWidget {
                     if (alert.severity != null) _statusChip(alert.severity!),
                   ],
                 ),
-                const SizedBox(height: Insets.md),
+                SizedBox(height: Insets.md),
                 for (final row in [
                   if (alert.monitoringTool != null)
-                    ('Tool', alert.monitoringTool!),
-                  if (alert.service != null) ('Service', alert.service!),
+                    (context.l10n.alertTool, alert.monitoringTool!),
+                  if (alert.service != null)
+                    (context.l10n.alertService, alert.service!),
                   if (alert.startedAt != null)
-                    ('Started', Format.dateTime(alert.startedAt!)),
+                    (
+                      context.l10n.alertStarted,
+                      Format.dateTime(alert.startedAt!),
+                    ),
                   if (alert.endedAt != null)
-                    ('Ended', Format.dateTime(alert.endedAt!)),
-                  if (alert.eventCount > 0) ('Events', '${alert.eventCount}'),
-                  if (alert.hosts.isNotEmpty) ('Hosts', alert.hosts.join(', ')),
+                    (context.l10n.alertEnded, Format.dateTime(alert.endedAt!)),
+                  if (alert.eventCount > 0)
+                    (context.l10n.alertEvents, '${alert.eventCount}'),
+                  if (alert.hosts.isNotEmpty)
+                    (context.l10n.alertHosts, alert.hosts.join(', ')),
                   if (alert.assignees.isNotEmpty)
                     (
-                      'Assignees',
+                      context.l10n.fieldAssignees,
                       alert.assignees.map((u) => u.name).join(', '),
                     ),
                 ])
@@ -216,10 +223,12 @@ class _AlertTile extends ConsumerWidget {
                     ),
                   ),
                 if (alert.issueIid != null) ...[
-                  const SizedBox(height: Insets.sm),
+                  SizedBox(height: Insets.sm),
                   TextButton.icon(
-                    icon: const Icon(Icons.task_alt, size: 16),
-                    label: Text('Linked issue #${alert.issueIid}'),
+                    icon: Icon(Icons.task_alt, size: 16),
+                    label: Text(
+                      context.l10n.linkedIssueP0('${alert.issueIid}'),
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                       unawaited(

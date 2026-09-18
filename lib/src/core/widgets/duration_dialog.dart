@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Asks for a GitLab duration (`2h`, `1d 4h`, `30m`). Returns the
 /// trimmed string or null when cancelled.
@@ -17,11 +18,11 @@ Future<String?> promptDuration(BuildContext context, {required String title}) {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, controller.text.trim()),
-          child: const Text('Save'),
+          child: Text(context.l10n.actionSave),
         ),
       ],
     ),

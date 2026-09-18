@@ -275,6 +275,8 @@ class GitLabApiClient {
         throw const ApiException(
           kind: ApiErrorKind.unknown,
           message: 'File is too large to show in the app',
+          messageKey: ApiMessageKey.fileTooLarge,
+          isDefaultMessage: true,
         );
       }
       return response.data ?? Uint8List(0);
@@ -314,6 +316,8 @@ class GitLabApiClient {
       throw const ApiException(
         kind: ApiErrorKind.unknown,
         message: 'Too many redirects',
+        messageKey: ApiMessageKey.tooManyRedirects,
+        isDefaultMessage: true,
       );
     }
     return response;

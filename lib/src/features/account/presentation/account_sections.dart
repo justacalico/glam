@@ -11,6 +11,7 @@ import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/domain/account_models.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// SSH keys with add / delete.
 class SshKeysSection extends ConsumerWidget {
@@ -21,15 +22,15 @@ class SshKeysSection extends ConsumerWidget {
     final keys = ref.watch(sshKeysProvider);
 
     return _Section(
-      label: 'SSH keys',
+      label: context.l10n.sshKeys,
       trailing: TextButton.icon(
-        icon: const Icon(Icons.add, size: 16),
-        label: const Text('Add'),
+        icon: Icon(Icons.add, size: 16),
+        label: Text(context.l10n.actionAdd),
         onPressed: () => _addKey(context, ref),
       ),
       children: [
         keys.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
               padding: EdgeInsets.all(Insets.lg),
               child: CircularProgressIndicator(),
@@ -37,7 +38,7 @@ class SshKeysSection extends ConsumerWidget {
           ),
           error: (e, _) => _ErrorTile(error: e),
           data: (list) => list.isEmpty
-              ? const ListTile(dense: true, title: Text('No SSH keys'))
+              ? ListTile(dense: true, title: Text(context.l10n.noSshKeys))
               : Column(
                   children: [
                     for (final k in list)
@@ -53,13 +54,13 @@ class SshKeysSection extends ConsumerWidget {
                             if (k.lastUsedAt != null)
                               'used ${Format.date(k.lastUsedAt!)}',
                           ].join(' · '),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: GlamFonts.mono,
                             fontSize: 11,
                           ),
                         ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
+                          icon: Icon(Icons.delete_outline, size: 18),
                           onPressed: () => _deleteKey(context, ref, k),
                         ),
                       ),
@@ -76,7 +77,7 @@ class SshKeysSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add SSH key'),
+        title: Text(context.l10n.addSshKey),
         content: SizedBox(
           width: 420,
           child: Column(
@@ -85,16 +86,16 @@ class SshKeysSection extends ConsumerWidget {
               TextField(
                 controller: title,
                 autofocus: true,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(labelText: context.l10n.fieldTitle),
               ),
-              const SizedBox(height: Insets.sm),
+              SizedBox(height: Insets.sm),
               TextField(
                 controller: key,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Public key',
-                  hintText: 'ssh-ed25519 AAAA…',
+                decoration: InputDecoration(
+                  labelText: context.l10n.publicKey,
+                  hintText: context.l10n.sshEd25519Aaaa,
                 ),
               ),
             ],
@@ -103,7 +104,7 @@ class SshKeysSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -112,7 +113,7 @@ class SshKeysSection extends ConsumerWidget {
               }
               Navigator.pop(context, true);
             },
-            child: const Text('Add'),
+            child: Text(context.l10n.actionAdd),
           ),
         ],
       ),
@@ -134,7 +135,11 @@ class SshKeysSection extends ConsumerWidget {
   }
 
   Future<void> _deleteKey(BuildContext context, WidgetRef ref, SshKey k) async {
-    final ok = await _confirm(context, title: 'Remove SSH key?', body: k.title);
+    final ok = await _confirm(
+      context,
+      title: context.l10n.removeSshKey,
+      body: k.title,
+    );
     if (ok != true || !context.mounted) {
       return;
     }
@@ -157,15 +162,15 @@ class GpgKeysSection extends ConsumerWidget {
     final keys = ref.watch(gpgKeysProvider);
 
     return _Section(
-      label: 'GPG keys',
+      label: context.l10n.gpgKeys,
       trailing: TextButton.icon(
-        icon: const Icon(Icons.add, size: 16),
-        label: const Text('Add'),
+        icon: Icon(Icons.add, size: 16),
+        label: Text(context.l10n.actionAdd),
         onPressed: () => _addKey(context, ref),
       ),
       children: [
         keys.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
               padding: EdgeInsets.all(Insets.lg),
               child: CircularProgressIndicator(),
@@ -173,19 +178,16 @@ class GpgKeysSection extends ConsumerWidget {
           ),
           error: (e, _) => _ErrorTile(error: e),
           data: (list) => list.isEmpty
-              ? const ListTile(dense: true, title: Text('No GPG keys'))
+              ? ListTile(dense: true, title: Text(context.l10n.noGpgKeys))
               : Column(
                   children: [
                     for (final k in list)
                       ListTile(
                         dense: true,
-                        leading: const Icon(
-                          Icons.verified_user_outlined,
-                          size: 18,
-                        ),
+                        leading: Icon(Icons.verified_user_outlined, size: 18),
                         title: Text(
                           k.emails.isEmpty
-                              ? 'GPG key #${k.id}'
+                              ? context.l10n.gpgKeyId(k.id)
                               : k.emails.first,
                         ),
                         subtitle: Text(
@@ -194,13 +196,13 @@ class GpgKeysSection extends ConsumerWidget {
                             if (k.createdAt != null)
                               'added ${Format.date(k.createdAt!)}',
                           ].join(' · '),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: GlamFonts.mono,
                             fontSize: 11,
                           ),
                         ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
+                          icon: Icon(Icons.delete_outline, size: 18),
                           onPressed: () => _deleteKey(context, ref, k),
                         ),
                       ),
@@ -216,7 +218,7 @@ class GpgKeysSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add GPG key'),
+        title: Text(context.l10n.addGpgKey),
         content: SizedBox(
           width: 420,
           child: TextField(
@@ -224,8 +226,8 @@ class GpgKeysSection extends ConsumerWidget {
             autofocus: true,
             minLines: 4,
             maxLines: 8,
-            decoration: const InputDecoration(
-              labelText: 'Public key',
+            decoration: InputDecoration(
+              labelText: context.l10n.publicKey,
               hintText: '-----BEGIN PGP PUBLIC KEY BLOCK-----',
             ),
           ),
@@ -233,7 +235,7 @@ class GpgKeysSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -241,7 +243,7 @@ class GpgKeysSection extends ConsumerWidget {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Add'),
+            child: Text(context.l10n.actionAdd),
           ),
         ],
       ),
@@ -262,7 +264,11 @@ class GpgKeysSection extends ConsumerWidget {
 
   Future<void> _deleteKey(BuildContext context, WidgetRef ref, GpgKey k) async {
     final label = k.emails.isEmpty ? 'key #${k.id}' : k.emails.first;
-    final ok = await _confirm(context, title: 'Remove GPG key?', body: label);
+    final ok = await _confirm(
+      context,
+      title: context.l10n.removeGpgKey,
+      body: label,
+    );
     if (ok != true || !context.mounted) {
       return;
     }
@@ -287,10 +293,10 @@ class TokensSection extends ConsumerWidget {
     final currentId = ref.watch(currentTokenProvider).value;
 
     return _Section(
-      label: 'Access tokens',
+      label: context.l10n.accessTokens,
       children: [
         tokens.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
               padding: EdgeInsets.all(Insets.lg),
               child: CircularProgressIndicator(),
@@ -298,13 +304,13 @@ class TokensSection extends ConsumerWidget {
           ),
           error: (e, _) => _ErrorTile(error: e),
           data: (list) => list.isEmpty
-              ? const ListTile(dense: true, title: Text('No active tokens'))
+              ? ListTile(dense: true, title: Text(context.l10n.noActiveTokens))
               : Column(
                   children: [
                     for (final t in list)
                       ListTile(
                         dense: true,
-                        leading: const Icon(Icons.badge_outlined, size: 18),
+                        leading: Icon(Icons.badge_outlined, size: 18),
                         title: Text(t.name),
                         subtitle: Text(
                           [
@@ -323,13 +329,13 @@ class TokensSection extends ConsumerWidget {
                           children: [
                             if (t.id == currentId)
                               IconButton(
-                                icon: const Icon(Icons.refresh, size: 18),
-                                tooltip: 'Rotate',
+                                icon: Icon(Icons.refresh, size: 18),
+                                tooltip: context.l10n.rotate,
                                 onPressed: () => _rotate(context, ref, t),
                               ),
                             IconButton(
-                              icon: const Icon(Icons.block, size: 18),
-                              tooltip: 'Revoke',
+                              icon: Icon(Icons.block, size: 18),
+                              tooltip: context.l10n.actionRevoke,
                               onPressed: () =>
                                   _revoke(context, ref, t, t.id == currentId),
                             ),
@@ -352,7 +358,7 @@ class TokensSection extends ConsumerWidget {
   ) async {
     final ok = await _confirm(
       context,
-      title: 'Rotate token?',
+      title: context.l10n.rotateToken,
       body:
           '"${t.name}" stops working immediately. A replacement is '
           'created and stored.',
@@ -361,14 +367,15 @@ class TokensSection extends ConsumerWidget {
       return;
     }
     try {
+      final l10n = context.l10n;
       final rotated = await ref
           .read(accountActionsProvider)
           .rotateCurrentToken();
       final cleartext = rotated.token;
       if (cleartext == null) {
-        throw const ApiException(
+        throw ApiException(
           kind: ApiErrorKind.unknown,
-          message: 'GitLab did not return a token',
+          message: l10n.gitlabDidNotReturnAToken,
         );
       }
       await ref.read(sessionProvider.notifier).replaceToken(cleartext);
@@ -376,12 +383,12 @@ class TokensSection extends ConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Token rotated'),
-            content: SelectableText('New token (shown once):\n\n$cleartext'),
+            title: Text(context.l10n.tokenRotated),
+            content: SelectableText(context.l10n.newTokenShownOnce(cleartext)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Done'),
+                child: Text(context.l10n.actionDone),
               ),
             ],
           ),
@@ -402,7 +409,7 @@ class TokensSection extends ConsumerWidget {
   ) async {
     final ok = await _confirm(
       context,
-      title: 'Revoke token?',
+      title: context.l10n.revokeToken,
       body: isCurrent
           ? '"${t.name}" is this session\'s token — revoking signs you out.'
           : '"${t.name}" stops working immediately.',
@@ -427,24 +434,24 @@ class TokensSection extends ConsumerWidget {
 class NotificationSection extends ConsumerWidget {
   const NotificationSection({super.key});
 
-  static const _eventLabels = {
-    'new_note': 'New comments',
-    'new_issue': 'New issues',
-    'reopen_issue': 'Reopened issues',
-    'close_issue': 'Closed issues',
-    'reassign_issue': 'Reassigned issues',
-    'issue_due': 'Issue due dates',
-    'new_merge_request': 'New merge requests',
-    'push_to_merge_request': 'Pushes to merge requests',
-    'reopen_merge_request': 'Reopened merge requests',
-    'close_merge_request': 'Closed merge requests',
-    'reassign_merge_request': 'Reassigned merge requests',
-    'merge_merge_request': 'Merged merge requests',
-    'failed_pipeline': 'Failed pipelines',
-    'fixed_pipeline': 'Fixed pipelines',
-    'success_pipeline': 'Successful pipelines',
-    'moved_project': 'Moved projects',
-    'new_epic': 'New epics',
+  static Map<String, String> _eventLabels(AppLocalizations l10n) => {
+    'new_note': l10n.eventNewComments,
+    'new_issue': l10n.eventNewIssues,
+    'reopen_issue': l10n.eventReopenedIssues,
+    'close_issue': l10n.eventClosedIssues,
+    'reassign_issue': l10n.eventReassignedIssues,
+    'issue_due': l10n.eventIssueDueDates,
+    'new_merge_request': l10n.eventNewMrs,
+    'push_to_merge_request': l10n.eventPushesToMrs,
+    'reopen_merge_request': l10n.eventReopenedMrs,
+    'close_merge_request': l10n.eventClosedMrs,
+    'reassign_merge_request': l10n.eventReassignedMrs,
+    'merge_merge_request': l10n.eventMergedMrs,
+    'failed_pipeline': l10n.eventFailedPipelines,
+    'fixed_pipeline': l10n.eventFixedPipelines,
+    'success_pipeline': l10n.eventSuccessfulPipelines,
+    'moved_project': l10n.eventMovedProjects,
+    'new_epic': l10n.eventNewEpics,
   };
 
   @override
@@ -452,10 +459,10 @@ class NotificationSection extends ConsumerWidget {
     final settings = ref.watch(notificationSettingsProvider);
 
     return _Section(
-      label: 'Notifications',
+      label: context.l10n.notificationsTitle,
       children: [
         settings.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
               padding: EdgeInsets.all(Insets.lg),
               child: CircularProgressIndicator(),
@@ -468,7 +475,7 @@ class NotificationSection extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
                 child: Row(
                   children: [
-                    const Expanded(child: Text('Level')),
+                    Expanded(child: Text(context.l10n.notificationsLevel)),
                     DropdownButton<String>(
                       value:
                           NotificationSettings.levelLabels.containsKey(s.level)
@@ -477,7 +484,10 @@ class NotificationSection extends ConsumerWidget {
                       items: [
                         for (final e
                             in NotificationSettings.levelLabels.entries)
-                          DropdownMenuItem(value: e.key, child: Text(e.value)),
+                          DropdownMenuItem(
+                            value: e.key,
+                            child: Text(context.l10n.notificationLevel(e.key)),
+                          ),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -489,7 +499,7 @@ class NotificationSection extends ConsumerWidget {
                 ),
               ),
               if (s.level == 'custom')
-                for (final e in _eventLabels.entries)
+                for (final e in _eventLabels(context.l10n).entries)
                   SwitchListTile(
                     dense: true,
                     title: Text(e.value),
@@ -544,15 +554,15 @@ class EmailsSection extends ConsumerWidget {
     final colors = context.colors;
 
     return _Section(
-      label: 'Emails',
+      label: context.l10n.emails,
       trailing: TextButton.icon(
-        icon: const Icon(Icons.add, size: 16),
-        label: const Text('Add'),
+        icon: Icon(Icons.add, size: 16),
+        label: Text(context.l10n.actionAdd),
         onPressed: () => _addEmail(context, ref),
       ),
       children: [
         emails.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
               padding: EdgeInsets.all(Insets.lg),
               child: CircularProgressIndicator(),
@@ -560,7 +570,7 @@ class EmailsSection extends ConsumerWidget {
           ),
           error: (e, _) => _ErrorTile(error: e),
           data: (list) => list.isEmpty
-              ? const ListTile(dense: true, title: Text('No emails'))
+              ? ListTile(dense: true, title: Text(context.l10n.noEmails))
               : Column(
                   children: [
                     for (final m in list)
@@ -597,23 +607,23 @@ class EmailsSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add email'),
+        title: Text(context.l10n.addEmail),
         content: SizedBox(
           width: 420,
           child: TextField(
             controller: email,
             autofocus: true,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              hintText: 'you@example.com',
+            decoration: InputDecoration(
+              labelText: context.l10n.email,
+              hintText: context.l10n.youExampleCom,
             ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -622,7 +632,7 @@ class EmailsSection extends ConsumerWidget {
               }
               Navigator.pop(context, true);
             },
-            child: const Text('Add'),
+            child: Text(context.l10n.actionAdd),
           ),
         ],
       ),
@@ -646,7 +656,11 @@ class EmailsSection extends ConsumerWidget {
     WidgetRef ref,
     UserEmail m,
   ) async {
-    final ok = await _confirm(context, title: 'Remove email?', body: m.email);
+    final ok = await _confirm(
+      context,
+      title: context.l10n.removeEmail,
+      body: m.email,
+    );
     if (ok != true || !context.mounted) {
       return;
     }
@@ -707,11 +721,11 @@ Future<bool?> _confirm(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Confirm'),
+          child: Text(context.l10n.actionConfirm),
         ),
       ],
     ),
@@ -728,7 +742,7 @@ class PreferencesSection extends ConsumerWidget {
     final prefs = ref.watch(userPreferencesProvider);
 
     return _Section(
-      label: 'GitLab preferences',
+      label: context.l10n.gitlabPreferences,
       children: [
         prefs.when(
           loading: () => const Center(
@@ -743,51 +757,58 @@ class PreferencesSection extends ConsumerWidget {
               _toggle(
                 context,
                 ref,
-                'Show whitespace changes in diffs',
+                context.l10n.prefShowWhitespace,
                 p.showWhitespaceInDiffs,
                 'show_whitespace_in_diffs',
               ),
               _toggle(
                 context,
                 ref,
-                'Show one file at a time in diffs',
+                context.l10n.prefFileByFile,
                 p.viewDiffsFileByFile,
                 'view_diffs_file_by_file',
               ),
               _toggle(
                 context,
                 ref,
-                'Include unstaged changes in diffs',
+                context.l10n.prefUnstaged,
                 p.passUnstagedChangesInDiff,
                 'pass_unstaged_changes_in_diff',
               ),
               _toggle(
                 context,
                 ref,
-                'Markdown surrounds selection',
+                context.l10n.prefMarkdownSurround,
                 p.markdownSurroundSelection,
                 'markdown_surround_selection',
               ),
               _toggle(
                 context,
                 ref,
-                'Automatic markdown lists',
+                context.l10n.prefMarkdownLists,
                 p.markdownAutomaticLists,
                 'markdown_automatic_lists',
               ),
-              _choice(context, ref, 'Layout width', p.layoutWidth, const {
-                'fixed': 'Fixed',
-                'fluid': 'Fluid',
-              }, 'layout_width'),
               _choice(
                 context,
                 ref,
-                'Default projects view',
+                context.l10n.prefLayoutWidth,
+                p.layoutWidth,
+                {
+                  'fixed': context.l10n.layoutFixed,
+                  'fluid': context.l10n.layoutFluid,
+                },
+                'layout_width',
+              ),
+              _choice(
+                context,
+                ref,
+                context.l10n.prefProjectsView,
                 p.projectsView,
-                const {
-                  'activity': 'Activity',
-                  'starred': 'Starred',
-                  'trending': 'Trending',
+                {
+                  'activity': context.l10n.activityTitle,
+                  'starred': context.l10n.scopeStarred,
+                  'trending': context.l10n.projectsViewTrending,
                 },
                 'projects_view',
               ),
@@ -828,10 +849,13 @@ class PreferencesSection extends ConsumerWidget {
           Expanded(child: Text(title)),
           DropdownButton<String>(
             value: options.containsKey(current) ? current : null,
-            hint: const Text('Default'),
+            hint: Text(context.l10n.miscDefault),
             items: [
               for (final e in options.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
+                DropdownMenuItem(
+                  value: e.key,
+                  child: Text(context.l10n.notificationLevel(e.key)),
+                ),
             ],
             onChanged: (v) {
               if (v != null) {

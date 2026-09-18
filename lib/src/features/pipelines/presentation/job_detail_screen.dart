@@ -15,6 +15,7 @@ import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/pipelines/application/pipelines_providers.dart';
 import 'package:glam/src/features/pipelines/domain/pipeline.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Job page: meta header plus the full console trace in monospace.
 class JobDetailScreen extends ConsumerWidget {
@@ -37,7 +38,7 @@ class JobDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: job.maybeWhen(
           data: (j) => Text(j.name),
-          orElse: () => Text('Job #$jobId'),
+          orElse: () => Text(context.l10n.jobP0(jobId)),
         ),
         actions: [
           job.maybeWhen(
@@ -46,13 +47,13 @@ class JobDetailScreen extends ConsumerWidget {
               children: [
                 if (j.status == 'running' || j.status == 'pending')
                   IconButton(
-                    tooltip: 'Cancel',
+                    tooltip: context.l10n.actionCancel,
                     icon: const Icon(Icons.stop_circle_outlined),
                     onPressed: () => unawaited(_act(context, ref, 'cancel')),
                   )
                 else
                   IconButton(
-                    tooltip: 'Retry',
+                    tooltip: context.l10n.actionRetry,
                     icon: const Icon(Icons.refresh),
                     onPressed: () => unawaited(
                       _act(
@@ -64,7 +65,7 @@ class JobDetailScreen extends ConsumerWidget {
                   ),
                 if (j.webUrl != null)
                   IconButton(
-                    tooltip: 'Open in browser',
+                    tooltip: context.l10n.actionOpenBrowser,
                     icon: const Icon(Icons.open_in_new, size: 20),
                     onPressed: () => unawaited(launchExternal(j.webUrl!)),
                   ),
@@ -101,20 +102,26 @@ class JobDetailScreen extends ConsumerWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(erase ? 'Erase job?' : 'Delete artifacts?'),
+          title: Text(
+            erase
+                ? context.l10n.eraseJobConfirm
+                : context.l10n.deleteArtifactsConfirm,
+          ),
           content: Text(
             erase
-                ? 'The trace and artifacts are permanently removed.'
-                : 'Locked artifacts may remain. Requires a maintainer role.',
+                ? context.l10n.eraseJobBody
+                : context.l10n.deleteArtifactsBody,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(erase ? 'Erase' : 'Delete'),
+              child: Text(
+                erase ? context.l10n.erase : context.l10n.actionDelete,
+              ),
             ),
           ],
         ),
@@ -164,22 +171,22 @@ class _JobMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = <PopupMenuEntry<String>>[
       if (job.hasArtifacts)
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'artifacts',
-          child: Text('Browse artifacts'),
+          child: Text(context.l10n.browseArtifacts),
         ),
       if (job.status == 'success' || job.status == 'failed') ...[
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'keep_artifacts',
-          child: Text('Keep artifacts'),
+          child: Text(context.l10n.keepArtifacts),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete_artifacts',
-          child: Text('Delete artifacts'),
+          child: Text(context.l10n.deleteArtifactsAction),
         ),
       ],
       if (_erasable.contains(job.status))
-        const PopupMenuItem(value: 'erase', child: Text('Erase job')),
+        PopupMenuItem(value: 'erase', child: Text(context.l10n.eraseJobAction)),
     ];
     if (items.isEmpty) {
       return const SizedBox.shrink();
@@ -221,7 +228,10 @@ class _JobHeader extends StatelessWidget {
               style: theme.textTheme.bodySmall,
             ),
           if (job.user != null)
-            Text('by ${job.user!.name}', style: theme.textTheme.bodySmall),
+            Text(
+              context.l10n.byP0(job.user!.name),
+              style: theme.textTheme.bodySmall,
+            ),
           if (job.tagList.isNotEmpty)
             Text(
               job.tagList.join(', '),
@@ -276,7 +286,7 @@ class _TraceView extends ConsumerWidget {
             right: Insets.md,
             bottom: Insets.md,
             child: IconButton.filled(
-              tooltip: 'Copy trace',
+              tooltip: context.l10n.copyTrace,
               icon: const Icon(Icons.copy_outlined, size: 18),
               onPressed: () =>
                   unawaited(Clipboard.setData(ClipboardData(text: body))),

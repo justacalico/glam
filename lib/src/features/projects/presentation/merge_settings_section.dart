@@ -8,6 +8,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Merge-request workflow settings: merge method, squash policy, merge
 /// gates, source-branch cleanup and commit templates.
@@ -23,7 +24,7 @@ class MergeSettingsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Merge requests'),
+        SectionLabel(context.l10n.mrsTitle),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -33,44 +34,44 @@ class MergeSettingsSection extends ConsumerWidget {
           child: Column(
             children: [
               _ChoiceTile(
-                label: 'Merge method',
+                label: context.l10n.mergeMethod,
                 value: project.mergeMethod ?? 'merge',
-                options: const {
-                  'merge': 'Merge commit',
-                  'rebase_merge': 'Rebase and merge',
-                  'ff': 'Fast-forward merge',
+                options: {
+                  'merge': context.l10n.mergeMethodCommit,
+                  'rebase_merge': context.l10n.mergeMethodRebase,
+                  'ff': context.l10n.mergeMethodFf,
                 },
                 onChanged: (v) => _set(context, ref, mergeMethod: v),
               ),
               _divider(colors),
               _ChoiceTile(
-                label: 'Squash commits',
+                label: context.l10n.squashCommits,
                 value: project.squashOption ?? 'default_off',
-                options: const {
-                  'never': 'Do not allow',
-                  'always': 'Require',
-                  'default_on': 'Allow, on by default',
-                  'default_off': 'Allow, off by default',
+                options: {
+                  'never': context.l10n.squashNever,
+                  'always': context.l10n.squashAlways,
+                  'default_on': context.l10n.squashDefaultOn,
+                  'default_off': context.l10n.squashDefaultOff,
                 },
                 onChanged: (v) => _set(context, ref, squashOption: v),
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Pipelines must succeed',
+                label: context.l10n.pipelinesMustSucceed,
                 value: project.onlyAllowMergeIfPipelineSucceeds ?? false,
                 onChanged: (v) =>
                     _set(context, ref, onlyAllowMergeIfPipelineSucceeds: v),
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Allow merge on skipped pipelines',
+                label: context.l10n.allowMergeOnSkippedPipelines,
                 value: project.allowMergeOnSkippedPipeline ?? false,
                 onChanged: (v) =>
                     _set(context, ref, allowMergeOnSkippedPipeline: v),
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'All threads must be resolved',
+                label: context.l10n.allThreadsMustBeResolved,
                 value:
                     project.onlyAllowMergeIfAllDiscussionsAreResolved ?? false,
                 onChanged: (v) => _set(
@@ -81,43 +82,43 @@ class MergeSettingsSection extends ConsumerWidget {
               ),
               _divider(colors),
               _GateSwitch(
-                label: 'Delete source branch after merge',
+                label: context.l10n.deleteSourceBranchAfterMerge,
                 value: project.removeSourceBranchAfterMerge ?? false,
                 onChanged: (v) =>
                     _set(context, ref, removeSourceBranchAfterMerge: v),
               ),
               _divider(colors),
               _TemplateTile(
-                label: 'Merge commit template',
+                label: context.l10n.mergeCommitTemplate,
                 value: project.mergeCommitTemplate,
                 onEdit: () => _editTemplate(
                   context,
                   ref,
-                  label: 'Merge commit template',
+                  label: context.l10n.mergeCommitTemplate,
                   initial: project.mergeCommitTemplate,
                   onSubmit: (v) => _set(context, ref, mergeCommitTemplate: v),
                 ),
               ),
               _divider(colors),
               _TemplateTile(
-                label: 'Squash commit template',
+                label: context.l10n.squashCommitTemplate,
                 value: project.squashCommitTemplate,
                 onEdit: () => _editTemplate(
                   context,
                   ref,
-                  label: 'Squash commit template',
+                  label: context.l10n.squashCommitTemplate,
                   initial: project.squashCommitTemplate,
                   onSubmit: (v) => _set(context, ref, squashCommitTemplate: v),
                 ),
               ),
               _divider(colors),
               _TemplateTile(
-                label: 'Suggestion commit message',
+                label: context.l10n.suggestionCommitMessage,
                 value: project.suggestionCommitMessage,
                 onEdit: () => _editTemplate(
                   context,
                   ref,
-                  label: 'Suggestion commit message',
+                  label: context.l10n.suggestionCommitMessage,
                   initial: project.suggestionCommitMessage,
                   onSubmit: (v) =>
                       _set(context, ref, suggestionCommitMessage: v),
@@ -186,8 +187,8 @@ class MergeSettingsSection extends ConsumerWidget {
             autofocus: true,
             minLines: 3,
             maxLines: 6,
-            decoration: const InputDecoration(
-              hintText: 'Leave empty to use the default',
+            decoration: InputDecoration(
+              hintText: context.l10n.leaveEmptyToUseTheDefault,
               border: OutlineInputBorder(),
             ),
           ),
@@ -195,11 +196,11 @@ class MergeSettingsSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -293,7 +294,7 @@ class _TemplateTile extends StatelessWidget {
       dense: true,
       title: Text(label),
       subtitle: Text(
-        value == null || value!.isEmpty ? 'Default' : value!,
+        value == null || value!.isEmpty ? context.l10n.templateDefault : value!,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

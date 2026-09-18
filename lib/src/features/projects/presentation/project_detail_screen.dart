@@ -41,6 +41,7 @@ import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/repository/presentation/releases_screen.dart';
 import 'package:glam/src/features/repository/presentation/tags_screen.dart';
 import 'package:glam/src/features/wiki/presentation/wiki_screen.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project home: header card + tabbed content.
 class ProjectDetailScreen extends ConsumerWidget {
@@ -69,7 +70,7 @@ class _ProjectBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabs = _tabsFor(project);
+    final tabs = _tabsFor(context.l10n, project);
     return DefaultTabController(
       length: tabs.length,
       child: NestedScrollView(
@@ -99,64 +100,79 @@ class _ProjectBody extends ConsumerWidget {
     );
   }
 
-  List<({String label, Widget Function() builder})> _tabsFor(Project project) {
+  List<({String label, Widget Function() builder})> _tabsFor(
+    AppLocalizations l10n,
+    Project project,
+  ) {
     return [
-      (label: 'Overview', builder: () => ProjectOverviewTab(project: project)),
-      (label: 'Issues', builder: () => ProjectIssuesTab(projectId: project.id)),
-      (label: 'MRs', builder: () => ProjectMrsTab(projectId: project.id)),
       (
-        label: 'Pipelines',
+        label: l10n.tabOverview,
+        builder: () => ProjectOverviewTab(project: project),
+      ),
+      (
+        label: l10n.issuesTitle,
+        builder: () => ProjectIssuesTab(projectId: project.id),
+      ),
+      (label: l10n.navMrs, builder: () => ProjectMrsTab(projectId: project.id)),
+      (
+        label: l10n.tabPipelines,
         builder: () => PipelinesScreen(projectId: project.id),
       ),
       (
-        label: 'Environments',
+        label: l10n.tabEnvironments,
         builder: () => EnvironmentsScreen(projectId: project.id),
       ),
-      (label: 'Flags', builder: () => FeatureFlagsTab(projectId: project.id)),
-      (label: 'Alerts', builder: () => AlertsTab(projectId: project.id)),
       (
-        label: 'Members',
+        label: l10n.tabFlags,
+        builder: () => FeatureFlagsTab(projectId: project.id),
+      ),
+      (label: l10n.tabAlerts, builder: () => AlertsTab(projectId: project.id)),
+      (
+        label: l10n.tabMembers,
         builder: () => MembersList(id: project.id, isProject: true),
       ),
       (
-        label: 'Activity',
+        label: l10n.activityTitle,
         builder: () => EventList(feed: (kind: 'project', id: project.id)),
       ),
       if (project.forksCount > 0)
-        (label: 'Forks', builder: () => _ForksTab(projectId: project.id)),
+        (label: l10n.tabForks, builder: () => _ForksTab(projectId: project.id)),
       if (!project.emptyRepo)
         (
-          label: 'Contributors',
+          label: l10n.tabContributors,
           builder: () => _ContributorsTab(projectId: project.id),
         ),
       (
-        label: 'Packages',
+        label: l10n.tabPackages,
         builder: () => ProjectPackagesTab(projectId: project.id),
       ),
       (
-        label: 'Registry',
+        label: l10n.tabRegistry,
         builder: () => ProjectRegistryTab(projectId: project.id),
       ),
       (
-        label: 'Snippets',
+        label: l10n.snippetsTitle,
         builder: () => ProjectSnippetsTab(projectId: project.id),
       ),
-      (label: 'Wiki', builder: () => ProjectWikiTab(projectId: project.id)),
       (
-        label: 'Boards',
+        label: l10n.tabWiki,
+        builder: () => ProjectWikiTab(projectId: project.id),
+      ),
+      (
+        label: l10n.tabBoards,
         builder: () => BoardsTab(scope: (id: project.id, isProject: true)),
       ),
       (
-        label: 'Milestones',
+        label: l10n.tabMilestones,
         builder: () => MilestonesTab(scope: (id: project.id, isProject: true)),
       ),
       (
-        label: 'Labels',
+        label: l10n.tabLabels,
         builder: () => LabelsTab(scope: (id: project.id, isProject: true)),
       ),
       if (!project.emptyRepo)
         (
-          label: 'Files',
+          label: l10n.tabFiles,
           builder: () => FilesScreen(
             projectId: project.id.toString(),
             defaultRef: project.defaultBranch,
@@ -164,20 +180,20 @@ class _ProjectBody extends ConsumerWidget {
         ),
       if (!project.emptyRepo)
         (
-          label: 'Commits',
+          label: l10n.tabCommits,
           builder: () => CommitsScreen(projectId: project.id.toString()),
         ),
       if (!project.emptyRepo)
         (
-          label: 'Branches',
+          label: l10n.tabBranches,
           builder: () => BranchesScreen(projectId: project.id.toString()),
         ),
       (
-        label: 'Tags',
+        label: l10n.tabTags,
         builder: () => TagsScreen(projectId: project.id.toString()),
       ),
       (
-        label: 'Releases',
+        label: l10n.tabReleases,
         builder: () => ReleasesScreen(projectId: project.id.toString()),
       ),
     ];
@@ -280,7 +296,7 @@ class _ProjectHeader extends ConsumerWidget {
                 onTap: () => unawaited(
                   UsersSheet.show(
                     context,
-                    title: 'Starrers',
+                    title: context.l10n.starrersTitle,
                     provider: projectStarrersProvider(project.id),
                   ),
                 ),
@@ -312,28 +328,28 @@ class _ProjectHeader extends ConsumerWidget {
             children: [
               _ActionChip(
                 icon: Icons.search,
-                label: 'Search',
+                label: context.l10n.searchTitle,
                 onTap: () =>
                     unawaited(context.push(Routes.projectSearch(project.id))),
               ),
               _ActionChip(
                 icon: Icons.star_outline,
-                label: 'Star',
+                label: context.l10n.actionStar,
                 onTap: () => _toggleStar(ref, context),
               ),
               _ActionChip(
                 icon: Icons.fork_right,
-                label: 'Fork',
+                label: context.l10n.actionFork,
                 onTap: () => _fork(ref, context),
               ),
               _ActionChip(
                 icon: Icons.link,
-                label: 'Copy clone URL',
+                label: context.l10n.actionCopyCloneUrl,
                 onTap: () => _copyClone(context),
               ),
               _ActionChip(
                 icon: Icons.notifications_outlined,
-                label: 'Notifications',
+                label: context.l10n.notificationsTitle,
                 onTap: () => unawaited(
                   ScopedNotificationSheet.show(context, (
                     id: project.id,
@@ -344,12 +360,12 @@ class _ProjectHeader extends ConsumerWidget {
               if (project.webUrl != null)
                 _ActionChip(
                   icon: Icons.open_in_new,
-                  label: 'Open in browser',
+                  label: context.l10n.actionOpenBrowser,
                   onTap: () => launchExternal(project.webUrl!),
                 ),
               _ActionChip(
                 icon: Icons.settings_outlined,
-                label: 'Settings',
+                label: context.l10n.settingsTitle,
                 onTap: () =>
                     unawaited(context.push(Routes.projectSettings(project.id))),
               ),
@@ -401,7 +417,7 @@ class _ProjectHeader extends ConsumerWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Starred')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.snackStarred)));
     }
   }
 
@@ -412,14 +428,16 @@ class _ProjectHeader extends ConsumerWidget {
           .fork(project.id);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Forked to ${forked.pathWithNamespace}')),
+          SnackBar(
+            content: Text(context.l10n.snackForked(forked.pathWithNamespace)),
+          ),
         );
       }
     } on Object {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not fork the project')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.snackForkFailed)));
       }
     }
   }
@@ -433,7 +451,7 @@ class _ProjectHeader extends ConsumerWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Clone URL copied')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.snackCloneCopied)));
     }
   }
 }
@@ -454,9 +472,9 @@ class _ContributorsTab extends ConsumerWidget {
       value: contributors,
       onRetry: () => ref.invalidate(projectContributorsProvider(projectId)),
       data: (items) => items.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.people_outline,
-              title: 'No contributors',
+              title: context.l10n.contributorsEmpty,
             )
           : ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
@@ -563,7 +581,7 @@ class _LatestPipelineStat extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     return Tooltip(
-      message: 'Latest pipeline',
+      message: context.l10n.latestPipeline,
       child: InkWell(
         onTap: () => unawaited(
           context.push(Routes.projectPipeline(projectId, pipeline.id)),
@@ -642,7 +660,10 @@ class _ForksTab extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(icon: Icons.fork_right, title: 'No forks yet'),
+        empty: EmptyState(
+          icon: Icons.fork_right,
+          title: context.l10n.forksEmpty,
+        ),
         itemBuilder: (context, index) {
           final p = data.items[index];
           return ProjectTile(

@@ -5,6 +5,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One MR row: state icon, title, source → target, pipeline status.
 class MrTile extends StatelessWidget {
@@ -46,7 +47,7 @@ class MrTile extends StatelessWidget {
                     children: [
                       if (mr.draft)
                         Text(
-                          'Draft: ',
+                          context.l10n.mrTileDraft,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: colors.inkMuted,
                           ),

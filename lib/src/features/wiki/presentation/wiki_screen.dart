@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/wiki/application/wiki_providers.dart';
 import 'package:glam/src/features/wiki/domain/wiki_page.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Wiki pages tab inside project detail.
 class ProjectWikiTab extends ConsumerWidget {
@@ -38,7 +39,7 @@ class ProjectWikiTab extends ConsumerWidget {
               Insets.xs,
             ),
             child: IconButton(
-              tooltip: 'New page',
+              tooltip: context.l10n.newPage,
               icon: const Icon(Icons.add),
               onPressed: () => unawaited(
                 WikiFormScreen.show(context, projectId: projectId).then((
@@ -66,9 +67,9 @@ class ProjectWikiTab extends ConsumerWidget {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.menu_book_outlined,
-                title: 'No wiki pages',
+                title: context.l10n.noWikiPages,
               ),
               itemBuilder: (context, index) {
                 final page = data.items[index];
@@ -109,10 +110,10 @@ class WikiPageScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(page.value?.title ?? 'Wiki'),
+        title: Text(page.value?.title ?? context.l10n.tabWiki),
         actions: [
           IconButton(
-            tooltip: 'Edit',
+            tooltip: context.l10n.actionEdit,
             icon: const Icon(Icons.edit_outlined, size: 20),
             onPressed: page.value == null
                 ? null
@@ -131,7 +132,7 @@ class WikiPageScreen extends ConsumerWidget {
                   ),
           ),
           IconButton(
-            tooltip: 'Delete',
+            tooltip: context.l10n.actionDelete,
             icon: const Icon(Icons.delete_outline, size: 20),
             onPressed: () => unawaited(_confirmDelete(context, ref)),
           ),
@@ -152,16 +153,16 @@ class WikiPageScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete page?'),
-        content: const Text('This cannot be undone.'),
+        title: Text(context.l10n.deletePage),
+        content: Text(context.l10n.thisCannotBeUndone),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -247,8 +248,8 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
     if (title.isEmpty || _content.text.trim().isEmpty || _saving) {
       setState(
         () => _error = title.isEmpty
-            ? 'Title is required'
-            : 'Content is required',
+            ? context.l10n.titleRequired
+            : context.l10n.contentRequired,
       );
       return;
     }
@@ -283,7 +284,7 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the page';
+        _error = context.l10n.pageSaveFailed;
       });
     }
   }
@@ -307,9 +308,9 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
         ..selection = TextSelection.collapsed(offset: at + markdown.length);
     } on Object {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to upload file')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.composerUploadFailed)),
+        );
       }
     } finally {
       if (mounted) {
@@ -334,15 +335,15 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit page' : 'New wiki page',
+            _editing ? context.l10n.editPage : context.l10n.newWikiPage,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
           ),
@@ -351,9 +352,9 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
             controller: _content,
             minLines: 10,
             maxLines: 18,
-            decoration: const InputDecoration(
-              labelText: 'Content',
-              hintText: 'Markdown',
+            decoration: InputDecoration(
+              labelText: context.l10n.content,
+              hintText: context.l10n.markdown,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -369,7 +370,7 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.attach_file, size: 16),
-              label: const Text('Attach file'),
+              label: Text(context.l10n.attachFile),
             ),
           ),
           if (_error != null)
@@ -383,7 +384,7 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -394,7 +395,11 @@ class _WikiFormScreenState extends ConsumerState<WikiFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create page'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createPage,
+                      ),
               ),
             ],
           ),

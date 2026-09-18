@@ -13,6 +13,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Labels tab inside project or group detail.
 class LabelsTab extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _LabelsTabState extends ConsumerState<LabelsTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search labels',
+            hint: context.l10n.searchLabels,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -57,7 +58,7 @@ class _LabelsTabState extends ConsumerState<LabelsTab> {
               Insets.xs,
             ),
             child: IconButton(
-              tooltip: 'New label',
+              tooltip: context.l10n.newLabel,
               icon: const Icon(Icons.add),
               onPressed: () => unawaited(
                 LabelFormScreen.show(context, scope: widget.scope).then((
@@ -76,9 +77,9 @@ class _LabelsTabState extends ConsumerState<LabelsTab> {
             value: labels,
             onRetry: () => ref.invalidate(labelsProvider(filter)),
             data: (items) => items.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.label_outline,
-                    title: 'No labels',
+                    title: context.l10n.noLabels,
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(vertical: Insets.sm),
@@ -125,25 +126,33 @@ class _LabelTile extends ConsumerWidget {
         children: [
           if (label.openIssuesCount != null)
             Text(
-              '${label.openIssuesCount} issues',
+              context.l10n.p0Issues('${label.openIssuesCount}'),
               style: theme.textTheme.bodySmall,
             ),
           PopupMenuButton<String>(
             iconSize: 18,
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'edit', child: Text('Edit')),
+              PopupMenuItem(
+                value: 'edit',
+                child: Text(context.l10n.actionEdit),
+              ),
               PopupMenuItem(
                 value: 'subscribe',
                 child: Text(
-                  label.subscribed ?? false ? 'Unsubscribe' : 'Subscribe',
+                  label.subscribed ?? false
+                      ? context.l10n.unsubscribe
+                      : context.l10n.subscribe,
                 ),
               ),
               if (scope.isProject)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'promote',
-                  child: Text('Promote to group'),
+                  child: Text(context.l10n.promoteToGroup),
                 ),
-              const PopupMenuItem(value: 'delete', child: Text('Delete')),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text(context.l10n.actionDelete),
+              ),
             ],
             onSelected: (v) {
               if (v == 'edit') {
@@ -188,19 +197,16 @@ class _LabelTile extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Promote ${label.name}?'),
-        content: const Text(
-          'The label moves to the parent group and is replaced on every '
-          'issue and MR that uses it.',
-        ),
+        title: Text(context.l10n.promoteP0(label.name)),
+        content: Text(context.l10n.labelPromoteBody),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(true),
-            child: const Text('Promote'),
+            child: Text(context.l10n.promote),
           ),
         ],
       ),
@@ -216,16 +222,16 @@ class _LabelTile extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${label.name}?'),
-        content: const Text('The label is removed from every issue and MR.'),
+        title: Text(context.l10n.deleteNamedConfirm(label.name)),
+        content: Text(context.l10n.theLabelIsRemovedFromEvery),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -325,7 +331,7 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
   Future<void> _save() async {
     final name = _name.text.trim();
     if (name.isEmpty || _saving) {
-      setState(() => _error = name.isEmpty ? 'Name is required' : null);
+      setState(() => _error = name.isEmpty ? context.l10n.nameRequired : null);
       return;
     }
     setState(() {
@@ -365,7 +371,7 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the label';
+        _error = context.l10n.labelSaveFailed;
       });
     }
   }
@@ -386,13 +392,13 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit label' : 'New label',
+            _editing ? context.l10n.editLabel : context.l10n.newLabel,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           Center(
             child: LabelChip(
-              name: _name.text.isEmpty ? 'Label preview' : _name.text,
+              name: _name.text.isEmpty ? context.l10n.labelPreview : _name.text,
               color: _color,
             ),
           ),
@@ -401,22 +407,22 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
             controller: _name,
             autofocus: !_editing,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              hintText: 'bug or priority::high',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldName,
+              hintText: context.l10n.bugOrPriorityHigh,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
           TextField(
             controller: _description,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldDescription,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
-          Text('Color', style: theme.textTheme.labelLarge),
+          Text(context.l10n.color, style: theme.textTheme.labelLarge),
           const SizedBox(height: Insets.sm),
           Wrap(
             spacing: Insets.sm,
@@ -459,7 +465,7 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -470,7 +476,11 @@ class _LabelFormScreenState extends ConsumerState<LabelFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create label'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createLabel,
+                      ),
               ),
             ],
           ),

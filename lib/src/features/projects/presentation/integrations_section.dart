@@ -8,6 +8,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/integration.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project integrations (`/services`): enable/disable each service
 /// and edit its property values. Secret fields may arrive masked;
@@ -25,7 +26,7 @@ class IntegrationsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Integrations'),
+        SectionLabel(context.l10n.integrations),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -48,11 +49,11 @@ class IntegrationsSection extends ConsumerWidget {
                   return a.title.compareTo(b.title);
                 });
               return sorted.isEmpty
-                  ? const Padding(
+                  ? Padding(
                       padding: EdgeInsets.all(Insets.lg),
                       child: EmptyState(
                         icon: Icons.extension_outlined,
-                        title: 'No integrations',
+                        title: context.l10n.noIntegrations,
                       ),
                     )
                   : Column(
@@ -152,7 +153,7 @@ class _IntegrationTile extends StatelessWidget {
           Switch(value: integration.active, onChanged: onToggle),
           if (onEdit != null)
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.l10n.actionEdit,
               icon: const Icon(Icons.tune, size: 18),
               onPressed: onEdit,
             ),
@@ -219,8 +220,7 @@ class _IntegrationDialogState extends State<_IntegrationDialog> {
                   ),
                 ),
               Text(
-                'Secret values may appear masked. Fields you do not '
-                'change are left as they are.',
+                context.l10n.secretValuesMayAppearMaskedFields,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.inkFaint),
@@ -232,9 +232,9 @@ class _IntegrationDialogState extends State<_IntegrationDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        FilledButton(onPressed: _save, child: Text(context.l10n.actionSave)),
       ],
     );
   }

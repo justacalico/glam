@@ -17,6 +17,7 @@ import 'package:glam/src/features/boards/domain/board.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/labels/domain/label.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Boards tab inside project or group detail: a board picker plus a
 /// horizontal Kanban view.
@@ -43,8 +44,8 @@ class _BoardsTabState extends ConsumerState<BoardsTab> {
         if (items.isEmpty) {
           return EmptyState(
             icon: Icons.view_kanban_outlined,
-            title: 'No boards',
-            actionLabel: 'New board',
+            title: context.l10n.noBoards,
+            actionLabel: context.l10n.newBoard,
             onAction: () => unawaited(_editBoard(null)),
           );
         }
@@ -84,17 +85,23 @@ class _BoardsTabState extends ConsumerState<BoardsTab> {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'New board',
+                    tooltip: context.l10n.newBoard,
                     iconSize: 18,
-                    icon: const Icon(Icons.add),
+                    icon: Icon(Icons.add),
                     onPressed: () => unawaited(_editBoard(null)),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Board actions',
+                    tooltip: context.l10n.boardActions,
                     iconSize: 18,
-                    itemBuilder: (context) => const [
-                      PopupMenuItem(value: 'rename', child: Text('Rename')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'rename',
+                        child: Text(context.l10n.rename),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(context.l10n.actionDelete),
+                      ),
                     ],
                     onSelected: (v) {
                       if (v == 'rename') {
@@ -158,16 +165,16 @@ class _BoardsTabState extends ConsumerState<BoardsTab> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${board.name}?'),
-        content: const Text('Issues stay on the project; only the board goes.'),
+        title: Text(context.l10n.deleteNamedConfirm(board.name)),
+        content: Text(context.l10n.issuesStayOnTheProjectOnly),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -218,13 +225,13 @@ class _Kanban extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const EmptyState(
+                EmptyState(
                   icon: Icons.view_column_outlined,
-                  title: 'This board has no lists',
+                  title: context.l10n.thisBoardHasNoLists,
                 ),
                 TextButton.icon(
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add list'),
+                  icon: Icon(Icons.add, size: 16),
+                  label: Text(context.l10n.addList),
                   onPressed: () =>
                       unawaited(_AddListTile.pick(context, ref, loc)),
                 ),
@@ -299,8 +306,8 @@ class _AddListTile extends ConsumerWidget {
       width: 160,
       child: Center(
         child: OutlinedButton.icon(
-          icon: const Icon(Icons.add, size: 16),
-          label: const Text('Add list'),
+          icon: Icon(Icons.add, size: 16),
+          label: Text(context.l10n.addList),
           onPressed: () => unawaited(pick(context, ref, loc)),
         ),
       ),
@@ -317,11 +324,11 @@ class _LabelPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final labels = ref.watch(labelsProvider((scope: scope, search: null)));
     return AlertDialog(
-      title: const Text('Add list'),
+      title: Text(context.l10n.addList),
       content: SizedBox(
         width: 320,
         child: labels.when(
-          loading: () => const Padding(
+          loading: () => Padding(
             padding: EdgeInsets.all(Insets.lg),
             child: Center(child: CircularProgressIndicator()),
           ),
@@ -330,12 +337,12 @@ class _LabelPicker extends ConsumerWidget {
             child: Text('$e'),
           ),
           data: (items) => items.isEmpty
-              ? const Padding(
+              ? Padding(
                   padding: EdgeInsets.all(Insets.lg),
-                  child: Text('No labels on this project.'),
+                  child: Text(context.l10n.noLabelsOnThisProject),
                 )
               : ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 360),
+                  constraints: BoxConstraints(maxHeight: 360),
                   child: ListView(
                     shrinkWrap: true,
                     children: [
@@ -353,7 +360,7 @@ class _LabelPicker extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
       ],
     );
@@ -404,16 +411,18 @@ class _Column extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${list.title}?'),
-        content: const Text('Issues keep their label; only the column goes.'),
+        title: Text(
+          context.l10n.removeNamedConfirm(list.displayTitle(context.l10n)),
+        ),
+        content: Text(context.l10n.issuesKeepTheirLabelOnlyThe),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.actionRemove),
           ),
         ],
       ),
@@ -468,7 +477,7 @@ class _Column extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    list.title,
+                    list.displayTitle(context.l10n),
                     style: theme.textTheme.titleSmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -491,17 +500,17 @@ class _Column extends ConsumerWidget {
                   ),
                 if (list.listType == 'label')
                   PopupMenuButton<String>(
-                    tooltip: 'List actions',
+                    tooltip: context.l10n.listActions,
                     iconSize: 16,
                     icon: Icon(
                       Icons.more_vert,
                       size: 16,
                       color: colors.inkFaint,
                     ),
-                    itemBuilder: (context) => const [
+                    itemBuilder: (context) => [
                       PopupMenuItem(
                         value: 'remove',
-                        child: Text('Remove list'),
+                        child: Text(context.l10n.removeList),
                       ),
                     ],
                     onSelected: (_) => unawaited(_removeList(context, ref)),
@@ -515,7 +524,7 @@ class _Column extends ConsumerWidget {
               data: (items) => items.isEmpty
                   ? Center(
                       child: Text(
-                        'No issues',
+                        context.l10n.noIssues,
                         style: theme.textTheme.bodySmall,
                       ),
                     )
@@ -588,7 +597,7 @@ class _Card extends StatelessWidget {
                     ),
                   ),
                   PopupMenuButton<BoardList>(
-                    tooltip: 'Move to',
+                    tooltip: context.l10n.moveTo,
                     iconSize: 16,
                     icon: Icon(
                       Icons.swap_horiz,
@@ -604,7 +613,7 @@ class _Card extends StatelessWidget {
                 ],
               ),
               if (issue.labels.isNotEmpty) ...[
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 Wrap(
                   spacing: Insets.xs,
                   runSpacing: Insets.xs,
@@ -613,10 +622,13 @@ class _Card extends StatelessWidget {
                   ],
                 ),
               ],
-              const SizedBox(height: Insets.sm),
+              SizedBox(height: Insets.sm),
               Row(
                 children: [
-                  Text('#${issue.iid}', style: theme.textTheme.bodySmall),
+                  Text(
+                    context.l10n.issueIid(issue.iid),
+                    style: theme.textTheme.bodySmall,
+                  ),
                   const Spacer(),
                   if (issue.assignees.isNotEmpty)
                     AvatarStack(users: issue.assignees, radius: 8),
@@ -689,7 +701,9 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
     );
 
     return AlertDialog(
-      title: Text(existing == null ? 'New board' : 'Edit board'),
+      title: Text(
+        existing == null ? context.l10n.newBoard : context.l10n.editBoard,
+      ),
       content: SizedBox(
         width: 360,
         child: SingleChildScrollView(
@@ -699,45 +713,45 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
               TextField(
                 controller: _name,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldName,
                   border: OutlineInputBorder(),
                 ),
                 onSubmitted: (_) => _save(),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               milestones.when(
                 loading: () => const LinearProgressIndicator(),
                 error: (_, _) => const SizedBox.shrink(),
                 data: (state) => DropdownButtonFormField<int?>(
                   initialValue: _milestone,
-                  decoration: const InputDecoration(
-                    labelText: 'Milestone scope',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.milestoneScope,
                     border: OutlineInputBorder(),
                   ),
                   items: [
-                    const DropdownMenuItem(child: Text('No milestone')),
+                    DropdownMenuItem(child: Text(context.l10n.noMilestone)),
                     for (final m in state.items)
                       DropdownMenuItem(value: m.id, child: Text(m.title)),
                   ],
                   onChanged: (v) => setState(() => _milestone = v),
                 ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _labels,
-                decoration: const InputDecoration(
-                  labelText: 'Label scope',
-                  hintText: 'bug, frontend',
+                decoration: InputDecoration(
+                  labelText: context.l10n.labelScope,
+                  hintText: context.l10n.bugFrontend,
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _weight,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Weight scope',
+                decoration: InputDecoration(
+                  labelText: context.l10n.weightScope,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -748,9 +762,9 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        FilledButton(onPressed: _save, child: Text(context.l10n.actionSave)),
       ],
     );
   }

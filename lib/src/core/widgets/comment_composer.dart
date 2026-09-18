@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Bottom-docked comment input with a send button and an optional
 /// file-attach affordance.
@@ -55,9 +56,9 @@ class _CommentComposerState extends State<CommentComposer> {
         ..selection = TextSelection.collapsed(offset: at + markdown.length);
     } on Object {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to upload file')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.composerUploadFailed)),
+        );
       }
     } finally {
       if (mounted) {
@@ -77,9 +78,9 @@ class _CommentComposerState extends State<CommentComposer> {
       _controller.clear();
     } on Object {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to post comment')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.composerSendFailed)),
+        );
       }
     } finally {
       if (mounted) {
@@ -113,7 +114,7 @@ class _CommentComposerState extends State<CommentComposer> {
               textInputAction: TextInputAction.newline,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: widget.hint ?? 'Write a comment',
+                hintText: widget.hint ?? context.l10n.composerHint,
                 isDense: true,
                 filled: true,
                 fillColor: colors.surfaceMuted,
@@ -130,7 +131,7 @@ class _CommentComposerState extends State<CommentComposer> {
           ),
           if (widget.onUpload != null)
             IconButton(
-              tooltip: 'Attach a file',
+              tooltip: context.l10n.composerAttach,
               onPressed: _uploading ? null : _attach,
               icon: _uploading
                   ? const SizedBox(

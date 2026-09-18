@@ -21,14 +21,15 @@ import 'package:glam/src/core/models/milestone.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 const _reactions = ['thumbsup', 'thumbsdown', 'smile', 'tada', 'heart'];
-const _reactionLabels = {
-  'thumbsup': 'Thumbs up',
-  'thumbsdown': 'Thumbs down',
-  'smile': 'Smile',
-  'tada': 'Tada',
-  'heart': 'Heart',
+Map<String, String> _reactionLabels(AppLocalizations l10n) => {
+  'thumbsup': l10n.reactionThumbsup,
+  'thumbsdown': l10n.reactionThumbsdown,
+  'smile': l10n.reactionSmile,
+  'tada': l10n.reactionTada,
+  'heart': l10n.reactionHeart,
 };
 
 /// Global issues list with scope/state/search filters.
@@ -54,7 +55,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Issues'),
+        title: Text(context.l10n.issuesTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(104),
           child: Column(
@@ -64,7 +65,10 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                 child: SegmentedButton<IssueScope>(
                   segments: [
                     for (final scope in IssueScope.values)
-                      ButtonSegment(value: scope, label: Text(scope.label)),
+                      ButtonSegment(
+                        value: scope,
+                        label: Text(context.l10n.issueScopeLabel(scope)),
+                      ),
                   ],
                   selected: {filter.scope},
                   onSelectionChanged: (s) => _setFilter(
@@ -92,7 +96,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                     Expanded(
                       flex: 2,
                       child: SearchField(
-                        hint: 'Search issues',
+                        hint: context.l10n.searchIssues,
                         onChanged: (v) => _setFilter(
                           (f) => (
                             scope: f.scope,
@@ -117,12 +121,12 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                         child: Row(
                           children: [
                             FilterMenu(
-                              title: 'State',
+                              title: context.l10n.state,
                               current: filter.state,
                               options: const ['opened', 'closed'],
-                              labels: const {
-                                'opened': 'Open',
-                                'closed': 'Closed',
+                              labels: {
+                                'opened': context.l10n.stateOpen,
+                                'closed': context.l10n.stateClosed,
                               },
                               onSelect: (s) => _setFilter(
                                 (f) => (
@@ -140,7 +144,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                               ),
                             ),
                             FilterMenu(
-                              title: 'Type',
+                              title: context.l10n.type,
                               current: filter.issueType,
                               options: const [
                                 'issue',
@@ -148,6 +152,12 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                                 'task',
                                 'test_case',
                               ],
+                              labels: {
+                                'issue': context.l10n.issueTypeIssue,
+                                'incident': context.l10n.issueTypeIncident,
+                                'task': context.l10n.issueTypeTask,
+                                'test_case': context.l10n.issueTypeTestCase,
+                              },
                               onSelect: (v) => _setFilter(
                                 (f) => (
                                   scope: f.scope,
@@ -164,16 +174,16 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                               ),
                             ),
                             FilterMenu(
-                              title: 'Confidential',
+                              title: context.l10n.confidential,
                               current: switch (filter.confidential) {
                                 true => 'true',
                                 false => 'false',
                                 null => null,
                               },
                               options: const ['true', 'false'],
-                              labels: const {
-                                'true': 'Confidential',
-                                'false': 'Not confidential',
+                              labels: {
+                                'true': context.l10n.confidential,
+                                'false': context.l10n.notConfidential,
                               },
                               onSelect: (v) => _setFilter(
                                 (f) => (
@@ -191,7 +201,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                               ),
                             ),
                             FilterMenu(
-                              title: 'Due',
+                              title: context.l10n.dueFilter,
                               current: filter.dueDate,
                               options: const [
                                 'overdue',
@@ -200,12 +210,13 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                                 'next_month_and_previous_two_weeks',
                                 '0',
                               ],
-                              labels: const {
-                                'overdue': 'Overdue',
-                                'week': 'Due this week',
-                                'month': 'Due this month',
-                                'next_month_and_previous_two_weeks': 'Due soon',
-                                '0': 'No due date',
+                              labels: {
+                                'overdue': context.l10n.dueOverdue,
+                                'week': context.l10n.dueThisWeek,
+                                'month': context.l10n.dueThisMonth,
+                                'next_month_and_previous_two_weeks':
+                                    context.l10n.dueSoon,
+                                '0': context.l10n.noDueDate,
                               },
                               onSelect: (v) => _setFilter(
                                 (f) => (
@@ -223,15 +234,15 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                               ),
                             ),
                             FilterMenu(
-                              title: 'Activity',
+                              title: context.l10n.activityTitle,
                               current: filter.updatedDays == null
                                   ? null
                                   : '${filter.updatedDays}',
                               options: const ['1', '7', '30'],
-                              labels: const {
-                                '1': 'Last 24h',
-                                '7': 'Last week',
-                                '30': 'Last month',
+                              labels: {
+                                '1': context.l10n.last24h,
+                                '7': context.l10n.lastWeek,
+                                '30': context.l10n.lastMonth,
                               },
                               onSelect: (v) => _setFilter(
                                 (f) => (
@@ -251,7 +262,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             SortMenu(
                               orderBy: filter.orderBy,
                               sort: filter.sort,
-                              options: SortOptions.issues,
+                              options: SortOptions.issues(context.l10n),
                               onSelect: (o) => _setFilter(
                                 (f) => (
                                   scope: f.scope,
@@ -292,9 +303,9 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
             color: colors.border,
             indent: Insets.lg,
           ),
-          empty: const EmptyState(
+          empty: EmptyState(
             icon: Icons.task_alt,
-            title: 'No issues match this filter',
+            title: context.l10n.noIssuesMatchFilter,
           ),
           itemBuilder: (context, index) {
             final issue = data.items[index];
@@ -393,7 +404,11 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
             .value
             ?.items ??
         const <Member>[];
-    const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
+    final states = {
+      'opened': context.l10n.stateOpen,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
+    };
     final counts = {
       'opened': stats?.opened,
       'closed': stats?.closed,
@@ -410,7 +425,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search issues',
+            hint: context.l10n.searchIssues,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -439,7 +454,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 const SizedBox(width: Insets.sm),
               ],
               FilterMenu(
-                title: 'Assignee',
+                title: context.l10n.assignee,
                 current: _assigneeId == null
                     ? null
                     : members
@@ -454,7 +469,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 ),
               ),
               FilterMenu(
-                title: 'Author',
+                title: context.l10n.author,
                 current: _authorId == null
                     ? null
                     : members
@@ -469,41 +484,47 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                 ),
               ),
               FilterMenu(
-                title: 'Label',
+                title: context.l10n.labelFilter,
                 current: _label,
                 options: [for (final l in labels) l.name],
                 onSelect: (v) => setState(() => _label = v),
               ),
               FilterMenu(
-                title: 'Milestone',
+                title: context.l10n.milestone,
                 current: _milestone,
                 options: [for (final m in milestones) m.title],
                 onSelect: (v) => setState(() => _milestone = v),
               ),
               FilterMenu(
-                title: 'Type',
+                title: context.l10n.type,
                 current: _issueType,
                 options: const ['issue', 'incident', 'task', 'test_case'],
+                labels: {
+                  'issue': context.l10n.issueTypeIssue,
+                  'incident': context.l10n.issueTypeIncident,
+                  'task': context.l10n.issueTypeTask,
+                  'test_case': context.l10n.issueTypeTestCase,
+                },
                 onSelect: (v) => setState(() => _issueType = v),
               ),
               FilterMenu(
-                title: 'Confidential',
+                title: context.l10n.confidential,
                 current: switch (_confidential) {
                   true => 'true',
                   false => 'false',
                   null => null,
                 },
                 options: const ['true', 'false'],
-                labels: const {
-                  'true': 'Confidential',
-                  'false': 'Not confidential',
+                labels: {
+                  'true': context.l10n.confidential,
+                  'false': context.l10n.notConfidential,
                 },
                 onSelect: (v) => setState(
                   () => _confidential = v == null ? null : v == 'true',
                 ),
               ),
               FilterMenu(
-                title: 'Due',
+                title: context.l10n.dueFilter,
                 current: _dueDate,
                 options: const [
                   'overdue',
@@ -512,30 +533,30 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
                   'next_month_and_previous_two_weeks',
                   '0',
                 ],
-                labels: const {
-                  'overdue': 'Overdue',
-                  'week': 'Due this week',
-                  'month': 'Due this month',
-                  'next_month_and_previous_two_weeks': 'Due soon',
-                  '0': 'No due date',
+                labels: {
+                  'overdue': context.l10n.dueOverdue,
+                  'week': context.l10n.dueThisWeek,
+                  'month': context.l10n.dueThisMonth,
+                  'next_month_and_previous_two_weeks': context.l10n.dueSoon,
+                  '0': context.l10n.noDueDate,
                 },
                 onSelect: (v) => setState(() => _dueDate = v),
               ),
               FilterMenu(
-                title: 'Reacted',
+                title: context.l10n.reactedFilter,
                 current: _myReaction,
                 options: _reactions,
-                labels: _reactionLabels,
+                labels: _reactionLabels(context.l10n),
                 onSelect: (v) => setState(() => _myReaction = v),
               ),
               FilterMenu(
-                title: 'Activity',
+                title: context.l10n.activityTitle,
                 current: _updatedDays == null ? null : '$_updatedDays',
                 options: const ['1', '7', '30'],
-                labels: const {
-                  '1': 'Last 24h',
-                  '7': 'Last week',
-                  '30': 'Last month',
+                labels: {
+                  '1': context.l10n.last24h,
+                  '7': context.l10n.lastWeek,
+                  '30': context.l10n.lastMonth,
                 },
                 onSelect: (v) => setState(
                   () => _updatedDays = v == null ? null : int.parse(v),
@@ -544,14 +565,14 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
               SortMenu(
                 orderBy: _orderBy,
                 sort: _sort,
-                options: SortOptions.issues,
+                options: SortOptions.issues(context.l10n),
                 onSelect: (o) => setState(() {
                   _orderBy = o.orderBy;
                   _sort = o.sort;
                 }),
               ),
               IconButton(
-                tooltip: 'New issue',
+                tooltip: context.l10n.newIssue,
                 icon: const Icon(Icons.add),
                 onPressed: () => unawaited(
                   IssueFormScreen.show(context, projectId: widget.projectId),
@@ -576,8 +597,8 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
               ),
               empty: EmptyState(
                 icon: Icons.task_alt,
-                title: 'No issues',
-                actionLabel: 'New issue',
+                title: context.l10n.noIssues,
+                actionLabel: context.l10n.newIssue,
                 onAction: () => unawaited(
                   IssueFormScreen.show(context, projectId: widget.projectId),
                 ),

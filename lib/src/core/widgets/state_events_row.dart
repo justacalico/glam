@@ -7,6 +7,7 @@ import 'package:glam/src/core/models/resource_milestone_event.dart';
 import 'package:glam/src/core/models/resource_state_event.dart';
 import 'package:glam/src/core/utils/color_parse.dart';
 import 'package:glam/src/core/utils/format.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Close/reopen, milestone, and label entries for an issue or MR
 /// activity stream. Renders nothing while loading, on error, or when
@@ -42,30 +43,45 @@ class StateEventsRow extends StatelessWidget {
             icon: e.state == 'reopened'
                 ? Icons.refresh_outlined
                 : Icons.block_outlined,
-            text: '${e.state} ${_by(e.user?.username)}${e.createdAt.at()}',
+            text: context.l10n.stateEventLine(
+              e.state == 'reopened'
+                  ? context.l10n.eventReopened
+                  : context.l10n.stateClosed,
+              _by(context, e.user?.username),
+              e.createdAt.at(),
+            ),
           ),
         for (final e in milestones)
           _EventChip(
             icon: e.action == 'remove' ? Icons.flag_outlined : Icons.flag,
-            text:
-                '${e.action == 'remove' ? 'removed' : 'added'} milestone '
-                '${e.milestoneTitle} ${_by(e.user?.username)}'
-                '${e.createdAt.at()}',
+            text: context.l10n.milestoneEventLine(
+              e.action == 'remove'
+                  ? context.l10n.eventRemoved
+                  : context.l10n.eventAdded,
+              e.milestoneTitle,
+              _by(context, e.user?.username),
+              e.createdAt.at(),
+            ),
           ),
         for (final e in labels)
           _EventChip(
             icon: Icons.label_outline,
             iconColor: parseHexColor(e.labelColor) ?? colors.inkFaint,
-            text:
-                '${e.action == 'remove' ? 'removed' : 'added'} label '
-                '${e.labelName} ${_by(e.user?.username)}'
-                '${e.createdAt.at()}',
+            text: context.l10n.labelEventLine(
+              e.action == 'remove'
+                  ? context.l10n.eventRemoved
+                  : context.l10n.eventAdded,
+              e.labelName,
+              _by(context, e.user?.username),
+              e.createdAt.at(),
+            ),
           ),
       ],
     );
   }
 
-  String _by(String? username) => username == null ? '' : 'by $username ';
+  String _by(BuildContext context, String? username) =>
+      username == null ? '' : context.l10n.byUser(username);
 }
 
 extension on DateTime? {

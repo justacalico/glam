@@ -9,6 +9,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/presentation/reactions_row.dart';
 import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One discussion thread: a stack of notes, an inline reply box, and a
 /// resolve toggle when the thread is resolvable.
@@ -130,7 +131,11 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                             : Icons.check_circle_outline,
                         size: 14,
                       ),
-                      label: Text(d.resolved ? 'Resolved' : 'Resolve'),
+                      label: Text(
+                        d.resolved
+                            ? context.l10n.resolved
+                            : context.l10n.resolve,
+                      ),
                       style: TextButton.styleFrom(
                         foregroundColor: d.resolved
                             ? colors.success
@@ -175,8 +180,8 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                         child: TextField(
                           controller: _reply,
                           autofocus: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Reply…',
+                          decoration: InputDecoration(
+                            hintText: context.l10n.replyHint,
                             isDense: true,
                           ),
                           onSubmitted: (_) => _send(),
@@ -193,7 +198,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
                       icon: const Icon(Icons.reply, size: 14),
-                      label: const Text('Reply'),
+                      label: Text(context.l10n.actionReply),
                       style: TextButton.styleFrom(
                         foregroundColor: colors.inkMuted,
                         visualDensity: VisualDensity.compact,

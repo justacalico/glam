@@ -14,6 +14,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Release list; each entry expands to show notes and asset links.
 class ReleasesScreen extends ConsumerWidget {
@@ -39,7 +40,7 @@ class ReleasesScreen extends ConsumerWidget {
             ),
             child: TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('New release'),
+              label: Text(context.l10n.newRelease),
               onPressed: () => _showCreate(context, ref),
             ),
           ),
@@ -54,9 +55,9 @@ class ReleasesScreen extends ConsumerWidget {
               onRefresh: notifier.refresh,
               padding: Insets.pagePadding,
               separator: const SizedBox(height: Insets.md),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.new_releases_outlined,
-                title: 'No releases yet',
+                title: context.l10n.noReleasesYet,
               ),
               itemBuilder: (context, index) => _ReleaseCard(
                 projectId: projectId,
@@ -76,29 +77,29 @@ class ReleasesScreen extends ConsumerWidget {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New release'),
+        title: Text(context.l10n.newRelease),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: tag,
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Tag (new or existing)',
+              decoration: InputDecoration(
+                labelText: context.l10n.tagNewOrExisting,
               ),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: name,
-              decoration: const InputDecoration(labelText: 'Release name'),
+              decoration: InputDecoration(labelText: context.l10n.releaseName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: description,
               minLines: 3,
               maxLines: 6,
-              decoration: const InputDecoration(
-                labelText: 'Release notes',
+              decoration: InputDecoration(
+                labelText: context.l10n.releaseNotes,
                 alignLabelWithHint: true,
               ),
             ),
@@ -107,11 +108,11 @@ class ReleasesScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Publish'),
+            child: Text(context.l10n.publish),
           ),
         ],
       ),
@@ -152,22 +153,22 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Edit ${release.tagName}'),
+        title: Text(context.l10n.editP0(release.tagName)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: name,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Release name'),
+              decoration: InputDecoration(labelText: context.l10n.releaseName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: description,
               minLines: 3,
               maxLines: 6,
-              decoration: const InputDecoration(
-                labelText: 'Release notes',
+              decoration: InputDecoration(
+                labelText: context.l10n.releaseNotes,
                 alignLabelWithHint: true,
               ),
             ),
@@ -176,11 +177,11 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -211,16 +212,16 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${widget.release.tagName}?'),
-        content: const Text('The release is removed; the tag stays.'),
+        title: Text(context.l10n.deleteNamedConfirm(widget.release.tagName)),
+        content: Text(context.l10n.theReleaseIsRemovedTheTag),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -251,37 +252,53 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(existing == null ? 'Add asset link' : 'Edit link'),
+          title: Text(
+            existing == null
+                ? context.l10n.addAssetLink
+                : context.l10n.editLink,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: name,
                 autofocus: true,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: context.l10n.fieldName),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: url,
-                decoration: const InputDecoration(labelText: 'URL'),
+                decoration: InputDecoration(labelText: context.l10n.webhookUrl),
               ),
               const SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: linkType,
-                decoration: const InputDecoration(labelText: 'Type'),
-                items: const [
-                  DropdownMenuItem(value: 'runbook', child: Text('Runbook')),
-                  DropdownMenuItem(value: 'image', child: Text('Image')),
-                  DropdownMenuItem(value: 'package', child: Text('Package')),
-                  DropdownMenuItem(value: 'other', child: Text('Other')),
+                decoration: InputDecoration(labelText: context.l10n.type),
+                items: [
+                  DropdownMenuItem(
+                    value: 'runbook',
+                    child: Text(context.l10n.runbook),
+                  ),
+                  DropdownMenuItem(
+                    value: 'image',
+                    child: Text(context.l10n.image),
+                  ),
+                  DropdownMenuItem(
+                    value: 'package',
+                    child: Text(context.l10n.package),
+                  ),
+                  DropdownMenuItem(
+                    value: 'other',
+                    child: Text(context.l10n.other),
+                  ),
                 ],
                 onChanged: (v) => setState(() => linkType = v ?? 'other'),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: filepath,
-                decoration: const InputDecoration(
-                  labelText: 'Filepath (optional)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.filepathOptional,
                   hintText: '/releases/v1.2.0/asset.zip',
                 ),
               ),
@@ -290,11 +307,11 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Save'),
+              child: Text(context.l10n.actionSave),
             ),
           ],
         ),
@@ -341,16 +358,16 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${link.name}?'),
-        content: const Text('Only the link is removed; assets stay.'),
+        title: Text(context.l10n.removeNamedConfirm(link.name)),
+        content: Text(context.l10n.onlyTheLinkIsRemovedAssets),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.actionRemove),
           ),
         ],
       ),
@@ -388,22 +405,22 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
         showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Evidence · ${widget.release.tagName}'),
+            title: Text(context.l10n.evidenceP0(widget.release.tagName)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SHA: ${ev.sha ?? '—'}'),
+                Text(context.l10n.shaP0(ev.sha ?? '—')),
                 const SizedBox(height: Insets.sm),
-                Text('File: ${ev.filepath ?? '—'}'),
+                Text(context.l10n.fileP0(ev.filepath ?? '—')),
                 const SizedBox(height: Insets.sm),
-                Text('Collected: ${Format.dateTime(ev.collectedAt)}'),
+                Text(context.l10n.collectedP0(Format.dateTime(ev.collectedAt))),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: Text(context.l10n.actionClose),
               ),
             ],
           ),
@@ -414,7 +431,9 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              e.statusCode == 404 ? 'No evidence collected' : e.message,
+              e.statusCode == 404
+                  ? context.l10n.noEvidenceCollected
+                  : e.message,
             ),
           ),
         );
@@ -467,8 +486,10 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                           style: theme.textTheme.titleMedium,
                         ),
                         Text(
-                          '${release.tagName} · '
-                          '${Format.date(release.releasedAt)}',
+                          context.l10n.tagReleasedAt(
+                            release.tagName,
+                            Format.date(release.releasedAt),
+                          ),
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontFamily: GlamFonts.mono,
                           ),
@@ -477,13 +498,22 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Release actions',
+                    tooltip: context.l10n.releaseActions,
                     iconSize: 18,
                     icon: Icon(Icons.more_vert, color: colors.inkFaint),
-                    itemBuilder: (context) => const [
-                      PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      PopupMenuItem(value: 'evidence', child: Text('Evidence')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Text(context.l10n.actionEdit),
+                      ),
+                      PopupMenuItem(
+                        value: 'evidence',
+                        child: Text(context.l10n.evidence),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(context.l10n.actionDelete),
+                      ),
                     ],
                     onSelected: (v) {
                       if (v == 'edit') {
@@ -516,7 +546,7 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: Insets.md),
                       child: Text(
-                        'by ${release.author!.name}',
+                        context.l10n.byP0(release.author!.name),
                         style: theme.textTheme.bodySmall,
                       ),
                     ),
@@ -559,14 +589,14 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                                 size: 16,
                                 color: colors.inkFaint,
                               ),
-                              itemBuilder: (context) => const [
+                              itemBuilder: (context) => [
                                 PopupMenuItem(
                                   value: 'edit',
-                                  child: Text('Edit link'),
+                                  child: Text(context.l10n.editLink),
                                 ),
                                 PopupMenuItem(
                                   value: 'delete',
-                                  child: Text('Remove link'),
+                                  child: Text(context.l10n.removeLinkTooltip),
                                 ),
                               ],
                               onSelected: (v) {
@@ -584,7 +614,7 @@ class _ReleaseCardState extends ConsumerState<_ReleaseCard> {
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
                       icon: const Icon(Icons.add_link, size: 16),
-                      label: const Text('Add link'),
+                      label: Text(context.l10n.addLink),
                       onPressed: () => unawaited(_editLink(null)),
                     ),
                   ),

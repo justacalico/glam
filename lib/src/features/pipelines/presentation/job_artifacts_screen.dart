@@ -13,6 +13,7 @@ import 'package:glam/src/features/pipelines/application/pipelines_providers.dart
 import 'package:glam/src/features/pipelines/domain/artifact_entry.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Browses a job's artifact archive. Newer GitLab versions list
 /// entries from metadata; older ones fall back to unpacking the zip.
@@ -33,15 +34,15 @@ class JobArtifactsScreen extends ConsumerWidget {
     final colors = context.colors;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Artifacts · job #$jobId')),
+      appBar: AppBar(title: Text(context.l10n.artifactsJobP0(jobId))),
       body: AsyncValueWidget<List<ArtifactEntry>>(
         value: entries,
         onRetry: () => ref.invalidate(jobArtifactsProvider(loc)),
         data: (items) {
           if (items.isEmpty) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.archive_outlined,
-              title: 'Archive is empty',
+              title: context.l10n.archiveIsEmpty,
             );
           }
           return ListView.separated(
@@ -120,7 +121,7 @@ class _ArtifactSheet extends ConsumerWidget {
                 file.maybeWhen(
                   data: (bytes) => Builder(
                     builder: (buttonContext) => IconButton(
-                      tooltip: 'Share',
+                      tooltip: context.l10n.share,
                       icon: const Icon(Icons.ios_share, size: 18),
                       onPressed: () {
                         // iPad requires an anchor rect for the share sheet.
@@ -155,7 +156,7 @@ class _ArtifactSheet extends ConsumerWidget {
                 if (text == null) {
                   return Center(
                     child: Text(
-                      'Binary file — use Share to save it.',
+                      context.l10n.binaryFileUseShareToSave,
                       style: TextStyle(color: colors.inkMuted),
                     ),
                   );

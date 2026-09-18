@@ -12,6 +12,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/project_pages.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// GitLab Pages: site URL, HTTPS-only and unique-domain switches,
 /// custom domains, and unpublish. Hidden where Pages is off.
@@ -32,7 +33,7 @@ class PagesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Pages'),
+        SectionLabel(context.l10n.pages),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -47,16 +48,18 @@ class PagesSection extends ConsumerWidget {
                 if (info != null) ...[
                   ListTile(
                     dense: true,
-                    leading: const Icon(Icons.language, size: 18),
+                    leading: Icon(Icons.language, size: 18),
                     title: Text(
-                      info.pages.url.isEmpty ? 'Pages site' : info.pages.url,
+                      info.pages.url.isEmpty
+                          ? context.l10n.pagesSite
+                          : info.pages.url,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: info.pages.url.isEmpty
                         ? null
                         : IconButton(
-                            tooltip: 'Open site',
+                            tooltip: context.l10n.openSite,
                             icon: const Icon(Icons.open_in_new, size: 18),
                             onPressed: () =>
                                 unawaited(launchExternal(info.pages.url)),
@@ -65,18 +68,16 @@ class PagesSection extends ConsumerWidget {
                   Divider(height: 1, color: colors.border, indent: Insets.lg),
                   SwitchListTile(
                     dense: true,
-                    title: const Text('Force HTTPS'),
-                    subtitle: const Text('Redirect all Pages traffic to HTTPS'),
+                    title: Text(context.l10n.forceHttps),
+                    subtitle: Text(context.l10n.redirectAllPagesTrafficToHttps),
                     value: info.pages.forceHttps,
                     onChanged: (v) => _update(context, ref, forceHttps: v),
                   ),
                   Divider(height: 1, color: colors.border, indent: Insets.lg),
                   SwitchListTile(
                     dense: true,
-                    title: const Text('Unique domain'),
-                    subtitle: const Text(
-                      'Serve this site on a unique per-deployment domain',
-                    ),
+                    title: Text(context.l10n.uniqueDomain),
+                    subtitle: Text(context.l10n.serveThisSiteOnAUnique),
                     value: info.pages.uniqueDomainEnabled,
                     onChanged: (v) =>
                         _update(context, ref, uniqueDomainEnabled: v),
@@ -102,14 +103,18 @@ class PagesSection extends ConsumerWidget {
                         title: Text(d.domain),
                         subtitle: Text(
                           [
-                            d.verified ? 'Verified' : 'Unverified',
-                            if (d.autoSslEnabled) 'Auto SSL',
+                            d.verified
+                                ? context.l10n.domainVerified
+                                : context.l10n.domainUnverified,
+                            if (d.autoSslEnabled) context.l10n.autoSsl,
                             if (d.expiresAt != null)
-                              'cert expires ${Format.date(d.expiresAt)}',
+                              context.l10n.certExpiresP0(
+                                Format.date(d.expiresAt),
+                              ),
                           ].join(' · '),
                         ),
                         trailing: IconButton(
-                          tooltip: 'Remove domain',
+                          tooltip: context.l10n.removeDomain,
                           icon: const Icon(
                             Icons.remove_circle_outline,
                             size: 18,
@@ -127,10 +132,10 @@ class PagesSection extends ConsumerWidget {
                       const SizedBox(width: Insets.sm),
                       TextButton.icon(
                         icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Add domain'),
+                        label: Text(context.l10n.addDomain),
                         onPressed: () => _addDomain(context, ref),
                       ),
-                      const Spacer(),
+                      Spacer(),
                       TextButton.icon(
                         icon: Icon(
                           Icons.unpublished_outlined,
@@ -138,7 +143,7 @@ class PagesSection extends ConsumerWidget {
                           color: colors.danger,
                         ),
                         label: Text(
-                          'Unpublish',
+                          context.l10n.actionUnpublish,
                           style: TextStyle(color: colors.danger),
                         ),
                         onPressed: () => _unpublish(context, ref),
@@ -204,8 +209,8 @@ class PagesSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Remove domain?',
-      body: '"$domain" will stop serving this Pages site.',
+      title: context.l10n.removeDomainConfirm,
+      body: context.l10n.p0WillStopServingThisPages(domain),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -225,8 +230,8 @@ class PagesSection extends ConsumerWidget {
   Future<void> _unpublish(BuildContext context, WidgetRef ref) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Unpublish Pages?',
-      body: 'The site goes offline until the next Pages deployment.',
+      title: context.l10n.unpublishPages,
+      body: context.l10n.theSiteGoesOfflineUntilThe,
     );
     if (ok != true || !context.mounted) {
       return;
@@ -261,24 +266,24 @@ class _DomainDialogState extends State<_DomainDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Pages domain'),
+      title: Text(context.l10n.addPagesDomain),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'docs.example.com',
-          labelText: 'Domain',
+          labelText: context.l10n.fieldDomain,
         ),
         onSubmitted: (v) => Navigator.of(context).pop(v.trim()),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
-          child: const Text('Add'),
+          child: Text(context.l10n.actionAdd),
         ),
       ],
     );

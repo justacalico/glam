@@ -13,6 +13,7 @@ import 'package:glam/src/features/merge_requests/application/mr_providers.dart';
 import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Create/edit form for a merge request. Dialog on wide screens,
 /// bottom sheet on phones.
@@ -100,11 +101,13 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
   Future<void> _save() async {
     final title = _title.text.trim();
     if (title.isEmpty || _saving) {
-      setState(() => _error = title.isEmpty ? 'Title is required' : null);
+      setState(
+        () => _error = title.isEmpty ? context.l10n.titleRequired : null,
+      );
       return;
     }
     if (!_editing && (_source == null || _target == null)) {
-      setState(() => _error = 'Pick a source and target branch');
+      setState(() => _error = context.l10n.mrPickBranches);
       return;
     }
     setState(() {
@@ -153,7 +156,7 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the merge request';
+        _error = context.l10n.mrSaveFailed;
       });
     }
   }
@@ -179,12 +182,12 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit merge request' : 'New merge request',
+            _editing ? context.l10n.editMr : context.l10n.newMr,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           _BranchPicker(
-            label: 'Source branch',
+            label: context.l10n.sourceBranch,
             value: _source,
             branches: branchNames,
             enabled: !_editing,
@@ -192,7 +195,7 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           ),
           const SizedBox(height: Insets.md),
           _BranchPicker(
-            label: 'Target branch',
+            label: context.l10n.targetBranch,
             value: _target,
             branches: branchNames,
             onChanged: (v) => setState(() => _target = v),
@@ -201,8 +204,8 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
           ),
@@ -217,9 +220,9 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
             controller: _description,
             minLines: 4,
             maxLines: 10,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              hintText: 'Markdown supported',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldDescription,
+              hintText: context.l10n.markdownSupported,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -227,36 +230,36 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
           const SizedBox(height: Insets.md),
           TextField(
             controller: _labels,
-            decoration: const InputDecoration(
-              labelText: 'Labels',
-              hintText: 'bug, frontend',
+            decoration: InputDecoration(
+              labelText: context.l10n.tabLabels,
+              hintText: context.l10n.bugFrontend,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
           MembersPickerField(
             projectId: widget.projectId,
-            label: 'Assignees',
+            label: context.l10n.fieldAssignees,
             selected: _assigneeIds,
             onChanged: (s) => setState(() => _assigneeIds = s),
           ),
           const SizedBox(height: Insets.md),
           MembersPickerField(
             projectId: widget.projectId,
-            label: 'Reviewers',
+            label: context.l10n.reviewers,
             selected: _reviewerIds,
             onChanged: (s) => setState(() => _reviewerIds = s),
           ),
           if (!_editing) ...[
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Squash commits'),
+              title: Text(context.l10n.squashCommits),
               value: _squash,
               onChanged: (v) => setState(() => _squash = v),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Delete source branch after merge'),
+              title: Text(context.l10n.deleteSourceBranchAfterMerge),
               value: _removeSource,
               onChanged: (v) => setState(() => _removeSource = v),
             ),
@@ -272,7 +275,7 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -283,7 +286,11 @@ class _MrFormScreenState extends ConsumerState<MrFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create MR'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createMr,
+                      ),
               ),
             ],
           ),

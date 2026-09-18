@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project_filter.dart';
 import 'package:glam/src/features/projects/presentation/new_project_dialog.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Projects list: yours / starred / explore / all, with search and sort.
 class ProjectsScreen extends ConsumerStatefulWidget {
@@ -61,22 +62,24 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search projects',
+                decoration: InputDecoration(
+                  hintText: context.l10n.projectsSearchHint,
                   border: InputBorder.none,
                   filled: false,
                 ),
                 onChanged: _onSearchChanged,
               )
-            : const Text('Projects'),
+            : Text(context.l10n.projectsTitle),
         actions: [
           IconButton(
-            tooltip: 'New project',
+            tooltip: context.l10n.projectNew,
             icon: const Icon(Icons.add),
             onPressed: () => unawaited(_newProject()),
           ),
           IconButton(
-            tooltip: _searching ? 'Close search' : 'Search',
+            tooltip: _searching
+                ? context.l10n.searchClose
+                : context.l10n.searchTitle,
             icon: Icon(_searching ? Icons.close : Icons.search),
             onPressed: () {
               setState(() {
@@ -89,7 +92,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             },
           ),
           PopupMenuButton<ProjectSort>(
-            tooltip: 'Sort',
+            tooltip: context.l10n.sortTitle,
             icon: const Icon(Icons.sort),
             initialValue: filter.sort,
             onSelected: (sort) =>
@@ -105,7 +108,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                       else
                         const SizedBox(width: 16),
                       const SizedBox(width: Insets.sm),
-                      Text(sort.label),
+                      Text(context.l10n.projectSort(sort.name)),
                     ],
                   ),
                 ),
@@ -124,7 +127,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: Insets.sm),
                     child: ChoiceChip(
-                      label: Text(scope.label),
+                      label: Text(context.l10n.projectScope(scope.name)),
                       selected: filter.scope == scope,
                       onSelected: (_) => ref
                           .read(projectFilterProvider.notifier)
@@ -154,10 +157,10 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
           padding: const EdgeInsets.symmetric(vertical: Insets.sm),
           empty: EmptyState(
             icon: Icons.folder_open,
-            title: 'No projects',
+            title: context.l10n.projectsEmpty,
             message: filter.search.isNotEmpty
-                ? 'Nothing matches "${filter.search}"'
-                : 'Projects you have access to will show up here',
+                ? context.l10n.projectsEmptyMatch(filter.search)
+                : context.l10n.projectsEmptyHint,
           ),
           itemBuilder: (context, index) => ProjectTile(
             project: data.items[index],

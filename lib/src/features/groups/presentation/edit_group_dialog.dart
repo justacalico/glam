@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Group settings form (name, path, description, visibility). Returns
 /// the updated [Group] or null when cancelled.
@@ -43,7 +44,7 @@ class _EditGroupDialogState extends ConsumerState<EditGroupDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit group'),
+      title: Text(context.l10n.editGroup),
       content: SizedBox(
         width: 420,
         child: SingleChildScrollView(
@@ -53,30 +54,39 @@ class _EditGroupDialogState extends ConsumerState<EditGroupDialog> {
               TextField(
                 controller: _name,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldName,
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: _path,
-                decoration: const InputDecoration(
-                  labelText: 'Path',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldPath,
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: _visibility,
-                decoration: const InputDecoration(
-                  labelText: 'Visibility',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldVisibility,
                   border: OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'private', child: Text('Private')),
-                  DropdownMenuItem(value: 'internal', child: Text('Internal')),
-                  DropdownMenuItem(value: 'public', child: Text('Public')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'private',
+                    child: Text(context.l10n.visibilityPrivate),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internal',
+                    child: Text(context.l10n.visibilityInternal),
+                  ),
+                  DropdownMenuItem(
+                    value: 'public',
+                    child: Text(context.l10n.visibilityPublic),
+                  ),
                 ],
                 onChanged: (v) {
                   if (v != null) {
@@ -87,8 +97,8 @@ class _EditGroupDialogState extends ConsumerState<EditGroupDialog> {
               const SizedBox(height: Insets.md),
               TextField(
                 controller: _description,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldDescription,
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
@@ -100,11 +110,11 @@ class _EditGroupDialogState extends ConsumerState<EditGroupDialog> {
       actions: [
         TextButton(
           onPressed: _busy ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: _busy ? null : _save,
-          child: const Text('Save'),
+          child: Text(context.l10n.actionSave),
         ),
       ],
     );

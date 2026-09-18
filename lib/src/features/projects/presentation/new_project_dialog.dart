@@ -5,6 +5,7 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/namespace.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// New-project form. Returns the created [Project] or null when cancelled.
 class NewProjectDialog extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _NewProjectDialogState extends ConsumerState<NewProjectDialog> {
     final namespaces = ref.watch(namespacesProvider);
 
     return AlertDialog(
-      title: const Text('New project'),
+      title: Text(context.l10n.projectNew),
       content: SizedBox(
         width: 420,
         child: SingleChildScrollView(
@@ -53,17 +54,17 @@ class _NewProjectDialogState extends ConsumerState<NewProjectDialog> {
               TextField(
                 controller: _name,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldName,
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _path,
-                decoration: const InputDecoration(
-                  labelText: 'Path',
-                  hintText: 'Defaults to the name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldPath,
+                  hintText: context.l10n.fieldPathHint,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -73,29 +74,40 @@ class _NewProjectDialogState extends ConsumerState<NewProjectDialog> {
                 error: (_, _) => const SizedBox.shrink(),
                 data: (items) => DropdownButtonFormField<GitlabNamespace?>(
                   initialValue: _namespace,
-                  decoration: const InputDecoration(
-                    labelText: 'Namespace',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldNamespace,
                     border: OutlineInputBorder(),
                   ),
                   items: [
-                    const DropdownMenuItem(child: Text('Personal namespace')),
+                    DropdownMenuItem(
+                      child: Text(context.l10n.namespacePersonal),
+                    ),
                     for (final n in items)
                       DropdownMenuItem(value: n, child: Text(n.label)),
                   ],
                   onChanged: (v) => setState(() => _namespace = v),
                 ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: _visibility,
-                decoration: const InputDecoration(
-                  labelText: 'Visibility',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldVisibility,
                   border: OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'private', child: Text('Private')),
-                  DropdownMenuItem(value: 'internal', child: Text('Internal')),
-                  DropdownMenuItem(value: 'public', child: Text('Public')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'private',
+                    child: Text(context.l10n.visibilityPrivate),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internal',
+                    child: Text(context.l10n.visibilityInternal),
+                  ),
+                  DropdownMenuItem(
+                    value: 'public',
+                    child: Text(context.l10n.visibilityPublic),
+                  ),
                 ],
                 onChanged: (v) {
                   if (v != null) {
@@ -103,17 +115,17 @@ class _NewProjectDialogState extends ConsumerState<NewProjectDialog> {
                   }
                 },
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _description,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldDescription,
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
               ),
               CheckboxListTile(
-                title: const Text('Initialize with a README'),
+                title: Text(context.l10n.initReadme),
                 value: _readme,
                 onChanged: (v) => setState(() => _readme = v ?? false),
                 dense: true,
@@ -126,11 +138,11 @@ class _NewProjectDialogState extends ConsumerState<NewProjectDialog> {
       actions: [
         TextButton(
           onPressed: _busy ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: _busy ? null : _create,
-          child: const Text('Create'),
+          child: Text(context.l10n.actionCreate),
         ),
       ],
     );

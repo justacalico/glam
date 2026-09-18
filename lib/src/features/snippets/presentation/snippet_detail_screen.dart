@@ -21,6 +21,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/snippets/application/snippets_providers.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippet_form_screen.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One snippet: metadata header plus the highlighted file contents.
 class SnippetDetailScreen extends ConsumerWidget {
@@ -41,17 +42,17 @@ class SnippetDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(snippet.value?.title ?? 'Snippet'),
+        title: Text(snippet.value?.title ?? context.l10n.snippet),
         actions: [
           if (snippet.value?.webUrl != null)
             IconButton(
-              tooltip: 'Open in browser',
+              tooltip: context.l10n.actionOpenBrowser,
               icon: const Icon(Icons.open_in_new, size: 20),
               onPressed: () =>
                   unawaited(launchExternal(snippet.value!.webUrl!)),
             ),
           IconButton(
-            tooltip: 'Edit',
+            tooltip: context.l10n.actionEdit,
             icon: const Icon(Icons.edit_outlined, size: 20),
             onPressed: () => unawaited(
               SnippetFormScreen.show(
@@ -70,7 +71,7 @@ class SnippetDetailScreen extends ConsumerWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Delete',
+            tooltip: context.l10n.actionDelete,
             icon: const Icon(Icons.delete_outline, size: 20),
             onPressed: () => unawaited(_confirmDelete(context, ref)),
           ),
@@ -122,7 +123,7 @@ class SnippetDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: Insets.lg),
                   Text(
-                    'Comments',
+                    context.l10n.hookComments,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: Insets.sm),
@@ -153,16 +154,16 @@ class SnippetDetailScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete snippet?'),
-        content: const Text('This cannot be undone.'),
+        title: Text(context.l10n.deleteSnippet),
+        content: Text(context.l10n.thisCannotBeUndone),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -201,7 +202,7 @@ class _SnippetNotes extends ConsumerWidget {
           return Padding(
             padding: const EdgeInsets.all(Insets.lg),
             child: Text(
-              'No comments yet',
+              context.l10n.noCommentsYet,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           );
@@ -269,7 +270,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         IconButton(
-          tooltip: 'Copy link',
+          tooltip: context.l10n.copyLink,
           icon: Icon(Icons.link, size: 18, color: colors.inkMuted),
           onPressed: () {
             final url = snippet.webUrl;
@@ -277,7 +278,7 @@ class _Header extends StatelessWidget {
               unawaited(Clipboard.setData(ClipboardData(text: url)));
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('Link copied')));
+              ).showSnackBar(SnackBar(content: Text(context.l10n.linkCopied)));
             }
           },
         ),

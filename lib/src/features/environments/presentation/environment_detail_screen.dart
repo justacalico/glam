@@ -16,6 +16,7 @@ import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/environments/application/environments_providers.dart';
 import 'package:glam/src/features/environments/data/environments_repository.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One environment: metadata header + the deployments it has seen.
 class EnvironmentDetailScreen extends ConsumerWidget {
@@ -31,7 +32,7 @@ class EnvironmentDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: env.maybeWhen(
           data: (e) => Text(e.name),
-          orElse: () => const Text('Environment'),
+          orElse: () => Text(context.l10n.environment),
         ),
         actions: [
           env.maybeWhen(
@@ -65,20 +66,20 @@ class _EnvActions extends ConsumerWidget {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit environment'),
+        title: Text(context.l10n.editEnvironment),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: name,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: context.l10n.fieldName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: url,
-              decoration: const InputDecoration(
-                labelText: 'External URL (optional)',
+              decoration: InputDecoration(
+                labelText: context.l10n.externalUrlOptional,
               ),
             ),
           ],
@@ -86,11 +87,11 @@ class _EnvActions extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -121,16 +122,16 @@ class _EnvActions extends ConsumerWidget {
             final confirm = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                title: Text('Delete ${env.name}?'),
-                content: const Text('Stopped environments can be deleted.'),
+                title: Text(context.l10n.deleteNamedConfirm(env.name)),
+                content: Text(context.l10n.stoppedEnvironmentsCanBeDeleted),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancel'),
+                    child: Text(context.l10n.actionCancel),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: const Text('Delete'),
+                    child: Text(context.l10n.actionDelete),
                   ),
                 ],
               ),
@@ -154,15 +155,18 @@ class _EnvActions extends ConsumerWidget {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(value: 'edit', child: Text('Edit')),
+        PopupMenuItem(value: 'edit', child: Text(context.l10n.actionEdit)),
         if (env.isAvailable)
-          const PopupMenuItem(value: 'stop', child: Text('Stop')),
+          PopupMenuItem(value: 'stop', child: Text(context.l10n.stop)),
         if (env.externalUrl != null)
-          const PopupMenuItem(value: 'open', child: Text('Open live URL')),
+          PopupMenuItem(value: 'open', child: Text(context.l10n.openLiveUrl)),
         if (env.externalUrl != null)
-          const PopupMenuItem(value: 'copy', child: Text('Copy URL')),
+          PopupMenuItem(value: 'copy', child: Text(context.l10n.copyUrl)),
         if (!env.isAvailable)
-          const PopupMenuItem(value: 'delete', child: Text('Delete')),
+          PopupMenuItem(
+            value: 'delete',
+            child: Text(context.l10n.actionDelete),
+          ),
       ],
     );
   }
@@ -219,10 +223,13 @@ class _EnvBodyState extends State<_EnvBody> {
               const SizedBox(height: Insets.md),
               Row(
                 children: [
-                  Text('Deployments', style: theme.textTheme.titleMedium),
+                  Text(
+                    context.l10n.hookDeployments,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const Spacer(),
                   FilterMenu(
-                    title: 'Status',
+                    title: context.l10n.status,
                     current: _status,
                     options: const [
                       'created',
@@ -267,9 +274,9 @@ class _DeploymentsList extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.only(bottom: Insets.xl),
         separator: Divider(height: 1, color: colors.border),
-        empty: const EmptyState(
+        empty: EmptyState(
           icon: Icons.rocket_launch_outlined,
-          title: 'No deployments yet',
+          title: context.l10n.noDeploymentsYet,
         ),
         itemBuilder: (context, index) =>
             _DeploymentTile(deployment: data.items[index]),
@@ -295,7 +302,10 @@ class _DeploymentTile extends StatelessWidget {
       ),
       title: Row(
         children: [
-          Text('#${deployment.iid}', style: theme.textTheme.titleSmall),
+          Text(
+            context.l10n.issueIid(deployment.iid),
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(width: Insets.sm),
           if (deployment.status != null) StateChip.pipeline(deployment.status!),
         ],

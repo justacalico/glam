@@ -16,6 +16,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/issues/presentation/issue_tile.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Milestones tab inside project (or group) detail.
 class MilestonesTab extends ConsumerStatefulWidget {
@@ -37,7 +38,11 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
     final filter = (scope: widget.scope, state: _state, search: _search);
     final list = ref.watch(milestonesProvider(filter));
     final notifier = ref.read(milestonesProvider(filter).notifier);
-    const states = {'active': 'Active', 'closed': 'Closed', null: 'All'};
+    final states = {
+      'active': context.l10n.stateActive,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
+    };
 
     return Column(
       children: [
@@ -49,7 +54,7 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search milestones',
+            hint: context.l10n.searchMilestones,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -75,7 +80,7 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
               const Spacer(),
               if (widget.scope.isProject)
                 IconButton(
-                  tooltip: 'New milestone',
+                  tooltip: context.l10n.newMilestone,
                   icon: const Icon(Icons.add),
                   onPressed: () => unawaited(
                     MilestoneFormScreen.show(
@@ -105,9 +110,9 @@ class _MilestonesTabState extends ConsumerState<MilestonesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.flag_outlined,
-                title: 'No milestones',
+                title: context.l10n.noMilestones,
               ),
               itemBuilder: (context, index) => _MilestoneTile(
                 milestone: data.items[index],
@@ -145,10 +150,10 @@ class _MilestoneTile extends StatelessWidget {
       subtitle: Text(
         [
           if (milestone.startDate != null)
-            'Starts ${Format.date(milestone.startDate)}',
+            context.l10n.startsOn(Format.date(milestone.startDate!)),
           if (milestone.dueDate != null)
-            'Due ${Format.date(milestone.dueDate)}',
-          if (!milestone.isActive) 'Closed',
+            context.l10n.dueOn(Format.date(milestone.dueDate!)),
+          if (!milestone.isActive) context.l10n.stateClosed,
         ].join(' · '),
         maxLines: 1,
         style: theme.textTheme.bodySmall?.copyWith(
@@ -181,11 +186,11 @@ class MilestoneDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(milestone.value?.title ?? 'Milestone'),
+        title: Text(milestone.value?.title ?? context.l10n.milestone),
         actions: [
           if (milestone.value != null)
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.l10n.actionEdit,
               icon: const Icon(Icons.edit_outlined, size: 20),
               onPressed: () => unawaited(
                 MilestoneFormScreen.show(
@@ -219,7 +224,11 @@ class MilestoneDetailScreen extends ConsumerWidget {
                       children: [
                         if (m.state != null)
                           Chip(
-                            label: Text(m.isActive ? 'Active' : 'Closed'),
+                            label: Text(
+                              m.isActive
+                                  ? context.l10n.active
+                                  : context.l10n.stateClosed,
+                            ),
                             visualDensity: VisualDensity.compact,
                           ),
                         const SizedBox(width: Insets.sm),
@@ -241,10 +250,10 @@ class MilestoneDetailScreen extends ConsumerWidget {
                 ),
               ),
               Divider(height: 1, color: colors.border),
-              const TabBar(
+              TabBar(
                 tabs: [
-                  Tab(text: 'Issues'),
-                  Tab(text: 'Merge requests'),
+                  Tab(text: context.l10n.issuesTitle),
+                  Tab(text: context.l10n.mrsTitle),
                 ],
               ),
               Expanded(
@@ -274,7 +283,7 @@ class _MilestoneIssues extends ConsumerWidget {
     return AsyncValueWidget(
       value: issues,
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.task_alt, title: 'No issues')
+          ? EmptyState(icon: Icons.task_alt, title: context.l10n.noIssues)
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               itemCount: items.length,
@@ -303,7 +312,7 @@ class _MilestoneMrs extends ConsumerWidget {
     return AsyncValueWidget(
       value: mrs,
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.merge, title: 'No merge requests')
+          ? EmptyState(icon: Icons.merge, title: context.l10n.noMergeRequests)
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               itemCount: items.length,
@@ -401,7 +410,9 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
   Future<void> _save() async {
     final title = _title.text.trim();
     if (title.isEmpty || _saving) {
-      setState(() => _error = title.isEmpty ? 'Title is required' : null);
+      setState(
+        () => _error = title.isEmpty ? context.l10n.titleRequired : null,
+      );
       return;
     }
     setState(() {
@@ -443,7 +454,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the milestone';
+        _error = context.l10n.milestoneSaveFailed;
       });
     }
   }
@@ -476,15 +487,15 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit milestone' : 'New milestone',
+            _editing ? context.l10n.editMilestone : context.l10n.newMilestone,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _title,
             autofocus: !_editing,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldTitle,
               border: OutlineInputBorder(),
             ),
           ),
@@ -493,8 +504,8 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
             controller: _description,
             minLines: 3,
             maxLines: 6,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldDescription,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -506,7 +517,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () => unawaited(_pickDate(true)),
                   icon: const Icon(Icons.event_outlined, size: 18),
-                  label: Text(_fmt(_startDate) ?? 'Start date'),
+                  label: Text(_fmt(_startDate) ?? context.l10n.startDate),
                 ),
               ),
               const SizedBox(width: Insets.md),
@@ -514,7 +525,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () => unawaited(_pickDate(false)),
                   icon: const Icon(Icons.event_outlined, size: 18),
-                  label: Text(_fmt(_dueDate) ?? 'Due date'),
+                  label: Text(_fmt(_dueDate) ?? context.l10n.dueDate),
                 ),
               ),
             ],
@@ -530,7 +541,7 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -541,7 +552,11 @@ class _MilestoneFormScreenState extends ConsumerState<MilestoneFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_editing ? 'Save' : 'Create milestone'),
+                    : Text(
+                        _editing
+                            ? context.l10n.actionSave
+                            : context.l10n.createMilestone,
+                      ),
               ),
             ],
           ),

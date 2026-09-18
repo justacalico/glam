@@ -15,6 +15,7 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/file_editor_screen.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Full-screen file viewer: rendered markdown for docs, highlighted code
 /// for everything else, with copy/raw actions.
@@ -60,7 +61,7 @@ class FileViewerScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Edit file',
+            tooltip: context.l10n.editFile,
             icon: const Icon(Icons.edit_outlined),
             onPressed: ref == null || file.value == null
                 ? null
@@ -78,7 +79,7 @@ class FileViewerScreen extends ConsumerWidget {
                   },
           ),
           IconButton(
-            tooltip: 'Copy contents',
+            tooltip: context.l10n.copyContents,
             icon: const Icon(Icons.copy_outlined),
             onPressed: () => _copy(context, file.value),
           ),
@@ -103,15 +104,18 @@ class FileViewerScreen extends ConsumerWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'history',
-                child: Text('File history'),
+                child: Text(context.l10n.fileHistory),
               ),
-              const PopupMenuItem(value: 'blame', child: Text('View blame')),
+              PopupMenuItem(
+                value: 'blame',
+                child: Text(context.l10n.viewBlame),
+              ),
               if (ref != null)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
-                  child: Text('Delete file'),
+                  child: Text(context.l10n.deleteFile),
                 ),
             ],
           ),
@@ -133,7 +137,7 @@ class FileViewerScreen extends ConsumerWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.copiedToClipboard)));
     }
   }
 
@@ -141,16 +145,16 @@ class FileViewerScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete $path?'),
-        content: const Text('A commit removing this file will be created.'),
+        title: Text(context.l10n.deleteNamedConfirm(path)),
+        content: Text(context.l10n.aCommitRemovingThisFileWill),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -193,7 +197,7 @@ class _FileBody extends StatelessWidget {
           ),
           color: colors.surfaceMuted,
           child: Text(
-            '${Format.bytes(file.size)} · ${file.encoding}',
+            context.l10n.linkSummary(Format.bytes(file.size), file.encoding),
             style: Theme.of(
               context,
             ).textTheme.labelSmall?.copyWith(color: colors.inkMuted),

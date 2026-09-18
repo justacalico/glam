@@ -39,6 +39,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_highlight: ^0.7.0
+  flutter_localizations:
+    sdk: flutter
   flutter_markdown: ^0.7.7+1
   flutter_riverpod: ^3.4.3
   flutter_secure_storage: ^11.2.0
@@ -67,6 +69,7 @@ dependency_overrides:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
   uses-material-design: true
 
   fonts:
@@ -92,3 +95,4 @@ flutter:
           weight: 500
         - asset: assets/fonts/SpaceGrotesk-700.ttf
           weight: 700
+

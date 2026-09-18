@@ -10,6 +10,7 @@ import 'package:glam/src/features/projects/domain/deploy_key.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Deploy keys with add / remove.
 class DeployKeysSection extends ConsumerWidget {
@@ -27,10 +28,10 @@ class DeployKeysSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Deploy keys')),
+            Expanded(child: SectionLabel(context.l10n.deployKeys)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _addKey(context, ref),
             ),
           ],
@@ -51,11 +52,11 @@ class DeployKeysSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.vpn_key_outlined,
-                      title: 'No deploy keys',
+                      title: context.l10n.noDeployKeys,
                     ),
                   )
                 : Column(
@@ -68,9 +69,9 @@ class DeployKeysSection extends ConsumerWidget {
                           subtitle: Text(
                             [
                               k.fingerprint,
-                              if (k.canPush) 'write access',
+                              if (k.canPush) context.l10n.writeAccess,
                               if (k.createdAt != null)
-                                'added ${Format.date(k.createdAt!)}',
+                                context.l10n.addedP0(Format.date(k.createdAt!)),
                             ].join(' · '),
                             style: const TextStyle(
                               fontFamily: GlamFonts.mono,
@@ -98,7 +99,7 @@ class DeployKeysSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Add deploy key'),
+          title: Text(context.l10n.addDeployKey),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -107,23 +108,25 @@ class DeployKeysSection extends ConsumerWidget {
                 TextField(
                   controller: title,
                   autofocus: true,
-                  decoration: const InputDecoration(labelText: 'Title'),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldTitle,
+                  ),
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 TextField(
                   controller: key,
                   minLines: 3,
                   maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Public key',
-                    hintText: 'ssh-ed25519 AAAA…',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.publicKey,
+                    hintText: context.l10n.sshEd25519Aaaa,
                   ),
                 ),
                 CheckboxListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text('Grant write access'),
+                  title: Text(context.l10n.grantWriteAccess),
                   value: canPush,
                   onChanged: (v) => setState(() => canPush = v ?? false),
                 ),
@@ -133,7 +136,7 @@ class DeployKeysSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -142,7 +145,7 @@ class DeployKeysSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Add'),
+              child: Text(context.l10n.actionAdd),
             ),
           ],
         ),
@@ -179,7 +182,7 @@ class DeployKeysSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Remove deploy key?',
+      title: context.l10n.removeDeployKey,
       body: k.title,
     );
     if (ok != true || !context.mounted) {

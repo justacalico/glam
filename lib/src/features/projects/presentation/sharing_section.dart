@@ -13,6 +13,7 @@ import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Groups this project is shared with, plus share / unshare actions.
 class SharingSection extends ConsumerWidget {
@@ -30,10 +31,10 @@ class SharingSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Shared groups')),
+            Expanded(child: SectionLabel(context.l10n.sharedGroups)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Share'),
+              label: Text(context.l10n.share),
               onPressed: () => _share(context, ref),
             ),
           ],
@@ -45,11 +46,11 @@ class SharingSection extends ConsumerWidget {
             border: Border.all(color: colors.border),
           ),
           child: shared.isEmpty
-              ? const Padding(
+              ? Padding(
                   padding: EdgeInsets.all(Insets.lg),
                   child: EmptyState(
                     icon: Icons.group_outlined,
-                    title: 'Not shared with any group',
+                    title: context.l10n.notSharedWithAnyGroup,
                   ),
                 )
               : Column(
@@ -77,7 +78,7 @@ class SharingSection extends ConsumerWidget {
     }
     if (candidates.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No groups left to share with')),
+        SnackBar(content: Text(context.l10n.noGroupsLeftToShareWith)),
       );
       return;
     }
@@ -88,7 +89,7 @@ class SharingSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Share with group'),
+          title: Text(context.l10n.shareWithGroup),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -96,7 +97,7 @@ class SharingSection extends ConsumerWidget {
               children: [
                 DropdownButtonFormField<int>(
                   initialValue: groupId,
-                  decoration: const InputDecoration(labelText: 'Group'),
+                  decoration: InputDecoration(labelText: context.l10n.group),
                   items: [
                     for (final g in candidates)
                       DropdownMenuItem(
@@ -109,17 +110,29 @@ class SharingSection extends ConsumerWidget {
                   ],
                   onChanged: (v) => setState(() => groupId = v ?? groupId),
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 DropdownButtonFormField<int>(
                   initialValue: accessLevel,
-                  decoration: const InputDecoration(
-                    labelText: 'Max access level',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.maxAccessLevel,
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 10, child: Text('Guest')),
-                    DropdownMenuItem(value: 20, child: Text('Reporter')),
-                    DropdownMenuItem(value: 30, child: Text('Developer')),
-                    DropdownMenuItem(value: 40, child: Text('Maintainer')),
+                  items: [
+                    DropdownMenuItem(
+                      value: 10,
+                      child: Text(context.l10n.roleGuest),
+                    ),
+                    DropdownMenuItem(
+                      value: 20,
+                      child: Text(context.l10n.roleReporter),
+                    ),
+                    DropdownMenuItem(
+                      value: 30,
+                      child: Text(context.l10n.roleDeveloper),
+                    ),
+                    DropdownMenuItem(
+                      value: 40,
+                      child: Text(context.l10n.roleMaintainer),
+                    ),
                   ],
                   onChanged: (v) => setState(() => accessLevel = v ?? 30),
                 ),
@@ -128,8 +141,8 @@ class SharingSection extends ConsumerWidget {
                   controller: days,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Expires in days (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldExpiresDays,
                   ),
                 ),
               ],
@@ -138,11 +151,11 @@ class SharingSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Share'),
+              child: Text(context.l10n.share),
             ),
           ],
         ),
@@ -178,8 +191,8 @@ class SharingSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Remove group share?',
-      body: '"${group.displayName}" loses access to this project.',
+      title: context.l10n.removeGroupShare,
+      body: context.l10n.shareRemoveBody(group.displayName),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -208,7 +221,7 @@ class _SharedGroupTile extends StatelessWidget {
     return ListTile(
       dense: true,
       leading: Icon(Icons.group_outlined, size: 18, color: colors.inkMuted),
-      title: Text(group.displayName),
+      title: Text(group.localizedName(context.l10n)),
       subtitle: Text(
         [
           group.roleLabel,
@@ -217,8 +230,8 @@ class _SharedGroupTile extends StatelessWidget {
         ].join(' · '),
       ),
       trailing: IconButton(
-        icon: const Icon(Icons.remove_circle_outline, size: 18),
-        tooltip: 'Unshare',
+        icon: Icon(Icons.remove_circle_outline, size: 18),
+        tooltip: context.l10n.unshare,
         onPressed: onRemove,
       ),
     );

@@ -20,6 +20,7 @@ import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/pipelines/presentation/schedules_tab.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Pipeline history + schedules for a project — the CI/CD tab.
 class PipelinesScreen extends ConsumerStatefulWidget {
@@ -52,12 +53,18 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
               Expanded(
                 child: SegmentedButton<_CicdTab>(
                   showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(value: _CicdTab.runs, label: Text('Runs')),
-                    ButtonSegment(value: _CicdTab.jobs, label: Text('Jobs')),
+                  segments: [
+                    ButtonSegment(
+                      value: _CicdTab.runs,
+                      label: Text(context.l10n.runs),
+                    ),
+                    ButtonSegment(
+                      value: _CicdTab.jobs,
+                      label: Text(context.l10n.hookJobs),
+                    ),
                     ButtonSegment(
                       value: _CicdTab.schedules,
-                      label: Text('Schedules'),
+                      label: Text(context.l10n.schedules),
                     ),
                   ],
                   selected: {_tab},
@@ -66,7 +73,7 @@ class _PipelinesScreenState extends ConsumerState<PipelinesScreen> {
               ),
               TextButton.icon(
                 icon: const Icon(Icons.checklist_outlined, size: 16),
-                label: const Text('Lint'),
+                label: Text(context.l10n.lint),
                 onPressed: () =>
                     CiLintSheet.show(context, projectId: widget.projectId),
               ),
@@ -111,14 +118,14 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
     'skipped',
     'manual',
   ];
-  static const _statusLabels = {
-    'running': 'Running',
-    'pending': 'Pending',
-    'success': 'Passed',
-    'failed': 'Failed',
-    'canceled': 'Canceled',
-    'skipped': 'Skipped',
-    'manual': 'Manual',
+  static Map<String, String> _statusLabels(AppLocalizations l10n) => {
+    'running': l10n.pipelineStatusRunning,
+    'pending': l10n.pipelineStatusPending,
+    'success': l10n.pipelineStatusSuccess,
+    'failed': l10n.pipelineStatusFailed,
+    'canceled': l10n.pipelineStatusCanceled,
+    'skipped': l10n.pipelineStatusSkipped,
+    'manual': l10n.pipelineStatusManual,
   };
 
   static const _sourceValues = [
@@ -131,15 +138,15 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
     'pipeline',
     'chat',
   ];
-  static const _sourceLabels = {
-    'push': 'Push',
-    'web': 'Web',
-    'schedule': 'Schedule',
-    'api': 'API',
-    'trigger': 'Trigger',
-    'merge_request_event': 'Merge request',
-    'pipeline': 'Pipeline',
-    'chat': 'Chat',
+  static Map<String, String> _sourceLabels(AppLocalizations l10n) => {
+    'push': l10n.pipelineSourcePush,
+    'web': l10n.pipelineSourceWeb,
+    'schedule': l10n.pipelineSourceSchedule,
+    'api': l10n.pipelineSourceApi,
+    'trigger': l10n.pipelineSourceTrigger,
+    'merge_request_event': l10n.pipelineSourceMr,
+    'pipeline': l10n.pipelineSourcePipeline,
+    'chat': l10n.pipelineSourceChat,
   };
 
   @override
@@ -185,29 +192,29 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FilterMenu(
-                    title: 'Source',
+                    title: context.l10n.source,
                     current: _source,
                     options: _sourceValues,
-                    labels: _sourceLabels,
+                    labels: _sourceLabels(context.l10n),
                     onSelect: (v) => setState(() => _source = v),
                   ),
                   FilterMenu(
-                    title: 'Ref',
+                    title: context.l10n.ref,
                     current: _ref,
                     options: [for (final b in branches) b.name],
                     onSelect: (v) => setState(() => _ref = v),
                   ),
                   FilterMenu(
-                    title: 'User',
+                    title: context.l10n.user,
                     current: _username,
                     options: [for (final m in members) m.username],
                     onSelect: (v) => setState(() => _username = v),
                   ),
                   FilterMenu(
-                    title: 'Status',
+                    title: context.l10n.status,
                     current: _status,
                     options: _statusValues,
-                    labels: _statusLabels,
+                    labels: _statusLabels(context.l10n),
                     onSelect: (v) => setState(() => _status = v),
                   ),
                 ],
@@ -229,9 +236,9 @@ class _PipelineRunsState extends ConsumerState<_PipelineRuns> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.rocket_launch_outlined,
-                title: 'No pipelines yet',
+                title: context.l10n.noPipelinesYet,
               ),
               itemBuilder: (context, index) => PipelineTile(
                 pipeline: data.items[index],
@@ -267,14 +274,14 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
     'skipped',
     'manual',
   ];
-  static const _scopeLabels = {
-    'running': 'Running',
-    'pending': 'Pending',
-    'success': 'Passed',
-    'failed': 'Failed',
-    'canceled': 'Canceled',
-    'skipped': 'Skipped',
-    'manual': 'Manual',
+  static Map<String, String> _scopeLabels(AppLocalizations l10n) => {
+    'running': l10n.pipelineStatusRunning,
+    'pending': l10n.pipelineStatusPending,
+    'success': l10n.pipelineStatusSuccess,
+    'failed': l10n.pipelineStatusFailed,
+    'canceled': l10n.pipelineStatusCanceled,
+    'skipped': l10n.pipelineStatusSkipped,
+    'manual': l10n.pipelineStatusManual,
   };
 
   @override
@@ -291,10 +298,10 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
           child: Padding(
             padding: const EdgeInsets.only(right: Insets.lg),
             child: FilterMenu(
-              title: 'Scope',
+              title: context.l10n.scope,
               current: _scope,
               options: _scopeValues,
-              labels: _scopeLabels,
+              labels: _scopeLabels(context.l10n),
               onSelect: (v) => setState(() => _scope = v),
             ),
           ),
@@ -313,9 +320,9 @@ class _ProjectJobsState extends ConsumerState<_ProjectJobs> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.construction_outlined,
-                title: 'No jobs',
+                title: context.l10n.noJobs,
               ),
               itemBuilder: (context, index) =>
                   _JobTile(job: data.items[index], projectId: widget.projectId),
@@ -396,7 +403,7 @@ class PipelineTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '#${pipeline.iid ?? pipeline.id}',
+                        context.l10n.issueIid(pipeline.iid ?? pipeline.id),
                         style: theme.textTheme.titleSmall,
                       ),
                       const SizedBox(width: Insets.sm),
@@ -544,14 +551,14 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('CI lint', style: theme.textTheme.titleMedium),
+            Text(context.l10n.ciLint, style: theme.textTheme.titleMedium),
             const SizedBox(height: Insets.sm),
             TextField(
               controller: _content,
               maxLines: 8,
               style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
-              decoration: const InputDecoration(
-                hintText: 'stages:\n  - build',
+              decoration: InputDecoration(
+                hintText: context.l10n.stagesNBuild,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -561,7 +568,9 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
                 FilledButton.icon(
                   onPressed: _loading ? null : _lint,
                   icon: const Icon(Icons.check, size: 16),
-                  label: Text(_loading ? 'Checking…' : 'Validate'),
+                  label: Text(
+                    _loading ? context.l10n.checking : context.l10n.validate,
+                  ),
                 ),
                 const SizedBox(width: Insets.md),
                 if (_result != null)
@@ -572,7 +581,7 @@ class _CiLintSheetState extends ConsumerState<CiLintSheet> {
                 if (_result != null && _result!.jobs.isNotEmpty) ...[
                   const SizedBox(width: Insets.sm),
                   Text(
-                    '${_result!.jobs.length} jobs',
+                    context.l10n.p0Jobs(_result!.jobs.length),
                     style: theme.textTheme.bodySmall,
                   ),
                 ],

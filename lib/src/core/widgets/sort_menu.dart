@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One entry in a [SortMenu]: the API `order_by`/`sort` pair plus a
 /// label ("Newest", "Due soonest", ...).
@@ -30,7 +31,7 @@ class SortMenu extends StatelessWidget {
       sort: sort ?? options.first.sort,
     );
     return PopupMenuButton<SortOption>(
-      tooltip: 'Sort',
+      tooltip: context.l10n.sortTitle,
       icon: const Icon(Icons.sort, size: 20),
       onSelected: onSelect,
       itemBuilder: (context) => [
@@ -56,22 +57,22 @@ class SortMenu extends StatelessWidget {
 /// Shared option sets for the lists GitLab sorts server-side.
 abstract final class SortOptions {
   /// `created_at`/`updated_at`/`due_date` — issues.
-  static const issues = [
-    (orderBy: 'created_at', sort: 'desc', label: 'Newest'),
-    (orderBy: 'created_at', sort: 'asc', label: 'Oldest'),
-    (orderBy: 'updated_at', sort: 'desc', label: 'Recently updated'),
-    (orderBy: 'updated_at', sort: 'asc', label: 'Least recently updated'),
-    (orderBy: 'due_date', sort: 'asc', label: 'Due soonest'),
-    (orderBy: 'due_date', sort: 'desc', label: 'Due latest'),
+  static List<SortOption> issues(AppLocalizations l10n) => [
+    (orderBy: 'created_at', sort: 'desc', label: l10n.sortNewest),
+    (orderBy: 'created_at', sort: 'asc', label: l10n.sortOldest),
+    (orderBy: 'updated_at', sort: 'desc', label: l10n.sortRecentlyUpdated),
+    (orderBy: 'updated_at', sort: 'asc', label: l10n.sortLeastRecentlyUpdated),
+    (orderBy: 'due_date', sort: 'asc', label: l10n.sortDueSoonest),
+    (orderBy: 'due_date', sort: 'desc', label: l10n.sortDueLatest),
   ];
 
   /// `created_at`/`updated_at`/`title` — merge requests.
-  static const mergeRequests = [
-    (orderBy: 'created_at', sort: 'desc', label: 'Newest'),
-    (orderBy: 'created_at', sort: 'asc', label: 'Oldest'),
-    (orderBy: 'updated_at', sort: 'desc', label: 'Recently updated'),
-    (orderBy: 'updated_at', sort: 'asc', label: 'Least recently updated'),
-    (orderBy: 'title', sort: 'asc', label: 'Title A-Z'),
-    (orderBy: 'title', sort: 'desc', label: 'Title Z-A'),
+  static List<SortOption> mergeRequests(AppLocalizations l10n) => [
+    (orderBy: 'created_at', sort: 'desc', label: l10n.sortNewest),
+    (orderBy: 'created_at', sort: 'asc', label: l10n.sortOldest),
+    (orderBy: 'updated_at', sort: 'desc', label: l10n.sortRecentlyUpdated),
+    (orderBy: 'updated_at', sort: 'asc', label: l10n.sortLeastRecentlyUpdated),
+    (orderBy: 'title', sort: 'asc', label: l10n.sortTitleAZ),
+    (orderBy: 'title', sort: 'desc', label: l10n.sortTitleZA),
   ];
 }

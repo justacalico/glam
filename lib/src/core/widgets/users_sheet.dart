@@ -7,6 +7,7 @@ import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
 import 'package:glam/src/app/router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Draggable sheet listing users (followers, starrers, ...).
 class UsersSheet extends ConsumerWidget {
@@ -48,9 +49,9 @@ class UsersSheet extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('$e')),
               data: (list) => list.isEmpty
-                  ? const EmptyState(
+                  ? EmptyState(
                       icon: Icons.people_outline,
-                      title: 'Nobody here yet',
+                      title: context.l10n.usersEmpty,
                     )
                   : ListView.builder(
                       controller: controller,
