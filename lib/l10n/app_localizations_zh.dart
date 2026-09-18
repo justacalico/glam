@@ -854,4 +854,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ciCdConfigPath => 'CI/CD 配置路径';
+
+  @override
+  String get noDeployKeys => '没有部署密钥';
+
+  @override
+  String get addDeployKey => '添加部署密钥';
+
+  @override
+  String get publicKey => '公钥';
+
+  @override
+  String get sshEd25519Aaaa => 'ssh-ed25519 AAAA…';
+
+  @override
+  String get grantWriteAccess => '授予写权限';
+
+  @override
+  String get removeDeployKey => '移除部署密钥？';
 }

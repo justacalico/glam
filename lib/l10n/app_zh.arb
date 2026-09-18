@@ -274,5 +274,11 @@
   "keepLatestArtifacts": "保留最新产物",
   "jobTimeout": "作业超时",
   "timeoutSeconds": "超时时间（秒）",
-  "ciCdConfigPath": "CI/CD 配置路径"
+  "ciCdConfigPath": "CI/CD 配置路径",
+  "noDeployKeys": "没有部署密钥",
+  "addDeployKey": "添加部署密钥",
+  "publicKey": "公钥",
+  "sshEd25519Aaaa": "ssh-ed25519 AAAA…",
+  "grantWriteAccess": "授予写权限",
+  "removeDeployKey": "移除部署密钥？"
 }

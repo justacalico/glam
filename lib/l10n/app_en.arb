@@ -344,5 +344,11 @@
   "keepLatestArtifacts": "Keep latest artifacts",
   "jobTimeout": "Job timeout",
   "timeoutSeconds": "Timeout (seconds)",
-  "ciCdConfigPath": "CI/CD config path"
+  "ciCdConfigPath": "CI/CD config path",
+  "noDeployKeys": "No deploy keys",
+  "addDeployKey": "Add deploy key",
+  "publicKey": "Public key",
+  "sshEd25519Aaaa": "ssh-ed25519 AAAA…",
+  "grantWriteAccess": "Grant write access",
+  "removeDeployKey": "Remove deploy key?"
 }

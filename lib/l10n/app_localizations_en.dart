@@ -859,4 +859,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ciCdConfigPath => 'CI/CD config path';
+
+  @override
+  String get noDeployKeys => 'No deploy keys';
+
+  @override
+  String get addDeployKey => 'Add deploy key';
+
+  @override
+  String get publicKey => 'Public key';
+
+  @override
+  String get sshEd25519Aaaa => 'ssh-ed25519 AAAA…';
+
+  @override
+  String get grantWriteAccess => 'Grant write access';
+
+  @override
+  String get removeDeployKey => 'Remove deploy key?';
 }

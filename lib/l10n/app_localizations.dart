@@ -1747,6 +1747,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CI/CD config path'**
   String get ciCdConfigPath;
+
+  /// No description provided for @noDeployKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'No deploy keys'**
+  String get noDeployKeys;
+
+  /// No description provided for @addDeployKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add deploy key'**
+  String get addDeployKey;
+
+  /// No description provided for @publicKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Public key'**
+  String get publicKey;
+
+  /// No description provided for @sshEd25519Aaaa.
+  ///
+  /// In en, this message translates to:
+  /// **'ssh-ed25519 AAAA…'**
+  String get sshEd25519Aaaa;
+
+  /// No description provided for @grantWriteAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant write access'**
+  String get grantWriteAccess;
+
+  /// No description provided for @removeDeployKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove deploy key?'**
+  String get removeDeployKey;
 }
 
 class _AppLocalizationsDelegate
