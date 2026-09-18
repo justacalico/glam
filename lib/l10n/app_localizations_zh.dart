@@ -1579,4 +1579,97 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get searchGroups => '搜索群组';
+
+  @override
+  String get parentGroup => '父群组';
+
+  @override
+  String get topLevel => '顶层';
+
+  @override
+  String get inviteMember => '邀请成员';
+
+  @override
+  String get noMembers => '没有成员';
+
+  @override
+  String get pendingInvitations => '待处理的邀请';
+
+  @override
+  String get accessRequests => '访问请求';
+
+  @override
+  String get approve => '批准';
+
+  @override
+  String get deny => '拒绝';
+
+  @override
+  String get invitedGroups => '受邀群组';
+
+  @override
+  String get planner => 'Planner';
+
+  @override
+  String get thatGroupLosesAccessToThis => '该群组将失去对此群组的访问权限。';
+
+  @override
+  String makeP0(Object p0) {
+    return '设为$p0';
+  }
+
+  @override
+  String theyLoseP0Access(Object p0) {
+    return '将失去$p0访问权限。';
+  }
+
+  @override
+  String get usernameUserIdOrEmail => '用户名、用户 ID 或邮箱';
+
+  @override
+  String get jane42OrJaneExampleCom => 'jane、42 或 jane@example.com';
+
+  @override
+  String get invite => '邀请';
+
+  @override
+  String memberDisplay(Object p0, Object p1) {
+    return '$p0 @$p1';
+  }
+
+  @override
+  String get rolePlanner => 'Planner';
+
+  @override
+  String get roleMinimal => '最小权限';
+
+  @override
+  String roleLevelOther(Object p0) {
+    return '级别 $p0';
+  }
+
+  @override
+  String expiresDate(Object p0) {
+    return '$p0 到期';
+  }
+
+  @override
+  String get memberIdentifierRequired => '需要填写用户名、用户 ID 或邮箱';
+
+  @override
+  String get memberAddFailed => '无法添加成员';
+
+  @override
+  String get noExpiration => '无到期时间';
+
+  @override
+  String expiresOn(Object p0) {
+    return '$p0 到期';
+  }
+
+  @override
+  String get projectWord => '项目';
+
+  @override
+  String get groupWord => '群组';
 }

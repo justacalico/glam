@@ -56,3 +56,16 @@ extension ProjectSortL10n on AppLocalizations {
     _ => sortLastActivity,
   };
 }
+
+/// Labels for GitLab member access levels.
+extension AccessLevelL10n on AppLocalizations {
+  String accessLevelName(int level) => switch (level) {
+    10 => roleGuest,
+    15 => rolePlanner,
+    20 => roleReporter,
+    30 => roleDeveloper,
+    40 => roleMaintainer,
+    50 => roleOwner,
+    _ => roleLevelOther(level),
+  };
+}

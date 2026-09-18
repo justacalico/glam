@@ -18,10 +18,10 @@ import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/presentation/activity_screen.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
-import 'package:glam/src/features/groups/presentation/members_screen.dart';
 import 'package:glam/src/features/profile/application/profile_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Profile page for the current user or any user (`/users/:id`).
 class ProfileScreen extends ConsumerWidget {
@@ -638,7 +638,7 @@ class _MembershipsSection extends ConsumerWidget {
                 title: Text(m.sourceName),
                 subtitle: Text(
                   [
-                    accessLevels[m.accessLevel] ?? 'Level ${m.accessLevel}',
+                    context.l10n.accessLevelName(m.accessLevel),
                     if (m.expiresAt != null)
                       'expires ${Format.date(m.expiresAt)}',
                   ].join(' · '),

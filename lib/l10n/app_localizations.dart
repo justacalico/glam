@@ -3145,6 +3145,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search groups'**
   String get searchGroups;
+
+  /// No description provided for @parentGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent group'**
+  String get parentGroup;
+
+  /// No description provided for @topLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get topLevel;
+
+  /// No description provided for @inviteMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite member'**
+  String get inviteMember;
+
+  /// No description provided for @noMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members'**
+  String get noMembers;
+
+  /// No description provided for @pendingInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invitations'**
+  String get pendingInvitations;
+
+  /// No description provided for @accessRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Access requests'**
+  String get accessRequests;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @deny.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny'**
+  String get deny;
+
+  /// No description provided for @invitedGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited groups'**
+  String get invitedGroups;
+
+  /// No description provided for @planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Planner'**
+  String get planner;
+
+  /// No description provided for @thatGroupLosesAccessToThis.
+  ///
+  /// In en, this message translates to:
+  /// **'That group loses access to this one.'**
+  String get thatGroupLosesAccessToThis;
+
+  /// No description provided for @makeP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Make {p0}'**
+  String makeP0(Object p0);
+
+  /// No description provided for @theyLoseP0Access.
+  ///
+  /// In en, this message translates to:
+  /// **'They lose {p0} access.'**
+  String theyLoseP0Access(Object p0);
+
+  /// No description provided for @usernameUserIdOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Username, user id, or email'**
+  String get usernameUserIdOrEmail;
+
+  /// No description provided for @jane42OrJaneExampleCom.
+  ///
+  /// In en, this message translates to:
+  /// **'jane, 42, or jane@example.com'**
+  String get jane42OrJaneExampleCom;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @memberDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} @{p1}'**
+  String memberDisplay(Object p0, Object p1);
+
+  /// No description provided for @rolePlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Planner'**
+  String get rolePlanner;
+
+  /// No description provided for @roleMinimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get roleMinimal;
+
+  /// No description provided for @roleLevelOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {p0}'**
+  String roleLevelOther(Object p0);
+
+  /// No description provided for @expiresDate.
+  ///
+  /// In en, this message translates to:
+  /// **'expires {p0}'**
+  String expiresDate(Object p0);
+
+  /// No description provided for @memberIdentifierRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username, user id, or email is required'**
+  String get memberIdentifierRequired;
+
+  /// No description provided for @memberAddFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add the member'**
+  String get memberAddFailed;
+
+  /// No description provided for @noExpiration.
+  ///
+  /// In en, this message translates to:
+  /// **'No expiration'**
+  String get noExpiration;
+
+  /// No description provided for @expiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {p0}'**
+  String expiresOn(Object p0);
+
+  /// No description provided for @projectWord.
+  ///
+  /// In en, this message translates to:
+  /// **'project'**
+  String get projectWord;
+
+  /// No description provided for @groupWord.
+  ///
+  /// In en, this message translates to:
+  /// **'group'**
+  String get groupWord;
 }
 
 class _AppLocalizationsDelegate

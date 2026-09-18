@@ -1600,4 +1600,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchGroups => 'Search groups';
+
+  @override
+  String get parentGroup => 'Parent group';
+
+  @override
+  String get topLevel => 'Top level';
+
+  @override
+  String get inviteMember => 'Invite member';
+
+  @override
+  String get noMembers => 'No members';
+
+  @override
+  String get pendingInvitations => 'Pending invitations';
+
+  @override
+  String get accessRequests => 'Access requests';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get deny => 'Deny';
+
+  @override
+  String get invitedGroups => 'Invited groups';
+
+  @override
+  String get planner => 'Planner';
+
+  @override
+  String get thatGroupLosesAccessToThis =>
+      'That group loses access to this one.';
+
+  @override
+  String makeP0(Object p0) {
+    return 'Make $p0';
+  }
+
+  @override
+  String theyLoseP0Access(Object p0) {
+    return 'They lose $p0 access.';
+  }
+
+  @override
+  String get usernameUserIdOrEmail => 'Username, user id, or email';
+
+  @override
+  String get jane42OrJaneExampleCom => 'jane, 42, or jane@example.com';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String memberDisplay(Object p0, Object p1) {
+    return '$p0 @$p1';
+  }
+
+  @override
+  String get rolePlanner => 'Planner';
+
+  @override
+  String get roleMinimal => 'Minimal';
+
+  @override
+  String roleLevelOther(Object p0) {
+    return 'Level $p0';
+  }
+
+  @override
+  String expiresDate(Object p0) {
+    return 'expires $p0';
+  }
+
+  @override
+  String get memberIdentifierRequired =>
+      'Username, user id, or email is required';
+
+  @override
+  String get memberAddFailed => 'Could not add the member';
+
+  @override
+  String get noExpiration => 'No expiration';
+
+  @override
+  String expiresOn(Object p0) {
+    return 'Expires $p0';
+  }
+
+  @override
+  String get projectWord => 'project';
+
+  @override
+  String get groupWord => 'group';
 }

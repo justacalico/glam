@@ -4,6 +4,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// New-group form. Returns the created [Group] or null when cancelled.
 class NewGroupDialog extends ConsumerStatefulWidget {
@@ -41,7 +42,7 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
     final owned = ref.watch(ownedGroupsProvider);
 
     return AlertDialog(
-      title: const Text('New group'),
+      title: Text(context.l10n.newGroup),
       content: SizedBox(
         width: 420,
         child: SingleChildScrollView(
@@ -51,17 +52,17 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
               TextField(
                 controller: _name,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldName,
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: _path,
-                decoration: const InputDecoration(
-                  labelText: 'Path',
-                  hintText: 'Defaults to the name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldPath,
+                  hintText: context.l10n.fieldPathHint,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -71,12 +72,12 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
                 error: (_, _) => const SizedBox.shrink(),
                 data: (items) => DropdownButtonFormField<Group?>(
                   initialValue: _parent,
-                  decoration: const InputDecoration(
-                    labelText: 'Parent group',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.parentGroup,
                     border: OutlineInputBorder(),
                   ),
                   items: [
-                    const DropdownMenuItem(child: Text('Top level')),
+                    DropdownMenuItem(child: Text(context.l10n.topLevel)),
                     for (final g in items)
                       DropdownMenuItem(value: g, child: Text(g.fullPath)),
                   ],
@@ -86,14 +87,23 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
               const SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: _visibility,
-                decoration: const InputDecoration(
-                  labelText: 'Visibility',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldVisibility,
                   border: OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'private', child: Text('Private')),
-                  DropdownMenuItem(value: 'internal', child: Text('Internal')),
-                  DropdownMenuItem(value: 'public', child: Text('Public')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'private',
+                    child: Text(context.l10n.visibilityPrivate),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internal',
+                    child: Text(context.l10n.visibilityInternal),
+                  ),
+                  DropdownMenuItem(
+                    value: 'public',
+                    child: Text(context.l10n.visibilityPublic),
+                  ),
                 ],
                 onChanged: (v) {
                   if (v != null) {
@@ -104,8 +114,8 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
               const SizedBox(height: Insets.md),
               TextField(
                 controller: _description,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldDescription,
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
@@ -117,11 +127,11 @@ class _NewGroupDialogState extends ConsumerState<NewGroupDialog> {
       actions: [
         TextButton(
           onPressed: _busy ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: _busy ? null : _create,
-          child: const Text('Create'),
+          child: Text(context.l10n.actionCreate),
         ),
       ],
     );

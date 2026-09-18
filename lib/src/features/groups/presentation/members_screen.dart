@@ -16,16 +16,10 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Access levels GitLab exposes through the members API.
-const accessLevels = {
-  10: 'Guest',
-  15: 'Planner',
-  20: 'Reporter',
-  30: 'Developer',
-  40: 'Maintainer',
-  50: 'Owner',
-};
+const accessLevels = [10, 15, 20, 30, 40, 50];
 
 /// Member list shared between project and group detail screens,
 /// with invite / change-role / remove actions.
@@ -60,7 +54,7 @@ class _MembersListState extends ConsumerState<MembersList> {
             0,
           ),
           child: SearchField(
-            hint: 'Search members',
+            hint: context.l10n.pickerSearchMembers,
             onChanged: (v) => setState(() => _query = v),
           ),
         ),
@@ -74,7 +68,7 @@ class _MembersListState extends ConsumerState<MembersList> {
               Insets.xs,
             ),
             child: IconButton(
-              tooltip: 'Invite member',
+              tooltip: context.l10n.inviteMember,
               icon: const Icon(Icons.person_add_outlined),
               onPressed: () => unawaited(
                 MemberFormScreen.show(context, scope: scope).then((saved) {
@@ -103,9 +97,9 @@ class _MembersListState extends ConsumerState<MembersList> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.people_outline,
-                title: 'No members',
+                title: context.l10n.noMembers,
               ),
               itemBuilder: (context, index) =>
                   _MemberTile(member: data.items[index], scope: scope),
@@ -156,7 +150,7 @@ class _PendingInvitations extends ConsumerWidget {
               Insets.xs,
             ),
             child: Text(
-              'Pending invitations',
+              context.l10n.pendingInvitations,
               style: theme.textTheme.labelMedium,
             ),
           ),
@@ -184,17 +178,11 @@ class _PendingInvitations extends ConsumerWidget {
                         Text(
                           [
                             i.inviteEmail,
-                            switch (i.accessLevel) {
-                              10 => 'Guest',
-                              15 => 'Planner',
-                              20 => 'Reporter',
-                              30 => 'Developer',
-                              40 => 'Maintainer',
-                              50 => 'Owner',
-                              _ => 'Minimal',
-                            },
+                            context.l10n.accessLevelName(i.accessLevel),
                             if (i.expiresAt != null)
-                              'expires ${Format.date(i.expiresAt!)}',
+                              context.l10n.expiresDate(
+                                Format.date(i.expiresAt!),
+                              ),
                           ].join(' · '),
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -207,7 +195,7 @@ class _PendingInvitations extends ConsumerWidget {
                   TextButton(
                     onPressed: () => _revoke(context, ref, i.inviteEmail),
                     child: Text(
-                      'Revoke',
+                      context.l10n.actionRevoke,
                       style: TextStyle(color: colors.danger),
                     ),
                   ),
@@ -277,7 +265,7 @@ class _AccessRequests extends ConsumerWidget {
               Insets.xs,
             ),
             child: Text(
-              'Access requests',
+              context.l10n.accessRequests,
               style: Theme.of(context).textTheme.labelMedium,
             ),
           ),
@@ -295,18 +283,21 @@ class _AccessRequests extends ConsumerWidget {
                   const SizedBox(width: Insets.sm),
                   Expanded(
                     child: Text(
-                      '${m.name} @${m.username}',
+                      context.l10n.memberDisplay(m.name, m.username),
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   TextButton(
                     onPressed: () => _approve(context, ref, m.id),
-                    child: const Text('Approve'),
+                    child: Text(context.l10n.approve),
                   ),
                   TextButton(
                     onPressed: () => _deny(context, ref, m.id),
-                    child: Text('Deny', style: TextStyle(color: colors.danger)),
+                    child: Text(
+                      context.l10n.deny,
+                      style: TextStyle(color: colors.danger),
+                    ),
                   ),
                 ],
               ),
@@ -389,13 +380,13 @@ class _InvitedGroups extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Invited groups',
+                    context.l10n.invitedGroups,
                     style: theme.textTheme.labelMedium,
                   ),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Share'),
+                  label: Text(context.l10n.share),
                   onPressed: () => _share(context, ref, shared),
                 ),
               ],
@@ -410,7 +401,7 @@ class _InvitedGroups extends ConsumerWidget {
                 Insets.md,
               ),
               child: Text(
-                'Not shared with any group',
+                context.l10n.notSharedWithAnyGroup,
                 style: theme.textTheme.bodySmall,
               ),
             )
@@ -445,7 +436,7 @@ class _InvitedGroups extends ConsumerWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.remove_circle_outline, size: 18),
-                      tooltip: 'Unshare',
+                      tooltip: context.l10n.unshare,
                       onPressed: () => _unshare(context, ref, g),
                     ),
                   ],
@@ -472,7 +463,7 @@ class _InvitedGroups extends ConsumerWidget {
     }
     if (candidates.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No groups left to share with')),
+        SnackBar(content: Text(context.l10n.noGroupsLeftToShareWith)),
       );
       return;
     }
@@ -483,7 +474,7 @@ class _InvitedGroups extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Share with group'),
+          title: Text(context.l10n.shareWithGroup),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -491,7 +482,7 @@ class _InvitedGroups extends ConsumerWidget {
               children: [
                 DropdownButtonFormField<int>(
                   initialValue: groupId,
-                  decoration: const InputDecoration(labelText: 'Group'),
+                  decoration: InputDecoration(labelText: context.l10n.group),
                   items: [
                     for (final g in candidates)
                       DropdownMenuItem(
@@ -507,15 +498,30 @@ class _InvitedGroups extends ConsumerWidget {
                 const SizedBox(height: Insets.sm),
                 DropdownButtonFormField<int>(
                   initialValue: accessLevel,
-                  decoration: const InputDecoration(
-                    labelText: 'Max access level',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.maxAccessLevel,
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 10, child: Text('Guest')),
-                    DropdownMenuItem(value: 15, child: Text('Planner')),
-                    DropdownMenuItem(value: 20, child: Text('Reporter')),
-                    DropdownMenuItem(value: 30, child: Text('Developer')),
-                    DropdownMenuItem(value: 40, child: Text('Maintainer')),
+                  items: [
+                    DropdownMenuItem(
+                      value: 10,
+                      child: Text(context.l10n.roleGuest),
+                    ),
+                    DropdownMenuItem(
+                      value: 15,
+                      child: Text(context.l10n.planner),
+                    ),
+                    DropdownMenuItem(
+                      value: 20,
+                      child: Text(context.l10n.roleReporter),
+                    ),
+                    DropdownMenuItem(
+                      value: 30,
+                      child: Text(context.l10n.roleDeveloper),
+                    ),
+                    DropdownMenuItem(
+                      value: 40,
+                      child: Text(context.l10n.roleMaintainer),
+                    ),
                   ],
                   onChanged: (v) => setState(() => accessLevel = v ?? 30),
                 ),
@@ -524,8 +530,8 @@ class _InvitedGroups extends ConsumerWidget {
                   controller: days,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Expires in days (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldExpiresDays,
                   ),
                 ),
               ],
@@ -534,11 +540,11 @@ class _InvitedGroups extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Share'),
+              child: Text(context.l10n.share),
             ),
           ],
         ),
@@ -578,16 +584,16 @@ class _InvitedGroups extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${group.displayName}?'),
-        content: const Text('That group loses access to this one.'),
+        title: Text(context.l10n.removeNamedConfirm(group.displayName)),
+        content: Text(context.l10n.thatGroupLosesAccessToThis),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.actionRemove),
           ),
         ],
       ),
@@ -666,16 +672,18 @@ class _MemberTile extends ConsumerWidget {
             iconSize: 18,
             icon: Icon(Icons.more_vert, size: 18, color: colors.inkFaint),
             itemBuilder: (context) => [
-              for (final e in accessLevels.entries)
+              for (final e in accessLevels)
                 PopupMenuItem(
-                  value: e.key,
-                  enabled: e.key != member.accessLevel,
-                  child: Text('Make ${e.value}'),
+                  value: e,
+                  enabled: e != member.accessLevel,
+                  child: Text(
+                    context.l10n.makeP0(context.l10n.accessLevelName(e)),
+                  ),
                 ),
               const PopupMenuDivider(),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: -1,
-                child: Text('Remove', style: TextStyle()),
+                child: Text(context.l10n.actionRemove, style: TextStyle()),
               ),
             ],
             onSelected: (v) {
@@ -707,18 +715,20 @@ class _MemberTile extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${member.name}?'),
+        title: Text(context.l10n.removeNamedConfirm(member.name)),
         content: Text(
-          'They lose ${scope.isProject ? 'project' : 'group'} access.',
+          context.l10n.theyLoseP0Access(
+            scope.isProject ? context.l10n.projectWord : context.l10n.groupWord,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.actionRemove),
           ),
         ],
       ),
@@ -788,9 +798,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     final raw = _user.text.trim();
     if (raw.isEmpty || _saving) {
       setState(
-        () => _error = raw.isEmpty
-            ? 'Username, user id, or email is required'
-            : null,
+        () =>
+            _error = raw.isEmpty ? context.l10n.memberIdentifierRequired : null,
       );
       return;
     }
@@ -822,7 +831,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not add the member';
+        _error = context.l10n.memberAddFailed;
       });
     }
   }
@@ -854,27 +863,30 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Invite member', style: theme.textTheme.headlineSmall),
+          Text(context.l10n.inviteMember, style: theme.textTheme.headlineSmall),
           const SizedBox(height: Insets.lg),
           TextField(
             controller: _user,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Username, user id, or email',
-              hintText: 'jane, 42, or jane@example.com',
+            decoration: InputDecoration(
+              labelText: context.l10n.usernameUserIdOrEmail,
+              hintText: context.l10n.jane42OrJaneExampleCom,
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: Insets.md),
           DropdownButtonFormField<int>(
             initialValue: _level,
-            decoration: const InputDecoration(
-              labelText: 'Role',
+            decoration: InputDecoration(
+              labelText: context.l10n.fieldRole,
               border: OutlineInputBorder(),
             ),
             items: [
-              for (final e in accessLevels.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
+              for (final e in accessLevels)
+                DropdownMenuItem(
+                  value: e,
+                  child: Text(context.l10n.accessLevelName(e)),
+                ),
             ],
             onChanged: (v) => setState(() => _level = v ?? 30),
           ),
@@ -884,8 +896,10 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             icon: const Icon(Icons.event_outlined, size: 18),
             label: Text(
               _expires == null
-                  ? 'No expiration'
-                  : 'Expires ${_expires!.toIso8601String().substring(0, 10)}',
+                  ? context.l10n.noExpiration
+                  : context.l10n.expiresOn(
+                      _expires!.toIso8601String().substring(0, 10),
+                    ),
             ),
           ),
           if (_error != null)
@@ -899,7 +913,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             children: [
               TextButton(
                 onPressed: _saving ? null : () => context.pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               const SizedBox(width: Insets.sm),
               FilledButton(
@@ -910,7 +924,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Invite'),
+                    : Text(context.l10n.invite),
               ),
             ],
           ),
