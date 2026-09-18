@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Tags inside one container repository.
 class RegistryTagsScreen extends ConsumerStatefulWidget {
@@ -36,7 +37,7 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
     final notifier = ref.read(registryTagsProvider(filter).notifier);
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.repoName ?? 'Tags')),
+      appBar: AppBar(title: Text(widget.repoName ?? context.l10n.tabTags)),
       body: Column(
         children: [
           Padding(
@@ -47,7 +48,7 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
               0,
             ),
             child: SearchField(
-              hint: 'Filter tags (regex)',
+              hint: context.l10n.filterTagsRegex,
               onChanged: (s) => setState(() => _name = s),
             ),
           ),
@@ -65,9 +66,9 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
                   color: colors.border,
                   indent: Insets.lg,
                 ),
-                empty: const EmptyState(
+                empty: EmptyState(
                   icon: Icons.sell_outlined,
-                  title: 'No tags',
+                  title: context.l10n.noTags,
                 ),
                 itemBuilder: (context, index) {
                   final t = data.items[index];
@@ -103,16 +104,16 @@ class _RegistryTagsScreenState extends ConsumerState<RegistryTagsScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete tag?'),
-        content: Text('"${tag.name}" is removed permanently.'),
+        title: Text(context.l10n.deleteTag),
+        content: Text(context.l10n.p0IsRemovedPermanently(tag.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),

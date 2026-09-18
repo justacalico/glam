@@ -2523,4 +2523,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get following => 'Following';
+
+  @override
+  String get searchPackages => 'Search packages';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get noPackages => 'No packages';
+
+  @override
+  String get deletePackage => 'Delete package?';
+
+  @override
+  String p0IsRemovedPermanently(Object p0) {
+    return '\"$p0\" is removed permanently.';
+  }
+
+  @override
+  String get noFiles => 'No files';
+
+  @override
+  String get noContainerImages => 'No container images';
+
+  @override
+  String get deleteRepository => 'Delete repository?';
+
+  @override
+  String p0AndAllItsTagsAre(Object p0) {
+    return '\"$p0\" and all its tags are removed.';
+  }
+
+  @override
+  String get filterTagsRegex => 'Filter tags (regex)';
+
+  @override
+  String get noTags => 'No tags';
+
+  @override
+  String get deleteTag => 'Delete tag?';
 }

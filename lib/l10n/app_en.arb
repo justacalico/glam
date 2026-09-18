@@ -780,5 +780,17 @@
   "fieldLinkedin": "LinkedIn",
   "fieldBio": "Bio",
   "followers": "Followers",
-  "following": "Following"
+  "following": "Following",
+  "searchPackages": "Search packages",
+  "type": "Type",
+  "noPackages": "No packages",
+  "deletePackage": "Delete package?",
+  "p0IsRemovedPermanently": "\"{p0}\" is removed permanently.",
+  "noFiles": "No files",
+  "noContainerImages": "No container images",
+  "deleteRepository": "Delete repository?",
+  "p0AndAllItsTagsAre": "\"{p0}\" and all its tags are removed.",
+  "filterTagsRegex": "Filter tags (regex)",
+  "noTags": "No tags",
+  "deleteTag": "Delete tag?"
 }

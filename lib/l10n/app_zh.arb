@@ -780,5 +780,17 @@
   "fieldLinkedin": "LinkedIn",
   "fieldBio": "简介",
   "followers": "关注者",
-  "following": "正在关注"
+  "following": "正在关注",
+  "searchPackages": "搜索包",
+  "type": "类型",
+  "noPackages": "没有包",
+  "deletePackage": "删除包？",
+  "p0IsRemovedPermanently": "“{p0}”将被永久移除。",
+  "noFiles": "没有文件",
+  "noContainerImages": "没有容器镜像",
+  "deleteRepository": "删除仓库？",
+  "p0AndAllItsTagsAre": "“{p0}”及其所有标签将被移除。",
+  "filterTagsRegex": "过滤标签（正则）",
+  "noTags": "没有标签",
+  "deleteTag": "删除标签？"
 }

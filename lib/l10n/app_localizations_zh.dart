@@ -2490,4 +2490,44 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get following => '正在关注';
+
+  @override
+  String get searchPackages => '搜索包';
+
+  @override
+  String get type => '类型';
+
+  @override
+  String get noPackages => '没有包';
+
+  @override
+  String get deletePackage => '删除包？';
+
+  @override
+  String p0IsRemovedPermanently(Object p0) {
+    return '“$p0”将被永久移除。';
+  }
+
+  @override
+  String get noFiles => '没有文件';
+
+  @override
+  String get noContainerImages => '没有容器镜像';
+
+  @override
+  String get deleteRepository => '删除仓库？';
+
+  @override
+  String p0AndAllItsTagsAre(Object p0) {
+    return '“$p0”及其所有标签将被移除。';
+  }
+
+  @override
+  String get filterTagsRegex => '过滤标签（正则）';
+
+  @override
+  String get noTags => '没有标签';
+
+  @override
+  String get deleteTag => '删除标签？';
 }

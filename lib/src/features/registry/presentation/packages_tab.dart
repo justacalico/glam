@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/registry/application/registry_providers.dart';
 import 'package:glam/src/features/registry/domain/registry_models.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 String _label(GitLabPackage p) =>
     p.version.isEmpty ? p.name : '${p.name} ${p.version}';
@@ -66,13 +67,13 @@ class _ProjectPackagesTabState extends ConsumerState<ProjectPackagesTab> {
             children: [
               Expanded(
                 child: SearchField(
-                  hint: 'Search packages',
+                  hint: context.l10n.searchPackages,
                   onChanged: (v) => setState(() => _name = v),
                 ),
               ),
               const SizedBox(width: Insets.sm),
               FilterMenu(
-                title: 'Type',
+                title: context.l10n.type,
                 current: _type,
                 options: _types,
                 onSelect: (v) => setState(() => _type = v),
@@ -94,9 +95,9 @@ class _ProjectPackagesTabState extends ConsumerState<ProjectPackagesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.inventory_2_outlined,
-                title: 'No packages',
+                title: context.l10n.noPackages,
               ),
               itemBuilder: (context, index) {
                 final p = data.items[index];
@@ -136,7 +137,7 @@ class _ProjectPackagesTabState extends ConsumerState<ProjectPackagesTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(context.l10n.actionClose),
           ),
         ],
       ),
@@ -151,16 +152,16 @@ class _ProjectPackagesTabState extends ConsumerState<ProjectPackagesTab> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete package?'),
-        content: Text('"${_label(p)}" is removed permanently.'),
+        title: Text(context.l10n.deletePackage),
+        content: Text(context.l10n.p0IsRemovedPermanently(_label(p))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -205,7 +206,7 @@ class _PackageFiles extends ConsumerWidget {
       ),
       error: (e, _) => Text('$e'),
       data: (list) => list.isEmpty
-          ? const Text('No files')
+          ? Text(context.l10n.noFiles)
           : ListView(
               shrinkWrap: true,
               children: [

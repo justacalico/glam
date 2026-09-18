@@ -4783,6 +4783,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Following'**
   String get following;
+
+  /// No description provided for @searchPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Search packages'**
+  String get searchPackages;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @noPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages'**
+  String get noPackages;
+
+  /// No description provided for @deletePackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete package?'**
+  String get deletePackage;
+
+  /// No description provided for @p0IsRemovedPermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" is removed permanently.'**
+  String p0IsRemovedPermanently(Object p0);
+
+  /// No description provided for @noFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'No files'**
+  String get noFiles;
+
+  /// No description provided for @noContainerImages.
+  ///
+  /// In en, this message translates to:
+  /// **'No container images'**
+  String get noContainerImages;
+
+  /// No description provided for @deleteRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete repository?'**
+  String get deleteRepository;
+
+  /// No description provided for @p0AndAllItsTagsAre.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" and all its tags are removed.'**
+  String p0AndAllItsTagsAre(Object p0);
+
+  /// No description provided for @filterTagsRegex.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter tags (regex)'**
+  String get filterTagsRegex;
+
+  /// No description provided for @noTags.
+  ///
+  /// In en, this message translates to:
+  /// **'No tags'**
+  String get noTags;
+
+  /// No description provided for @deleteTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete tag?'**
+  String get deleteTag;
 }
 
 class _AppLocalizationsDelegate
