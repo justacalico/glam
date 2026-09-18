@@ -2977,6 +2977,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'users'**
   String get userPlural;
+
+  /// No description provided for @newGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get newGroup;
+
+  /// No description provided for @noGroupsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups found'**
+  String get noGroupsFound;
+
+  /// No description provided for @searchThisGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Search this group'**
+  String get searchThisGroup;
+
+  /// No description provided for @groupActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Group actions'**
+  String get groupActions;
+
+  /// No description provided for @editGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get editGroup;
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get deleteGroup;
+
+  /// No description provided for @shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get shared;
+
+  /// No description provided for @subgroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Subgroups'**
+  String get subgroups;
+
+  /// No description provided for @iterations.
+  ///
+  /// In en, this message translates to:
+  /// **'Iterations'**
+  String get iterations;
+
+  /// No description provided for @variables.
+  ///
+  /// In en, this message translates to:
+  /// **'Variables'**
+  String get variables;
+
+  /// No description provided for @tokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens'**
+  String get tokens;
+
+  /// No description provided for @audit.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit'**
+  String get audit;
+
+  /// No description provided for @deleteGroup2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group?'**
+  String get deleteGroup2;
+
+  /// No description provided for @noProjectsInThisGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects in this group'**
+  String get noProjectsInThisGroup;
+
+  /// No description provided for @noProjectsSharedWithThisGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects shared with this group'**
+  String get noProjectsSharedWithThisGroup;
+
+  /// No description provided for @noIterations.
+  ///
+  /// In en, this message translates to:
+  /// **'No iterations'**
+  String get noIterations;
+
+  /// No description provided for @iterationsNeedAPremiumGroupWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Iterations need a Premium group with a cadence.'**
+  String get iterationsNeedAPremiumGroupWith;
+
+  /// No description provided for @noSubgroups.
+  ///
+  /// In en, this message translates to:
+  /// **'No subgroups'**
+  String get noSubgroups;
+
+  /// No description provided for @noMergeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No merge requests'**
+  String get noMergeRequests;
+
+  /// No description provided for @deleteGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group?'**
+  String get deleteGroupConfirm;
+
+  /// No description provided for @deleteGroupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes the group and all of its subgroups and content. This cannot be undone.'**
+  String get deleteGroupBody;
+
+  /// No description provided for @searchProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Search projects'**
+  String get searchProjects;
+
+  /// No description provided for @searchIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Search issues'**
+  String get searchIssues;
+
+  /// No description provided for @searchMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Search merge requests'**
+  String get searchMrs;
+
+  /// No description provided for @stateOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get stateOpen;
+
+  /// No description provided for @stateClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get stateClosed;
+
+  /// No description provided for @stateAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get stateAll;
+
+  /// No description provided for @stateMerged.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged'**
+  String get stateMerged;
 }
 
 class _AppLocalizationsDelegate

@@ -1495,4 +1495,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get userPlural => '用户';
+
+  @override
+  String get newGroup => '新建群组';
+
+  @override
+  String get noGroupsFound => '未找到群组';
+
+  @override
+  String get searchThisGroup => '搜索此群组';
+
+  @override
+  String get groupActions => '群组操作';
+
+  @override
+  String get editGroup => '编辑群组';
+
+  @override
+  String get deleteGroup => '删除群组';
+
+  @override
+  String get shared => '已共享';
+
+  @override
+  String get subgroups => '子群组';
+
+  @override
+  String get iterations => '迭代';
+
+  @override
+  String get variables => '变量';
+
+  @override
+  String get tokens => '令牌';
+
+  @override
+  String get audit => '审计';
+
+  @override
+  String get deleteGroup2 => 'Delete group?';
+
+  @override
+  String get noProjectsInThisGroup => '此群组中没有项目';
+
+  @override
+  String get noProjectsSharedWithThisGroup => '没有与此群组共享的项目';
+
+  @override
+  String get noIterations => '没有迭代';
+
+  @override
+  String get iterationsNeedAPremiumGroupWith => '迭代需要 Premium 群组并设置周期。';
+
+  @override
+  String get noSubgroups => '没有子群组';
+
+  @override
+  String get noMergeRequests => '没有合并请求';
+
+  @override
+  String get deleteGroupConfirm => '删除群组？';
+
+  @override
+  String get deleteGroupBody => '将删除该群组及其所有子群组和内容。此操作无法撤销。';
+
+  @override
+  String get searchProjects => '搜索项目';
+
+  @override
+  String get searchIssues => '搜索议题';
+
+  @override
+  String get searchMrs => '搜索合并请求';
+
+  @override
+  String get stateOpen => '打开';
+
+  @override
+  String get stateClosed => '已关闭';
+
+  @override
+  String get stateAll => '全部';
+
+  @override
+  String get stateMerged => '已合并';
 }

@@ -1513,4 +1513,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userPlural => 'users';
+
+  @override
+  String get newGroup => 'New group';
+
+  @override
+  String get noGroupsFound => 'No groups found';
+
+  @override
+  String get searchThisGroup => 'Search this group';
+
+  @override
+  String get groupActions => 'Group actions';
+
+  @override
+  String get editGroup => 'Edit group';
+
+  @override
+  String get deleteGroup => 'Delete group';
+
+  @override
+  String get shared => 'Shared';
+
+  @override
+  String get subgroups => 'Subgroups';
+
+  @override
+  String get iterations => 'Iterations';
+
+  @override
+  String get variables => 'Variables';
+
+  @override
+  String get tokens => 'Tokens';
+
+  @override
+  String get audit => 'Audit';
+
+  @override
+  String get deleteGroup2 => 'Delete group?';
+
+  @override
+  String get noProjectsInThisGroup => 'No projects in this group';
+
+  @override
+  String get noProjectsSharedWithThisGroup =>
+      'No projects shared with this group';
+
+  @override
+  String get noIterations => 'No iterations';
+
+  @override
+  String get iterationsNeedAPremiumGroupWith =>
+      'Iterations need a Premium group with a cadence.';
+
+  @override
+  String get noSubgroups => 'No subgroups';
+
+  @override
+  String get noMergeRequests => 'No merge requests';
+
+  @override
+  String get deleteGroupConfirm => 'Delete group?';
+
+  @override
+  String get deleteGroupBody =>
+      'This deletes the group and all of its subgroups and content. This cannot be undone.';
+
+  @override
+  String get searchProjects => 'Search projects';
+
+  @override
+  String get searchIssues => 'Search issues';
+
+  @override
+  String get searchMrs => 'Search merge requests';
+
+  @override
+  String get stateOpen => 'Open';
+
+  @override
+  String get stateClosed => 'Closed';
+
+  @override
+  String get stateAll => 'All';
+
+  @override
+  String get stateMerged => 'Merged';
 }

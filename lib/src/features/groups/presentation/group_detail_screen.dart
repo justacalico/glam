@@ -33,6 +33,7 @@ import 'package:glam/src/features/labels/presentation/labels_screen.dart';
 import 'package:glam/src/features/milestones/presentation/milestones_screen.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Group home: header plus tabs for projects, subgroups, members.
 class GroupDetailScreen extends ConsumerWidget {
@@ -46,10 +47,10 @@ class GroupDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Group'),
+        title: Text(context.l10n.group),
         actions: [
           IconButton(
-            tooltip: 'Notifications',
+            tooltip: context.l10n.notificationsTitle,
             icon: const Icon(Icons.notifications_outlined, size: 20),
             onPressed: () => unawaited(
               ScopedNotificationSheet.show(context, (
@@ -59,17 +60,20 @@ class GroupDetailScreen extends ConsumerWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Search this group',
+            tooltip: context.l10n.searchThisGroup,
             icon: const Icon(Icons.search, size: 20),
             onPressed: () =>
                 unawaited(context.push(Routes.groupSearch(groupId))),
           ),
           PopupMenuButton<String>(
-            tooltip: 'Group actions',
+            tooltip: context.l10n.groupActions,
             iconSize: 20,
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'edit', child: Text('Edit group')),
-              PopupMenuItem(value: 'delete', child: Text('Delete group')),
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'edit', child: Text(context.l10n.editGroup)),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text(context.l10n.deleteGroup),
+              ),
             ],
             onSelected: (v) {
               final g = group.value;
@@ -90,25 +94,25 @@ class GroupDetailScreen extends ConsumerWidget {
           child: Column(
             children: [
               _GroupHeader(group: g),
-              const TabBar(
+              TabBar(
                 isScrollable: true,
                 tabs: [
-                  Tab(text: 'Projects'),
-                  Tab(text: 'Shared'),
-                  Tab(text: 'Subgroups'),
-                  Tab(text: 'Issues'),
-                  Tab(text: 'MRs'),
-                  Tab(text: 'Members'),
-                  Tab(text: 'Milestones'),
-                  Tab(text: 'Boards'),
-                  Tab(text: 'Labels'),
-                  Tab(text: 'Iterations'),
-                  Tab(text: 'Variables'),
-                  Tab(text: 'Runners'),
-                  Tab(text: 'Tokens'),
-                  Tab(text: 'Webhooks'),
-                  Tab(text: 'Activity'),
-                  Tab(text: 'Audit'),
+                  Tab(text: context.l10n.projectsTitle),
+                  Tab(text: context.l10n.shared),
+                  Tab(text: context.l10n.subgroups),
+                  Tab(text: context.l10n.issuesTitle),
+                  Tab(text: context.l10n.navMrs),
+                  Tab(text: context.l10n.tabMembers),
+                  Tab(text: context.l10n.tabMilestones),
+                  Tab(text: context.l10n.tabBoards),
+                  Tab(text: context.l10n.tabLabels),
+                  Tab(text: context.l10n.iterations),
+                  Tab(text: context.l10n.variables),
+                  Tab(text: context.l10n.runners),
+                  Tab(text: context.l10n.tokens),
+                  Tab(text: context.l10n.webhooksTitle),
+                  Tab(text: context.l10n.activityTitle),
+                  Tab(text: context.l10n.audit),
                 ],
               ),
               Expanded(
@@ -149,19 +153,16 @@ Future<void> _deleteGroup(
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Delete group?'),
-      content: const Text(
-        'This deletes the group and all of its subgroups and content. '
-        'This cannot be undone.',
-      ),
+      title: Text(context.l10n.deleteGroupConfirm),
+      content: Text(context.l10n.deleteGroupBody),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Delete group'),
+          child: Text(context.l10n.deleteGroup),
         ),
       ],
     ),
@@ -261,7 +262,7 @@ class _ProjectsTabState extends ConsumerState<_ProjectsTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search projects',
+            hint: context.l10n.searchProjects,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -279,9 +280,9 @@ class _ProjectsTabState extends ConsumerState<_ProjectsTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.folder_outlined,
-                title: 'No projects in this group',
+                title: context.l10n.noProjectsInThisGroup,
               ),
               itemBuilder: (context, index) {
                 final p = data.items[index];
@@ -318,9 +319,9 @@ class _SharedProjectsTab extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
+        empty: EmptyState(
           icon: Icons.folder_shared_outlined,
-          title: 'No projects shared with this group',
+          title: context.l10n.noProjectsSharedWithThisGroup,
         ),
         itemBuilder: (context, index) {
           final p = data.items[index];
@@ -394,9 +395,9 @@ class _RunnersTab extends ConsumerWidget {
       value: runners,
       onRetry: () => ref.invalidate(groupRunnersProvider(groupId)),
       data: (list) => list.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.smart_toy_outlined,
-              title: 'No runners available',
+              title: context.l10n.noRunnersAvailable,
             )
           : ListView(
               padding: Insets.pagePadding,
@@ -526,10 +527,10 @@ class _IterationsTab extends ConsumerWidget {
       onRetry: () => ref.invalidate(groupIterationsProvider(groupId)),
       data: (items) {
         if (items.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.event_repeat_outlined,
-            title: 'No iterations',
-            message: 'Iterations need a Premium group with a cadence.',
+            title: context.l10n.noIterations,
+            message: context.l10n.iterationsNeedAPremiumGroupWith,
           );
         }
         return ListView.separated(
@@ -556,7 +557,7 @@ class _IterationsTab extends ConsumerWidget {
               trailing: it.webUrl == null
                   ? null
                   : IconButton(
-                      tooltip: 'Open in browser',
+                      tooltip: context.l10n.actionOpenBrowser,
                       icon: const Icon(Icons.open_in_new, size: 16),
                       onPressed: () => unawaited(launchExternal(it.webUrl!)),
                     ),
@@ -588,9 +589,9 @@ class _SubgroupsTab extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
+        empty: EmptyState(
           icon: Icons.workspaces_outlined,
-          title: 'No subgroups',
+          title: context.l10n.noSubgroups,
         ),
         itemBuilder: (context, index) => GroupTile(group: data.items[index]),
       ),
@@ -618,7 +619,11 @@ class _GroupIssuesTabState extends ConsumerState<_GroupIssuesTab> {
     final filter = (group: widget.groupId, state: _state, search: _search);
     final list = ref.watch(groupIssuesProvider(filter));
     final notifier = ref.read(groupIssuesProvider(filter).notifier);
-    const states = {'opened': 'Open', 'closed': 'Closed', null: 'All'};
+    final states = {
+      'opened': context.l10n.stateOpen,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
+    };
 
     return Column(
       children: [
@@ -630,7 +635,7 @@ class _GroupIssuesTabState extends ConsumerState<_GroupIssuesTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search issues',
+            hint: context.l10n.searchIssues,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -670,7 +675,10 @@ class _GroupIssuesTabState extends ConsumerState<_GroupIssuesTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(icon: Icons.task_alt, title: 'No issues'),
+              empty: EmptyState(
+                icon: Icons.task_alt,
+                title: context.l10n.noIssues,
+              ),
               itemBuilder: (context, index) {
                 final issue = data.items[index];
                 return IssueTile(
@@ -711,11 +719,11 @@ class _GroupMrsTabState extends ConsumerState<_GroupMrsTab> {
     final filter = (group: widget.groupId, state: _state, search: _search);
     final list = ref.watch(groupMrsProvider(filter));
     final notifier = ref.read(groupMrsProvider(filter).notifier);
-    const states = {
-      'opened': 'Open',
-      'merged': 'Merged',
-      'closed': 'Closed',
-      null: 'All',
+    final states = {
+      'opened': context.l10n.stateOpen,
+      'merged': context.l10n.stateMerged,
+      'closed': context.l10n.stateClosed,
+      null: context.l10n.stateAll,
     };
 
     return Column(
@@ -728,7 +736,7 @@ class _GroupMrsTabState extends ConsumerState<_GroupMrsTab> {
             0,
           ),
           child: SearchField(
-            hint: 'Search merge requests',
+            hint: context.l10n.searchMrs,
             onChanged: (v) => setState(() => _search = v),
           ),
         ),
@@ -768,9 +776,9 @@ class _GroupMrsTabState extends ConsumerState<_GroupMrsTab> {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.merge,
-                title: 'No merge requests',
+                title: context.l10n.noMergeRequests,
               ),
               itemBuilder: (context, index) {
                 final mr = data.items[index];
