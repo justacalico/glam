@@ -11,6 +11,7 @@ import 'package:glam/src/features/issues/application/issues_providers.dart';
 import 'package:glam/src/features/issues/domain/issue_link.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
 import 'package:go_router/go_router.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Linked issues (relates_to / blocks / blocked_by) with add / remove.
 class IssueLinksSection extends ConsumerWidget {
@@ -30,13 +31,13 @@ class IssueLinksSection extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                'Linked issues',
+                context.l10n.linkedIssues,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Link'),
+              label: Text(context.l10n.link),
               onPressed: () => _link(context, ref),
             ),
           ],
@@ -61,7 +62,7 @@ class IssueLinksSection extends ConsumerWidget {
                 ? Padding(
                     padding: const EdgeInsets.all(Insets.lg),
                     child: Text(
-                      'No linked issues',
+                      context.l10n.noLinkedIssues,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   )
@@ -98,7 +99,7 @@ class IssueLinksSection extends ConsumerWidget {
           }
 
           return AlertDialog(
-            title: const Text('Link issue'),
+            title: Text(context.l10n.linkIssue),
             content: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Column(
@@ -109,7 +110,7 @@ class IssueLinksSection extends ConsumerWidget {
                     autofocus: true,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Issue #',
+                      labelText: context.l10n.issueIidField,
                       errorText: iidError ? 'Enter an issue number' : null,
                     ),
                     onChanged: (_) {
@@ -122,15 +123,15 @@ class IssueLinksSection extends ConsumerWidget {
                   const SizedBox(height: Insets.sm),
                   TextField(
                     controller: project,
-                    decoration: const InputDecoration(
-                      labelText: 'Project (optional)',
-                      hintText: 'group/other-project',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.projectOptional,
+                      hintText: context.l10n.groupOtherProject,
                     ),
                   ),
                   const SizedBox(height: Insets.md),
                   Row(
                     children: [
-                      const Expanded(child: Text('Link type')),
+                      Expanded(child: Text(context.l10n.linkType)),
                       DropdownButton<String>(
                         value: linkType,
                         onChanged: (v) {
@@ -138,18 +139,18 @@ class IssueLinksSection extends ConsumerWidget {
                             setState(() => linkType = v);
                           }
                         },
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'relates_to',
-                            child: Text('Relates to'),
+                            child: Text(context.l10n.relatesTo),
                           ),
                           DropdownMenuItem(
                             value: 'blocks',
-                            child: Text('Blocks'),
+                            child: Text(context.l10n.blocks),
                           ),
                           DropdownMenuItem(
                             value: 'is_blocked_by',
-                            child: Text('Blocked by'),
+                            child: Text(context.l10n.blockedBy),
                           ),
                         ],
                       ),
@@ -161,9 +162,9 @@ class IssueLinksSection extends ConsumerWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
-              FilledButton(onPressed: submit, child: const Text('Link')),
+              FilledButton(onPressed: submit, child: Text(context.l10n.link)),
             ],
           );
         },
@@ -204,16 +205,16 @@ class IssueLinksSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove link?'),
-        content: Text('Unlink #${link.issue.iid} from this issue.'),
+        title: Text(context.l10n.removeLink),
+        content: Text(context.l10n.unlinkP0FromThisIssue(link.issue.iid)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.actionRemove),
           ),
         ],
       ),
@@ -255,7 +256,10 @@ class _IssueLinkTile extends StatelessWidget {
         ),
         title: Text(issue.title, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(
-          '${link.typeLabel} · ${issue.references ?? '#${issue.iid}'}',
+          context.l10n.linkSummary(
+            link.typeLabel,
+            issue.references ?? context.l10n.issueIid(issue.iid),
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -264,7 +268,7 @@ class _IssueLinkTile extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: const Icon(Icons.link_off_outlined, size: 18),
-          tooltip: 'Remove link',
+          tooltip: context.l10n.removeLinkTooltip,
           onPressed: onRemove,
         ),
       ),
@@ -288,13 +292,13 @@ class RelatedMrsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Related merge requests',
+          context.l10n.relatedMergeRequests,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         if (closedBy.isNotEmpty) ...[
           const SizedBox(height: Insets.sm),
           Text(
-            'Will be closed by',
+            context.l10n.willBeClosedBy,
             style: Theme.of(context).textTheme.bodySmall,
           ),
           for (final m in closedBy)
@@ -325,7 +329,7 @@ class RelatedMrsSection extends ConsumerWidget {
                 ? Padding(
                     padding: const EdgeInsets.all(Insets.lg),
                     child: Text(
-                      'No related merge requests',
+                      context.l10n.noRelatedMergeRequests,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   )

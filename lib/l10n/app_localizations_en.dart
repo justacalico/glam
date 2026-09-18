@@ -1695,4 +1695,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupWord => 'group';
+
+  @override
+  String get linkedIssues => 'Linked issues';
+
+  @override
+  String get link => 'Link';
+
+  @override
+  String get noLinkedIssues => 'No linked issues';
+
+  @override
+  String get linkIssue => 'Link issue';
+
+  @override
+  String get projectOptional => 'Project (optional)';
+
+  @override
+  String get groupOtherProject => 'group/other-project';
+
+  @override
+  String get linkType => 'Link type';
+
+  @override
+  String get relatesTo => 'Relates to';
+
+  @override
+  String get blocks => 'Blocks';
+
+  @override
+  String get blockedBy => 'Blocked by';
+
+  @override
+  String get removeLink => 'Remove link?';
+
+  @override
+  String unlinkP0FromThisIssue(Object p0) {
+    return 'Unlink #$p0 from this issue.';
+  }
+
+  @override
+  String get relatedMergeRequests => 'Related merge requests';
+
+  @override
+  String get willBeClosedBy => 'Will be closed by';
+
+  @override
+  String get noRelatedMergeRequests => 'No related merge requests';
+
+  @override
+  String moreCount(Object p0) {
+    return '+$p0';
+  }
+
+  @override
+  String linkSummary(Object p0, Object p1) {
+    return '$p0 · $p1';
+  }
+
+  @override
+  String get issueIidField => 'Issue #';
+
+  @override
+  String get removeLinkTooltip => 'Remove link';
 }

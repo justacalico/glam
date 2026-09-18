@@ -3307,6 +3307,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'group'**
   String get groupWord;
+
+  /// No description provided for @linkedIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked issues'**
+  String get linkedIssues;
+
+  /// No description provided for @link.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get link;
+
+  /// No description provided for @noLinkedIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'No linked issues'**
+  String get noLinkedIssues;
+
+  /// No description provided for @linkIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Link issue'**
+  String get linkIssue;
+
+  /// No description provided for @projectOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Project (optional)'**
+  String get projectOptional;
+
+  /// No description provided for @groupOtherProject.
+  ///
+  /// In en, this message translates to:
+  /// **'group/other-project'**
+  String get groupOtherProject;
+
+  /// No description provided for @linkType.
+  ///
+  /// In en, this message translates to:
+  /// **'Link type'**
+  String get linkType;
+
+  /// No description provided for @relatesTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Relates to'**
+  String get relatesTo;
+
+  /// No description provided for @blocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks'**
+  String get blocks;
+
+  /// No description provided for @blockedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked by'**
+  String get blockedBy;
+
+  /// No description provided for @removeLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove link?'**
+  String get removeLink;
+
+  /// No description provided for @unlinkP0FromThisIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink #{p0} from this issue.'**
+  String unlinkP0FromThisIssue(Object p0);
+
+  /// No description provided for @relatedMergeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Related merge requests'**
+  String get relatedMergeRequests;
+
+  /// No description provided for @willBeClosedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be closed by'**
+  String get willBeClosedBy;
+
+  /// No description provided for @noRelatedMergeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No related merge requests'**
+  String get noRelatedMergeRequests;
+
+  /// No description provided for @moreCount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{p0}'**
+  String moreCount(Object p0);
+
+  /// No description provided for @linkSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} · {p1}'**
+  String linkSummary(Object p0, Object p1);
+
+  /// No description provided for @issueIidField.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue #'**
+  String get issueIidField;
+
+  /// No description provided for @removeLinkTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove link'**
+  String get removeLinkTooltip;
 }
 
 class _AppLocalizationsDelegate

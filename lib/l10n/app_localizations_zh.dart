@@ -1672,4 +1672,67 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get groupWord => '群组';
+
+  @override
+  String get linkedIssues => '关联议题';
+
+  @override
+  String get link => '链接';
+
+  @override
+  String get noLinkedIssues => '没有关联议题';
+
+  @override
+  String get linkIssue => '链接议题';
+
+  @override
+  String get projectOptional => '项目（可选）';
+
+  @override
+  String get groupOtherProject => 'group/other-project';
+
+  @override
+  String get linkType => '链接类型';
+
+  @override
+  String get relatesTo => '关联';
+
+  @override
+  String get blocks => '阻塞';
+
+  @override
+  String get blockedBy => '被阻塞';
+
+  @override
+  String get removeLink => '移除链接？';
+
+  @override
+  String unlinkP0FromThisIssue(Object p0) {
+    return '从此议题取消链接 #$p0。';
+  }
+
+  @override
+  String get relatedMergeRequests => '相关合并请求';
+
+  @override
+  String get willBeClosedBy => '将被关闭';
+
+  @override
+  String get noRelatedMergeRequests => '没有相关合并请求';
+
+  @override
+  String moreCount(Object p0) {
+    return '+$p0';
+  }
+
+  @override
+  String linkSummary(Object p0, Object p1) {
+    return '$p0 · $p1';
+  }
+
+  @override
+  String get issueIidField => '议题 #';
+
+  @override
+  String get removeLinkTooltip => '移除链接';
 }

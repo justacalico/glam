@@ -5,6 +5,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/avatar_stack.dart';
 import 'package:glam/src/core/widgets/label_chip.dart';
 import 'package:glam/src/features/issues/domain/issue.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One issue row: state dot, title, labels, and metadata.
 class IssueTile extends StatelessWidget {
@@ -67,7 +68,7 @@ class IssueTile extends StatelessWidget {
                           LabelChip(name: label),
                         if (issue.labels.length > 4)
                           Text(
-                            '+${issue.labels.length - 4}',
+                            context.l10n.moreCount(issue.labels.length - 4),
                             style: theme.textTheme.labelSmall,
                           ),
                       ],
