@@ -18,6 +18,7 @@ import 'package:glam/src/features/pipelines/domain/pipeline_schedule.dart';
 import 'package:glam/src/features/pipelines/presentation/pipelines_screen.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Scheduled pipelines for a project — the Schedules half of the
 /// Pipelines tab.
@@ -40,7 +41,7 @@ class PipelineSchedulesTab extends ConsumerWidget {
             onPressed: () =>
                 unawaited(_ScheduleForm.show(context, projectId: projectId)),
             icon: const Icon(Icons.add, size: 16),
-            label: const Text('New schedule'),
+            label: Text(context.l10n.newSchedule),
           ),
         ),
         Expanded(
@@ -57,9 +58,9 @@ class PipelineSchedulesTab extends ConsumerWidget {
                 color: colors.border,
                 indent: Insets.lg,
               ),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.schedule_outlined,
-                title: 'No scheduled pipelines',
+                title: context.l10n.noScheduledPipelines,
               ),
               itemBuilder: (context, index) =>
                   _ScheduleTile(projectId: projectId, s: data.items[index]),
@@ -90,7 +91,7 @@ class _ScheduleTile extends ConsumerWidget {
         color: s.active ? context.colors.success : context.colors.inkMuted,
       ),
       title: Text(
-        s.description.isEmpty ? 'Schedule #${s.id}' : s.description,
+        s.description.isEmpty ? context.l10n.scheduleId(s.id) : s.description,
         style: theme.textTheme.titleSmall,
       ),
       subtitle: Text(
@@ -112,15 +113,24 @@ class _ScheduleTile extends ConsumerWidget {
             onSelected: (action) =>
                 unawaited(_action(context, ref, notifier, action, myId)),
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'runs', child: Text('Recent runs')),
-              const PopupMenuItem(value: 'play', child: Text('Run now')),
+              PopupMenuItem(
+                value: 'runs',
+                child: Text(context.l10n.recentRuns),
+              ),
+              PopupMenuItem(value: 'play', child: Text(context.l10n.runNow)),
               if (myId != null && s.owner?.id != myId)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'own',
-                  child: Text('Take ownership'),
+                  child: Text(context.l10n.takeOwnership),
                 ),
-              const PopupMenuItem(value: 'edit', child: Text('Edit')),
-              const PopupMenuItem(value: 'delete', child: Text('Delete')),
+              PopupMenuItem(
+                value: 'edit',
+                child: Text(context.l10n.actionEdit),
+              ),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text(context.l10n.actionDelete),
+              ),
             ],
           ),
         ],
@@ -152,9 +162,9 @@ class _ScheduleTile extends ConsumerWidget {
         case 'play':
           await notifier.play(s.id);
           if (context.mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Schedule triggered')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.scheduleTriggered)),
+            );
           }
         case 'own':
           await notifier.takeOwnership(s.id);
@@ -175,19 +185,20 @@ class _ScheduleTile extends ConsumerWidget {
           final ok = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Delete schedule?'),
+              title: Text(context.l10n.deleteSchedule),
               content: Text(
-                '"${s.description.isEmpty ? s.cron : s.description}"'
-                ' stops running.',
+                context.l10n.scheduleStopsRunning(
+                  s.description.isEmpty ? s.cron : s.description,
+                ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.actionCancel),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Delete'),
+                  child: Text(context.l10n.actionDelete),
                 ),
               ],
             ),
@@ -206,7 +217,7 @@ class _ScheduleTile extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.errorGeneric)));
       }
     }
   }
@@ -234,7 +245,7 @@ class _ScheduleRunsSheet extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(Insets.lg),
             child: Text(
-              'Recent runs',
+              context.l10n.recentRuns,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -243,9 +254,9 @@ class _ScheduleRunsSheet extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('$e')),
               data: (list) => list.isEmpty
-                  ? const EmptyState(
+                  ? EmptyState(
                       icon: Icons.play_circle_outline,
-                      title: 'No runs yet',
+                      title: context.l10n.noRunsYet,
                     )
                   : ListView.builder(
                       controller: controller,
@@ -350,12 +361,12 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
         _saving) {
       setState(
         () => _error = _ref == null || _ref!.isEmpty
-            ? 'Pick a target ref'
+            ? context.l10n.pickTargetRef
             : _description.text.trim().isEmpty
             ? 'A description is required'
             : cron.isEmpty
             ? 'A cron expression is required'
-            : 'Variable keys must be unique',
+            : context.l10n.varKeysUnique,
       );
       return;
     }
@@ -379,7 +390,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the schedule';
+        _error = context.l10n.scheduleSaveFailed;
       });
     }
   }
@@ -450,7 +461,9 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
     final branchNames = branches.value?.items.map((b) => b.name).toList();
 
     return AlertDialog(
-      title: Text(_editing ? 'Edit schedule' : 'New schedule'),
+      title: Text(
+        _editing ? context.l10n.editSchedule : context.l10n.newSchedule,
+      ),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
@@ -460,16 +473,16 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
             children: [
               TextField(
                 controller: _description,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldDescription,
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: _ref,
-                decoration: const InputDecoration(
-                  labelText: 'Target ref',
+                decoration: InputDecoration(
+                  labelText: context.l10n.targetRef,
                   border: OutlineInputBorder(),
                 ),
                 items: [
@@ -508,8 +521,8 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                     flex: 2,
                     child: TextField(
                       controller: _cron,
-                      decoration: const InputDecoration(
-                        labelText: 'Cron',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cron,
                         hintText: '0 2 * * *',
                         border: OutlineInputBorder(),
                       ),
@@ -519,9 +532,9 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                   Expanded(
                     child: TextField(
                       controller: _timezone,
-                      decoration: const InputDecoration(
-                        labelText: 'Timezone',
-                        hintText: 'UTC',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.timezone,
+                        hintText: context.l10n.utc,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -530,13 +543,16 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Active'),
+                title: Text(context.l10n.stateActive),
                 value: _active,
                 onChanged: (v) => setState(() => _active = v),
               ),
               Row(
                 children: [
-                  Text('Variables', style: theme.textTheme.labelLarge),
+                  Text(
+                    context.l10n.variables,
+                    style: theme.textTheme.labelLarge,
+                  ),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.add, size: 18),
@@ -558,8 +574,8 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                       Expanded(
                         child: TextField(
                           controller: _vars[i].key,
-                          decoration: const InputDecoration(
-                            hintText: 'KEY',
+                          decoration: InputDecoration(
+                            hintText: context.l10n.key,
                             isDense: true,
                             border: OutlineInputBorder(),
                           ),
@@ -599,7 +615,7 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => context.pop(),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: _saving ? null : _save,
@@ -609,7 +625,11 @@ class _ScheduleFormState extends ConsumerState<_ScheduleForm> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(_editing ? 'Save' : 'Create'),
+              : Text(
+                  _editing
+                      ? context.l10n.actionSave
+                      : context.l10n.actionCreate,
+                ),
         ),
       ],
     );

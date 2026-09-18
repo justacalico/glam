@@ -2256,4 +2256,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pipelineSourceChat => 'Chat';
+
+  @override
+  String get newSchedule => 'New schedule';
+
+  @override
+  String get noScheduledPipelines => 'No scheduled pipelines';
+
+  @override
+  String get recentRuns => 'Recent runs';
+
+  @override
+  String get runNow => 'Run now';
+
+  @override
+  String get takeOwnership => 'Take ownership';
+
+  @override
+  String get scheduleTriggered => 'Schedule triggered';
+
+  @override
+  String get deleteSchedule => 'Delete schedule?';
+
+  @override
+  String get noRunsYet => 'No runs yet';
+
+  @override
+  String get editSchedule => 'Edit schedule';
+
+  @override
+  String get targetRef => 'Target ref';
+
+  @override
+  String get cron => 'Cron';
+
+  @override
+  String get timezone => 'Timezone';
+
+  @override
+  String get utc => 'UTC';
+
+  @override
+  String get key => 'KEY';
+
+  @override
+  String artifactsJobP0(Object p0) {
+    return 'Artifacts · job #$p0';
+  }
+
+  @override
+  String get archiveIsEmpty => 'Archive is empty';
+
+  @override
+  String get binaryFileUseShareToSave => 'Binary file — use Share to save it.';
+
+  @override
+  String quotedName(Object p0) {
+    return '\"$p0\"';
+  }
+
+  @override
+  String scheduleId(Object p0) {
+    return 'Schedule #$p0';
+  }
+
+  @override
+  String get pickTargetRef => 'Pick a target ref';
+
+  @override
+  String get varKeysUnique => 'Variable keys must be unique';
+
+  @override
+  String get scheduleSaveFailed => 'Could not save the schedule';
+
+  @override
+  String scheduleStopsRunning(Object p0) {
+    return '\"$p0\" stops running.';
+  }
 }

@@ -4315,6 +4315,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat'**
   String get pipelineSourceChat;
+
+  /// No description provided for @newSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'New schedule'**
+  String get newSchedule;
+
+  /// No description provided for @noScheduledPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled pipelines'**
+  String get noScheduledPipelines;
+
+  /// No description provided for @recentRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent runs'**
+  String get recentRuns;
+
+  /// No description provided for @runNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Run now'**
+  String get runNow;
+
+  /// No description provided for @takeOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Take ownership'**
+  String get takeOwnership;
+
+  /// No description provided for @scheduleTriggered.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule triggered'**
+  String get scheduleTriggered;
+
+  /// No description provided for @deleteSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete schedule?'**
+  String get deleteSchedule;
+
+  /// No description provided for @noRunsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs yet'**
+  String get noRunsYet;
+
+  /// No description provided for @editSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit schedule'**
+  String get editSchedule;
+
+  /// No description provided for @targetRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Target ref'**
+  String get targetRef;
+
+  /// No description provided for @cron.
+  ///
+  /// In en, this message translates to:
+  /// **'Cron'**
+  String get cron;
+
+  /// No description provided for @timezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get timezone;
+
+  /// No description provided for @utc.
+  ///
+  /// In en, this message translates to:
+  /// **'UTC'**
+  String get utc;
+
+  /// No description provided for @key.
+  ///
+  /// In en, this message translates to:
+  /// **'KEY'**
+  String get key;
+
+  /// No description provided for @artifactsJobP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Artifacts · job #{p0}'**
+  String artifactsJobP0(Object p0);
+
+  /// No description provided for @archiveIsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive is empty'**
+  String get archiveIsEmpty;
+
+  /// No description provided for @binaryFileUseShareToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary file — use Share to save it.'**
+  String get binaryFileUseShareToSave;
+
+  /// No description provided for @quotedName.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\"'**
+  String quotedName(Object p0);
+
+  /// No description provided for @scheduleId.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule #{p0}'**
+  String scheduleId(Object p0);
+
+  /// No description provided for @pickTargetRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a target ref'**
+  String get pickTargetRef;
+
+  /// No description provided for @varKeysUnique.
+  ///
+  /// In en, this message translates to:
+  /// **'Variable keys must be unique'**
+  String get varKeysUnique;
+
+  /// No description provided for @scheduleSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the schedule'**
+  String get scheduleSaveFailed;
+
+  /// No description provided for @scheduleStopsRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" stops running.'**
+  String scheduleStopsRunning(Object p0);
 }
 
 class _AppLocalizationsDelegate

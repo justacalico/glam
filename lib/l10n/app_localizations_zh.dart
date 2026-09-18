@@ -2226,4 +2226,81 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pipelineSourceChat => '聊天';
+
+  @override
+  String get newSchedule => '新建调度';
+
+  @override
+  String get noScheduledPipelines => '没有调度的流水线';
+
+  @override
+  String get recentRuns => '最近运行';
+
+  @override
+  String get runNow => '立即运行';
+
+  @override
+  String get takeOwnership => '取得所有权';
+
+  @override
+  String get scheduleTriggered => '调度已触发';
+
+  @override
+  String get deleteSchedule => '删除调度？';
+
+  @override
+  String get noRunsYet => '暂无运行';
+
+  @override
+  String get editSchedule => '编辑调度';
+
+  @override
+  String get targetRef => '目标引用';
+
+  @override
+  String get cron => 'Cron';
+
+  @override
+  String get timezone => '时区';
+
+  @override
+  String get utc => 'UTC';
+
+  @override
+  String get key => '键';
+
+  @override
+  String artifactsJobP0(Object p0) {
+    return '作业 $p0 的产物';
+  }
+
+  @override
+  String get archiveIsEmpty => '归档为空';
+
+  @override
+  String get binaryFileUseShareToSave => '二进制文件。使用分享保存。';
+
+  @override
+  String quotedName(Object p0) {
+    return '“$p0”';
+  }
+
+  @override
+  String scheduleId(Object p0) {
+    return '调度 #$p0';
+  }
+
+  @override
+  String get pickTargetRef => '请选择目标引用';
+
+  @override
+  String get varKeysUnique => '变量键必须唯一';
+
+  @override
+  String get scheduleSaveFailed => '无法保存调度';
+
+  @override
+  String scheduleStopsRunning(Object p0) {
+    return '“$p0”将停止运行。';
+  }
 }
