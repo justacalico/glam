@@ -1322,4 +1322,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCaughtUp => 'All caught up';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get noAlerts => 'No alerts';
+
+  @override
+  String get alertsFromPrometheusAndOtherTools =>
+      'Alerts from Prometheus and other tools appear here.';
+
+  @override
+  String get setStatus => 'Set status';
+
+  @override
+  String linkedIssueP0(Object p0) {
+    return 'Linked issue #$p0';
+  }
+
+  @override
+  String get alertTool => 'Tool';
+
+  @override
+  String get alertService => 'Service';
+
+  @override
+  String get alertStarted => 'Started';
+
+  @override
+  String get alertEnded => 'Ended';
+
+  @override
+  String get alertEvents => 'Events';
+
+  @override
+  String get alertHosts => 'Hosts';
+
+  @override
+  String get fieldAssignees => 'Assignees';
 }

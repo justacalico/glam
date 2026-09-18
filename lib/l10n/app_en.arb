@@ -505,5 +505,17 @@
   },
   "noActivityYet": "No activity yet",
   "markAllRead": "Mark all read",
-  "allCaughtUp": "All caught up"
+  "allCaughtUp": "All caught up",
+  "status": "Status",
+  "noAlerts": "No alerts",
+  "alertsFromPrometheusAndOtherTools": "Alerts from Prometheus and other tools appear here.",
+  "setStatus": "Set status",
+  "linkedIssueP0": "Linked issue #{p0}",
+  "alertTool": "Tool",
+  "alertService": "Service",
+  "alertStarted": "Started",
+  "alertEnded": "Ended",
+  "alertEvents": "Events",
+  "alertHosts": "Hosts",
+  "fieldAssignees": "Assignees"
 }

@@ -2629,6 +2629,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All caught up'**
   String get allCaughtUp;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @noAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'No alerts'**
+  String get noAlerts;
+
+  /// No description provided for @alertsFromPrometheusAndOtherTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts from Prometheus and other tools appear here.'**
+  String get alertsFromPrometheusAndOtherTools;
+
+  /// No description provided for @setStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Set status'**
+  String get setStatus;
+
+  /// No description provided for @linkedIssueP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked issue #{p0}'**
+  String linkedIssueP0(Object p0);
+
+  /// No description provided for @alertTool.
+  ///
+  /// In en, this message translates to:
+  /// **'Tool'**
+  String get alertTool;
+
+  /// No description provided for @alertService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get alertService;
+
+  /// No description provided for @alertStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get alertStarted;
+
+  /// No description provided for @alertEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get alertEnded;
+
+  /// No description provided for @alertEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get alertEvents;
+
+  /// No description provided for @alertHosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts'**
+  String get alertHosts;
+
+  /// No description provided for @fieldAssignees.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignees'**
+  String get fieldAssignees;
 }
 
 class _AppLocalizationsDelegate

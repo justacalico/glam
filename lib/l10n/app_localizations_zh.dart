@@ -1310,4 +1310,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get allCaughtUp => '全部处理完了';
+
+  @override
+  String get status => '状态';
+
+  @override
+  String get noAlerts => '没有告警';
+
+  @override
+  String get alertsFromPrometheusAndOtherTools =>
+      '来自 Prometheus 和其他工具的告警会显示在这里。';
+
+  @override
+  String get setStatus => '设置状态';
+
+  @override
+  String linkedIssueP0(Object p0) {
+    return '关联议题 #$p0';
+  }
+
+  @override
+  String get alertTool => '工具';
+
+  @override
+  String get alertService => '服务';
+
+  @override
+  String get alertStarted => '开始时间';
+
+  @override
+  String get alertEnded => '结束时间';
+
+  @override
+  String get alertEvents => '事件';
+
+  @override
+  String get alertHosts => '主机';
+
+  @override
+  String get fieldAssignees => '负责人';
 }

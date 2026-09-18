@@ -421,5 +421,17 @@
   "eventNewEpics": "新 epic",
   "noActivityYet": "暂无动态",
   "markAllRead": "全部标为已读",
-  "allCaughtUp": "全部处理完了"
+  "allCaughtUp": "全部处理完了",
+  "status": "状态",
+  "noAlerts": "没有告警",
+  "alertsFromPrometheusAndOtherTools": "来自 Prometheus 和其他工具的告警会显示在这里。",
+  "setStatus": "设置状态",
+  "linkedIssueP0": "关联议题 #{p0}",
+  "alertTool": "工具",
+  "alertService": "服务",
+  "alertStarted": "开始时间",
+  "alertEnded": "结束时间",
+  "alertEvents": "事件",
+  "alertHosts": "主机",
+  "fieldAssignees": "负责人"
 }
