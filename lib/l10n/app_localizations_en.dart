@@ -3720,4 +3720,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String groupN(Object p0) {
     return 'group $p0';
   }
+
+  @override
+  String get prefShowWhitespace => 'Show whitespace changes in diffs';
+
+  @override
+  String get prefFileByFile => 'Show one file at a time in diffs';
+
+  @override
+  String get prefUnstaged => 'Include unstaged changes in diffs';
+
+  @override
+  String get prefMarkdownSurround => 'Markdown surrounds selection';
+
+  @override
+  String get prefMarkdownLists => 'Automatic markdown lists';
+
+  @override
+  String get prefLayoutWidth => 'Layout width';
+
+  @override
+  String get layoutFixed => 'Fixed';
+
+  @override
+  String get layoutFluid => 'Fluid';
+
+  @override
+  String get prefProjectsView => 'Default projects view';
+
+  @override
+  String get projectsViewTrending => 'Trending';
 }

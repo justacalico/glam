@@ -1138,5 +1138,15 @@
   "searchScopeUsers": "用户",
   "searchScopeSnippetCode": "代码片段内容",
   "iterationN": "迭代 {p0}",
-  "groupN": "群组 {p0}"
+  "groupN": "群组 {p0}",
+  "prefShowWhitespace": "在差异中显示空白变更",
+  "prefFileByFile": "差异中一次显示一个文件",
+  "prefUnstaged": "差异中包含未暂存的变更",
+  "prefMarkdownSurround": "Markdown 环绕所选内容",
+  "prefMarkdownLists": "自动 Markdown 列表",
+  "prefLayoutWidth": "布局宽度",
+  "layoutFixed": "固定",
+  "layoutFluid": "自适应",
+  "prefProjectsView": "默认项目视图",
+  "projectsViewTrending": "热门"
 }

@@ -1138,5 +1138,15 @@
   "searchScopeUsers": "Users",
   "searchScopeSnippetCode": "Snippet code",
   "iterationN": "Iteration {p0}",
-  "groupN": "group {p0}"
+  "groupN": "group {p0}",
+  "prefShowWhitespace": "Show whitespace changes in diffs",
+  "prefFileByFile": "Show one file at a time in diffs",
+  "prefUnstaged": "Include unstaged changes in diffs",
+  "prefMarkdownSurround": "Markdown surrounds selection",
+  "prefMarkdownLists": "Automatic markdown lists",
+  "prefLayoutWidth": "Layout width",
+  "layoutFixed": "Fixed",
+  "layoutFluid": "Fluid",
+  "prefProjectsView": "Default projects view",
+  "projectsViewTrending": "Trending"
 }

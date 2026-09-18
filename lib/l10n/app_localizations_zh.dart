@@ -3678,4 +3678,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String groupN(Object p0) {
     return '群组 $p0';
   }
+
+  @override
+  String get prefShowWhitespace => '在差异中显示空白变更';
+
+  @override
+  String get prefFileByFile => '差异中一次显示一个文件';
+
+  @override
+  String get prefUnstaged => '差异中包含未暂存的变更';
+
+  @override
+  String get prefMarkdownSurround => 'Markdown 环绕所选内容';
+
+  @override
+  String get prefMarkdownLists => '自动 Markdown 列表';
+
+  @override
+  String get prefLayoutWidth => '布局宽度';
+
+  @override
+  String get layoutFixed => '固定';
+
+  @override
+  String get layoutFluid => '自适应';
+
+  @override
+  String get prefProjectsView => '默认项目视图';
+
+  @override
+  String get projectsViewTrending => '热门';
 }

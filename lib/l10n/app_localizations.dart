@@ -6931,6 +6931,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'group {p0}'**
   String groupN(Object p0);
+
+  /// No description provided for @prefShowWhitespace.
+  ///
+  /// In en, this message translates to:
+  /// **'Show whitespace changes in diffs'**
+  String get prefShowWhitespace;
+
+  /// No description provided for @prefFileByFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Show one file at a time in diffs'**
+  String get prefFileByFile;
+
+  /// No description provided for @prefUnstaged.
+  ///
+  /// In en, this message translates to:
+  /// **'Include unstaged changes in diffs'**
+  String get prefUnstaged;
+
+  /// No description provided for @prefMarkdownSurround.
+  ///
+  /// In en, this message translates to:
+  /// **'Markdown surrounds selection'**
+  String get prefMarkdownSurround;
+
+  /// No description provided for @prefMarkdownLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic markdown lists'**
+  String get prefMarkdownLists;
+
+  /// No description provided for @prefLayoutWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout width'**
+  String get prefLayoutWidth;
+
+  /// No description provided for @layoutFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed'**
+  String get layoutFixed;
+
+  /// No description provided for @layoutFluid.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluid'**
+  String get layoutFluid;
+
+  /// No description provided for @prefProjectsView.
+  ///
+  /// In en, this message translates to:
+  /// **'Default projects view'**
+  String get prefProjectsView;
+
+  /// No description provided for @projectsViewTrending.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending'**
+  String get projectsViewTrending;
 }
 
 class _AppLocalizationsDelegate
