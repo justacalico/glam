@@ -2701,6 +2701,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assignees'**
   String get fieldAssignees;
+
+  /// No description provided for @noBoards.
+  ///
+  /// In en, this message translates to:
+  /// **'No boards'**
+  String get noBoards;
+
+  /// No description provided for @newBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'New board'**
+  String get newBoard;
+
+  /// No description provided for @boardActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Board actions'**
+  String get boardActions;
+
+  /// No description provided for @rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// No description provided for @issuesStayOnTheProjectOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues stay on the project; only the board goes.'**
+  String get issuesStayOnTheProjectOnly;
+
+  /// No description provided for @thisBoardHasNoLists.
+  ///
+  /// In en, this message translates to:
+  /// **'This board has no lists'**
+  String get thisBoardHasNoLists;
+
+  /// No description provided for @addList.
+  ///
+  /// In en, this message translates to:
+  /// **'Add list'**
+  String get addList;
+
+  /// No description provided for @noLabelsOnThisProject.
+  ///
+  /// In en, this message translates to:
+  /// **'No labels on this project.'**
+  String get noLabelsOnThisProject;
+
+  /// No description provided for @removeP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {p0}?'**
+  String removeP0(Object p0);
+
+  /// No description provided for @issuesKeepTheirLabelOnlyThe.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues keep their label; only the column goes.'**
+  String get issuesKeepTheirLabelOnlyThe;
+
+  /// No description provided for @listActions.
+  ///
+  /// In en, this message translates to:
+  /// **'List actions'**
+  String get listActions;
+
+  /// No description provided for @removeList.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove list'**
+  String get removeList;
+
+  /// No description provided for @noIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'No issues'**
+  String get noIssues;
+
+  /// No description provided for @moveTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to'**
+  String get moveTo;
+
+  /// No description provided for @p0.
+  ///
+  /// In en, this message translates to:
+  /// **'#{p0}'**
+  String p0(Object p0);
+
+  /// No description provided for @editBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit board'**
+  String get editBoard;
+
+  /// No description provided for @milestoneScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone scope'**
+  String get milestoneScope;
+
+  /// No description provided for @noMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'No milestone'**
+  String get noMilestone;
+
+  /// No description provided for @labelScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Label scope'**
+  String get labelScope;
+
+  /// No description provided for @bugFrontend.
+  ///
+  /// In en, this message translates to:
+  /// **'bug, frontend'**
+  String get bugFrontend;
+
+  /// No description provided for @weightScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight scope'**
+  String get weightScope;
 }
 
 class _AppLocalizationsDelegate

@@ -1349,4 +1349,73 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fieldAssignees => '负责人';
+
+  @override
+  String get noBoards => 'No boards';
+
+  @override
+  String get newBoard => 'New board';
+
+  @override
+  String get boardActions => 'Board actions';
+
+  @override
+  String get rename => 'Rename';
+
+  @override
+  String get issuesStayOnTheProjectOnly =>
+      'Issues stay on the project; only the board goes.';
+
+  @override
+  String get thisBoardHasNoLists => 'This board has no lists';
+
+  @override
+  String get addList => 'Add list';
+
+  @override
+  String get noLabelsOnThisProject => 'No labels on this project.';
+
+  @override
+  String removeP0(Object p0) {
+    return 'Remove $p0?';
+  }
+
+  @override
+  String get issuesKeepTheirLabelOnlyThe =>
+      'Issues keep their label; only the column goes.';
+
+  @override
+  String get listActions => 'List actions';
+
+  @override
+  String get removeList => 'Remove list';
+
+  @override
+  String get noIssues => 'No issues';
+
+  @override
+  String get moveTo => 'Move to';
+
+  @override
+  String p0(Object p0) {
+    return '#$p0';
+  }
+
+  @override
+  String get editBoard => 'Edit board';
+
+  @override
+  String get milestoneScope => 'Milestone scope';
+
+  @override
+  String get noMilestone => 'No milestone';
+
+  @override
+  String get labelScope => 'Label scope';
+
+  @override
+  String get bugFrontend => 'bug, frontend';
+
+  @override
+  String get weightScope => 'Weight scope';
 }
