@@ -3435,4 +3435,79 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get signOutConfirmBody => '你的令牌将从此设备移除。';
+
+  @override
+  String get reactionThumbsup => '点赞';
+
+  @override
+  String get reactionThumbsdown => '踩';
+
+  @override
+  String get reactionSmile => '微笑';
+
+  @override
+  String get reactionTada => '庆祝';
+
+  @override
+  String get reactionHeart => '爱心';
+
+  @override
+  String get notConfidential => '非保密';
+
+  @override
+  String get dueFilter => '截止日期';
+
+  @override
+  String get dueOverdue => '已逾期';
+
+  @override
+  String get dueThisWeek => '本周截止';
+
+  @override
+  String get dueThisMonth => '本月截止';
+
+  @override
+  String get dueSoon => '即将截止';
+
+  @override
+  String get noDueDate => '无截止日期';
+
+  @override
+  String get reactedFilter => '已表态';
+
+  @override
+  String get last24h => '最近 24 小时';
+
+  @override
+  String get lastWeek => '最近一周';
+
+  @override
+  String get lastMonth => '最近一个月';
+
+  @override
+  String get newIssue => '新建议题';
+
+  @override
+  String get noIssuesMatchFilter => '没有符合此筛选条件的议题';
+
+  @override
+  String get assignee => '指派人';
+
+  @override
+  String get author => '作者';
+
+  @override
+  String get labelFilter => '标签';
+
+  @override
+  String get issueTypeIssue => '议题';
+
+  @override
+  String get issueTypeIncident => '事故';
+
+  @override
+  String get issueTypeTask => '任务';
+
+  @override
+  String get issueTypeTestCase => '测试用例';
 }

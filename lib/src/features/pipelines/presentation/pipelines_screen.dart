@@ -21,7 +21,6 @@ import 'package:glam/src/features/repository/application/repository_providers.da
 import 'package:glam/src/features/pipelines/presentation/schedules_tab.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
 import 'package:glam/src/core/utils/l10n.dart';
-import 'package:glam/l10n/app_localizations.dart';
 
 /// Pipeline history + schedules for a project — the CI/CD tab.
 class PipelinesScreen extends ConsumerStatefulWidget {

@@ -10,7 +10,6 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/profile/application/profile_providers.dart';
-import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/utils/l10n.dart';
 
 /// Landing screen: greeting, quick stats, and shortcuts into the main

@@ -12,7 +12,6 @@ import 'package:glam/src/features/account/domain/account_models.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
 import 'package:glam/src/core/utils/l10n.dart';
-import 'package:glam/l10n/app_localizations.dart';
 
 /// SSH keys with add / delete.
 class SshKeysSection extends ConsumerWidget {

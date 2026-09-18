@@ -6469,6 +6469,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your token is removed from this device.'**
   String get signOutConfirmBody;
+
+  /// No description provided for @reactionThumbsup.
+  ///
+  /// In en, this message translates to:
+  /// **'Thumbs up'**
+  String get reactionThumbsup;
+
+  /// No description provided for @reactionThumbsdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Thumbs down'**
+  String get reactionThumbsdown;
+
+  /// No description provided for @reactionSmile.
+  ///
+  /// In en, this message translates to:
+  /// **'Smile'**
+  String get reactionSmile;
+
+  /// No description provided for @reactionTada.
+  ///
+  /// In en, this message translates to:
+  /// **'Tada'**
+  String get reactionTada;
+
+  /// No description provided for @reactionHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart'**
+  String get reactionHeart;
+
+  /// No description provided for @notConfidential.
+  ///
+  /// In en, this message translates to:
+  /// **'Not confidential'**
+  String get notConfidential;
+
+  /// No description provided for @dueFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get dueFilter;
+
+  /// No description provided for @dueOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get dueOverdue;
+
+  /// No description provided for @dueThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Due this week'**
+  String get dueThisWeek;
+
+  /// No description provided for @dueThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Due this month'**
+  String get dueThisMonth;
+
+  /// No description provided for @dueSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Due soon'**
+  String get dueSoon;
+
+  /// No description provided for @noDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get noDueDate;
+
+  /// No description provided for @reactedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reacted'**
+  String get reactedFilter;
+
+  /// No description provided for @last24h.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 24h'**
+  String get last24h;
+
+  /// No description provided for @lastWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get lastWeek;
+
+  /// No description provided for @lastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get lastMonth;
+
+  /// No description provided for @newIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'New issue'**
+  String get newIssue;
+
+  /// No description provided for @noIssuesMatchFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No issues match this filter'**
+  String get noIssuesMatchFilter;
+
+  /// No description provided for @assignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get assignee;
+
+  /// No description provided for @author.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get author;
+
+  /// No description provided for @labelFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get labelFilter;
+
+  /// No description provided for @issueTypeIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue'**
+  String get issueTypeIssue;
+
+  /// No description provided for @issueTypeIncident.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident'**
+  String get issueTypeIncident;
+
+  /// No description provided for @issueTypeTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get issueTypeTask;
+
+  /// No description provided for @issueTypeTestCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Test case'**
+  String get issueTypeTestCase;
 }
 
 class _AppLocalizationsDelegate

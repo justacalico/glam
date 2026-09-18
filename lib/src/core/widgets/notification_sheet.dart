@@ -7,7 +7,6 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/domain/account_models.dart';
-import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/utils/l10n.dart';
 
 /// A project or group id for scoped notification settings.

@@ -7,7 +7,6 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
 import 'package:glam/src/core/utils/l10n.dart';
-import 'package:glam/l10n/app_localizations.dart';
 
 /// Create or edit a repository file. Commits straight to [branch].
 class FileEditorScreen extends ConsumerStatefulWidget {

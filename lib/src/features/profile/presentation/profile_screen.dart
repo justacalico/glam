@@ -22,7 +22,6 @@ import 'package:glam/src/features/profile/application/profile_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
 import 'package:glam/src/core/utils/l10n.dart';
-import 'package:glam/l10n/app_localizations.dart';
 
 /// Profile page for the current user or any user (`/users/:id`).
 class ProfileScreen extends ConsumerWidget {

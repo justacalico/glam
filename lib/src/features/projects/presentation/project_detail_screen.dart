@@ -41,7 +41,6 @@ import 'package:glam/src/features/repository/presentation/files_screen.dart';
 import 'package:glam/src/features/repository/presentation/releases_screen.dart';
 import 'package:glam/src/features/repository/presentation/tags_screen.dart';
 import 'package:glam/src/features/wiki/presentation/wiki_screen.dart';
-import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project home: header card + tabbed content.

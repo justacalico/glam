@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
-import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/utils/l10n.dart';
 
 /// One entry in a [SortMenu]: the API `order_by`/`sort` pair plus a

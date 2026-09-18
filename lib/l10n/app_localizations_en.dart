@@ -3477,4 +3477,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signOutConfirmBody => 'Your token is removed from this device.';
+
+  @override
+  String get reactionThumbsup => 'Thumbs up';
+
+  @override
+  String get reactionThumbsdown => 'Thumbs down';
+
+  @override
+  String get reactionSmile => 'Smile';
+
+  @override
+  String get reactionTada => 'Tada';
+
+  @override
+  String get reactionHeart => 'Heart';
+
+  @override
+  String get notConfidential => 'Not confidential';
+
+  @override
+  String get dueFilter => 'Due';
+
+  @override
+  String get dueOverdue => 'Overdue';
+
+  @override
+  String get dueThisWeek => 'Due this week';
+
+  @override
+  String get dueThisMonth => 'Due this month';
+
+  @override
+  String get dueSoon => 'Due soon';
+
+  @override
+  String get noDueDate => 'No due date';
+
+  @override
+  String get reactedFilter => 'Reacted';
+
+  @override
+  String get last24h => 'Last 24h';
+
+  @override
+  String get lastWeek => 'Last week';
+
+  @override
+  String get lastMonth => 'Last month';
+
+  @override
+  String get newIssue => 'New issue';
+
+  @override
+  String get noIssuesMatchFilter => 'No issues match this filter';
+
+  @override
+  String get assignee => 'Assignee';
+
+  @override
+  String get author => 'Author';
+
+  @override
+  String get labelFilter => 'Label';
+
+  @override
+  String get issueTypeIssue => 'Issue';
+
+  @override
+  String get issueTypeIncident => 'Incident';
+
+  @override
+  String get issueTypeTask => 'Task';
+
+  @override
+  String get issueTypeTestCase => 'Test case';
 }
