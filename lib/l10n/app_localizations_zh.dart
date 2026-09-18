@@ -3281,4 +3281,80 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hookEventSubgroup => '子群组';
+
+  @override
+  String get positiveNumberRequired => '必须是正数';
+
+  @override
+  String get enterNumber => '请输入数字';
+
+  @override
+  String get addApprovalRule => '添加审批规则';
+
+  @override
+  String get editApprovalRule => '编辑审批规则';
+
+  @override
+  String get notSet => '未设置';
+
+  @override
+  String approvalsValue(Object p0, Object p1) {
+    return '$p0 个审批';
+  }
+
+  @override
+  String secondsValue(Object p0) {
+    return '$p0 秒';
+  }
+
+  @override
+  String get pagesSite => 'Pages 站点';
+
+  @override
+  String runnerStopsRunning(Object p0) {
+    return '“$p0”将停止运行此项目的作业。';
+  }
+
+  @override
+  String get secureFileDeleteBody => '引用它的流水线将失败。';
+
+  @override
+  String shareRemoveBody(Object p0) {
+    return '“$p0”将失去对此项目的访问权限。';
+  }
+
+  @override
+  String lastUsedAt(Object p0) {
+    return '最后使用 $p0';
+  }
+
+  @override
+  String get neverUsed => '从未使用';
+
+  @override
+  String get triggerDeleteBody => '使用此令牌的请求将停止工作。';
+
+  @override
+  String get storageRepository => '仓库';
+
+  @override
+  String get storageLfs => 'LFS 对象';
+
+  @override
+  String get storageJobArtifacts => '作业产物';
+
+  @override
+  String get storagePackages => '包';
+
+  @override
+  String get storageUploads => '上传';
+
+  @override
+  String get storageWiki => 'Wiki';
+
+  @override
+  String get storageSnippets => '代码片段';
+
+  @override
+  String get storageRegistry => '容器注册表';
 }

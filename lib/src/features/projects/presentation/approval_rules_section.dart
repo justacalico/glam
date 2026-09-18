@@ -106,7 +106,7 @@ class ApprovalRulesSection extends ConsumerWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 labelText: context.l10n.approvalsRequiredToMerge,
-                errorText: error ? 'Enter a number' : null,
+                errorText: error ? context.l10n.enterNumber : null,
               ),
               onChanged: (_) {
                 if (error) {
@@ -175,7 +175,9 @@ class ApprovalRulesSection extends ConsumerWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(
-            rule == null ? 'Add approval rule' : 'Edit approval rule',
+            rule == null
+                ? context.l10n.addApprovalRule
+                : context.l10n.editApprovalRule,
           ),
           content: SizedBox(
             width: 420,
@@ -318,7 +320,9 @@ class _RequiredRow extends StatelessWidget {
       ),
       title: Text(context.l10n.requiredApprovals),
       subtitle: Text(
-        value == null ? 'Not set' : '$value approval${value == 1 ? '' : 's'}',
+        value == null
+            ? context.l10n.notSet
+            : context.l10n.approvalsValue('$value', value == 1 ? '' : 's'),
       ),
       trailing: IconButton(
         icon: Icon(Icons.edit_outlined, size: 16),

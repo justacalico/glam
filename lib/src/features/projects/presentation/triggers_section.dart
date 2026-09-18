@@ -81,9 +81,11 @@ class TriggersSection extends ConsumerWidget {
                               if (t.token != null)
                                 t.token!.length > 4 ? t.token! : '${t.token}…',
                               if (t.lastUsedAt != null)
-                                'last used ${Format.relative(t.lastUsedAt)}'
+                                context.l10n.lastUsedAt(
+                                  Format.relative(t.lastUsedAt!),
+                                )
                               else
-                                'never used',
+                                context.l10n.neverUsed,
                             ].join(' · '),
                             style: const TextStyle(
                               fontFamily: GlamFonts.mono,
@@ -207,7 +209,7 @@ class TriggersSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.deleteTriggerConfirm,
-      body: 'Requests using this token will stop working.',
+      body: context.l10n.triggerDeleteBody,
     );
     if (ok != true || !context.mounted) {
       return;

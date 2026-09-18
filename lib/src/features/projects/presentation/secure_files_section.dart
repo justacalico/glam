@@ -128,7 +128,7 @@ class SecureFilesSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.deleteNamedConfirm(file.name),
-      body: 'Pipelines referencing it will fail.',
+      body: context.l10n.secureFileDeleteBody,
     );
     if (ok != true || !context.mounted) {
       return;

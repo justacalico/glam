@@ -149,7 +149,9 @@ class AccessTokensSection extends ConsumerWidget {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
                     labelText: context.l10n.fieldExpiresDays,
-                    errorText: daysError ? 'Must be a positive number' : null,
+                    errorText: daysError
+                        ? context.l10n.positiveNumberRequired
+                        : null,
                   ),
                   onChanged: (_) {
                     if (daysError) {

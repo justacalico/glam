@@ -6193,6 +6193,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'subgroup'**
   String get hookEventSubgroup;
+
+  /// No description provided for @positiveNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be a positive number'**
+  String get positiveNumberRequired;
+
+  /// No description provided for @enterNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number'**
+  String get enterNumber;
+
+  /// No description provided for @addApprovalRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add approval rule'**
+  String get addApprovalRule;
+
+  /// No description provided for @editApprovalRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit approval rule'**
+  String get editApprovalRule;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @approvalsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} approval{p1}'**
+  String approvalsValue(Object p0, Object p1);
+
+  /// No description provided for @secondsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} seconds'**
+  String secondsValue(Object p0);
+
+  /// No description provided for @pagesSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages site'**
+  String get pagesSite;
+
+  /// No description provided for @runnerStopsRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" will stop running this project\'s jobs.'**
+  String runnerStopsRunning(Object p0);
+
+  /// No description provided for @secureFileDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipelines referencing it will fail.'**
+  String get secureFileDeleteBody;
+
+  /// No description provided for @shareRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" loses access to this project.'**
+  String shareRemoveBody(Object p0);
+
+  /// No description provided for @lastUsedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'last used {p0}'**
+  String lastUsedAt(Object p0);
+
+  /// No description provided for @neverUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'never used'**
+  String get neverUsed;
+
+  /// No description provided for @triggerDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests using this token will stop working.'**
+  String get triggerDeleteBody;
+
+  /// No description provided for @storageRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository'**
+  String get storageRepository;
+
+  /// No description provided for @storageLfs.
+  ///
+  /// In en, this message translates to:
+  /// **'LFS objects'**
+  String get storageLfs;
+
+  /// No description provided for @storageJobArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Job artifacts'**
+  String get storageJobArtifacts;
+
+  /// No description provided for @storagePackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get storagePackages;
+
+  /// No description provided for @storageUploads.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploads'**
+  String get storageUploads;
+
+  /// No description provided for @storageWiki.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get storageWiki;
+
+  /// No description provided for @storageSnippets.
+  ///
+  /// In en, this message translates to:
+  /// **'Snippets'**
+  String get storageSnippets;
+
+  /// No description provided for @storageRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Container registry'**
+  String get storageRegistry;
 }
 
 class _AppLocalizationsDelegate

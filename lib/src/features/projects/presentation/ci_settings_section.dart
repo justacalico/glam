@@ -267,7 +267,9 @@ class _TimeoutTile extends StatelessWidget {
       dense: true,
       title: Text(context.l10n.jobTimeout),
       subtitle: Text(
-        seconds == null ? 'Default' : '$seconds seconds',
+        seconds == null
+            ? context.l10n.templateDefault
+            : context.l10n.secondsValue('$seconds'),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

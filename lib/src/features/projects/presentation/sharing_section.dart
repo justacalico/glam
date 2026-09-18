@@ -192,7 +192,7 @@ class SharingSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.removeGroupShare,
-      body: '"${group.displayName}" loses access to this project.',
+      body: context.l10n.shareRemoveBody(group.displayName),
     );
     if (ok != true || !context.mounted) {
       return;

@@ -132,9 +132,9 @@ class RunnersSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.removeRunner,
-      body:
-          '"${r.name.isEmpty ? r.description : r.name}" will stop '
-          "running this project's jobs.",
+      body: context.l10n.runnerStopsRunning(
+        r.name.isEmpty ? r.description : r.name,
+      ),
     );
     if (ok != true || !context.mounted) {
       return;

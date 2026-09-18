@@ -50,7 +50,9 @@ class PagesSection extends ConsumerWidget {
                     dense: true,
                     leading: Icon(Icons.language, size: 18),
                     title: Text(
-                      info.pages.url.isEmpty ? 'Pages site' : info.pages.url,
+                      info.pages.url.isEmpty
+                          ? context.l10n.pagesSite
+                          : info.pages.url,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

@@ -3322,4 +3322,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hookEventSubgroup => 'subgroup';
+
+  @override
+  String get positiveNumberRequired => 'Must be a positive number';
+
+  @override
+  String get enterNumber => 'Enter a number';
+
+  @override
+  String get addApprovalRule => 'Add approval rule';
+
+  @override
+  String get editApprovalRule => 'Edit approval rule';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String approvalsValue(Object p0, Object p1) {
+    return '$p0 approval$p1';
+  }
+
+  @override
+  String secondsValue(Object p0) {
+    return '$p0 seconds';
+  }
+
+  @override
+  String get pagesSite => 'Pages site';
+
+  @override
+  String runnerStopsRunning(Object p0) {
+    return '\"$p0\" will stop running this project\'s jobs.';
+  }
+
+  @override
+  String get secureFileDeleteBody => 'Pipelines referencing it will fail.';
+
+  @override
+  String shareRemoveBody(Object p0) {
+    return '\"$p0\" loses access to this project.';
+  }
+
+  @override
+  String lastUsedAt(Object p0) {
+    return 'last used $p0';
+  }
+
+  @override
+  String get neverUsed => 'never used';
+
+  @override
+  String get triggerDeleteBody =>
+      'Requests using this token will stop working.';
+
+  @override
+  String get storageRepository => 'Repository';
+
+  @override
+  String get storageLfs => 'LFS objects';
+
+  @override
+  String get storageJobArtifacts => 'Job artifacts';
+
+  @override
+  String get storagePackages => 'Packages';
+
+  @override
+  String get storageUploads => 'Uploads';
+
+  @override
+  String get storageWiki => 'Wiki';
+
+  @override
+  String get storageSnippets => 'Snippets';
+
+  @override
+  String get storageRegistry => 'Container registry';
 }

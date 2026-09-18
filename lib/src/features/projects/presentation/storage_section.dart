@@ -24,14 +24,14 @@ class StorageSection extends ConsumerWidget {
     final stats = ref.watch(projectStatisticsProvider(project.id)).value;
 
     final rows = <(String, int)>[
-      ('Repository', stats?.repositorySize ?? 0),
-      ('LFS objects', stats?.lfsObjectsSize ?? 0),
-      ('Job artifacts', stats?.jobArtifactsSize ?? 0),
-      ('Packages', stats?.packagesSize ?? 0),
-      ('Uploads', stats?.uploadsSize ?? 0),
-      ('Wiki', stats?.wikiSize ?? 0),
-      ('Snippets', stats?.snippetsSize ?? 0),
-      ('Container registry', stats?.containerRegistrySize ?? 0),
+      (context.l10n.storageRepository, stats?.repositorySize ?? 0),
+      (context.l10n.storageLfs, stats?.lfsObjectsSize ?? 0),
+      (context.l10n.storageJobArtifacts, stats?.jobArtifactsSize ?? 0),
+      (context.l10n.storagePackages, stats?.packagesSize ?? 0),
+      (context.l10n.storageUploads, stats?.uploadsSize ?? 0),
+      (context.l10n.storageWiki, stats?.wikiSize ?? 0),
+      (context.l10n.storageSnippets, stats?.snippetsSize ?? 0),
+      (context.l10n.storageRegistry, stats?.containerRegistrySize ?? 0),
     ].where((r) => r.$2 > 0).toList();
 
     return Column(
