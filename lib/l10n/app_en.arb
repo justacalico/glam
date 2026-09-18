@@ -409,5 +409,48 @@
   "allowGroupRunnersToPickUp": "Allow group runners to pick up jobs",
   "noRunnersAvailable": "No runners available",
   "removeFromProject": "Remove from project",
-  "removeRunner": "Remove runner?"
+  "removeRunner": "Remove runner?",
+  "secureFiles": "Secure files",
+  "upload": "Upload",
+  "noSecureFiles": "No secure files",
+  "sharedGroups": "Shared groups",
+  "share": "Share",
+  "notSharedWithAnyGroup": "Not shared with any group",
+  "noGroupsLeftToShareWith": "No groups left to share with",
+  "shareWithGroup": "Share with group",
+  "group": "Group",
+  "maxAccessLevel": "Max access level",
+  "removeGroupShare": "Remove group share?",
+  "unshare": "Unshare",
+  "storageMaintenance": "Storage & maintenance",
+  "storageStatisticsAreOnlyVisibleTo": "Storage statistics are only visible to maintainers.",
+  "housekeepingOptimizesTheRepositoryGcRepack": "Housekeeping optimizes the repository (gc, repack).",
+  "runHousekeeping": "Run housekeeping",
+  "housekeepingStarted": "Housekeeping started",
+  "pipelineTriggers": "Pipeline triggers",
+  "noTriggers": "No triggers",
+  "deleteTrigger": "Delete trigger",
+  "lintGitlabCiYml": "Lint .gitlab-ci.yml",
+  "validateCiConfigAgainstThisProject": "Validate CI config against this project",
+  "newTrigger": "New trigger",
+  "eGDeployWebhook": "e.g. Deploy webhook",
+  "triggerCreated": "Trigger created",
+  "useThisTokenToAuthenticateTrigger": "Use this token to authenticate trigger requests.",
+  "tokenCopied": "Token copied",
+  "lintCiConfig": "Lint CI config",
+  "pasteYourGitlabCiYmlHere": "Paste your .gitlab-ci.yml here",
+  "lint": "Lint",
+  "deleteNamedConfirm": "Delete {p0}?",
+  "storageTotal": "Total {p0}",
+  "commitCount": "{p0} commits",
+  "storageStatPair": "{p0} {p1}",
+  "deleteTriggerConfirm": "Delete trigger?",
+  "lintJobsList": "Jobs: {p0}",
+  "@lintJobsList": {
+    "placeholders": {
+      "p0": {
+        "type": "String"
+      }
+    }
+  }
 }

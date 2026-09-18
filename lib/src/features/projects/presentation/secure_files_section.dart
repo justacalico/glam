@@ -14,6 +14,7 @@ import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/domain/secure_file.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// CI/CD secure files: list, upload, download, delete.
 class SecureFilesSection extends ConsumerWidget {
@@ -31,10 +32,10 @@ class SecureFilesSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Secure files')),
+            Expanded(child: SectionLabel(context.l10n.secureFiles)),
             TextButton.icon(
               icon: const Icon(Icons.upload_file, size: 16),
-              label: const Text('Upload'),
+              label: Text(context.l10n.upload),
               onPressed: () => _upload(context, ref),
             ),
           ],
@@ -50,11 +51,11 @@ class SecureFilesSection extends ConsumerWidget {
             onRetry: () =>
                 ref.invalidate(projectSecureFilesProvider(project.id)),
             data: (items) => items.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.insert_drive_file_outlined,
-                      title: 'No secure files',
+                      title: context.l10n.noSecureFiles,
                     ),
                   )
                 : Column(
@@ -126,7 +127,7 @@ class SecureFilesSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Delete ${file.name}?',
+      title: context.l10n.deleteNamedConfirm(file.name),
       body: 'Pipelines referencing it will fail.',
     );
     if (ok != true || !context.mounted) {
@@ -183,13 +184,13 @@ class _SecureFileTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.download_outlined, size: 18),
-            tooltip: 'Download',
+            icon: Icon(Icons.download_outlined, size: 18),
+            tooltip: context.l10n.actionDownload,
             onPressed: onDownload,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, size: 18),
-            tooltip: 'Delete',
+            icon: Icon(Icons.delete_outline, size: 18),
+            tooltip: context.l10n.actionDelete,
             onPressed: onDelete,
           ),
         ],

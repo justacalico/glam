@@ -7,6 +7,7 @@ import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Storage usage plus repository housekeeping. Statistics need
 /// maintainer rights; other roles see the housekeeping action only
@@ -36,7 +37,7 @@ class StorageSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Storage & maintenance'),
+        SectionLabel(context.l10n.storageMaintenance),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(Insets.lg),
@@ -52,47 +53,54 @@ class StorageSection extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      'Total ${Format.bytes(stats.storageSize)}',
+                      context.l10n.storageTotal(
+                        Format.bytes(stats.storageSize),
+                      ),
                       style: theme.textTheme.titleSmall,
                     ),
-                    const SizedBox(width: Insets.md),
+                    SizedBox(width: Insets.md),
                     Text(
-                      '${Format.compact(stats.commitCount)} commits',
+                      context.l10n.commitCount(
+                        Format.compact(stats.commitCount),
+                      ),
                       style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
                 if (rows.isNotEmpty) ...[
-                  const SizedBox(height: Insets.sm),
+                  SizedBox(height: Insets.sm),
                   Wrap(
                     spacing: Insets.lg,
                     runSpacing: Insets.xs,
                     children: [
                       for (final r in rows)
                         Text(
-                          '${r.$1} ${Format.bytes(r.$2)}',
+                          context.l10n.storageStatPair(
+                            r.$1,
+                            Format.bytes(r.$2),
+                          ),
                           style: theme.textTheme.bodySmall,
                         ),
                     ],
                   ),
                 ],
-                const SizedBox(height: Insets.md),
+                SizedBox(height: Insets.md),
               ] else
                 Text(
-                  'Storage statistics are only visible to maintainers.',
+                  context.l10n.storageStatisticsAreOnlyVisibleTo,
                   style: theme.textTheme.bodySmall,
                 ),
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Housekeeping optimizes the repository (gc, repack).',
+                      context.l10n.housekeepingOptimizesTheRepositoryGcRepack,
                       style: theme.textTheme.bodySmall,
                     ),
                   ),
                   OutlinedButton(
                     onPressed: () => _housekeeping(context, ref),
-                    child: const Text('Run housekeeping'),
+                    child: Text(context.l10n.runHousekeeping),
                   ),
                 ],
               ),
@@ -107,9 +115,9 @@ class StorageSection extends ConsumerWidget {
     try {
       await ref.read(projectsRepositoryProvider).housekeeping(project.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Housekeeping started')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.housekeepingStarted)),
+        );
       }
     } on ApiException catch (e) {
       if (context.mounted) {

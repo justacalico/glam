@@ -1049,4 +1049,123 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeRunner => '移除 Runner？';
+
+  @override
+  String get secureFiles => '安全文件';
+
+  @override
+  String get upload => '上传';
+
+  @override
+  String get noSecureFiles => '没有安全文件';
+
+  @override
+  String get sharedGroups => '共享群组';
+
+  @override
+  String get share => '共享';
+
+  @override
+  String get notSharedWithAnyGroup => '未与任何群组共享';
+
+  @override
+  String get noGroupsLeftToShareWith => '没有可共享的群组了';
+
+  @override
+  String get shareWithGroup => '与群组共享';
+
+  @override
+  String get group => '群组';
+
+  @override
+  String get maxAccessLevel => '最高访问级别';
+
+  @override
+  String get removeGroupShare => '移除群组共享？';
+
+  @override
+  String get unshare => '取消共享';
+
+  @override
+  String get storageMaintenance => '存储与维护';
+
+  @override
+  String get storageStatisticsAreOnlyVisibleTo => '存储统计仅对维护者可见。';
+
+  @override
+  String get housekeepingOptimizesTheRepositoryGcRepack =>
+      'Housekeeping 会优化仓库（gc、repack）。';
+
+  @override
+  String get runHousekeeping => '运行 housekeeping';
+
+  @override
+  String get housekeepingStarted => 'Housekeeping 已开始';
+
+  @override
+  String get pipelineTriggers => '流水线触发器';
+
+  @override
+  String get noTriggers => '没有触发器';
+
+  @override
+  String get deleteTrigger => '删除触发器';
+
+  @override
+  String get lintGitlabCiYml => 'Lint .gitlab-ci.yml';
+
+  @override
+  String get validateCiConfigAgainstThisProject => '针对此项目验证 CI 配置';
+
+  @override
+  String get newTrigger => '新建触发器';
+
+  @override
+  String get eGDeployWebhook => '例如 部署 webhook';
+
+  @override
+  String get triggerCreated => '触发器已创建';
+
+  @override
+  String get useThisTokenToAuthenticateTrigger => '使用此令牌认证触发请求。';
+
+  @override
+  String get tokenCopied => '令牌已复制';
+
+  @override
+  String get lintCiConfig => 'Lint CI 配置';
+
+  @override
+  String get pasteYourGitlabCiYmlHere => '在此粘贴 .gitlab-ci.yml';
+
+  @override
+  String get lint => 'Lint';
+
+  @override
+  String deleteNamedConfirm(Object p0) {
+    return '删除 $p0？';
+  }
+
+  @override
+  String storageTotal(Object p0) {
+    return '总计 $p0';
+  }
+
+  @override
+  String commitCount(Object p0) {
+    return '$p0 次提交';
+  }
+
+  @override
+  String storageStatPair(Object p0, Object p1) {
+    return '$p0 $p1';
+  }
+
+  @override
+  String get deleteTriggerConfirm => '删除触发器？';
+
+  @override
+  String lintJobsList(String p0) {
+    return '作业：$p0';
+  }
 }

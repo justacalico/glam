@@ -13,6 +13,7 @@ import 'package:glam/src/features/pipelines/domain/pipeline_trigger.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Pipeline trigger tokens plus a CI lint runner. A new trigger's full
 /// token is only shown once, straight from the create response.
@@ -31,11 +32,11 @@ class TriggersSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Pipeline triggers')),
+            Expanded(child: SectionLabel(context.l10n.pipelineTriggers)),
             TextButton.icon(
               onPressed: () => _create(context, ref),
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
             ),
           ],
         ),
@@ -55,11 +56,11 @@ class TriggersSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.bolt_outlined,
-                      title: 'No triggers',
+                      title: context.l10n.noTriggers,
                     ),
                   )
                 : Column(
@@ -90,8 +91,8 @@ class TriggersSection extends ConsumerWidget {
                             ),
                           ),
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            tooltip: 'Delete trigger',
+                            icon: Icon(Icons.delete_outline, size: 18),
+                            tooltip: context.l10n.deleteTrigger,
                             onPressed: () => _remove(context, ref, t),
                           ),
                         ),
@@ -103,9 +104,9 @@ class TriggersSection extends ConsumerWidget {
         ListTile(
           dense: true,
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.checklist_outlined, size: 20),
-          title: const Text('Lint .gitlab-ci.yml'),
-          subtitle: const Text('Validate CI config against this project'),
+          leading: Icon(Icons.checklist_outlined, size: 20),
+          title: Text(context.l10n.lintGitlabCiYml),
+          subtitle: Text(context.l10n.validateCiConfigAgainstThisProject),
           onTap: () => _lint(context),
         ),
       ],
@@ -117,24 +118,24 @@ class TriggersSection extends ConsumerWidget {
     final desc = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New trigger'),
+        title: Text(context.l10n.newTrigger),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Description',
-            hintText: 'e.g. Deploy webhook',
+          decoration: InputDecoration(
+            labelText: context.l10n.fieldDescription,
+            hintText: context.l10n.eGDeployWebhook,
           ),
           onSubmitted: (v) => Navigator.pop(context, v.trim()),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Create'),
+            child: Text(context.l10n.actionCreate),
           ),
         ],
       ),
@@ -165,12 +166,12 @@ class TriggersSection extends ConsumerWidget {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Trigger created'),
+        title: Text(context.l10n.triggerCreated),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Use this token to authenticate trigger requests.'),
+            Text(context.l10n.useThisTokenToAuthenticateTrigger),
             const SizedBox(height: Insets.sm),
             SelectableText(
               t.token!,
@@ -184,14 +185,14 @@ class TriggersSection extends ConsumerWidget {
               unawaited(Clipboard.setData(ClipboardData(text: t.token!)));
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('Token copied')));
+              ).showSnackBar(SnackBar(content: Text(context.l10n.tokenCopied)));
             },
-            icon: const Icon(Icons.copy_outlined, size: 18),
-            label: const Text('Copy'),
+            icon: Icon(Icons.copy_outlined, size: 18),
+            label: Text(context.l10n.actionCopy),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            child: Text(context.l10n.actionDone),
           ),
         ],
       ),
@@ -205,7 +206,7 @@ class TriggersSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Delete trigger?',
+      title: context.l10n.deleteTriggerConfirm,
       body: 'Requests using this token will stop working.',
     );
     if (ok != true || !context.mounted) {
@@ -261,7 +262,7 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
     final result = _result;
 
     return AlertDialog(
-      title: const Text('Lint CI config'),
+      title: Text(context.l10n.lintCiConfig),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
         child: SingleChildScrollView(
@@ -277,8 +278,8 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
                   fontFamily: GlamFonts.mono,
                   fontSize: 12.5,
                 ),
-                decoration: const InputDecoration(
-                  hintText: 'Paste your .gitlab-ci.yml here',
+                decoration: InputDecoration(
+                  hintText: context.l10n.pasteYourGitlabCiYmlHere,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -324,7 +325,7 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
                   Padding(
                     padding: const EdgeInsets.only(top: Insets.sm),
                     child: Text(
-                      'Jobs: ${result.jobs.join(', ')}',
+                      context.l10n.lintJobsList(result.jobs.join(', ')),
                       style: theme.textTheme.bodySmall,
                     ),
                   ),
@@ -336,7 +337,7 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          child: Text(context.l10n.actionClose),
         ),
         FilledButton(
           onPressed: _busy ? null : _run,
@@ -346,7 +347,7 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Lint'),
+              : Text(context.l10n.lint),
         ),
       ],
     );

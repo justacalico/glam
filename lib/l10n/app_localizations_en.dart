@@ -1058,4 +1058,126 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeRunner => 'Remove runner?';
+
+  @override
+  String get secureFiles => 'Secure files';
+
+  @override
+  String get upload => 'Upload';
+
+  @override
+  String get noSecureFiles => 'No secure files';
+
+  @override
+  String get sharedGroups => 'Shared groups';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get notSharedWithAnyGroup => 'Not shared with any group';
+
+  @override
+  String get noGroupsLeftToShareWith => 'No groups left to share with';
+
+  @override
+  String get shareWithGroup => 'Share with group';
+
+  @override
+  String get group => 'Group';
+
+  @override
+  String get maxAccessLevel => 'Max access level';
+
+  @override
+  String get removeGroupShare => 'Remove group share?';
+
+  @override
+  String get unshare => 'Unshare';
+
+  @override
+  String get storageMaintenance => 'Storage & maintenance';
+
+  @override
+  String get storageStatisticsAreOnlyVisibleTo =>
+      'Storage statistics are only visible to maintainers.';
+
+  @override
+  String get housekeepingOptimizesTheRepositoryGcRepack =>
+      'Housekeeping optimizes the repository (gc, repack).';
+
+  @override
+  String get runHousekeeping => 'Run housekeeping';
+
+  @override
+  String get housekeepingStarted => 'Housekeeping started';
+
+  @override
+  String get pipelineTriggers => 'Pipeline triggers';
+
+  @override
+  String get noTriggers => 'No triggers';
+
+  @override
+  String get deleteTrigger => 'Delete trigger';
+
+  @override
+  String get lintGitlabCiYml => 'Lint .gitlab-ci.yml';
+
+  @override
+  String get validateCiConfigAgainstThisProject =>
+      'Validate CI config against this project';
+
+  @override
+  String get newTrigger => 'New trigger';
+
+  @override
+  String get eGDeployWebhook => 'e.g. Deploy webhook';
+
+  @override
+  String get triggerCreated => 'Trigger created';
+
+  @override
+  String get useThisTokenToAuthenticateTrigger =>
+      'Use this token to authenticate trigger requests.';
+
+  @override
+  String get tokenCopied => 'Token copied';
+
+  @override
+  String get lintCiConfig => 'Lint CI config';
+
+  @override
+  String get pasteYourGitlabCiYmlHere => 'Paste your .gitlab-ci.yml here';
+
+  @override
+  String get lint => 'Lint';
+
+  @override
+  String deleteNamedConfirm(Object p0) {
+    return 'Delete $p0?';
+  }
+
+  @override
+  String storageTotal(Object p0) {
+    return 'Total $p0';
+  }
+
+  @override
+  String commitCount(Object p0) {
+    return '$p0 commits';
+  }
+
+  @override
+  String storageStatPair(Object p0, Object p1) {
+    return '$p0 $p1';
+  }
+
+  @override
+  String get deleteTriggerConfirm => 'Delete trigger?';
+
+  @override
+  String lintJobsList(String p0) {
+    return 'Jobs: $p0';
+  }
 }

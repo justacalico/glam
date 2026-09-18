@@ -2137,6 +2137,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove runner?'**
   String get removeRunner;
+
+  /// No description provided for @secureFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure files'**
+  String get secureFiles;
+
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get upload;
+
+  /// No description provided for @noSecureFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'No secure files'**
+  String get noSecureFiles;
+
+  /// No description provided for @sharedGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared groups'**
+  String get sharedGroups;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @notSharedWithAnyGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Not shared with any group'**
+  String get notSharedWithAnyGroup;
+
+  /// No description provided for @noGroupsLeftToShareWith.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups left to share with'**
+  String get noGroupsLeftToShareWith;
+
+  /// No description provided for @shareWithGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with group'**
+  String get shareWithGroup;
+
+  /// No description provided for @group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get group;
+
+  /// No description provided for @maxAccessLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max access level'**
+  String get maxAccessLevel;
+
+  /// No description provided for @removeGroupShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove group share?'**
+  String get removeGroupShare;
+
+  /// No description provided for @unshare.
+  ///
+  /// In en, this message translates to:
+  /// **'Unshare'**
+  String get unshare;
+
+  /// No description provided for @storageMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage & maintenance'**
+  String get storageMaintenance;
+
+  /// No description provided for @storageStatisticsAreOnlyVisibleTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage statistics are only visible to maintainers.'**
+  String get storageStatisticsAreOnlyVisibleTo;
+
+  /// No description provided for @housekeepingOptimizesTheRepositoryGcRepack.
+  ///
+  /// In en, this message translates to:
+  /// **'Housekeeping optimizes the repository (gc, repack).'**
+  String get housekeepingOptimizesTheRepositoryGcRepack;
+
+  /// No description provided for @runHousekeeping.
+  ///
+  /// In en, this message translates to:
+  /// **'Run housekeeping'**
+  String get runHousekeeping;
+
+  /// No description provided for @housekeepingStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Housekeeping started'**
+  String get housekeepingStarted;
+
+  /// No description provided for @pipelineTriggers.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline triggers'**
+  String get pipelineTriggers;
+
+  /// No description provided for @noTriggers.
+  ///
+  /// In en, this message translates to:
+  /// **'No triggers'**
+  String get noTriggers;
+
+  /// No description provided for @deleteTrigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete trigger'**
+  String get deleteTrigger;
+
+  /// No description provided for @lintGitlabCiYml.
+  ///
+  /// In en, this message translates to:
+  /// **'Lint .gitlab-ci.yml'**
+  String get lintGitlabCiYml;
+
+  /// No description provided for @validateCiConfigAgainstThisProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Validate CI config against this project'**
+  String get validateCiConfigAgainstThisProject;
+
+  /// No description provided for @newTrigger.
+  ///
+  /// In en, this message translates to:
+  /// **'New trigger'**
+  String get newTrigger;
+
+  /// No description provided for @eGDeployWebhook.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Deploy webhook'**
+  String get eGDeployWebhook;
+
+  /// No description provided for @triggerCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger created'**
+  String get triggerCreated;
+
+  /// No description provided for @useThisTokenToAuthenticateTrigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this token to authenticate trigger requests.'**
+  String get useThisTokenToAuthenticateTrigger;
+
+  /// No description provided for @tokenCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Token copied'**
+  String get tokenCopied;
+
+  /// No description provided for @lintCiConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Lint CI config'**
+  String get lintCiConfig;
+
+  /// No description provided for @pasteYourGitlabCiYmlHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your .gitlab-ci.yml here'**
+  String get pasteYourGitlabCiYmlHere;
+
+  /// No description provided for @lint.
+  ///
+  /// In en, this message translates to:
+  /// **'Lint'**
+  String get lint;
+
+  /// No description provided for @deleteNamedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {p0}?'**
+  String deleteNamedConfirm(Object p0);
+
+  /// No description provided for @storageTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {p0}'**
+  String storageTotal(Object p0);
+
+  /// No description provided for @commitCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} commits'**
+  String commitCount(Object p0);
+
+  /// No description provided for @storageStatPair.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} {p1}'**
+  String storageStatPair(Object p0, Object p1);
+
+  /// No description provided for @deleteTriggerConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete trigger?'**
+  String get deleteTriggerConfirm;
+
+  /// No description provided for @lintJobsList.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs: {p0}'**
+  String lintJobsList(String p0);
 }
 
 class _AppLocalizationsDelegate
