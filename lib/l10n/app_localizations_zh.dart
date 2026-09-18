@@ -1886,4 +1886,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get newMr => '新建合并请求';
+
+  @override
+  String get resolved => '已解决';
+
+  @override
+  String get resolve => '解决';
+
+  @override
+  String get replyHint => '回复…';
+
+  @override
+  String get actionReply => '回复';
 }

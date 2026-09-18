@@ -3691,6 +3691,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New merge request'**
   String get newMr;
+
+  /// No description provided for @resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolved;
+
+  /// No description provided for @resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve'**
+  String get resolve;
+
+  /// No description provided for @replyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply…'**
+  String get replyHint;
+
+  /// No description provided for @actionReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get actionReply;
 }
 
 class _AppLocalizationsDelegate

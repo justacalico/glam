@@ -1910,4 +1910,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newMr => 'New merge request';
+
+  @override
+  String get resolved => 'Resolved';
+
+  @override
+  String get resolve => 'Resolve';
+
+  @override
+  String get replyHint => 'Reply…';
+
+  @override
+  String get actionReply => 'Reply';
 }

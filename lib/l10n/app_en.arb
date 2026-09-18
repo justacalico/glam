@@ -598,5 +598,9 @@
   "mrPickBranches": "Pick a source and target branch",
   "mrSaveFailed": "Could not save the merge request",
   "editMr": "Edit merge request",
-  "newMr": "New merge request"
+  "newMr": "New merge request",
+  "resolved": "Resolved",
+  "resolve": "Resolve",
+  "replyHint": "Reply…",
+  "actionReply": "Reply"
 }

@@ -598,5 +598,9 @@
   "mrPickBranches": "请选择源分支和目标分支",
   "mrSaveFailed": "无法保存合并请求",
   "editMr": "编辑合并请求",
-  "newMr": "新建合并请求"
+  "newMr": "新建合并请求",
+  "resolved": "已解决",
+  "resolve": "解决",
+  "replyHint": "回复…",
+  "actionReply": "回复"
 }
