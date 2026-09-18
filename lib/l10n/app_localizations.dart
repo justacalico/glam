@@ -3715,6 +3715,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reply'**
   String get actionReply;
+
+  /// No description provided for @changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes'**
+  String get changes;
+
+  /// No description provided for @loadMoreFailedRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more failed. Retry'**
+  String get loadMoreFailedRetry;
+
+  /// No description provided for @draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get draft;
+
+  /// No description provided for @scheduledToMergeWhenThePipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled to merge when the pipeline succeeds'**
+  String get scheduledToMergeWhenThePipeline;
+
+  /// No description provided for @merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get merge;
+
+  /// No description provided for @revokeApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke approval'**
+  String get revokeApproval;
+
+  /// No description provided for @cancelAutoMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel auto-merge'**
+  String get cancelAutoMerge;
+
+  /// No description provided for @mergeWhenPipelineSucceeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge when pipeline succeeds'**
+  String get mergeWhenPipelineSucceeds;
+
+  /// No description provided for @mergeP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge !{p0}'**
+  String mergeP0(Object p0);
+
+  /// No description provided for @deleteSourceBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete source branch'**
+  String get deleteSourceBranch;
+
+  /// No description provided for @mergesAutomaticallyOnceThePipelineSucceeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Merges automatically once the pipeline succeeds.'**
+  String get mergesAutomaticallyOnceThePipelineSucceeds;
+
+  /// No description provided for @setAutoMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Set auto-merge'**
+  String get setAutoMerge;
+
+  /// No description provided for @closeMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Close MR'**
+  String get closeMr;
+
+  /// No description provided for @reopenMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen MR'**
+  String get reopenMr;
+
+  /// No description provided for @markAsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as ready'**
+  String get markAsReady;
+
+  /// No description provided for @markAsDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as draft'**
+  String get markAsDraft;
+
+  /// No description provided for @rebase.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebase'**
+  String get rebase;
+
+  /// No description provided for @cherryPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry-pick'**
+  String get cherryPick;
+
+  /// No description provided for @revert.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert'**
+  String get revert;
+
+  /// No description provided for @downloadPatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Download patch'**
+  String get downloadPatch;
+
+  /// No description provided for @noChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes'**
+  String get noChanges;
+
+  /// No description provided for @latestChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest changes'**
+  String get latestChanges;
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @publish.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get publish;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review?'**
+  String get submitReview;
+
+  /// No description provided for @allPendingCommentsBecomeVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'All pending comments become visible.'**
+  String get allPendingCommentsBecomeVisible;
+
+  /// No description provided for @publishAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish all'**
+  String get publishAll;
+
+  /// No description provided for @noPendingComments.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending comments.'**
+  String get noPendingComments;
+
+  /// No description provided for @binaryFileOrDiffTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary file or diff too large'**
+  String get binaryFileOrDiffTooLarge;
+
+  /// No description provided for @writeAComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment…'**
+  String get writeAComment;
+
+  /// No description provided for @addToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to review'**
+  String get addToReview;
+
+  /// No description provided for @comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get comment;
+
+  /// No description provided for @missingDiffRefsRefreshTheMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing diff refs. Refresh the MR and try again.'**
+  String get missingDiffRefsRefreshTheMr;
+
+  /// No description provided for @noCommits.
+  ///
+  /// In en, this message translates to:
+  /// **'No commits'**
+  String get noCommits;
+
+  /// No description provided for @contextCommits.
+  ///
+  /// In en, this message translates to:
+  /// **'Context commits'**
+  String get contextCommits;
+
+  /// No description provided for @mrIid.
+  ///
+  /// In en, this message translates to:
+  /// **'!{p0}'**
+  String mrIid(Object p0);
+
+  /// No description provided for @branchArrow.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} → {p1}'**
+  String branchArrow(Object p0, Object p1);
+
+  /// No description provided for @projectMrRef.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} !{p1}'**
+  String projectMrRef(Object p0, Object p1);
+
+  /// No description provided for @deletionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'-{p0}'**
+  String deletionsCount(Object p0);
+
+  /// No description provided for @mergedByAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged by {p0} {p1}'**
+  String mergedByAt(Object p0, Object p1);
+
+  /// No description provided for @pendingComments.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} pending comment{p1} in your review'**
+  String pendingComments(Object p0, Object p1);
+
+  /// No description provided for @versionEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {p0} · {p1} · {p2} file{p3}'**
+  String versionEntry(Object p0, Object p1, Object p2, Object p3);
+
+  /// No description provided for @commentOnLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment on {p0}:{p1}'**
+  String commentOnLine(Object p0, Object p1);
 }
 
 class _AppLocalizationsDelegate

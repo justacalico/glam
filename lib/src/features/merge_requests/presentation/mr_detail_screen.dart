@@ -41,6 +41,7 @@ import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/repository/presentation/commits_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// MR detail with four tabs: overview (desc + activity), changed
 /// files, the commit list, and pipelines. Merge actions live in a
@@ -59,7 +60,7 @@ class MrDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('!$iid'),
+        title: Text(context.l10n.mrIid(iid)),
         actions: [
           mr.maybeWhen(
             data: (m) => _MrActions(mr: m, loc: _loc),
@@ -88,12 +89,12 @@ class _MrBody extends StatelessWidget {
       length: 4,
       child: Column(
         children: [
-          const TabBar(
+          TabBar(
             tabs: [
-              Tab(text: 'Overview'),
-              Tab(text: 'Changes'),
-              Tab(text: 'Commits'),
-              Tab(text: 'Pipelines'),
+              Tab(text: context.l10n.tabOverview),
+              Tab(text: context.l10n.changes),
+              Tab(text: context.l10n.tabCommits),
+              Tab(text: context.l10n.tabPipelines),
             ],
           ),
           Expanded(
@@ -164,7 +165,7 @@ class _OverviewTab extends ConsumerWidget {
                 ),
                 const SizedBox(height: Insets.xl),
                 Text(
-                  'Activity',
+                  context.l10n.activityTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: Insets.sm),
@@ -193,7 +194,7 @@ class _OverviewTab extends ConsumerWidget {
                           Padding(
                             padding: const EdgeInsets.all(Insets.lg),
                             child: Text(
-                              'No comments yet',
+                              context.l10n.noCommentsYet,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
@@ -210,7 +211,7 @@ class _OverviewTab extends ConsumerWidget {
                               onPressed: () => ref
                                   .read(mrDiscussionsProvider(loc).notifier)
                                   .loadMore(),
-                              child: const Text('Load more failed. Retry'),
+                              child: Text(context.l10n.loadMoreFailedRetry),
                             ),
                           ),
                       ],
@@ -257,7 +258,7 @@ class _MrHeader extends StatelessWidget {
             StateChip.mergeRequestState(mr.state),
             if (mr.draft) ...[
               const SizedBox(width: Insets.sm),
-              const StateChip(label: 'Draft', tone: ChipTone.neutral),
+              StateChip(label: context.l10n.draft, tone: ChipTone.neutral),
             ],
             if (mr.headPipeline?.status != null) ...[
               const SizedBox(width: Insets.sm),
@@ -325,8 +326,10 @@ class _MrHeader extends StatelessWidget {
                   ),
                   const SizedBox(width: Insets.xs),
                   Text(
-                    '${mr.author!.name} opened '
-                    '${Format.relative(mr.createdAt)}',
+                    context.l10n.openedByAt(
+                      mr.author!.name,
+                      Format.relative(mr.createdAt),
+                    ),
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -335,14 +338,18 @@ class _MrHeader extends StatelessWidget {
               Text(mr.milestone!.title, style: theme.textTheme.bodySmall),
             if ((mr.timeEstimate ?? 0) > 0 || (mr.timeSpent ?? 0) > 0)
               Text(
-                '${Format.humanDuration(mr.timeSpent)} spent'
-                ' of ${Format.humanDuration(mr.timeEstimate)}',
+                context.l10n.timeSpentOf(
+                  Format.humanDuration(mr.timeSpent),
+                  Format.humanDuration(mr.timeEstimate),
+                ),
                 style: theme.textTheme.bodySmall,
               ),
             if (mr.mergedBy != null)
               Text(
-                'Merged by ${mr.mergedBy!.name} '
-                '${Format.relative(mr.mergedAt)}',
+                context.l10n.mergedByAt(
+                  mr.mergedBy!.name,
+                  Format.relative(mr.mergedAt),
+                ),
                 style: theme.textTheme.bodySmall,
               ),
           ],
@@ -362,9 +369,12 @@ class _MrHeader extends StatelessWidget {
             runSpacing: Insets.sm,
             children: [
               if (mr.assignees.isNotEmpty)
-                _People(label: 'Assignees', users: mr.assignees),
+                _People(
+                  label: context.l10n.fieldAssignees,
+                  users: mr.assignees,
+                ),
               if (mr.reviewers.isNotEmpty)
-                _People(label: 'Reviewers', users: mr.reviewers),
+                _People(label: context.l10n.reviewers, users: mr.reviewers),
             ],
           ),
         ],
@@ -498,7 +508,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
             Padding(
               padding: const EdgeInsets.only(top: Insets.sm),
               child: Text(
-                'Scheduled to merge when the pipeline succeeds',
+                context.l10n.scheduledToMergeWhenThePipeline,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.inkMuted),
@@ -512,7 +522,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
                     ? () => unawaited(_showMergeSheet(context, ref))
                     : null,
                 icon: const Icon(Icons.merge, size: 18),
-                label: const Text('Merge'),
+                label: Text(context.l10n.merge),
               ),
               const SizedBox(width: Insets.sm),
               if (approvals != null && canAct)
@@ -526,7 +536,11 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
                         : Icons.thumb_up_outlined,
                     size: 16,
                   ),
-                  label: Text(iApproved ? 'Revoke approval' : 'Approve'),
+                  label: Text(
+                    iApproved
+                        ? context.l10n.revokeApproval
+                        : context.l10n.approve,
+                  ),
                 ),
             ],
           ),
@@ -536,7 +550,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
               child: OutlinedButton.icon(
                 onPressed: _busy ? null : () => unawaited(_cancelAutoMerge()),
                 icon: const Icon(Icons.cancel_outlined, size: 16),
-                label: const Text('Cancel auto-merge'),
+                label: Text(context.l10n.cancelAutoMerge),
               ),
             )
           else if (canAutoMerge)
@@ -546,7 +560,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
                 onPressed: () =>
                     unawaited(_showMergeSheet(context, ref, autoMerge: true)),
                 icon: const Icon(Icons.schedule_outlined, size: 16),
-                label: const Text('Merge when pipeline succeeds'),
+                label: Text(context.l10n.mergeWhenPipelineSucceeds),
               ),
             ),
         ],
@@ -692,23 +706,26 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Merge !${widget.mr.iid}',
+            context.l10n.mergeP0(widget.mr.iid),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: Insets.sm),
           Text(
-            '${widget.mr.sourceBranch} → ${widget.mr.targetBranch}',
+            context.l10n.branchArrow(
+              widget.mr.sourceBranch,
+              widget.mr.targetBranch,
+            ),
             style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Squash commits'),
+            title: Text(context.l10n.squashCommits),
             value: _squash,
             onChanged: (v) => setState(() => _squash = v),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Delete source branch'),
+            title: Text(context.l10n.deleteSourceBranch),
             value: _removeSource,
             onChanged: (v) => setState(() => _removeSource = v),
           ),
@@ -716,7 +733,7 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
             Padding(
               padding: const EdgeInsets.only(bottom: Insets.sm),
               child: Text(
-                'Merges automatically once the pipeline succeeds.',
+                context.l10n.mergesAutomaticallyOnceThePipelineSucceeds,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.inkMuted),
@@ -736,7 +753,9 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(_autoMerge ? 'Set auto-merge' : 'Merge'),
+                : Text(
+                    _autoMerge ? context.l10n.setAutoMerge : context.l10n.merge,
+                  ),
           ),
           SizedBox(
             height: Insets.lg + MediaQuery.viewPaddingOf(context).bottom,
@@ -770,17 +789,17 @@ class _MrActions extends ConsumerWidget {
     final target = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('$label !${mr.iid}'),
+        title: Text(context.l10n.projectMrRef(label, mr.iid)),
         content: TextField(
           controller: branch,
           autofocus: true,
-          decoration: const InputDecoration(labelText: 'Target branch'),
+          decoration: InputDecoration(labelText: context.l10n.targetBranch),
           onSubmitted: (v) => Navigator.pop(context, v.trim()),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, branch.text.trim()),
@@ -839,12 +858,18 @@ class _MrActions extends ConsumerWidget {
                 subscribed: !mr.subscribed,
               );
             case 'estimate':
-              final d = await promptDuration(context, title: 'Time estimate');
+              final d = await promptDuration(
+                context,
+                title: context.l10n.timeEstimate,
+              );
               if (d != null && d.isNotEmpty) {
                 await repo.setTimeEstimate(loc.project, loc.iid, d);
               }
             case 'spent':
-              final d = await promptDuration(context, title: 'Add time spent');
+              final d = await promptDuration(
+                context,
+                title: context.l10n.addTimeSpent,
+              );
               if (d != null && d.isNotEmpty) {
                 await repo.addTimeSpent(loc.project, loc.iid, d);
               }
@@ -916,38 +941,48 @@ class _MrActions extends ConsumerWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 'toggle',
-          child: Text(mr.isOpen ? 'Close MR' : 'Reopen MR'),
+          child: Text(mr.isOpen ? context.l10n.closeMr : context.l10n.reopenMr),
         ),
         if (mr.isOpen) ...[
           PopupMenuItem(
             value: 'draft',
-            child: Text(mr.draft ? 'Mark as ready' : 'Mark as draft'),
+            child: Text(
+              mr.draft ? context.l10n.markAsReady : context.l10n.markAsDraft,
+            ),
           ),
-          const PopupMenuItem(value: 'rebase', child: Text('Rebase')),
+          PopupMenuItem(value: 'rebase', child: Text(context.l10n.rebase)),
         ],
         if (mr.isMerged &&
             (mr.mergeCommitSha != null || mr.squashCommitSha != null)) ...[
-          const PopupMenuItem(value: 'cherry_pick', child: Text('Cherry-pick')),
-          const PopupMenuItem(value: 'revert', child: Text('Revert')),
+          PopupMenuItem(
+            value: 'cherry_pick',
+            child: Text(context.l10n.cherryPick),
+          ),
+          PopupMenuItem(value: 'revert', child: Text(context.l10n.revert)),
         ],
         PopupMenuItem(
           value: 'subscribe',
-          child: Text(mr.subscribed ? 'Unsubscribe' : 'Subscribe'),
-        ),
-        const PopupMenuItem(
-          value: 'estimate',
-          child: Text('Set time estimate'),
-        ),
-        const PopupMenuItem(value: 'spent', child: Text('Add time spent')),
-        if ((mr.timeSpent ?? 0) > 0)
-          const PopupMenuItem(
-            value: 'reset_spent',
-            child: Text('Reset time spent'),
+          child: Text(
+            mr.subscribed ? context.l10n.unsubscribe : context.l10n.subscribe,
           ),
-        const PopupMenuItem(value: 'edit', child: Text('Edit')),
-        const PopupMenuItem(value: 'patch', child: Text('Download patch')),
-        const PopupMenuItem(value: 'copy', child: Text('Copy link')),
-        const PopupMenuItem(value: 'open', child: Text('Open in browser')),
+        ),
+        PopupMenuItem(
+          value: 'estimate',
+          child: Text(context.l10n.setTimeEstimate),
+        ),
+        PopupMenuItem(value: 'spent', child: Text(context.l10n.addTimeSpent)),
+        if ((mr.timeSpent ?? 0) > 0)
+          PopupMenuItem(
+            value: 'reset_spent',
+            child: Text(context.l10n.resetTimeSpent),
+          ),
+        PopupMenuItem(value: 'edit', child: Text(context.l10n.actionEdit)),
+        PopupMenuItem(value: 'patch', child: Text(context.l10n.downloadPatch)),
+        PopupMenuItem(value: 'copy', child: Text(context.l10n.copyLink)),
+        PopupMenuItem(
+          value: 'open',
+          child: Text(context.l10n.actionOpenBrowser),
+        ),
       ],
     );
   }
@@ -1011,9 +1046,9 @@ class _ChangesTabState extends ConsumerState<_ChangesTab> {
                   ),
             data: (entries) {
               if (entries.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.difference_outlined,
-                  title: 'No changes',
+                  title: context.l10n.noChanges,
                 );
               }
               return ListView.separated(
@@ -1077,16 +1112,21 @@ class _VersionPicker extends StatelessWidget {
               underline: const SizedBox.shrink(),
               style: theme.textTheme.bodyMedium,
               items: [
-                const DropdownMenuItem<int?>(child: Text('Latest changes')),
+                const DropdownMenuItem<int?>(
+                  child: Text(context.l10n.latestChanges),
+                ),
                 // sorted[0] is the newest version, which shows the same
                 // diff as Latest, so only older versions get entries.
                 for (var i = 1; i < sorted.length; i++)
                   DropdownMenuItem<int?>(
                     value: sorted[i].id,
                     child: Text(
-                      'Version ${sorted.length - i} · ${sorted[i].shortSha}'
-                      ' · ${sorted[i].realSize} '
-                      'file${sorted[i].realSize == 1 ? '' : 's'}',
+                      context.l10n.versionEntry(
+                        sorted.length - i,
+                        sorted[i].shortSha,
+                        sorted[i].realSize,
+                        sorted[i].realSize == 1 ? '' : 's',
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -1133,13 +1173,16 @@ class _ReviewBannerState extends ConsumerState<_ReviewBanner> {
         children: [
           Expanded(
             child: Text(
-              '$count pending comment${count == 1 ? '' : 's'} in your review',
+              context.l10n.pendingComments(
+                count,
+                count == 1 ? '' : 's',
+              ),
               style: Theme.of(context).textTheme.labelLarge,
             ),
           ),
           TextButton(
             onPressed: _busy ? null : _showDrafts,
-            child: const Text('Review'),
+            child: Text(context.l10n.review),
           ),
           FilledButton(
             onPressed: _busy ? null : _publish,
@@ -1149,7 +1192,7 @@ class _ReviewBannerState extends ConsumerState<_ReviewBanner> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Publish'),
+                : Text(context.l10n.publish),
           ),
         ],
       ),
@@ -1160,16 +1203,16 @@ class _ReviewBannerState extends ConsumerState<_ReviewBanner> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Submit review?'),
-        content: const Text('All pending comments become visible.'),
+        title: Text(context.l10n.submitReview),
+        content: Text(context.l10n.allPendingCommentsBecomeVisible),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Publish all'),
+            child: Text(context.l10n.publishAll),
           ),
         ],
       ),
@@ -1220,9 +1263,9 @@ class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
     final list = drafts.value ?? const [];
 
     if (list.isEmpty && drafts.hasValue) {
-      return const Padding(
+      return Padding(
         padding: Insets.pagePadding,
-        child: Text('No pending comments.'),
+        child: Text(context.l10n.noPendingComments),
       );
     }
     return ListView(
@@ -1245,10 +1288,19 @@ class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
             trailing: PopupMenuButton<String>(
               enabled: !_busy,
               onSelected: (a) => unawaited(_act(d, a)),
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'publish', child: Text('Publish')),
-                PopupMenuItem(value: 'edit', child: Text('Edit')),
-                PopupMenuItem(value: 'delete', child: Text('Delete')),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'publish',
+                  child: Text(context.l10n.publish),
+                ),
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Text(context.l10n.actionEdit),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text(context.l10n.actionDelete),
+                ),
               ],
             ),
           ),
@@ -1289,7 +1341,7 @@ class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
     final text = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit comment'),
+        title: Text(context.l10n.noteEditTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -1300,11 +1352,11 @@ class _DraftsSheetState extends ConsumerState<_DraftsSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -1383,7 +1435,7 @@ class _ChangeCard extends ConsumerWidget {
                 ),
                 if (diff.hunks.isNotEmpty) ...[
                   Text(
-                    '+${diff.additions}',
+                    context.l10n.moreCount(diff.additions),
                     style: TextStyle(
                       fontSize: 11.5,
                       color: colors.diffAdd,
@@ -1392,7 +1444,7 @@ class _ChangeCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: Insets.xs),
                   Text(
-                    '-${diff.deletions}',
+                    context.l10n.deletionsCount(diff.deletions),
                     style: TextStyle(
                       fontSize: 11.5,
                       color: colors.diffRemove,
@@ -1407,7 +1459,7 @@ class _ChangeCard extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(Insets.lg),
               child: Text(
-                'Binary file or diff too large',
+                context.l10n.binaryFileOrDiffTooLarge,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             )
@@ -1451,8 +1503,10 @@ class _ChangeCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Comment on ${entry.displayPath}:'
-              '${line.newLine ?? line.oldLine ?? ''}',
+              context.l10n.commentOnLine(
+                entry.displayPath,
+                line.newLine ?? line.oldLine ?? '',
+              ),
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: Insets.sm),
@@ -1461,7 +1515,7 @@ class _ChangeCard extends ConsumerWidget {
               autofocus: true,
               minLines: 2,
               maxLines: 5,
-              decoration: const InputDecoration(hintText: 'Write a comment…'),
+              decoration: InputDecoration(hintText: context.l10n.writeAComment),
             ),
             const SizedBox(height: Insets.md),
             Row(
@@ -1471,13 +1525,13 @@ class _ChangeCard extends ConsumerWidget {
                   TextButton(
                     onPressed: () =>
                         Navigator.pop(context, (controller.text.trim(), true)),
-                    child: const Text('Add to review'),
+                    child: Text(context.l10n.addToReview),
                   ),
                 const SizedBox(width: Insets.sm),
                 FilledButton(
                   onPressed: () =>
                       Navigator.pop(context, (controller.text.trim(), false)),
-                  child: const Text('Comment'),
+                  child: Text(context.l10n.comment),
                 ),
               ],
             ),
@@ -1496,9 +1550,7 @@ class _ChangeCard extends ConsumerWidget {
         refs?.startSha == null ||
         refs?.headSha == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Missing diff refs. Refresh the MR and try again.'),
-        ),
+        SnackBar(content: Text(context.l10n.missingDiffRefsRefreshTheMr)),
       );
       return;
     }
@@ -1589,7 +1641,7 @@ class _CommitsTab extends ConsumerWidget {
         ),
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(icon: Icons.commit, title: 'No commits'),
+        empty: EmptyState(icon: Icons.commit, title: context.l10n.noCommits),
         itemBuilder: (context, index) => CommitTile(
           commit: data.items[index],
           projectId: loc.project.toString(),
@@ -1620,7 +1672,10 @@ class _ContextCommitsHeader extends StatelessWidget {
               top: Insets.sm,
               bottom: Insets.xs,
             ),
-            child: Text('Context commits', style: theme.textTheme.labelSmall),
+            child: Text(
+              context.l10n.contextCommits,
+              style: theme.textTheme.labelSmall,
+            ),
           ),
           for (final c in commits)
             CommitTile(commit: c, projectId: loc.project.toString()),

@@ -1922,4 +1922,155 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionReply => 'Reply';
+
+  @override
+  String get changes => 'Changes';
+
+  @override
+  String get loadMoreFailedRetry => 'Load more failed. Retry';
+
+  @override
+  String get draft => 'Draft';
+
+  @override
+  String get scheduledToMergeWhenThePipeline =>
+      'Scheduled to merge when the pipeline succeeds';
+
+  @override
+  String get merge => 'Merge';
+
+  @override
+  String get revokeApproval => 'Revoke approval';
+
+  @override
+  String get cancelAutoMerge => 'Cancel auto-merge';
+
+  @override
+  String get mergeWhenPipelineSucceeds => 'Merge when pipeline succeeds';
+
+  @override
+  String mergeP0(Object p0) {
+    return 'Merge !$p0';
+  }
+
+  @override
+  String get deleteSourceBranch => 'Delete source branch';
+
+  @override
+  String get mergesAutomaticallyOnceThePipelineSucceeds =>
+      'Merges automatically once the pipeline succeeds.';
+
+  @override
+  String get setAutoMerge => 'Set auto-merge';
+
+  @override
+  String get closeMr => 'Close MR';
+
+  @override
+  String get reopenMr => 'Reopen MR';
+
+  @override
+  String get markAsReady => 'Mark as ready';
+
+  @override
+  String get markAsDraft => 'Mark as draft';
+
+  @override
+  String get rebase => 'Rebase';
+
+  @override
+  String get cherryPick => 'Cherry-pick';
+
+  @override
+  String get revert => 'Revert';
+
+  @override
+  String get downloadPatch => 'Download patch';
+
+  @override
+  String get noChanges => 'No changes';
+
+  @override
+  String get latestChanges => 'Latest changes';
+
+  @override
+  String get review => 'Review';
+
+  @override
+  String get publish => 'Publish';
+
+  @override
+  String get submitReview => 'Submit review?';
+
+  @override
+  String get allPendingCommentsBecomeVisible =>
+      'All pending comments become visible.';
+
+  @override
+  String get publishAll => 'Publish all';
+
+  @override
+  String get noPendingComments => 'No pending comments.';
+
+  @override
+  String get binaryFileOrDiffTooLarge => 'Binary file or diff too large';
+
+  @override
+  String get writeAComment => 'Write a comment…';
+
+  @override
+  String get addToReview => 'Add to review';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get missingDiffRefsRefreshTheMr =>
+      'Missing diff refs. Refresh the MR and try again.';
+
+  @override
+  String get noCommits => 'No commits';
+
+  @override
+  String get contextCommits => 'Context commits';
+
+  @override
+  String mrIid(Object p0) {
+    return '!$p0';
+  }
+
+  @override
+  String branchArrow(Object p0, Object p1) {
+    return '$p0 → $p1';
+  }
+
+  @override
+  String projectMrRef(Object p0, Object p1) {
+    return '$p0 !$p1';
+  }
+
+  @override
+  String deletionsCount(Object p0) {
+    return '-$p0';
+  }
+
+  @override
+  String mergedByAt(Object p0, Object p1) {
+    return 'Merged by $p0 $p1';
+  }
+
+  @override
+  String pendingComments(Object p0, Object p1) {
+    return '$p0 pending comment$p1 in your review';
+  }
+
+  @override
+  String versionEntry(Object p0, Object p1, Object p2, Object p3) {
+    return 'Version $p0 · $p1 · $p2 file$p3';
+  }
+
+  @override
+  String commentOnLine(Object p0, Object p1) {
+    return 'Comment on $p0:$p1';
+  }
 }

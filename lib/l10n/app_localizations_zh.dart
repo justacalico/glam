@@ -1898,4 +1898,151 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get actionReply => '回复';
+
+  @override
+  String get changes => '变更';
+
+  @override
+  String get loadMoreFailedRetry => '加载更多失败。重试';
+
+  @override
+  String get draft => '草稿';
+
+  @override
+  String get scheduledToMergeWhenThePipeline => '计划在流水线成功后合并';
+
+  @override
+  String get merge => '合并';
+
+  @override
+  String get revokeApproval => '撤销批准';
+
+  @override
+  String get cancelAutoMerge => '取消自动合并';
+
+  @override
+  String get mergeWhenPipelineSucceeds => '流水线成功后合并';
+
+  @override
+  String mergeP0(Object p0) {
+    return '合并 !$p0';
+  }
+
+  @override
+  String get deleteSourceBranch => '删除源分支';
+
+  @override
+  String get mergesAutomaticallyOnceThePipelineSucceeds => '流水线成功后自动合并。';
+
+  @override
+  String get setAutoMerge => '设置自动合并';
+
+  @override
+  String get closeMr => '关闭 MR';
+
+  @override
+  String get reopenMr => '重新打开 MR';
+
+  @override
+  String get markAsReady => '标记为就绪';
+
+  @override
+  String get markAsDraft => '标记为草稿';
+
+  @override
+  String get rebase => '变基';
+
+  @override
+  String get cherryPick => '拣选';
+
+  @override
+  String get revert => '还原';
+
+  @override
+  String get downloadPatch => '下载补丁';
+
+  @override
+  String get noChanges => '没有变更';
+
+  @override
+  String get latestChanges => '最新变更';
+
+  @override
+  String get review => '审查';
+
+  @override
+  String get publish => '发布';
+
+  @override
+  String get submitReview => '提交审查？';
+
+  @override
+  String get allPendingCommentsBecomeVisible => '所有待处理评论将变为可见。';
+
+  @override
+  String get publishAll => '全部发布';
+
+  @override
+  String get noPendingComments => '没有待处理评论。';
+
+  @override
+  String get binaryFileOrDiffTooLarge => '二进制文件或 diff 过大';
+
+  @override
+  String get writeAComment => '写评论…';
+
+  @override
+  String get addToReview => '加入审查';
+
+  @override
+  String get comment => '评论';
+
+  @override
+  String get missingDiffRefsRefreshTheMr => '缺少 diff 引用。请刷新 MR 后重试。';
+
+  @override
+  String get noCommits => '没有提交';
+
+  @override
+  String get contextCommits => '上下文提交';
+
+  @override
+  String mrIid(Object p0) {
+    return '!$p0';
+  }
+
+  @override
+  String branchArrow(Object p0, Object p1) {
+    return '$p0 → $p1';
+  }
+
+  @override
+  String projectMrRef(Object p0, Object p1) {
+    return '$p0 !$p1';
+  }
+
+  @override
+  String deletionsCount(Object p0) {
+    return '-$p0';
+  }
+
+  @override
+  String mergedByAt(Object p0, Object p1) {
+    return '由 $p0 于 $p1 合并';
+  }
+
+  @override
+  String pendingComments(Object p0, Object p1) {
+    return '你的审查中有 $p0 条待处理评论';
+  }
+
+  @override
+  String versionEntry(Object p0, Object p1, Object p2, Object p3) {
+    return '版本 $p0 · $p1 · $p2 个文件';
+  }
+
+  @override
+  String commentOnLine(Object p0, Object p1) {
+    return '评论 $p0:$p1';
+  }
 }
