@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
 import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/domain/event.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// The user's activity feed.
 class ActivityScreen extends ConsumerWidget {
@@ -20,7 +21,7 @@ class ActivityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Activity')),
+      appBar: AppBar(title: Text(context.l10n.activityTitle)),
       body: const EventList(feed: ownFeed),
     );
   }
@@ -48,9 +49,9 @@ class EventList extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border, indent: Insets.lg),
-        empty: const EmptyState(
+        empty: EmptyState(
           icon: Icons.bolt_outlined,
-          title: 'No activity yet',
+          title: context.l10n.noActivityYet,
         ),
         itemBuilder: (context, index) => EventTile(event: data.items[index]),
       ),

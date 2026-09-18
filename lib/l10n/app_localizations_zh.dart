@@ -1301,4 +1301,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String gpgKeyId(int p0) {
     return 'GPG 密钥 #$p0';
   }
+
+  @override
+  String get noActivityYet => '暂无动态';
+
+  @override
+  String get markAllRead => '全部标为已读';
+
+  @override
+  String get allCaughtUp => '全部处理完了';
 }

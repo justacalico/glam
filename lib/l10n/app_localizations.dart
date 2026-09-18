@@ -2611,6 +2611,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GPG key #{p0}'**
   String gpgKeyId(int p0);
+
+  /// No description provided for @noActivityYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity yet'**
+  String get noActivityYet;
+
+  /// No description provided for @markAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get markAllRead;
+
+  /// No description provided for @allCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get allCaughtUp;
 }
 
 class _AppLocalizationsDelegate

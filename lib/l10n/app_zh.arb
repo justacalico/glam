@@ -418,5 +418,8 @@
   "eventFixedPipelines": "修复的流水线",
   "eventSuccessfulPipelines": "成功的流水线",
   "eventMovedProjects": "移动的项目",
-  "eventNewEpics": "新 epic"
+  "eventNewEpics": "新 epic",
+  "noActivityYet": "暂无动态",
+  "markAllRead": "全部标为已读",
+  "allCaughtUp": "全部处理完了"
 }

@@ -1313,4 +1313,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String gpgKeyId(int p0) {
     return 'GPG key #$p0';
   }
+
+  @override
+  String get noActivityYet => 'No activity yet';
+
+  @override
+  String get markAllRead => 'Mark all read';
+
+  @override
+  String get allCaughtUp => 'All caught up';
 }

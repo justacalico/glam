@@ -11,6 +11,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/activity/application/activity_providers.dart';
 import 'package:glam/src/features/activity/domain/notification.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Unread notifications with a mark-all-read action.
 class NotificationsScreen extends ConsumerWidget {
@@ -24,10 +25,10 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(context.l10n.notificationsTitle),
         actions: [
           IconButton(
-            tooltip: 'Mark all read',
+            tooltip: context.l10n.markAllRead,
             icon: const Icon(Icons.done_all, size: 20),
             onPressed: () => unawaited(notifier.markAllRead()),
           ),
@@ -46,9 +47,9 @@ class NotificationsScreen extends ConsumerWidget {
             color: colors.border,
             indent: Insets.lg,
           ),
-          empty: const EmptyState(
+          empty: EmptyState(
             icon: Icons.notifications_none,
-            title: 'All caught up',
+            title: context.l10n.allCaughtUp,
           ),
           itemBuilder: (context, index) =>
               _NotificationTile(notification: data.items[index]),

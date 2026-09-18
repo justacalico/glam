@@ -502,5 +502,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "noActivityYet": "No activity yet",
+  "markAllRead": "Mark all read",
+  "allCaughtUp": "All caught up"
 }
