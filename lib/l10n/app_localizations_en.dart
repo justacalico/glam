@@ -1774,4 +1774,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createIssue => 'Create issue';
+
+  @override
+  String get moveIssue => 'Move issue';
+
+  @override
+  String get destinationProject => 'Destination project';
+
+  @override
+  String get groupProject => 'group/project';
+
+  @override
+  String get move => 'Move';
+
+  @override
+  String get issueWeight => 'Issue weight';
+
+  @override
+  String get emptyClearsTheWeight => 'Empty clears the weight';
+
+  @override
+  String get enterAWholeNumber => 'Enter a whole number';
+
+  @override
+  String get timeEstimate => 'Time estimate';
+
+  @override
+  String get addTimeSpent => 'Add time spent';
+
+  @override
+  String get closeIssue => 'Close issue';
+
+  @override
+  String get reopenIssue => 'Reopen issue';
+
+  @override
+  String get unsubscribe => 'Unsubscribe';
+
+  @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get setTimeEstimate => 'Set time estimate';
+
+  @override
+  String get resetTimeSpent => 'Reset time spent';
+
+  @override
+  String get setWeight => 'Set weight';
+
+  @override
+  String get cloneIssue => 'Clone issue';
+
+  @override
+  String get copyLink => 'Copy link';
+
+  @override
+  String get noCommentsYet => 'No comments yet';
+
+  @override
+  String issueDueDate(Object p0) {
+    return 'Due $p0';
+  }
+
+  @override
+  String issueWeightValue(Object p0) {
+    return 'Weight $p0';
+  }
+
+  @override
+  String get enterProjectPath => 'Enter a project path';
+
+  @override
+  String closedByName(Object p0) {
+    return 'Closed by $p0';
+  }
+
+  @override
+  String tasksStatus(Object p0) {
+    return 'Tasks $p0';
+  }
+
+  @override
+  String openedByAt(Object p0, Object p1) {
+    return '$p0 opened $p1';
+  }
+
+  @override
+  String timeSpentOf(Object p0, Object p1) {
+    return '$p0 spent of $p1';
+  }
 }

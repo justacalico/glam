@@ -29,6 +29,7 @@ import 'package:glam/src/features/issues/domain/issue.dart';
 import 'package:glam/src/features/issues/presentation/issue_form_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_links_section.dart';
 import 'package:glam/src/features/projects/application/projects_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Issue detail: metadata, description, and the comment thread with a
 /// composer docked at the bottom.
@@ -54,7 +55,7 @@ class IssueDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('#$iid'),
+        title: Text(context.l10n.issueIid(iid)),
         actions: [
           issue.maybeWhen(
             data: (i) => _IssueActions(issue: i, loc: _loc),
@@ -92,7 +93,7 @@ class IssueDetailScreen extends ConsumerWidget {
                   RelatedMrsSection(loc: _loc),
                   const SizedBox(height: Insets.xl),
                   Text(
-                    'Activity',
+                    context.l10n.activityTitle,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: Insets.sm),
@@ -149,14 +150,14 @@ class _IssueActions extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Move issue'),
+          title: Text(context.l10n.moveIssue),
           content: TextField(
             controller: controller,
             autofocus: true,
             decoration: InputDecoration(
-              labelText: 'Destination project',
-              hintText: 'group/project',
-              errorText: error ? 'Enter a project path' : null,
+              labelText: context.l10n.destinationProject,
+              hintText: context.l10n.groupProject,
+              errorText: error ? context.l10n.enterProjectPath : null,
             ),
             onChanged: (_) {
               if (error) {
@@ -174,7 +175,7 @@ class _IssueActions extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -185,7 +186,7 @@ class _IssueActions extends ConsumerWidget {
                 }
                 Navigator.pop(context, v);
               },
-              child: const Text('Move'),
+              child: Text(context.l10n.move),
             ),
           ],
         ),
@@ -229,25 +230,25 @@ class _IssueActions extends ConsumerWidget {
     final input = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Issue weight'),
+        title: Text(context.l10n.issueWeight),
         content: TextField(
           controller: controller,
           autofocus: true,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
-            hintText: 'Empty clears the weight',
+          decoration: InputDecoration(
+            hintText: context.l10n.emptyClearsTheWeight,
           ),
           onSubmitted: (v) => Navigator.pop(context, v.trim()),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -261,7 +262,7 @@ class _IssueActions extends ConsumerWidget {
     if (weight == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Enter a whole number')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.enterAWholeNumber)));
       return;
     }
     try {
@@ -311,14 +312,14 @@ class _IssueActions extends ConsumerWidget {
             await _promptDuration(
               context,
               ref,
-              title: 'Time estimate',
+              title: context.l10n.timeEstimate,
               onSubmit: (d) => repo.setTimeEstimate(loc.project, loc.iid, d),
             );
           case 'spent':
             await _promptDuration(
               context,
               ref,
-              title: 'Add time spent',
+              title: context.l10n.addTimeSpent,
               onSubmit: (d) => repo.addTimeSpent(loc.project, loc.iid, d),
             );
           case 'reset':
@@ -365,26 +366,38 @@ class _IssueActions extends ConsumerWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 'toggle',
-          child: Text(issue.isOpen ? 'Close issue' : 'Reopen issue'),
+          child: Text(
+            issue.isOpen ? context.l10n.closeIssue : context.l10n.reopenIssue,
+          ),
         ),
         PopupMenuItem(
           value: 'subscribe',
-          child: Text(issue.subscribed ? 'Unsubscribe' : 'Subscribe'),
+          child: Text(
+            issue.subscribed
+                ? context.l10n.unsubscribe
+                : context.l10n.subscribe,
+          ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'estimate',
-          child: Text('Set time estimate'),
+          child: Text(context.l10n.setTimeEstimate),
         ),
-        const PopupMenuItem(value: 'spent', child: Text('Add time spent')),
+        PopupMenuItem(value: 'spent', child: Text(context.l10n.addTimeSpent)),
         if ((issue.timeSpent ?? 0) > 0)
-          const PopupMenuItem(value: 'reset', child: Text('Reset time spent')),
-        const PopupMenuItem(value: 'weight', child: Text('Set weight')),
-        const PopupMenuItem(value: 'clone', child: Text('Clone issue')),
+          PopupMenuItem(
+            value: 'reset',
+            child: Text(context.l10n.resetTimeSpent),
+          ),
+        PopupMenuItem(value: 'weight', child: Text(context.l10n.setWeight)),
+        PopupMenuItem(value: 'clone', child: Text(context.l10n.cloneIssue)),
         if (issue.isOpen)
-          const PopupMenuItem(value: 'move', child: Text('Move issue')),
-        const PopupMenuItem(value: 'edit', child: Text('Edit')),
-        const PopupMenuItem(value: 'copy', child: Text('Copy link')),
-        const PopupMenuItem(value: 'open', child: Text('Open in browser')),
+          PopupMenuItem(value: 'move', child: Text(context.l10n.moveIssue)),
+        PopupMenuItem(value: 'edit', child: Text(context.l10n.actionEdit)),
+        PopupMenuItem(value: 'copy', child: Text(context.l10n.copyLink)),
+        PopupMenuItem(
+          value: 'open',
+          child: Text(context.l10n.actionOpenBrowser),
+        ),
       ],
     );
   }
@@ -410,7 +423,7 @@ class _Header extends StatelessWidget {
             if (issue.confidential) ...[
               const SizedBox(width: Insets.sm),
               StateChip(
-                label: 'Confidential',
+                label: context.l10n.confidential,
                 tone: ChipTone.warning,
                 icon: Icons.lock_outline,
               ),
@@ -436,14 +449,14 @@ class _Header extends StatelessWidget {
             if (issue.dueDate != null)
               _MetaRow(
                 icon: Icons.event_outlined,
-                label: 'Due ${Format.date(issue.dueDate)}',
+                label: context.l10n.issueDueDate(Format.date(issue.dueDate)),
                 colors: colors,
                 theme: theme,
               ),
             if (issue.weight != null)
               _MetaRow(
                 icon: Icons.scale_outlined,
-                label: 'Weight ${issue.weight}',
+                label: context.l10n.issueWeightValue('${issue.weight}'),
                 colors: colors,
                 theme: theme,
               ),
@@ -457,9 +470,10 @@ class _Header extends StatelessWidget {
             if ((issue.timeEstimate ?? 0) > 0 || (issue.timeSpent ?? 0) > 0)
               _MetaRow(
                 icon: Icons.timer_outlined,
-                label:
-                    '${Format.humanDuration(issue.timeSpent)} spent'
-                    ' of ${Format.humanDuration(issue.timeEstimate)}',
+                label: context.l10n.timeSpentOf(
+                  Format.humanDuration(issue.timeSpent),
+                  Format.humanDuration(issue.timeEstimate),
+                ),
                 colors: colors,
                 theme: theme,
               ),
@@ -491,8 +505,10 @@ class _Header extends StatelessWidget {
             padding: const EdgeInsets.only(top: Insets.sm),
             child: Text(
               [
-                if (issue.closedBy != null) 'Closed by ${issue.closedBy!.name}',
-                if (issue.taskStatus != null) 'Tasks ${issue.taskStatus}',
+                if (issue.closedBy != null)
+                  context.l10n.closedByName(issue.closedBy!.name),
+                if (issue.taskStatus != null)
+                  context.l10n.tasksStatus(issue.taskStatus!),
               ].join(' · '),
               style: theme.textTheme.bodySmall,
             ),
@@ -557,8 +573,10 @@ class _AuthorLine extends StatelessWidget {
         const SizedBox(width: Insets.xs),
         Flexible(
           child: Text(
-            '${issue.author!.name} opened '
-            '${Format.relative(issue.createdAt)}',
+            context.l10n.openedByAt(
+              issue.author!.name,
+              Format.relative(issue.createdAt),
+            ),
             style: theme.textTheme.bodySmall,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -616,7 +634,7 @@ class _NotesList extends ConsumerWidget {
           return Padding(
             padding: const EdgeInsets.all(Insets.lg),
             child: Text(
-              'No comments yet',
+              context.l10n.noCommentsYet,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           );

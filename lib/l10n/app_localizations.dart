@@ -3451,6 +3451,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create issue'**
   String get createIssue;
+
+  /// No description provided for @moveIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Move issue'**
+  String get moveIssue;
+
+  /// No description provided for @destinationProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination project'**
+  String get destinationProject;
+
+  /// No description provided for @groupProject.
+  ///
+  /// In en, this message translates to:
+  /// **'group/project'**
+  String get groupProject;
+
+  /// No description provided for @move.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get move;
+
+  /// No description provided for @issueWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue weight'**
+  String get issueWeight;
+
+  /// No description provided for @emptyClearsTheWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty clears the weight'**
+  String get emptyClearsTheWeight;
+
+  /// No description provided for @enterAWholeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number'**
+  String get enterAWholeNumber;
+
+  /// No description provided for @timeEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Time estimate'**
+  String get timeEstimate;
+
+  /// No description provided for @addTimeSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add time spent'**
+  String get addTimeSpent;
+
+  /// No description provided for @closeIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Close issue'**
+  String get closeIssue;
+
+  /// No description provided for @reopenIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen issue'**
+  String get reopenIssue;
+
+  /// No description provided for @unsubscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsubscribe'**
+  String get unsubscribe;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe'**
+  String get subscribe;
+
+  /// No description provided for @setTimeEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Set time estimate'**
+  String get setTimeEstimate;
+
+  /// No description provided for @resetTimeSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset time spent'**
+  String get resetTimeSpent;
+
+  /// No description provided for @setWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Set weight'**
+  String get setWeight;
+
+  /// No description provided for @cloneIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Clone issue'**
+  String get cloneIssue;
+
+  /// No description provided for @copyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @noCommentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet'**
+  String get noCommentsYet;
+
+  /// No description provided for @issueDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {p0}'**
+  String issueDueDate(Object p0);
+
+  /// No description provided for @issueWeightValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {p0}'**
+  String issueWeightValue(Object p0);
+
+  /// No description provided for @enterProjectPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a project path'**
+  String get enterProjectPath;
+
+  /// No description provided for @closedByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed by {p0}'**
+  String closedByName(Object p0);
+
+  /// No description provided for @tasksStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks {p0}'**
+  String tasksStatus(Object p0);
+
+  /// No description provided for @openedByAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} opened {p1}'**
+  String openedByAt(Object p0, Object p1);
+
+  /// No description provided for @timeSpentOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} spent of {p1}'**
+  String timeSpentOf(Object p0, Object p1);
 }
 
 class _AppLocalizationsDelegate

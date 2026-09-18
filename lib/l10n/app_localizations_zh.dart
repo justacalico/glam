@@ -1750,4 +1750,94 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get createIssue => '创建议题';
+
+  @override
+  String get moveIssue => '移动议题';
+
+  @override
+  String get destinationProject => '目标项目';
+
+  @override
+  String get groupProject => 'group/project';
+
+  @override
+  String get move => '移动';
+
+  @override
+  String get issueWeight => '议题权重';
+
+  @override
+  String get emptyClearsTheWeight => '留空则清除权重';
+
+  @override
+  String get enterAWholeNumber => '输入整数';
+
+  @override
+  String get timeEstimate => '时间估计';
+
+  @override
+  String get addTimeSpent => '添加已用时间';
+
+  @override
+  String get closeIssue => '关闭议题';
+
+  @override
+  String get reopenIssue => '重新打开议题';
+
+  @override
+  String get unsubscribe => '取消订阅';
+
+  @override
+  String get subscribe => '订阅';
+
+  @override
+  String get setTimeEstimate => '设置时间估计';
+
+  @override
+  String get resetTimeSpent => '重置已用时间';
+
+  @override
+  String get setWeight => '设置权重';
+
+  @override
+  String get cloneIssue => '克隆议题';
+
+  @override
+  String get copyLink => '复制链接';
+
+  @override
+  String get noCommentsYet => '暂无评论';
+
+  @override
+  String issueDueDate(Object p0) {
+    return '$p0 到期';
+  }
+
+  @override
+  String issueWeightValue(Object p0) {
+    return '权重 $p0';
+  }
+
+  @override
+  String get enterProjectPath => '输入项目路径';
+
+  @override
+  String closedByName(Object p0) {
+    return '由 $p0 关闭';
+  }
+
+  @override
+  String tasksStatus(Object p0) {
+    return '任务 $p0';
+  }
+
+  @override
+  String openedByAt(Object p0, Object p1) {
+    return '$p0 于 $p1 打开';
+  }
+
+  @override
+  String timeSpentOf(Object p0, Object p1) {
+    return '已用 $p0 / 共 $p1';
+  }
 }
