@@ -16,6 +16,7 @@ import 'package:glam/src/core/widgets/search_field.dart';
 import 'package:glam/src/core/widgets/state_chip.dart';
 import 'package:glam/src/features/environments/application/environments_providers.dart';
 import 'package:glam/src/features/environments/domain/environment.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Environments tab on the project page.
 class EnvironmentsScreen extends ConsumerStatefulWidget {
@@ -68,17 +69,17 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
           ),
           child: Row(
             children: [
-              const Spacer(),
+              Spacer(),
               FilterMenu(
-                title: 'State',
+                title: context.l10n.state,
                 current: _states,
                 options: _stateValues,
                 labels: _stateLabels,
                 onSelect: (v) => setState(() => _states = v),
               ),
               TextButton.icon(
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('New environment'),
+                icon: Icon(Icons.add, size: 16),
+                label: Text(context.l10n.newEnvironment),
                 onPressed: () => _showCreate(context, ref),
               ),
             ],
@@ -94,10 +95,10 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
               onRefresh: notifier.refresh,
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               separator: Divider(height: 1, color: colors.border),
-              empty: const EmptyState(
+              empty: EmptyState(
                 icon: Icons.cloud_outlined,
-                title: 'No environments',
-                message: 'Deployments to staging, production, etc.',
+                title: context.l10n.noEnvironments,
+                message: context.l10n.deploymentsToStagingProductionEtc,
               ),
               itemBuilder: (context, index) => _EnvironmentTile(
                 env: data.items[index],
@@ -116,20 +117,20 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New environment'),
+        title: Text(context.l10n.newEnvironment),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: name,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: context.l10n.fieldName),
             ),
             const SizedBox(height: Insets.md),
             TextField(
               controller: url,
-              decoration: const InputDecoration(
-                labelText: 'External URL (optional)',
+              decoration: InputDecoration(
+                labelText: context.l10n.externalUrlOptional,
               ),
             ),
           ],
@@ -137,11 +138,11 @@ class _EnvironmentsScreenState extends ConsumerState<EnvironmentsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Create'),
+            child: Text(context.l10n.actionCreate),
           ),
         ],
       ),
@@ -182,8 +183,11 @@ class _EnvironmentTile extends ConsumerWidget {
         children: [
           if (last != null)
             Text(
-              '#${last.iid} ${last.ref ?? ''} · '
-              '${Format.relative(last.createdAt)}',
+              context.l10n.deploymentRef(
+                last.iid,
+                last.ref ?? '',
+                Format.relative(last.createdAt),
+              ),
               style: theme.textTheme.bodySmall,
             ),
           Row(
@@ -205,8 +209,8 @@ class _EnvironmentTile extends ConsumerWidget {
         children: [
           if (env.externalUrl != null)
             IconButton(
-              icon: const Icon(Icons.open_in_new, size: 18),
-              tooltip: 'Open live environment',
+              icon: Icon(Icons.open_in_new, size: 18),
+              tooltip: context.l10n.openLiveEnvironment,
               onPressed: () => unawaited(launchExternal(env.externalUrl!)),
             ),
           PopupMenuButton<String>(
@@ -226,11 +230,11 @@ class _EnvironmentTile extends ConsumerWidget {
             },
             itemBuilder: (context) => [
               if (env.isAvailable)
-                const PopupMenuItem(value: 'stop', child: Text('Stop')),
+                PopupMenuItem(value: 'stop', child: Text(context.l10n.stop)),
               if (!env.isAvailable)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
-                  child: Text('Delete environment'),
+                  child: Text(context.l10n.deleteEnvironment),
                 ),
             ],
           ),
@@ -245,16 +249,16 @@ class _EnvironmentTile extends ConsumerWidget {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${env.name}?'),
-        content: const Text('Stopped environments can be deleted.'),
+        title: Text(context.l10n.deleteNamedConfirm(env.name)),
+        content: Text(context.l10n.stoppedEnvironmentsCanBeDeleted),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),

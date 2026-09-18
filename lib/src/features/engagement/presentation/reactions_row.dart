@@ -5,6 +5,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/models/award_emoji.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/engagement/application/engagement_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Reaction chips + an add-emoji button for an issue, MR, or note.
 class ReactionsRow extends ConsumerWidget {
@@ -80,7 +81,7 @@ class _ReactionChip extends StatelessWidget {
             child: AnimatedSwitcher(
               duration: Motion.fast,
               child: Text(
-                '${awards.first.glyph} ${awards.length}',
+                context.l10n.storageStatPair(awards.first.glyph, awards.length),
                 key: ValueKey(awards.length),
                 style: TextStyle(
                   fontSize: 13,

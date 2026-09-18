@@ -78,12 +78,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actionTryAgain => '重试';
 
   @override
-  String filterBy(String title) {
+  String filterBy(Object title) {
     return '按$title筛选';
   }
 
   @override
-  String filterAny(String title) {
+  String filterAny(Object title) {
     return '全部$title';
   }
 
@@ -142,7 +142,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pickerNone => '无';
 
   @override
-  String pickerSelected(int count) {
+  String pickerSelected(Object count) {
     return '已选 $count 人';
   }
 
@@ -276,7 +276,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get varMasked => '已掩码';
 
   @override
-  String varDeleteConfirm(String key) {
+  String varDeleteConfirm(Object key) {
     return '删除 $key？';
   }
 
@@ -305,7 +305,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tokenScopeRequired => '至少选择一个权限范围';
 
   @override
-  String tokenValueTitle(String name) {
+  String tokenValueTitle(Object name) {
     return '令牌 \"$name\"';
   }
 
@@ -535,7 +535,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get miscSaving => '保存中…';
 
   @override
-  String miscSeconds(int count) {
+  String miscSeconds(Object count) {
     return '$count 秒';
   }
 
@@ -609,7 +609,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get projectsEmpty => '暂无项目';
 
   @override
-  String projectsEmptyMatch(String query) {
+  String projectsEmptyMatch(Object query) {
     return '没有匹配 \"$query\" 的结果';
   }
 
@@ -710,7 +710,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get snackStarred => '已加星';
 
   @override
-  String snackForked(String path) {
+  String snackForked(Object path) {
     return '已派生到 $path';
   }
 
@@ -763,7 +763,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dangerDeleteHint => '删除将移除项目及其仓库。';
 
   @override
-  String transferConfirm(String name) {
+  String transferConfirm(Object name) {
     return '转移 $name？';
   }
 
@@ -771,7 +771,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldNewNamespace => '新命名空间';
 
   @override
-  String deleteProjectConfirm(String path) {
+  String deleteProjectConfirm(Object path) {
     return '删除 $path？';
   }
 
@@ -1165,7 +1165,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteTriggerConfirm => '删除触发器？';
 
   @override
-  String lintJobsList(String p0) {
+  String lintJobsList(Object p0) {
     return '作业：$p0';
   }
 
@@ -1298,7 +1298,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventNewEpics => '新 epic';
 
   @override
-  String gpgKeyId(int p0) {
+  String gpgKeyId(Object p0) {
     return 'GPG 密钥 #$p0';
   }
 
@@ -1351,71 +1351,101 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldAssignees => '负责人';
 
   @override
-  String get noBoards => 'No boards';
+  String get noBoards => '没有看板';
 
   @override
-  String get newBoard => 'New board';
+  String get newBoard => '新建看板';
 
   @override
-  String get boardActions => 'Board actions';
+  String get boardActions => '看板操作';
 
   @override
-  String get rename => 'Rename';
+  String get rename => '重命名';
 
   @override
-  String get issuesStayOnTheProjectOnly =>
-      'Issues stay on the project; only the board goes.';
+  String get issuesStayOnTheProjectOnly => '议题会保留在项目中，仅删除看板。';
 
   @override
-  String get thisBoardHasNoLists => 'This board has no lists';
+  String get thisBoardHasNoLists => '此看板没有列表';
 
   @override
-  String get addList => 'Add list';
+  String get addList => '添加列表';
 
   @override
-  String get noLabelsOnThisProject => 'No labels on this project.';
+  String get noLabelsOnThisProject => '此项目没有标签。';
 
   @override
-  String removeP0(Object p0) {
-    return 'Remove $p0?';
-  }
+  String get issuesKeepTheirLabelOnlyThe => '议题会保留标签，仅移除该列。';
 
   @override
-  String get issuesKeepTheirLabelOnlyThe =>
-      'Issues keep their label; only the column goes.';
+  String get listActions => '列表操作';
 
   @override
-  String get listActions => 'List actions';
+  String get removeList => '移除列表';
 
   @override
-  String get removeList => 'Remove list';
+  String get noIssues => '没有议题';
 
   @override
-  String get noIssues => 'No issues';
+  String get moveTo => '移动到';
 
   @override
-  String get moveTo => 'Move to';
+  String get editBoard => '编辑看板';
 
   @override
-  String p0(Object p0) {
-    return '#$p0';
-  }
+  String get milestoneScope => '里程碑范围';
 
   @override
-  String get editBoard => 'Edit board';
+  String get noMilestone => '无里程碑';
 
   @override
-  String get milestoneScope => 'Milestone scope';
-
-  @override
-  String get noMilestone => 'No milestone';
-
-  @override
-  String get labelScope => 'Label scope';
+  String get labelScope => '标签范围';
 
   @override
   String get bugFrontend => 'bug, frontend';
 
   @override
-  String get weightScope => 'Weight scope';
+  String get weightScope => '权重范围';
+
+  @override
+  String get state => '状态';
+
+  @override
+  String get newEnvironment => '新建环境';
+
+  @override
+  String get noEnvironments => '没有环境';
+
+  @override
+  String get deploymentsToStagingProductionEtc => '部署到 staging、production 等环境。';
+
+  @override
+  String get externalUrlOptional => '外部 URL（可选）';
+
+  @override
+  String get openLiveEnvironment => '打开线上环境';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get deleteEnvironment => '删除环境';
+
+  @override
+  String get stoppedEnvironmentsCanBeDeleted => '已停止的环境可以删除。';
+
+  @override
+  String issueIid(Object p0) {
+    return '#$p0';
+  }
+
+  @override
+  String removeNamedConfirm(Object p0) {
+    return '移除 $p0？';
+  }
+
+  @override
+  String deploymentRef(Object p0, Object p1, Object p2) {
+    return '#$p0 $p1 · $p2';
+  }
 }

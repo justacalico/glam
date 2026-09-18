@@ -240,13 +240,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Filter by {title}'**
-  String filterBy(String title);
+  String filterBy(Object title);
 
   /// No description provided for @filterAny.
   ///
   /// In en, this message translates to:
   /// **'Any {title}'**
-  String filterAny(String title);
+  String filterAny(Object title);
 
   /// No description provided for @sortTitle.
   ///
@@ -360,7 +360,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} selected'**
-  String pickerSelected(int count);
+  String pickerSelected(Object count);
 
   /// No description provided for @pickerSearchMembers.
   ///
@@ -624,7 +624,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Delete {key}?'**
-  String varDeleteConfirm(String key);
+  String varDeleteConfirm(Object key);
 
   /// No description provided for @tokensDeployTitle.
   ///
@@ -678,7 +678,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Token \"{name}\"'**
-  String tokenValueTitle(String name);
+  String tokenValueTitle(Object name);
 
   /// No description provided for @tokenCopyNow.
   ///
@@ -1134,7 +1134,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} seconds'**
-  String miscSeconds(int count);
+  String miscSeconds(Object count);
 
   /// No description provided for @errorEnterNumber.
   ///
@@ -1278,7 +1278,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Nothing matches \"{query}\"'**
-  String projectsEmptyMatch(String query);
+  String projectsEmptyMatch(Object query);
 
   /// No description provided for @projectsEmptyHint.
   ///
@@ -1476,7 +1476,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Forked to {path}'**
-  String snackForked(String path);
+  String snackForked(Object path);
 
   /// No description provided for @snackForkFailed.
   ///
@@ -1578,7 +1578,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Transfer {name}?'**
-  String transferConfirm(String name);
+  String transferConfirm(Object name);
 
   /// No description provided for @fieldNewNamespace.
   ///
@@ -1590,7 +1590,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Delete {path}?'**
-  String deleteProjectConfirm(String path);
+  String deleteProjectConfirm(Object path);
 
   /// No description provided for @deleteProjectBody.
   ///
@@ -2352,7 +2352,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Jobs: {p0}'**
-  String lintJobsList(String p0);
+  String lintJobsList(Object p0);
 
   /// No description provided for @auditEvents.
   ///
@@ -2610,7 +2610,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'GPG key #{p0}'**
-  String gpgKeyId(int p0);
+  String gpgKeyId(Object p0);
 
   /// No description provided for @noActivityYet.
   ///
@@ -2750,12 +2750,6 @@ abstract class AppLocalizations {
   /// **'No labels on this project.'**
   String get noLabelsOnThisProject;
 
-  /// No description provided for @removeP0.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {p0}?'**
-  String removeP0(Object p0);
-
   /// No description provided for @issuesKeepTheirLabelOnlyThe.
   ///
   /// In en, this message translates to:
@@ -2785,12 +2779,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Move to'**
   String get moveTo;
-
-  /// No description provided for @p0.
-  ///
-  /// In en, this message translates to:
-  /// **'#{p0}'**
-  String p0(Object p0);
 
   /// No description provided for @editBoard.
   ///
@@ -2827,6 +2815,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weight scope'**
   String get weightScope;
+
+  /// No description provided for @state.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get state;
+
+  /// No description provided for @newEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'New environment'**
+  String get newEnvironment;
+
+  /// No description provided for @noEnvironments.
+  ///
+  /// In en, this message translates to:
+  /// **'No environments'**
+  String get noEnvironments;
+
+  /// No description provided for @deploymentsToStagingProductionEtc.
+  ///
+  /// In en, this message translates to:
+  /// **'Deployments to staging, production, etc.'**
+  String get deploymentsToStagingProductionEtc;
+
+  /// No description provided for @externalUrlOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'External URL (optional)'**
+  String get externalUrlOptional;
+
+  /// No description provided for @openLiveEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Open live environment'**
+  String get openLiveEnvironment;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @deleteEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete environment'**
+  String get deleteEnvironment;
+
+  /// No description provided for @stoppedEnvironmentsCanBeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped environments can be deleted.'**
+  String get stoppedEnvironmentsCanBeDeleted;
+
+  /// No description provided for @issueIid.
+  ///
+  /// In en, this message translates to:
+  /// **'#{p0}'**
+  String issueIid(Object p0);
+
+  /// No description provided for @removeNamedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {p0}?'**
+  String removeNamedConfirm(Object p0);
+
+  /// No description provided for @deploymentRef.
+  ///
+  /// In en, this message translates to:
+  /// **'#{p0} {p1} · {p2}'**
+  String deploymentRef(Object p0, Object p1, Object p2);
 }
 
 class _AppLocalizationsDelegate

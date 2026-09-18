@@ -25,20 +25,6 @@
   "actionTryAgain": "Try again",
   "filterBy": "Filter by {title}",
   "filterAny": "Any {title}",
-  "@filterBy": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "@filterAny": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
   "sortTitle": "Sort",
   "sortNewest": "Newest",
   "sortOldest": "Oldest",
@@ -82,13 +68,6 @@
   "notifMovedProject": "Moved project",
   "templateUse": "Use template",
   "templateChoose": "Choose a template",
-  "@pickerSelected": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "levelGlobal": "Global default",
   "levelWatch": "Watch",
   "levelParticipating": "Participate",
@@ -140,20 +119,6 @@
   "webhookUrl": "URL",
   "webhookSecret": "Secret token (optional)",
   "webhookSsl": "SSL verification",
-  "@varDeleteConfirm": {
-    "placeholders": {
-      "key": {
-        "type": "String"
-      }
-    }
-  },
-  "@tokenValueTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "homeTitle": "Home",
   "projectsTitle": "Projects",
   "issuesTitle": "Issues",
@@ -220,13 +185,6 @@
   "actionExport": "Export",
   "actionReexport": "Re-export",
   "actionNew": "New",
-  "@miscSeconds": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "scopeYours": "Yours",
   "scopeStarred": "Starred",
   "scopeExplore": "Explore",
@@ -246,13 +204,6 @@
   "overviewLastActivity": "Last activity",
   "overviewOwner": "Owner",
   "overviewForkedFrom": "Forked from",
-  "@projectsEmptyMatch": {
-    "placeholders": {
-      "query": {
-        "type": "String"
-      }
-    }
-  },
   "tabOverview": "Overview",
   "tabPipelines": "Pipelines",
   "tabEnvironments": "Environments",
@@ -284,13 +235,6 @@
   "contributorsEmpty": "No contributors",
   "latestPipeline": "Latest pipeline",
   "forksEmpty": "No forks yet",
-  "@snackForked": {
-    "placeholders": {
-      "path": {
-        "type": "String"
-      }
-    }
-  },
   "projectSettingsTitle": "Project settings",
   "settingsSaved": "Settings saved",
   "sectionGeneral": "General",
@@ -311,20 +255,6 @@
   "fieldNamespace": "Namespace",
   "namespacePersonal": "Personal namespace",
   "initReadme": "Initialize with a README",
-  "@transferConfirm": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "@deleteProjectConfirm": {
-    "placeholders": {
-      "path": {
-        "type": "String"
-      }
-    }
-  },
   "noProjectAccessTokens": "No project access tokens",
   "createProjectAccessToken": "Create project access token",
   "copyThisNowItWillNot": "Copy this now — it will not be shown again.",
@@ -446,13 +376,6 @@
   "storageStatPair": "{p0} {p1}",
   "deleteTriggerConfirm": "Delete trigger?",
   "lintJobsList": "Jobs: {p0}",
-  "@lintJobsList": {
-    "placeholders": {
-      "p0": {
-        "type": "String"
-      }
-    }
-  },
   "auditEvents": "Audit events",
   "archived": "Archived",
   "sshKeys": "SSH keys",
@@ -496,13 +419,6 @@
   "eventMovedProjects": "Moved projects",
   "eventNewEpics": "New epics",
   "gpgKeyId": "GPG key #{p0}",
-  "@gpgKeyId": {
-    "placeholders": {
-      "p0": {
-        "type": "int"
-      }
-    }
-  },
   "noActivityYet": "No activity yet",
   "markAllRead": "Mark all read",
   "allCaughtUp": "All caught up",
@@ -526,17 +442,27 @@
   "thisBoardHasNoLists": "This board has no lists",
   "addList": "Add list",
   "noLabelsOnThisProject": "No labels on this project.",
-  "removeP0": "Remove {p0}?",
   "issuesKeepTheirLabelOnlyThe": "Issues keep their label; only the column goes.",
   "listActions": "List actions",
   "removeList": "Remove list",
   "noIssues": "No issues",
   "moveTo": "Move to",
-  "p0": "#{p0}",
   "editBoard": "Edit board",
   "milestoneScope": "Milestone scope",
   "noMilestone": "No milestone",
   "labelScope": "Label scope",
   "bugFrontend": "bug, frontend",
-  "weightScope": "Weight scope"
+  "weightScope": "Weight scope",
+  "state": "State",
+  "newEnvironment": "New environment",
+  "noEnvironments": "No environments",
+  "deploymentsToStagingProductionEtc": "Deployments to staging, production, etc.",
+  "externalUrlOptional": "External URL (optional)",
+  "openLiveEnvironment": "Open live environment",
+  "stop": "Stop",
+  "deleteEnvironment": "Delete environment",
+  "stoppedEnvironmentsCanBeDeleted": "Stopped environments can be deleted.",
+  "issueIid": "#{p0}",
+  "removeNamedConfirm": "Remove {p0}?",
+  "deploymentRef": "#{p0} {p1} · {p2}"
 }

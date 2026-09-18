@@ -78,12 +78,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionTryAgain => 'Try again';
 
   @override
-  String filterBy(String title) {
+  String filterBy(Object title) {
     return 'Filter by $title';
   }
 
   @override
-  String filterAny(String title) {
+  String filterAny(Object title) {
     return 'Any $title';
   }
 
@@ -142,7 +142,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickerNone => 'None';
 
   @override
-  String pickerSelected(int count) {
+  String pickerSelected(Object count) {
     return '$count selected';
   }
 
@@ -276,7 +276,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varMasked => 'Masked';
 
   @override
-  String varDeleteConfirm(String key) {
+  String varDeleteConfirm(Object key) {
     return 'Delete $key?';
   }
 
@@ -305,7 +305,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tokenScopeRequired => 'Pick at least one scope';
 
   @override
-  String tokenValueTitle(String name) {
+  String tokenValueTitle(Object name) {
     return 'Token \"$name\"';
   }
 
@@ -536,7 +536,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get miscSaving => 'Saving…';
 
   @override
-  String miscSeconds(int count) {
+  String miscSeconds(Object count) {
     return '$count seconds';
   }
 
@@ -610,7 +610,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectsEmpty => 'No projects';
 
   @override
-  String projectsEmptyMatch(String query) {
+  String projectsEmptyMatch(Object query) {
     return 'Nothing matches \"$query\"';
   }
 
@@ -712,7 +712,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get snackStarred => 'Starred';
 
   @override
-  String snackForked(String path) {
+  String snackForked(Object path) {
     return 'Forked to $path';
   }
 
@@ -766,7 +766,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Deleting removes the project and its repository.';
 
   @override
-  String transferConfirm(String name) {
+  String transferConfirm(Object name) {
     return 'Transfer $name?';
   }
 
@@ -774,7 +774,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldNewNamespace => 'New namespace';
 
   @override
-  String deleteProjectConfirm(String path) {
+  String deleteProjectConfirm(Object path) {
     return 'Delete $path?';
   }
 
@@ -1177,7 +1177,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteTriggerConfirm => 'Delete trigger?';
 
   @override
-  String lintJobsList(String p0) {
+  String lintJobsList(Object p0) {
     return 'Jobs: $p0';
   }
 
@@ -1310,7 +1310,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventNewEpics => 'New epics';
 
   @override
-  String gpgKeyId(int p0) {
+  String gpgKeyId(Object p0) {
     return 'GPG key #$p0';
   }
 
@@ -1388,11 +1388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLabelsOnThisProject => 'No labels on this project.';
 
   @override
-  String removeP0(Object p0) {
-    return 'Remove $p0?';
-  }
-
-  @override
   String get issuesKeepTheirLabelOnlyThe =>
       'Issues keep their label; only the column goes.';
 
@@ -1407,11 +1402,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moveTo => 'Move to';
-
-  @override
-  String p0(Object p0) {
-    return '#$p0';
-  }
 
   @override
   String get editBoard => 'Edit board';
@@ -1430,4 +1420,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weightScope => 'Weight scope';
+
+  @override
+  String get state => 'State';
+
+  @override
+  String get newEnvironment => 'New environment';
+
+  @override
+  String get noEnvironments => 'No environments';
+
+  @override
+  String get deploymentsToStagingProductionEtc =>
+      'Deployments to staging, production, etc.';
+
+  @override
+  String get externalUrlOptional => 'External URL (optional)';
+
+  @override
+  String get openLiveEnvironment => 'Open live environment';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get deleteEnvironment => 'Delete environment';
+
+  @override
+  String get stoppedEnvironmentsCanBeDeleted =>
+      'Stopped environments can be deleted.';
+
+  @override
+  String issueIid(Object p0) {
+    return '#$p0';
+  }
+
+  @override
+  String removeNamedConfirm(Object p0) {
+    return 'Remove $p0?';
+  }
+
+  @override
+  String deploymentRef(Object p0, Object p1, Object p2) {
+    return '#$p0 $p1 · $p2';
+  }
 }

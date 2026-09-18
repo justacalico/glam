@@ -230,7 +230,7 @@ class _Kanban extends ConsumerWidget {
                   title: context.l10n.thisBoardHasNoLists,
                 ),
                 TextButton.icon(
-                  icon: const Icon(Icons.add, size: 16),
+                  icon: Icon(Icons.add, size: 16),
                   label: Text(context.l10n.addList),
                   onPressed: () =>
                       unawaited(_AddListTile.pick(context, ref, loc)),
@@ -306,7 +306,7 @@ class _AddListTile extends ConsumerWidget {
       width: 160,
       child: Center(
         child: OutlinedButton.icon(
-          icon: const Icon(Icons.add, size: 16),
+          icon: Icon(Icons.add, size: 16),
           label: Text(context.l10n.addList),
           onPressed: () => unawaited(pick(context, ref, loc)),
         ),
@@ -328,7 +328,7 @@ class _LabelPicker extends ConsumerWidget {
       content: SizedBox(
         width: 320,
         child: labels.when(
-          loading: () => const Padding(
+          loading: () => Padding(
             padding: EdgeInsets.all(Insets.lg),
             child: Center(child: CircularProgressIndicator()),
           ),
@@ -342,7 +342,7 @@ class _LabelPicker extends ConsumerWidget {
                   child: Text(context.l10n.noLabelsOnThisProject),
                 )
               : ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 360),
+                  constraints: BoxConstraints(maxHeight: 360),
                   child: ListView(
                     shrinkWrap: true,
                     children: [
@@ -411,7 +411,7 @@ class _Column extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.removeP0(list.title)),
+        title: Text(context.l10n.removeNamedConfirm(list.title)),
         content: Text(context.l10n.issuesKeepTheirLabelOnlyThe),
         actions: [
           TextButton(
@@ -611,7 +611,7 @@ class _Card extends StatelessWidget {
                 ],
               ),
               if (issue.labels.isNotEmpty) ...[
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 Wrap(
                   spacing: Insets.xs,
                   runSpacing: Insets.xs,
@@ -624,7 +624,7 @@ class _Card extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    context.l10n.p0(issue.iid),
+                    context.l10n.issueIid(issue.iid),
                     style: theme.textTheme.bodySmall,
                   ),
                   const Spacer(),
@@ -717,7 +717,7 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
                 ),
                 onSubmitted: (_) => _save(),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               milestones.when(
                 loading: () => const LinearProgressIndicator(),
                 error: (_, _) => const SizedBox.shrink(),
@@ -744,7 +744,7 @@ class _BoardDialogState extends ConsumerState<_BoardDialog> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _weight,
                 keyboardType: TextInputType.number,
