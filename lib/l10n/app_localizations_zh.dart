@@ -2563,4 +2563,74 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aCommitRemovingThisFileWill => '将创建一个删除此文件的提交。';
+
+  @override
+  String editP0(Object p0) {
+    return '编辑 $p0';
+  }
+
+  @override
+  String get template => '模板';
+
+  @override
+  String get commit => '提交';
+
+  @override
+  String get filePath => '文件路径';
+
+  @override
+  String get commitMessage => '提交信息';
+
+  @override
+  String get fileContents => '文件内容';
+
+  @override
+  String commitsToP0(Object p0) {
+    return '提交到 $p0';
+  }
+
+  @override
+  String get noTemplates => '没有模板';
+
+  @override
+  String get searchBranches => '搜索分支';
+
+  @override
+  String get compare => '比较';
+
+  @override
+  String get deleteMerged => '删除已合并分支';
+
+  @override
+  String get newBranch => '新建分支';
+
+  @override
+  String get noBranches => '没有分支';
+
+  @override
+  String get branchName => '分支名';
+
+  @override
+  String get sourceRefBranchTagOrSha => '源引用（分支、标签或 sha）';
+
+  @override
+  String get deleteMergedBranches => '删除已合并的分支？';
+
+  @override
+  String get deleteBranch => '删除分支';
+
+  @override
+  String get deleteMergedBody => '将移除所有已合并到默认分支的分支。受保护分支会被保留。';
+
+  @override
+  String get templateGitignore => 'Gitignore';
+
+  @override
+  String get templateLicense => '许可证';
+
+  @override
+  String get templateGitlabCi => 'GitLab CI';
+
+  @override
+  String get templateDockerfile => 'Dockerfile';
 }

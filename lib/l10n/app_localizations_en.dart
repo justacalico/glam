@@ -2597,4 +2597,75 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aCommitRemovingThisFileWill =>
       'A commit removing this file will be created.';
+
+  @override
+  String editP0(Object p0) {
+    return 'Edit $p0';
+  }
+
+  @override
+  String get template => 'Template';
+
+  @override
+  String get commit => 'Commit';
+
+  @override
+  String get filePath => 'File path';
+
+  @override
+  String get commitMessage => 'Commit message';
+
+  @override
+  String get fileContents => 'File contents';
+
+  @override
+  String commitsToP0(Object p0) {
+    return 'Commits to $p0';
+  }
+
+  @override
+  String get noTemplates => 'No templates';
+
+  @override
+  String get searchBranches => 'Search branches';
+
+  @override
+  String get compare => 'Compare';
+
+  @override
+  String get deleteMerged => 'Delete merged';
+
+  @override
+  String get newBranch => 'New branch';
+
+  @override
+  String get noBranches => 'No branches';
+
+  @override
+  String get branchName => 'Branch name';
+
+  @override
+  String get sourceRefBranchTagOrSha => 'Source ref (branch, tag, or sha)';
+
+  @override
+  String get deleteMergedBranches => 'Delete merged branches?';
+
+  @override
+  String get deleteBranch => 'Delete branch';
+
+  @override
+  String get deleteMergedBody =>
+      'Every branch already merged into the default branch is removed. Protected branches are kept.';
+
+  @override
+  String get templateGitignore => 'Gitignore';
+
+  @override
+  String get templateLicense => 'License';
+
+  @override
+  String get templateGitlabCi => 'GitLab CI';
+
+  @override
+  String get templateDockerfile => 'Dockerfile';
 }

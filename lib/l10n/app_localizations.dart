@@ -4921,6 +4921,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A commit removing this file will be created.'**
   String get aCommitRemovingThisFileWill;
+
+  /// No description provided for @editP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {p0}'**
+  String editP0(Object p0);
+
+  /// No description provided for @template.
+  ///
+  /// In en, this message translates to:
+  /// **'Template'**
+  String get template;
+
+  /// No description provided for @commit.
+  ///
+  /// In en, this message translates to:
+  /// **'Commit'**
+  String get commit;
+
+  /// No description provided for @filePath.
+  ///
+  /// In en, this message translates to:
+  /// **'File path'**
+  String get filePath;
+
+  /// No description provided for @commitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Commit message'**
+  String get commitMessage;
+
+  /// No description provided for @fileContents.
+  ///
+  /// In en, this message translates to:
+  /// **'File contents'**
+  String get fileContents;
+
+  /// No description provided for @commitsToP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Commits to {p0}'**
+  String commitsToP0(Object p0);
+
+  /// No description provided for @noTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'No templates'**
+  String get noTemplates;
+
+  /// No description provided for @searchBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Search branches'**
+  String get searchBranches;
+
+  /// No description provided for @compare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get compare;
+
+  /// No description provided for @deleteMerged.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete merged'**
+  String get deleteMerged;
+
+  /// No description provided for @newBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'New branch'**
+  String get newBranch;
+
+  /// No description provided for @noBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'No branches'**
+  String get noBranches;
+
+  /// No description provided for @branchName.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch name'**
+  String get branchName;
+
+  /// No description provided for @sourceRefBranchTagOrSha.
+  ///
+  /// In en, this message translates to:
+  /// **'Source ref (branch, tag, or sha)'**
+  String get sourceRefBranchTagOrSha;
+
+  /// No description provided for @deleteMergedBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete merged branches?'**
+  String get deleteMergedBranches;
+
+  /// No description provided for @deleteBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete branch'**
+  String get deleteBranch;
+
+  /// No description provided for @deleteMergedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every branch already merged into the default branch is removed. Protected branches are kept.'**
+  String get deleteMergedBody;
+
+  /// No description provided for @templateGitignore.
+  ///
+  /// In en, this message translates to:
+  /// **'Gitignore'**
+  String get templateGitignore;
+
+  /// No description provided for @templateLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get templateLicense;
+
+  /// No description provided for @templateGitlabCi.
+  ///
+  /// In en, this message translates to:
+  /// **'GitLab CI'**
+  String get templateGitlabCi;
+
+  /// No description provided for @templateDockerfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Dockerfile'**
+  String get templateDockerfile;
 }
 
 class _AppLocalizationsDelegate
