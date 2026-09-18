@@ -329,5 +329,12 @@
   "createProjectAccessToken": "Create project access token",
   "copyThisNowItWillNot": "Copy this now — it will not be shown again.",
   "revokeAccessToken": "Revoke access token?",
-  "tokenCreatedTitle": "Token \"{p0}\""
+  "tokenCreatedTitle": "Token \"{p0}\"",
+  "noApprovalRules": "No approval rules",
+  "requiredApprovals": "Required approvals",
+  "approvalsRequiredToMerge": "Approvals required to merge",
+  "ruleName": "Rule name",
+  "approvalsRequired": "Approvals required",
+  "eligibleApprovers": "Eligible approvers",
+  "deleteApprovalRule": "Delete approval rule?"
 }

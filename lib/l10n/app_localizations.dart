@@ -1657,6 +1657,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Token \"{p0}\"'**
   String tokenCreatedTitle(Object p0);
+
+  /// No description provided for @noApprovalRules.
+  ///
+  /// In en, this message translates to:
+  /// **'No approval rules'**
+  String get noApprovalRules;
+
+  /// No description provided for @requiredApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Required approvals'**
+  String get requiredApprovals;
+
+  /// No description provided for @approvalsRequiredToMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Approvals required to merge'**
+  String get approvalsRequiredToMerge;
+
+  /// No description provided for @ruleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Rule name'**
+  String get ruleName;
+
+  /// No description provided for @approvalsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Approvals required'**
+  String get approvalsRequired;
+
+  /// No description provided for @eligibleApprovers.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible approvers'**
+  String get eligibleApprovers;
+
+  /// No description provided for @deleteApprovalRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete approval rule?'**
+  String get deleteApprovalRule;
 }
 
 class _AppLocalizationsDelegate

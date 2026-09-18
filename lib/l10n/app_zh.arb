@@ -259,5 +259,12 @@
   "createProjectAccessToken": "创建项目访问令牌",
   "tokenCreatedTitle": "令牌“{p0}”",
   "copyThisNowItWillNot": "请立即复制，之后将无法再次查看。",
-  "revokeAccessToken": "吊销访问令牌？"
+  "revokeAccessToken": "吊销访问令牌？",
+  "noApprovalRules": "没有审批规则",
+  "requiredApprovals": "所需审批数",
+  "approvalsRequiredToMerge": "合并所需审批数",
+  "ruleName": "规则名称",
+  "approvalsRequired": "所需审批数",
+  "eligibleApprovers": "可审批成员",
+  "deleteApprovalRule": "删除审批规则？"
 }

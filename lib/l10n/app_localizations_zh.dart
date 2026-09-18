@@ -809,4 +809,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String tokenCreatedTitle(Object p0) {
     return '令牌“$p0”';
   }
+
+  @override
+  String get noApprovalRules => '没有审批规则';
+
+  @override
+  String get requiredApprovals => '所需审批数';
+
+  @override
+  String get approvalsRequiredToMerge => '合并所需审批数';
+
+  @override
+  String get ruleName => '规则名称';
+
+  @override
+  String get approvalsRequired => '所需审批数';
+
+  @override
+  String get eligibleApprovers => '可审批成员';
+
+  @override
+  String get deleteApprovalRule => '删除审批规则？';
 }

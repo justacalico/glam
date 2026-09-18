@@ -814,4 +814,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String tokenCreatedTitle(Object p0) {
     return 'Token \"$p0\"';
   }
+
+  @override
+  String get noApprovalRules => 'No approval rules';
+
+  @override
+  String get requiredApprovals => 'Required approvals';
+
+  @override
+  String get approvalsRequiredToMerge => 'Approvals required to merge';
+
+  @override
+  String get ruleName => 'Rule name';
+
+  @override
+  String get approvalsRequired => 'Approvals required';
+
+  @override
+  String get eligibleApprovers => 'Eligible approvers';
+
+  @override
+  String get deleteApprovalRule => 'Delete approval rule?';
 }

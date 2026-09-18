@@ -12,6 +12,7 @@ import 'package:glam/src/features/projects/application/projects_providers.dart';
 import 'package:glam/src/features/projects/domain/approval_rule.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/admin_helpers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Merge-request approvals: the project-wide required count plus the
 /// named approval rules with their eligible approvers.
@@ -33,7 +34,7 @@ class ApprovalRulesSection extends ConsumerWidget {
             const Expanded(child: SectionLabel('Merge request approvals')),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _edit(context, ref, null),
             ),
           ],
@@ -60,11 +61,11 @@ class ApprovalRulesSection extends ConsumerWidget {
                   child: Text('$e'),
                 ),
                 data: (list) => list.isEmpty
-                    ? const Padding(
+                    ? Padding(
                         padding: EdgeInsets.all(Insets.lg),
                         child: EmptyState(
                           icon: Icons.fact_check_outlined,
-                          title: 'No approval rules',
+                          title: context.l10n.noApprovalRules,
                         ),
                       )
                     : Column(
@@ -95,7 +96,7 @@ class ApprovalRulesSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Required approvals'),
+          title: Text(context.l10n.requiredApprovals),
           content: SizedBox(
             width: 360,
             child: TextField(
@@ -104,7 +105,7 @@ class ApprovalRulesSection extends ConsumerWidget {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
-                labelText: 'Approvals required to merge',
+                labelText: context.l10n.approvalsRequiredToMerge,
                 errorText: error ? 'Enter a number' : null,
               ),
               onChanged: (_) {
@@ -125,7 +126,7 @@ class ApprovalRulesSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -136,7 +137,7 @@ class ApprovalRulesSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, v);
               },
-              child: const Text('Save'),
+              child: Text(context.l10n.actionSave),
             ),
           ],
         ),
@@ -185,7 +186,7 @@ class ApprovalRulesSection extends ConsumerWidget {
                   controller: name,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Rule name',
+                    labelText: context.l10n.ruleName,
                     errorText: nameError ? 'Required' : null,
                   ),
                   onChanged: (_) {
@@ -194,13 +195,13 @@ class ApprovalRulesSection extends ConsumerWidget {
                     }
                   },
                 ),
-                const SizedBox(height: Insets.sm),
+                SizedBox(height: Insets.sm),
                 TextField(
                   controller: required,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                    labelText: 'Approvals required',
+                    labelText: context.l10n.approvalsRequired,
                     errorText: requiredError ? '0 to 100' : null,
                   ),
                   onChanged: (_) {
@@ -209,10 +210,10 @@ class ApprovalRulesSection extends ConsumerWidget {
                     }
                   },
                 ),
-                const SizedBox(height: Insets.md),
+                SizedBox(height: Insets.md),
                 MembersPickerField(
                   projectId: project.id,
-                  label: 'Eligible approvers',
+                  label: context.l10n.eligibleApprovers,
                   selected: userIds,
                   onChanged: (s) => setState(() => userIds = s),
                 ),
@@ -222,7 +223,7 @@ class ApprovalRulesSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -238,7 +239,7 @@ class ApprovalRulesSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Save'),
+              child: Text(context.l10n.actionSave),
             ),
           ],
         ),
@@ -281,7 +282,7 @@ class ApprovalRulesSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Delete approval rule?',
+      title: context.l10n.deleteApprovalRule,
       body: '"${rule.name}" no longer gates merges.',
     );
     if (ok != true || !context.mounted) {
@@ -315,13 +316,13 @@ class _RequiredRow extends StatelessWidget {
         size: 18,
         color: colors.inkMuted,
       ),
-      title: const Text('Required approvals'),
+      title: Text(context.l10n.requiredApprovals),
       subtitle: Text(
         value == null ? 'Not set' : '$value approval${value == 1 ? '' : 's'}',
       ),
       trailing: IconButton(
-        icon: const Icon(Icons.edit_outlined, size: 16),
-        tooltip: 'Edit',
+        icon: Icon(Icons.edit_outlined, size: 16),
+        tooltip: context.l10n.actionEdit,
         onPressed: onEdit,
       ),
     );
@@ -373,13 +374,13 @@ class _RuleTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  tooltip: 'Edit',
+                  icon: Icon(Icons.edit_outlined, size: 16),
+                  tooltip: context.l10n.actionEdit,
                   onPressed: onEdit,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 16),
-                  tooltip: 'Delete',
+                  icon: Icon(Icons.delete_outline, size: 16),
+                  tooltip: context.l10n.actionDelete,
                   onPressed: onDelete,
                 ),
               ],
