@@ -255,7 +255,7 @@ class _MrHeader extends StatelessWidget {
       children: [
         Row(
           children: [
-            StateChip.mergeRequestState(mr.state),
+            StateChip.mergeRequestState(context.l10n, mr.state),
             if (mr.draft) ...[
               const SizedBox(width: Insets.sm),
               StateChip(label: context.l10n.draft, tone: ChipTone.neutral),

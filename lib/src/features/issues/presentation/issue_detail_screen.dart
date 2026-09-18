@@ -419,7 +419,7 @@ class _Header extends StatelessWidget {
       children: [
         Row(
           children: [
-            StateChip.issueState(issue.state),
+            StateChip.issueState(context.l10n, issue.state),
             if (issue.confidential) ...[
               const SizedBox(width: Insets.sm),
               StateChip(

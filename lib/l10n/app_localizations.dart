@@ -5653,6 +5653,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit snippet'**
   String get editSnippet;
+
+  /// No description provided for @stateLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get stateLocked;
 }
 
 class _AppLocalizationsDelegate

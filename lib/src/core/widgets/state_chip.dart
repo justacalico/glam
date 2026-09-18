@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/utils/extensions.dart';
+import 'package:glam/l10n/app_localizations.dart';
 
 /// Status palette used by [StateChip].
 enum ChipTone { success, info, warning, danger, neutral, merged }
@@ -32,16 +33,20 @@ class StateChip extends StatelessWidget {
   }
 
   /// Issue state chip (`opened`/`closed`).
-  factory StateChip.issueState(String state, {Key? key}) {
+  factory StateChip.issueState(
+    AppLocalizations l10n,
+    String state, {
+    Key? key,
+  }) {
     return switch (state) {
       'opened' => StateChip(
-        label: 'Open',
+        label: l10n.stateOpen,
         tone: ChipTone.success,
         icon: Icons.circle_outlined,
         key: key,
       ),
       'closed' => StateChip(
-        label: 'Closed',
+        label: l10n.stateClosed,
         tone: ChipTone.info,
         icon: Icons.check_circle,
         key: key,
@@ -55,28 +60,32 @@ class StateChip extends StatelessWidget {
   }
 
   /// Merge request state chip (`opened`/`merged`/`closed`/`locked`).
-  factory StateChip.mergeRequestState(String state, {Key? key}) {
+  factory StateChip.mergeRequestState(
+    AppLocalizations l10n,
+    String state, {
+    Key? key,
+  }) {
     return switch (state) {
       'opened' => StateChip(
-        label: 'Open',
+        label: l10n.stateOpen,
         tone: ChipTone.success,
         icon: Icons.merge,
         key: key,
       ),
       'merged' => StateChip(
-        label: 'Merged',
+        label: l10n.stateMerged,
         tone: ChipTone.merged,
         icon: Icons.merge,
         key: key,
       ),
       'closed' => StateChip(
-        label: 'Closed',
+        label: l10n.stateClosed,
         tone: ChipTone.danger,
         icon: Icons.close,
         key: key,
       ),
       'locked' => StateChip(
-        label: 'Locked',
+        label: l10n.stateLocked,
         tone: ChipTone.neutral,
         icon: Icons.lock,
         key: key,

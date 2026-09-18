@@ -2963,4 +2963,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get editSnippet => '编辑代码片段';
+
+  @override
+  String get stateLocked => '已锁定';
 }

@@ -3003,4 +3003,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editSnippet => 'Edit snippet';
+
+  @override
+  String get stateLocked => 'Locked';
 }
