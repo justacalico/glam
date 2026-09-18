@@ -7,6 +7,7 @@ import 'package:glam/src/core/models/note.dart';
 import 'package:glam/src/core/utils/format.dart';
 import 'package:glam/src/core/widgets/markdown_viewer.dart';
 import 'package:glam/src/core/widgets/user_avatar.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// One comment in an issue/MR thread.
 class NoteCard extends StatelessWidget {
@@ -76,7 +77,7 @@ class NoteCard extends StatelessWidget {
                 ),
                 if (onEdit != null || onDelete != null)
                   PopupMenuButton<String>(
-                    tooltip: 'Comment actions',
+                    tooltip: context.l10n.noteActions,
                     iconSize: 16,
                     icon: Icon(
                       Icons.more_vert,
@@ -85,11 +86,14 @@ class NoteCard extends StatelessWidget {
                     ),
                     itemBuilder: (context) => [
                       if (onEdit != null)
-                        const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Text(context.l10n.actionEdit),
+                        ),
                       if (onDelete != null)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
-                          child: Text('Delete'),
+                          child: Text(context.l10n.actionDelete),
                         ),
                     ],
                     onSelected: (v) {
@@ -127,7 +131,7 @@ class NoteCard extends StatelessWidget {
     final text = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit comment'),
+        title: Text(context.l10n.noteEditTitle),
         content: SizedBox(
           width: 420,
           child: TextField(
@@ -141,11 +145,11 @@ class NoteCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -161,15 +165,15 @@ class NoteCard extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete comment?'),
+        title: Text(context.l10n.noteDeleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),

@@ -86,4 +86,153 @@ class AppLocalizationsEn extends AppLocalizations {
   String filterAny(String title) {
     return 'Any $title';
   }
+
+  @override
+  String get sortTitle => 'Sort';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortOldest => 'Oldest';
+
+  @override
+  String get sortRecentlyUpdated => 'Recently updated';
+
+  @override
+  String get sortLeastRecentlyUpdated => 'Least recently updated';
+
+  @override
+  String get sortDueSoonest => 'Due soonest';
+
+  @override
+  String get sortDueLatest => 'Due latest';
+
+  @override
+  String get sortTitleAZ => 'Title A-Z';
+
+  @override
+  String get sortTitleZA => 'Title Z-A';
+
+  @override
+  String get composerUploadFailed => 'Failed to upload file';
+
+  @override
+  String get composerSendFailed => 'Failed to post comment';
+
+  @override
+  String get composerHint => 'Write a comment';
+
+  @override
+  String get composerAttach => 'Attach a file';
+
+  @override
+  String get listLoadFailed => 'Load failed, tap to retry';
+
+  @override
+  String get noteActions => 'Comment actions';
+
+  @override
+  String get noteEditTitle => 'Edit comment';
+
+  @override
+  String get noteDeleteConfirm => 'Delete comment?';
+
+  @override
+  String get pickerNone => 'None';
+
+  @override
+  String pickerSelected(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get pickerSearchMembers => 'Search members';
+
+  @override
+  String get pickerLoadFailed => 'Could not load members. Retry';
+
+  @override
+  String get pickerEmpty => 'No members found';
+
+  @override
+  String get usersEmpty => 'Nobody here yet';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsLevel => 'Level';
+
+  @override
+  String get notifNewNote => 'New comments';
+
+  @override
+  String get notifNewIssue => 'New issues';
+
+  @override
+  String get notifReopenIssue => 'Reopened issues';
+
+  @override
+  String get notifCloseIssue => 'Closed issues';
+
+  @override
+  String get notifReassignIssue => 'Reassigned issues';
+
+  @override
+  String get notifIssueDue => 'Issue due dates';
+
+  @override
+  String get notifNewMr => 'New merge requests';
+
+  @override
+  String get notifPushMr => 'Pushes to merge requests';
+
+  @override
+  String get notifReopenMr => 'Reopened merge requests';
+
+  @override
+  String get notifCloseMr => 'Closed merge requests';
+
+  @override
+  String get notifReassignMr => 'Reassigned merge requests';
+
+  @override
+  String get notifMergeMr => 'Merged merge requests';
+
+  @override
+  String get notifFailedPipeline => 'Failed pipelines';
+
+  @override
+  String get notifFixedPipeline => 'Fixed pipelines';
+
+  @override
+  String get notifSuccessPipeline => 'Successful pipelines';
+
+  @override
+  String get notifMovedProject => 'Moved project';
+
+  @override
+  String get templateUse => 'Use template';
+
+  @override
+  String get templateChoose => 'Choose a template';
+
+  @override
+  String get levelGlobal => 'Global default';
+
+  @override
+  String get levelWatch => 'Watch';
+
+  @override
+  String get levelParticipating => 'Participate';
+
+  @override
+  String get levelMention => 'On mention';
+
+  @override
+  String get levelDisabled => 'Disabled';
+
+  @override
+  String get levelCustom => 'Custom';
 }

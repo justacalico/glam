@@ -21,6 +21,7 @@ import 'package:glam/src/core/models/milestone.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
 import 'package:glam/src/features/milestones/application/planning_providers.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 const _reactions = ['thumbsup', 'thumbsdown', 'smile', 'tada', 'heart'];
 const _reactionLabels = {
@@ -251,7 +252,7 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                             SortMenu(
                               orderBy: filter.orderBy,
                               sort: filter.sort,
-                              options: SortOptions.issues,
+                              options: SortOptions.issues(context.l10n),
                               onSelect: (o) => _setFilter(
                                 (f) => (
                                   scope: f.scope,
@@ -544,7 +545,7 @@ class _ProjectIssuesTabState extends ConsumerState<ProjectIssuesTab> {
               SortMenu(
                 orderBy: _orderBy,
                 sort: _sort,
-                options: SortOptions.issues,
+                options: SortOptions.issues(context.l10n),
                 onSelect: (o) => setState(() {
                   _orderBy = o.orderBy;
                   _sort = o.sort;

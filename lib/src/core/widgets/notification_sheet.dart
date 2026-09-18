@@ -7,6 +7,8 @@ import 'package:glam/src/core/api/api_exception.dart';
 import 'package:glam/src/core/widgets/error_view.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/domain/account_models.dart';
+import 'package:glam/l10n/app_localizations.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// A project or group id for scoped notification settings.
 typedef NotificationScope = ({Object id, bool isProject});
@@ -33,23 +35,23 @@ class ScopedNotificationSheet extends ConsumerWidget {
     );
   }
 
-  static const _eventLabels = {
-    'new_note': 'New comments',
-    'new_issue': 'New issues',
-    'reopen_issue': 'Reopened issues',
-    'close_issue': 'Closed issues',
-    'reassign_issue': 'Reassigned issues',
-    'issue_due': 'Issue due dates',
-    'new_merge_request': 'New merge requests',
-    'push_to_merge_request': 'Pushes to merge requests',
-    'reopen_merge_request': 'Reopened merge requests',
-    'close_merge_request': 'Closed merge requests',
-    'reassign_merge_request': 'Reassigned merge requests',
-    'merge_merge_request': 'Merged merge requests',
-    'failed_pipeline': 'Failed pipelines',
-    'fixed_pipeline': 'Fixed pipelines',
-    'success_pipeline': 'Successful pipelines',
-    'moved_project': 'Moved project',
+  static Map<String, String> _eventLabels(AppLocalizations l10n) => {
+    'new_note': l10n.notifNewNote,
+    'new_issue': l10n.notifNewIssue,
+    'reopen_issue': l10n.notifReopenIssue,
+    'close_issue': l10n.notifCloseIssue,
+    'reassign_issue': l10n.notifReassignIssue,
+    'issue_due': l10n.notifIssueDue,
+    'new_merge_request': l10n.notifNewMr,
+    'push_to_merge_request': l10n.notifPushMr,
+    'reopen_merge_request': l10n.notifReopenMr,
+    'close_merge_request': l10n.notifCloseMr,
+    'reassign_merge_request': l10n.notifReassignMr,
+    'merge_merge_request': l10n.notifMergeMr,
+    'failed_pipeline': l10n.notifFailedPipeline,
+    'fixed_pipeline': l10n.notifFixedPipeline,
+    'success_pipeline': l10n.notifSuccessPipeline,
+    'moved_project': l10n.notifMovedProject,
   };
 
   @override
@@ -77,13 +79,16 @@ class ScopedNotificationSheet extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
-              child: Text('Notifications', style: theme.textTheme.titleMedium),
+              child: Text(
+                context.l10n.notificationsTitle,
+                style: theme.textTheme.titleMedium,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
               child: Row(
                 children: [
-                  const Expanded(child: Text('Level')),
+                  Expanded(child: Text(context.l10n.notificationsLevel)),
                   DropdownButton<String>(
                     value: NotificationSettings.levelLabels.containsKey(s.level)
                         ? s.level
@@ -104,7 +109,7 @@ class ScopedNotificationSheet extends ConsumerWidget {
               ),
             ),
             if (s.level == 'custom')
-              for (final e in _eventLabels.entries)
+              for (final e in _eventLabels(context.l10n).entries)
                 SwitchListTile(
                   dense: true,
                   title: Text(e.value),

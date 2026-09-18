@@ -38,5 +38,61 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sortTitle": "Sort",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortRecentlyUpdated": "Recently updated",
+  "sortLeastRecentlyUpdated": "Least recently updated",
+  "sortDueSoonest": "Due soonest",
+  "sortDueLatest": "Due latest",
+  "sortTitleAZ": "Title A-Z",
+  "sortTitleZA": "Title Z-A",
+  "composerUploadFailed": "Failed to upload file",
+  "composerSendFailed": "Failed to post comment",
+  "composerHint": "Write a comment",
+  "composerAttach": "Attach a file",
+  "listLoadFailed": "Load failed, tap to retry",
+  "noteActions": "Comment actions",
+  "noteEditTitle": "Edit comment",
+  "noteDeleteConfirm": "Delete comment?",
+  "pickerNone": "None",
+  "pickerSelected": "{count} selected",
+  "pickerSearchMembers": "Search members",
+  "pickerLoadFailed": "Could not load members. Retry",
+  "pickerEmpty": "No members found",
+  "usersEmpty": "Nobody here yet",
+  "notificationsTitle": "Notifications",
+  "notificationsLevel": "Level",
+  "notifNewNote": "New comments",
+  "notifNewIssue": "New issues",
+  "notifReopenIssue": "Reopened issues",
+  "notifCloseIssue": "Closed issues",
+  "notifReassignIssue": "Reassigned issues",
+  "notifIssueDue": "Issue due dates",
+  "notifNewMr": "New merge requests",
+  "notifPushMr": "Pushes to merge requests",
+  "notifReopenMr": "Reopened merge requests",
+  "notifCloseMr": "Closed merge requests",
+  "notifReassignMr": "Reassigned merge requests",
+  "notifMergeMr": "Merged merge requests",
+  "notifFailedPipeline": "Failed pipelines",
+  "notifFixedPipeline": "Fixed pipelines",
+  "notifSuccessPipeline": "Successful pipelines",
+  "notifMovedProject": "Moved project",
+  "templateUse": "Use template",
+  "templateChoose": "Choose a template",
+  "@pickerSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "levelGlobal": "Global default",
+  "levelWatch": "Watch",
+  "levelParticipating": "Participate",
+  "levelMention": "On mention",
+  "levelDisabled": "Disabled",
+  "levelCustom": "Custom"
 }

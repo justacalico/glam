@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/paged_list.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Scrollable list wired to a [PagedListState]: triggers `onLoadMore`
 /// near the bottom and renders a footer spinner / retry affordance.
@@ -111,7 +112,7 @@ class _LoadMoreFooter extends StatelessWidget {
           child: TextButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh, size: 16),
-            label: const Text('Load failed — tap to retry'),
+            label: Text(context.l10n.listLoadFailed),
           ),
         ),
       );

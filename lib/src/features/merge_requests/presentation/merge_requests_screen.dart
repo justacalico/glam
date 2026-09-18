@@ -23,6 +23,7 @@ import 'package:glam/src/features/milestones/application/planning_providers.dart
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_tile.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Global MR list with scope/state/search filters.
 class MergeRequestsScreen extends ConsumerStatefulWidget {
@@ -177,7 +178,7 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                             SortMenu(
                               orderBy: filter.orderBy,
                               sort: filter.sort,
-                              options: SortOptions.mergeRequests,
+                              options: SortOptions.mergeRequests(context.l10n),
                               onSelect: (o) => _setFilter(
                                 (f) => (
                                   scope: f.scope,
@@ -472,7 +473,7 @@ class _ProjectMrsTabState extends ConsumerState<ProjectMrsTab> {
               SortMenu(
                 orderBy: _orderBy,
                 sort: _sort,
-                options: SortOptions.mergeRequests,
+                options: SortOptions.mergeRequests(context.l10n),
                 onSelect: (o) => setState(() {
                   _orderBy = o.orderBy;
                   _sort = o.sort;

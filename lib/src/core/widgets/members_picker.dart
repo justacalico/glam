@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/core/api/paged_list.dart';
 import 'package:glam/src/features/groups/application/groups_providers.dart';
 import 'package:glam/src/features/groups/domain/group.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Multi-select field backed by the project members list.
 class MembersPickerField extends ConsumerWidget {
@@ -59,7 +60,9 @@ class MembersPickerField extends ConsumerWidget {
         ),
         child: Text(
           names.isEmpty
-              ? (selected.isEmpty ? 'None' : '${selected.length} selected')
+              ? (selected.isEmpty
+                    ? context.l10n.pickerNone
+                    : context.l10n.pickerSelected(selected.length))
               : names,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -106,11 +109,11 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
           children: [
             TextField(
               autofocus: wide,
-              decoration: const InputDecoration(
-                hintText: 'Search members',
-                prefixIcon: Icon(Icons.search, size: 20),
+              decoration: InputDecoration(
+                hintText: context.l10n.pickerSearchMembers,
+                prefixIcon: const Icon(Icons.search, size: 20),
                 isDense: true,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               onChanged: (v) => setState(() => _query = v.toLowerCase()),
             ),
@@ -122,11 +125,11 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.actionCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, _selected),
-          child: const Text('Done'),
+          child: Text(context.l10n.actionDone),
         ),
       ],
     );
@@ -144,7 +147,7 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
               query: null,
             )),
           ),
-          child: const Text('Could not load members. Retry'),
+          child: Text(context.l10n.pickerLoadFailed),
         ),
       ),
       data: (state) {
@@ -158,7 +161,7 @@ class _MembersDialogState extends ConsumerState<MembersDialog> {
             )
             .toList();
         if (visible.isEmpty) {
-          return const Center(child: Text('No members found'));
+          return Center(child: Text(context.l10n.pickerEmpty));
         }
         return NotificationListener<ScrollNotification>(
           onNotification: (n) {

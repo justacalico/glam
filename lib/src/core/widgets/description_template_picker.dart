@@ -6,6 +6,7 @@ import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
 import 'package:glam/src/features/repository/application/repository_providers.dart';
 import 'package:glam/src/features/repository/domain/repo_models.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Fills a description from a `.gitlab/` template. Renders nothing
 /// when the project has no templates of [type] (`issues` or
@@ -35,7 +36,7 @@ class DescriptionTemplatePicker extends ConsumerWidget {
       alignment: Alignment.centerRight,
       child: TextButton.icon(
         icon: const Icon(Icons.article_outlined, size: 16),
-        label: const Text('Use template'),
+        label: Text(context.l10n.templateUse),
         onPressed: () => unawaited(_pick(context, items)),
       ),
     );
@@ -59,7 +60,7 @@ class DescriptionTemplatePicker extends ConsumerWidget {
                   Insets.sm,
                 ),
                 child: Text(
-                  'Choose a template',
+                  context.l10n.templateChoose,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
