@@ -111,7 +111,9 @@ class IssueLinksSection extends ConsumerWidget {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: context.l10n.issueIidField,
-                      errorText: iidError ? 'Enter an issue number' : null,
+                      errorText: iidError
+                          ? context.l10n.enterIssueNumber
+                          : null,
                     ),
                     onChanged: (_) {
                       if (iidError) {

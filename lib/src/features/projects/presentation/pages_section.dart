@@ -103,7 +103,9 @@ class PagesSection extends ConsumerWidget {
                         title: Text(d.domain),
                         subtitle: Text(
                           [
-                            d.verified ? 'Verified' : 'Unverified',
+                            d.verified
+                                ? context.l10n.domainVerified
+                                : context.l10n.domainUnverified,
                             if (d.autoSslEnabled) context.l10n.autoSsl,
                             if (d.expiresAt != null)
                               context.l10n.certExpiresP0(

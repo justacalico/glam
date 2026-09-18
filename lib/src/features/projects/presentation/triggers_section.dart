@@ -71,7 +71,7 @@ class TriggersSection extends ConsumerWidget {
                           leading: const Icon(Icons.key_outlined, size: 18),
                           title: Text(
                             t.description.isEmpty
-                                ? 'Trigger ${t.id}'
+                                ? context.l10n.triggerN(t.id)
                                 : t.description,
                           ),
                           subtitle: Text(
@@ -298,7 +298,9 @@ class _LintDialogState extends ConsumerState<_LintDialog> {
                     ),
                     const SizedBox(width: Insets.sm),
                     Text(
-                      result.valid ? 'Config is valid' : 'Config is invalid',
+                      result.valid
+                          ? context.l10n.configValid
+                          : context.l10n.configInvalid,
                       style: theme.textTheme.titleSmall,
                     ),
                   ],

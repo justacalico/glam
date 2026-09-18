@@ -1104,5 +1104,15 @@
   "envStopped": "已停止",
   "searchEnvironments": "搜索环境",
   "newUserList": "新建用户列表",
-  "editNamed": "编辑 {p0}"
+  "editNamed": "编辑 {p0}",
+  "issueSaveFailed": "无法保存议题",
+  "editIssue": "编辑议题",
+  "enterIssueNumber": "请输入议题编号",
+  "mergeFailed": "合并失败",
+  "draftTitle": "草稿：{p0}",
+  "triggerN": "触发器 {p0}",
+  "configValid": "配置有效",
+  "configInvalid": "配置无效",
+  "domainVerified": "已验证",
+  "domainUnverified": "未验证"
 }

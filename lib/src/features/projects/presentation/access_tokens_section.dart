@@ -108,7 +108,7 @@ class AccessTokensSection extends ConsumerWidget {
                   autofocus: true,
                   decoration: InputDecoration(
                     labelText: context.l10n.fieldName,
-                    errorText: nameError ? 'Required' : null,
+                    errorText: nameError ? context.l10n.errorRequired : null,
                   ),
                   onChanged: (_) {
                     if (nameError) {

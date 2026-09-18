@@ -691,7 +691,7 @@ class _MergeSheetState extends ConsumerState<_MergeSheet> {
     } on Object {
       setState(() {
         _merging = false;
-        _error = 'Merge failed';
+        _error = context.l10n.mergeFailed;
       });
     }
   }
@@ -784,7 +784,7 @@ class _MrActions extends ConsumerWidget {
     if (sha == null) {
       return;
     }
-    final label = revert ? 'Revert' : 'Cherry-pick';
+    final label = revert ? context.l10n.revert : context.l10n.cherryPick;
     final branch = TextEditingController(text: mr.targetBranch);
     final target = await showDialog<String>(
       context: context,
@@ -846,7 +846,7 @@ class _MrActions extends ConsumerWidget {
             case 'draft':
               final title = mr.draft
                   ? stripDraftPrefix(mr.title)
-                  : 'Draft: ${mr.title}';
+                  : context.l10n.draftTitle(mr.title);
               if (title.isEmpty) {
                 return;
               }

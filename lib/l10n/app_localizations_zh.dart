@@ -3566,4 +3566,38 @@ class AppLocalizationsZh extends AppLocalizations {
   String editNamed(Object p0) {
     return '编辑 $p0';
   }
+
+  @override
+  String get issueSaveFailed => '无法保存议题';
+
+  @override
+  String get editIssue => '编辑议题';
+
+  @override
+  String get enterIssueNumber => '请输入议题编号';
+
+  @override
+  String get mergeFailed => '合并失败';
+
+  @override
+  String draftTitle(Object p0) {
+    return '草稿：$p0';
+  }
+
+  @override
+  String triggerN(Object p0) {
+    return '触发器 $p0';
+  }
+
+  @override
+  String get configValid => '配置有效';
+
+  @override
+  String get configInvalid => '配置无效';
+
+  @override
+  String get domainVerified => '已验证';
+
+  @override
+  String get domainUnverified => '未验证';
 }

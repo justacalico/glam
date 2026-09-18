@@ -3608,4 +3608,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String editNamed(Object p0) {
     return 'Edit $p0';
   }
+
+  @override
+  String get issueSaveFailed => 'Could not save the issue';
+
+  @override
+  String get editIssue => 'Edit issue';
+
+  @override
+  String get enterIssueNumber => 'Enter an issue number';
+
+  @override
+  String get mergeFailed => 'Merge failed';
+
+  @override
+  String draftTitle(Object p0) {
+    return 'Draft: $p0';
+  }
+
+  @override
+  String triggerN(Object p0) {
+    return 'Trigger $p0';
+  }
+
+  @override
+  String get configValid => 'Config is valid';
+
+  @override
+  String get configInvalid => 'Config is invalid';
+
+  @override
+  String get domainVerified => 'Verified';
+
+  @override
+  String get domainUnverified => 'Unverified';
 }

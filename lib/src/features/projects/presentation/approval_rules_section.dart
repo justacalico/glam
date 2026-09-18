@@ -189,7 +189,7 @@ class ApprovalRulesSection extends ConsumerWidget {
                   autofocus: true,
                   decoration: InputDecoration(
                     labelText: context.l10n.ruleName,
-                    errorText: nameError ? 'Required' : null,
+                    errorText: nameError ? context.l10n.errorRequired : null,
                   ),
                   onChanged: (_) {
                     if (nameError) {

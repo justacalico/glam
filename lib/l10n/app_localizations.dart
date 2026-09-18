@@ -6727,6 +6727,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit {p0}'**
   String editNamed(Object p0);
+
+  /// No description provided for @issueSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the issue'**
+  String get issueSaveFailed;
+
+  /// No description provided for @editIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit issue'**
+  String get editIssue;
+
+  /// No description provided for @enterIssueNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an issue number'**
+  String get enterIssueNumber;
+
+  /// No description provided for @mergeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge failed'**
+  String get mergeFailed;
+
+  /// No description provided for @draftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft: {p0}'**
+  String draftTitle(Object p0);
+
+  /// No description provided for @triggerN.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger {p0}'**
+  String triggerN(Object p0);
+
+  /// No description provided for @configValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Config is valid'**
+  String get configValid;
+
+  /// No description provided for @configInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Config is invalid'**
+  String get configInvalid;
+
+  /// No description provided for @domainVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get domainVerified;
+
+  /// No description provided for @domainUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Unverified'**
+  String get domainUnverified;
 }
 
 class _AppLocalizationsDelegate

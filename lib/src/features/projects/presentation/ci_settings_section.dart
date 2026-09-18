@@ -45,7 +45,10 @@ class CiSettingsSection extends ConsumerWidget {
               _ChoiceTile(
                 label: context.l10n.autoCancelRedundantPipelines,
                 value: project.autoCancelPendingPipelines ?? 'enabled',
-                options: const {'enabled': 'Enabled', 'disabled': 'Disabled'},
+                options: {
+                  'enabled': context.l10n.stateEnabled,
+                  'disabled': context.l10n.stateDisabled,
+                },
                 onChanged: (v) =>
                     _set(context, ref, autoCancelPendingPipelines: v),
               ),

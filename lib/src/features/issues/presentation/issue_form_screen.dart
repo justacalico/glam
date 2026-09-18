@@ -96,7 +96,9 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
   Future<void> _save() async {
     final title = _title.text.trim();
     if (title.isEmpty || _saving) {
-      setState(() => _error = title.isEmpty ? 'Title is required' : null);
+      setState(
+        () => _error = title.isEmpty ? context.l10n.titleRequired : null,
+      );
       return;
     }
     setState(() {
@@ -142,7 +144,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
     } on Object {
       setState(() {
         _saving = false;
-        _error = 'Could not save the issue';
+        _error = context.l10n.issueSaveFailed;
       });
     }
   }
@@ -176,7 +178,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _editing ? 'Edit issue' : 'New issue',
+            _editing ? context.l10n.editIssue : context.l10n.newIssue,
             style: theme.textTheme.headlineSmall,
           ),
           const SizedBox(height: Insets.lg),
@@ -235,7 +237,7 @@ class _IssueFormScreenState extends ConsumerState<IssueFormScreen> {
                   icon: const Icon(Icons.event_outlined, size: 18),
                   label: Text(
                     _dueDate == null
-                        ? 'Due date'
+                        ? context.l10n.dueDate
                         : _dueDate!.toIso8601String().substring(0, 10),
                   ),
                 ),

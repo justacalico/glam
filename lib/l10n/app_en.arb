@@ -1104,5 +1104,15 @@
   "envStopped": "Stopped",
   "searchEnvironments": "Search environments",
   "newUserList": "New user list",
-  "editNamed": "Edit {p0}"
+  "editNamed": "Edit {p0}",
+  "issueSaveFailed": "Could not save the issue",
+  "editIssue": "Edit issue",
+  "enterIssueNumber": "Enter an issue number",
+  "mergeFailed": "Merge failed",
+  "draftTitle": "Draft: {p0}",
+  "triggerN": "Trigger {p0}",
+  "configValid": "Config is valid",
+  "configInvalid": "Config is invalid",
+  "domainVerified": "Verified",
+  "domainUnverified": "Unverified"
 }
