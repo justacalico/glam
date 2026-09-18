@@ -1112,9 +1112,7 @@ class _VersionPicker extends StatelessWidget {
               underline: const SizedBox.shrink(),
               style: theme.textTheme.bodyMedium,
               items: [
-                const DropdownMenuItem<int?>(
-                  child: Text(context.l10n.latestChanges),
-                ),
+                DropdownMenuItem<int?>(child: Text(context.l10n.latestChanges)),
                 // sorted[0] is the newest version, which shows the same
                 // diff as Latest, so only older versions get entries.
                 for (var i = 1; i < sorted.length; i++)
@@ -1173,10 +1171,7 @@ class _ReviewBannerState extends ConsumerState<_ReviewBanner> {
         children: [
           Expanded(
             child: Text(
-              context.l10n.pendingComments(
-                count,
-                count == 1 ? '' : 's',
-              ),
+              context.l10n.pendingComments(count, count == 1 ? '' : 's'),
               style: Theme.of(context).textTheme.labelLarge,
             ),
           ),
