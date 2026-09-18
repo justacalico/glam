@@ -8,6 +8,7 @@ class SettingsStorage {
 
   static const String _themeKey = 'glam.theme_mode';
   static const String _codeWrapKey = 'glam.code_wrap';
+  static const String _localeKey = 'glam.locale';
 
   final SharedPreferences _prefs;
 
@@ -23,4 +24,10 @@ class SettingsStorage {
   bool get codeWrap => _prefs.getBool(_codeWrapKey) ?? false;
 
   Future<void> setCodeWrap(bool value) => _prefs.setBool(_codeWrapKey, value);
+
+  /// 'system', 'en', or 'zh'.
+  String get localeName => _prefs.getString(_localeKey) ?? 'system';
+
+  Future<void> setLocaleName(String value) =>
+      _prefs.setString(_localeKey, value);
 }

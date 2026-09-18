@@ -9,11 +9,17 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/pipelines/presentation/job_artifacts_screen.dart';
 
 import '../../helpers/test_client.dart';
+import 'package:glam/l10n/app_localizations.dart';
 
 Widget _app(Widget child, GitLabApiClient client) {
   return ProviderScope(
     overrides: [apiClientProvider.overrideWithValue(client)],
-    child: MaterialApp(theme: GlamTheme.light(), home: child),
+    child: MaterialApp(
+    theme: GlamTheme.light(),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: child,
+  ),
   );
 }
 

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/app/theme/app_theme.dart';
 import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/application/session_controller.dart';
@@ -229,6 +230,8 @@ Future<void> _shot(
       // full-screen children are Scaffolds themselves and nest fine.
       child: MaterialApp(
         theme: GlamTheme.light(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: child),
       ),
     ),
