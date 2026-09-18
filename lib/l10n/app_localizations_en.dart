@@ -3399,4 +3399,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storageRegistry => 'Container registry';
+
+  @override
+  String get errNetwork => 'Could not reach the server';
+
+  @override
+  String get errUnauthorized => 'Session expired, sign in again';
+
+  @override
+  String get errForbidden => 'You do not have access to this';
+
+  @override
+  String get errNotFound => 'Not found';
+
+  @override
+  String get errConflict => 'Request conflicts with current state';
+
+  @override
+  String get errServer => 'The server ran into a problem';
+
+  @override
+  String get errUnknown => 'Something went wrong';
+
+  @override
+  String get errFileTooLarge => 'File is too large to show in the app';
+
+  @override
+  String get errTooManyRedirects => 'Too many redirects';
+
+  @override
+  String get errBadArchive => 'Could not read the artifact archive';
 }

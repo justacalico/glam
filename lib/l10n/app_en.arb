@@ -1037,5 +1037,15 @@
   "storageUploads": "Uploads",
   "storageWiki": "Wiki",
   "storageSnippets": "Snippets",
-  "storageRegistry": "Container registry"
+  "storageRegistry": "Container registry",
+  "errNetwork": "Could not reach the server",
+  "errUnauthorized": "Session expired, sign in again",
+  "errForbidden": "You do not have access to this",
+  "errNotFound": "Not found",
+  "errConflict": "Request conflicts with current state",
+  "errServer": "The server ran into a problem",
+  "errUnknown": "Something went wrong",
+  "errFileTooLarge": "File is too large to show in the app",
+  "errTooManyRedirects": "Too many redirects",
+  "errBadArchive": "Could not read the artifact archive"
 }

@@ -14,10 +14,9 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final message = switch (error) {
-      ApiException(:final message) => message,
-      _ => context.l10n.errorGeneric,
-    };
+    final message = error is ApiException
+        ? (error as ApiException).displayMessage(context.l10n)
+        : context.l10n.errorGeneric;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(Insets.xl),

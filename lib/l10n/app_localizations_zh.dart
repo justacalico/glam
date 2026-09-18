@@ -3357,4 +3357,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get storageRegistry => '容器注册表';
+
+  @override
+  String get errNetwork => '无法连接服务器';
+
+  @override
+  String get errUnauthorized => '会话已过期，请重新登录';
+
+  @override
+  String get errForbidden => '你没有访问权限';
+
+  @override
+  String get errNotFound => '未找到';
+
+  @override
+  String get errConflict => '请求与当前状态冲突';
+
+  @override
+  String get errServer => '服务器出现问题';
+
+  @override
+  String get errUnknown => '出现错误';
+
+  @override
+  String get errFileTooLarge => '文件过大，无法在应用中显示';
+
+  @override
+  String get errTooManyRedirects => '重定向次数过多';
+
+  @override
+  String get errBadArchive => '无法读取产物归档';
 }

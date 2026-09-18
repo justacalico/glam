@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:glam/l10n/app_localizations.dart';
+import 'package:glam/src/core/api/api_exception.dart';
 
 /// Shorthand for `AppLocalizations.of(context)`.
 extension L10nX on BuildContext {
@@ -117,4 +118,26 @@ extension WebhookEventL10n on AppLocalizations {
     'subgroup' => hookEventSubgroup,
     _ => slug,
   };
+}
+
+/// Localized text for [ApiException] display. Server-supplied and custom
+/// messages pass through untouched; client defaults resolve per kind.
+extension ApiExceptionL10n on ApiException {
+  String displayMessage(AppLocalizations l10n) {
+    if (!isDefaultMessage) return message;
+    return switch (messageKey) {
+      ApiMessageKey.fileTooLarge => l10n.errFileTooLarge,
+      ApiMessageKey.tooManyRedirects => l10n.errTooManyRedirects,
+      ApiMessageKey.badArchive => l10n.errBadArchive,
+      ApiMessageKey.none => switch (kind) {
+        ApiErrorKind.network => l10n.errNetwork,
+        ApiErrorKind.unauthorized => l10n.errUnauthorized,
+        ApiErrorKind.forbidden => l10n.errForbidden,
+        ApiErrorKind.notFound => l10n.errNotFound,
+        ApiErrorKind.conflict => l10n.errConflict,
+        ApiErrorKind.server => l10n.errServer,
+        ApiErrorKind.unknown => l10n.errUnknown,
+      },
+    };
+  }
 }

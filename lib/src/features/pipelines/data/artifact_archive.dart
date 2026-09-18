@@ -15,6 +15,8 @@ List<ArtifactEntry> decodeArtifactEntries(Uint8List zip) {
     throw const ApiException(
       kind: ApiErrorKind.unknown,
       message: 'Could not read the artifact archive',
+      messageKey: ApiMessageKey.badArchive,
+      isDefaultMessage: true,
     );
   }
   final Archive archive;
@@ -24,6 +26,8 @@ List<ArtifactEntry> decodeArtifactEntries(Uint8List zip) {
     throw const ApiException(
       kind: ApiErrorKind.unknown,
       message: 'Could not read the artifact archive',
+      messageKey: ApiMessageKey.badArchive,
+      isDefaultMessage: true,
     );
   }
   return [

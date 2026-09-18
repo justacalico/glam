@@ -6325,6 +6325,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Container registry'**
   String get storageRegistry;
+
+  /// No description provided for @errNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server'**
+  String get errNetwork;
+
+  /// No description provided for @errUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, sign in again'**
+  String get errUnauthorized;
+
+  /// No description provided for @errForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to this'**
+  String get errForbidden;
+
+  /// No description provided for @errNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get errNotFound;
+
+  /// No description provided for @errConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Request conflicts with current state'**
+  String get errConflict;
+
+  /// No description provided for @errServer.
+  ///
+  /// In en, this message translates to:
+  /// **'The server ran into a problem'**
+  String get errServer;
+
+  /// No description provided for @errUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errUnknown;
+
+  /// No description provided for @errFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'File is too large to show in the app'**
+  String get errFileTooLarge;
+
+  /// No description provided for @errTooManyRedirects.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many redirects'**
+  String get errTooManyRedirects;
+
+  /// No description provided for @errBadArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the artifact archive'**
+  String get errBadArchive;
 }
 
 class _AppLocalizationsDelegate

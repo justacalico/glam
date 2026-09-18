@@ -1037,5 +1037,15 @@
   "storageUploads": "上传",
   "storageWiki": "Wiki",
   "storageSnippets": "代码片段",
-  "storageRegistry": "容器注册表"
+  "storageRegistry": "容器注册表",
+  "errNetwork": "无法连接服务器",
+  "errUnauthorized": "会话已过期，请重新登录",
+  "errForbidden": "你没有访问权限",
+  "errNotFound": "未找到",
+  "errConflict": "请求与当前状态冲突",
+  "errServer": "服务器出现问题",
+  "errUnknown": "出现错误",
+  "errFileTooLarge": "文件过大，无法在应用中显示",
+  "errTooManyRedirects": "重定向次数过多",
+  "errBadArchive": "无法读取产物归档"
 }
