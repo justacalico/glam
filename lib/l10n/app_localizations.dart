@@ -2887,6 +2887,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'#{p0} {p1} · {p2}'**
   String deploymentRef(Object p0, Object p1, Object p2);
+
+  /// No description provided for @environment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get environment;
+
+  /// No description provided for @editEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit environment'**
+  String get editEnvironment;
+
+  /// No description provided for @openLiveUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Open live URL'**
+  String get openLiveUrl;
+
+  /// No description provided for @copyUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy URL'**
+  String get copyUrl;
+
+  /// No description provided for @noDeploymentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No deployments yet'**
+  String get noDeploymentsYet;
+
+  /// No description provided for @userLists.
+  ///
+  /// In en, this message translates to:
+  /// **'User lists'**
+  String get userLists;
+
+  /// No description provided for @newList.
+  ///
+  /// In en, this message translates to:
+  /// **'New list'**
+  String get newList;
+
+  /// No description provided for @noFeatureFlags.
+  ///
+  /// In en, this message translates to:
+  /// **'No feature flags'**
+  String get noFeatureFlags;
+
+  /// No description provided for @theFlagIsRemovedFromEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'The flag is removed from every environment.'**
+  String get theFlagIsRemovedFromEvery;
+
+  /// No description provided for @noUserLists.
+  ///
+  /// In en, this message translates to:
+  /// **'No user lists'**
+  String get noUserLists;
+
+  /// No description provided for @flagStrategiesUsingItStopMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag strategies using it stop matching.'**
+  String get flagStrategiesUsingItStopMatching;
+
+  /// No description provided for @userIds.
+  ///
+  /// In en, this message translates to:
+  /// **'User IDs'**
+  String get userIds;
+
+  /// No description provided for @userListSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} {p1} · {p2}'**
+  String userListSummary(Object p0, Object p1, Object p2);
+
+  /// No description provided for @userSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'user'**
+  String get userSingular;
+
+  /// No description provided for @userPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'users'**
+  String get userPlural;
 }
 
 class _AppLocalizationsDelegate

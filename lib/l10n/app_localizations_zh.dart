@@ -1448,4 +1448,51 @@ class AppLocalizationsZh extends AppLocalizations {
   String deploymentRef(Object p0, Object p1, Object p2) {
     return '#$p0 $p1 · $p2';
   }
+
+  @override
+  String get environment => '环境';
+
+  @override
+  String get editEnvironment => '编辑环境';
+
+  @override
+  String get openLiveUrl => '打开线上 URL';
+
+  @override
+  String get copyUrl => '复制 URL';
+
+  @override
+  String get noDeploymentsYet => '暂无部署';
+
+  @override
+  String get userLists => '用户列表';
+
+  @override
+  String get newList => '新建列表';
+
+  @override
+  String get noFeatureFlags => '没有功能标志';
+
+  @override
+  String get theFlagIsRemovedFromEvery => '该标志将从每个环境中移除。';
+
+  @override
+  String get noUserLists => '没有用户列表';
+
+  @override
+  String get flagStrategiesUsingItStopMatching => '使用该列表的标志策略将停止匹配。';
+
+  @override
+  String get userIds => '用户 ID';
+
+  @override
+  String userListSummary(Object p0, Object p1, Object p2) {
+    return '共 $p0 个$p1 · $p2';
+  }
+
+  @override
+  String get userSingular => '用户';
+
+  @override
+  String get userPlural => '用户';
 }

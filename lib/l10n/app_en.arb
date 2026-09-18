@@ -464,5 +464,20 @@
   "stoppedEnvironmentsCanBeDeleted": "Stopped environments can be deleted.",
   "issueIid": "#{p0}",
   "removeNamedConfirm": "Remove {p0}?",
-  "deploymentRef": "#{p0} {p1} · {p2}"
+  "deploymentRef": "#{p0} {p1} · {p2}",
+  "environment": "Environment",
+  "editEnvironment": "Edit environment",
+  "openLiveUrl": "Open live URL",
+  "copyUrl": "Copy URL",
+  "noDeploymentsYet": "No deployments yet",
+  "userLists": "User lists",
+  "newList": "New list",
+  "noFeatureFlags": "No feature flags",
+  "theFlagIsRemovedFromEvery": "The flag is removed from every environment.",
+  "noUserLists": "No user lists",
+  "flagStrategiesUsingItStopMatching": "Flag strategies using it stop matching.",
+  "userIds": "User IDs",
+  "userListSummary": "{p0} {p1} · {p2}",
+  "userSingular": "user",
+  "userPlural": "users"
 }

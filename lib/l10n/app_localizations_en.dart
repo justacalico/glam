@@ -1464,4 +1464,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String deploymentRef(Object p0, Object p1, Object p2) {
     return '#$p0 $p1 · $p2';
   }
+
+  @override
+  String get environment => 'Environment';
+
+  @override
+  String get editEnvironment => 'Edit environment';
+
+  @override
+  String get openLiveUrl => 'Open live URL';
+
+  @override
+  String get copyUrl => 'Copy URL';
+
+  @override
+  String get noDeploymentsYet => 'No deployments yet';
+
+  @override
+  String get userLists => 'User lists';
+
+  @override
+  String get newList => 'New list';
+
+  @override
+  String get noFeatureFlags => 'No feature flags';
+
+  @override
+  String get theFlagIsRemovedFromEvery =>
+      'The flag is removed from every environment.';
+
+  @override
+  String get noUserLists => 'No user lists';
+
+  @override
+  String get flagStrategiesUsingItStopMatching =>
+      'Flag strategies using it stop matching.';
+
+  @override
+  String get userIds => 'User IDs';
+
+  @override
+  String userListSummary(Object p0, Object p1, Object p2) {
+    return '$p0 $p1 · $p2';
+  }
+
+  @override
+  String get userSingular => 'user';
+
+  @override
+  String get userPlural => 'users';
 }

@@ -10,6 +10,7 @@ import 'package:glam/src/core/widgets/empty_state.dart';
 import 'package:glam/src/features/environments/application/environments_providers.dart';
 import 'package:glam/src/features/environments/domain/feature_flag.dart';
 import 'package:glam/src/features/environments/domain/feature_flag_user_list.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 enum _FlagsView { flags, userLists }
 
@@ -42,14 +43,14 @@ class _FeatureFlagsTabState extends ConsumerState<FeatureFlagsTab> {
             children: [
               Expanded(
                 child: SegmentedButton<_FlagsView>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: _FlagsView.flags,
-                      label: Text('Flags'),
+                      label: Text(context.l10n.tabFlags),
                     ),
                     ButtonSegment(
                       value: _FlagsView.userLists,
-                      label: Text('User lists'),
+                      label: Text(context.l10n.userLists),
                     ),
                   ],
                   selected: {_view},
@@ -59,7 +60,7 @@ class _FeatureFlagsTabState extends ConsumerState<FeatureFlagsTab> {
               if (_view == _FlagsView.userLists)
                 TextButton.icon(
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('New list'),
+                  label: Text(context.l10n.newList),
                   onPressed: () => _editUserList(context, null),
                 ),
             ],
@@ -124,9 +125,9 @@ class _FlagsList extends ConsumerWidget {
       value: flags,
       onRetry: () => ref.invalidate(featureFlagsProvider(projectId)),
       data: (items) => items.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.flag_outlined,
-              title: 'No feature flags',
+              title: context.l10n.noFeatureFlags,
             )
           : RefreshIndicator(
               onRefresh: () async =>
@@ -174,16 +175,16 @@ class _FlagsList extends ConsumerWidget {
     final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${flag.name}?'),
-        content: const Text('The flag is removed from every environment.'),
+        title: Text(context.l10n.deleteNamedConfirm(flag.name)),
+        content: Text(context.l10n.theFlagIsRemovedFromEvery),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -243,7 +244,7 @@ class _FlagTile extends StatelessWidget {
         children: [
           Switch(value: flag.active, onChanged: onToggle),
           IconButton(
-            tooltip: 'Delete',
+            tooltip: context.l10n.actionDelete,
             icon: const Icon(Icons.delete_outline, size: 18),
             onPressed: onDelete,
           ),
@@ -268,7 +269,10 @@ class _UserLists extends ConsumerWidget {
       value: lists,
       onRetry: () => ref.invalidate(featureFlagUserListsProvider(projectId)),
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.group_outlined, title: 'No user lists')
+          ? EmptyState(
+              icon: Icons.group_outlined,
+              title: context.l10n.noUserLists,
+            )
           : RefreshIndicator(
               onRefresh: () async =>
                   ref.invalidate(featureFlagUserListsProvider(projectId)),
@@ -295,16 +299,16 @@ class _UserLists extends ConsumerWidget {
     final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${list.name}?'),
-        content: const Text('Flag strategies using it stop matching.'),
+        title: Text(context.l10n.deleteNamedConfirm(list.name)),
+        content: Text(context.l10n.flagStrategiesUsingItStopMatching),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(context.l10n.actionDelete),
           ),
         ],
       ),
@@ -350,15 +354,22 @@ class _UserListTile extends StatelessWidget {
       leading: Icon(Icons.group_outlined, size: 20, color: colors.inkFaint),
       title: Text(list.name, style: theme.textTheme.bodyMedium),
       subtitle: Text(
-        '$count ${count == 1 ? 'user' : 'users'} · ${list.userXids}',
+        context.l10n.userListSummary(
+          count,
+          count == 1 ? context.l10n.userSingular : context.l10n.userPlural,
+          list.userXids,
+        ),
         style: theme.textTheme.bodySmall?.copyWith(color: colors.inkFaint),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: PopupMenuButton<String>(
-        itemBuilder: (_) => const [
-          PopupMenuItem(value: 'edit', child: Text('Edit')),
-          PopupMenuItem(value: 'delete', child: Text('Delete')),
+        itemBuilder: (_) => [
+          PopupMenuItem(value: 'edit', child: Text(context.l10n.actionEdit)),
+          PopupMenuItem(
+            value: 'delete',
+            child: Text(context.l10n.actionDelete),
+          ),
         ],
         onSelected: (v) => v == 'edit' ? onEdit() : onDelete(),
       ),
@@ -393,7 +404,7 @@ Future<_UserListDraft?> _userListForm(
                 controller: name,
                 autofocus: true,
                 decoration: InputDecoration(
-                  labelText: 'Name',
+                  labelText: context.l10n.fieldName,
                   errorText: nameError ? 'Required' : null,
                 ),
                 onChanged: (_) {
@@ -405,8 +416,8 @@ Future<_UserListDraft?> _userListForm(
               const SizedBox(height: Insets.sm),
               TextField(
                 controller: xids,
-                decoration: const InputDecoration(
-                  labelText: 'User IDs',
+                decoration: InputDecoration(
+                  labelText: context.l10n.userIds,
                   hintText: '123, 456',
                 ),
               ),
@@ -416,7 +427,7 @@ Future<_UserListDraft?> _userListForm(
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -426,7 +437,7 @@ Future<_UserListDraft?> _userListForm(
               }
               Navigator.pop(context, true);
             },
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
