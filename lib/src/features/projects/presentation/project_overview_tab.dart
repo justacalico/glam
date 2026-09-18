@@ -168,6 +168,7 @@ class _InfoCard extends StatelessWidget {
                     child: Text(
                       rows[i].$3,
                       style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
