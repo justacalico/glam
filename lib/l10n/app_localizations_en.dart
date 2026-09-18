@@ -2446,4 +2446,81 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteArtifactsBody =>
       'Locked artifacts may remain. Requires a maintainer role.';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String joinedP0(Object p0) {
+    return 'Joined $p0';
+  }
+
+  @override
+  String p0Followers(Object p0) {
+    return '$p0 followers';
+  }
+
+  @override
+  String p0Following(Object p0) {
+    return '$p0 following';
+  }
+
+  @override
+  String get unfollow => 'Unfollow';
+
+  @override
+  String get follow => 'Follow';
+
+  @override
+  String p0ContributionsInTheLastYear(Object p0) {
+    return '$p0 contributions in the last year';
+  }
+
+  @override
+  String get statusEmoji => 'Status emoji';
+
+  @override
+  String get eG => 'e.g. 🌴';
+
+  @override
+  String get statusMessage => 'Status message';
+
+  @override
+  String get memberships => 'Memberships';
+
+  @override
+  String get fieldPronouns => 'Pronouns';
+
+  @override
+  String get fieldJobTitle => 'Job title';
+
+  @override
+  String get fieldOrganization => 'Organization';
+
+  @override
+  String get fieldLocation => 'Location';
+
+  @override
+  String get fieldPublicEmail => 'Public email';
+
+  @override
+  String get fieldWebsite => 'Website';
+
+  @override
+  String get fieldTwitter => 'Twitter';
+
+  @override
+  String get fieldLinkedin => 'LinkedIn';
+
+  @override
+  String get fieldBio => 'Bio';
+
+  @override
+  String get followers => 'Followers';
+
+  @override
+  String get following => 'Following';
 }

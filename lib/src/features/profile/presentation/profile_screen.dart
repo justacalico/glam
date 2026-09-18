@@ -22,6 +22,7 @@ import 'package:glam/src/features/profile/application/profile_providers.dart';
 import 'package:glam/src/features/projects/domain/project.dart';
 import 'package:glam/src/features/projects/presentation/project_tile.dart';
 import 'package:glam/src/core/utils/l10n.dart';
+import 'package:glam/l10n/app_localizations.dart';
 
 /// Profile page for the current user or any user (`/users/:id`).
 class ProfileScreen extends ConsumerWidget {
@@ -36,11 +37,11 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(context.l10n.profile),
         actions: [
           if (isSelf && user.value != null)
             IconButton(
-              tooltip: 'Edit profile',
+              tooltip: context.l10n.editProfile,
               icon: const Icon(Icons.edit_outlined, size: 20),
               onPressed: () => unawaited(
                 showModalBottomSheet(
@@ -53,7 +54,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           if (user.value?.webUrl != null)
             IconButton(
-              tooltip: 'Open in browser',
+              tooltip: context.l10n.actionOpenBrowser,
               icon: const Icon(Icons.open_in_new, size: 20),
               onPressed: () => unawaited(launchExternal(user.value!.webUrl!)),
             ),
@@ -67,11 +68,11 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             children: [
               _ProfileHeader(user: u, isSelf: isSelf),
-              const TabBar(
+              TabBar(
                 tabs: [
-                  Tab(text: 'Projects'),
-                  Tab(text: 'Starred'),
-                  Tab(text: 'Activity'),
+                  Tab(text: context.l10n.projectsTitle),
+                  Tab(text: context.l10n.snackStarred),
+                  Tab(text: context.l10n.activityTitle),
                 ],
               ),
               Expanded(
@@ -181,19 +182,19 @@ class _ProfileHeader extends StatelessWidget {
               if (user.createdAt != null)
                 _Meta(
                   icon: Icons.cake_outlined,
-                  text: 'Joined ${Format.date(user.createdAt)}',
+                  text: context.l10n.joinedP0(Format.date(user.createdAt)),
                 ),
               if (user.followers != null)
                 _Meta(
                   icon: Icons.people_outline,
-                  text: '${user.followers} followers',
-                  onTap: () => _usersSheet(context, user.id, 'Followers'),
+                  text: context.l10n.p0Followers('${user.followers}'),
+                  onTap: () => _usersSheet(context, user.id, followers: true),
                 ),
               if (user.following != null)
                 _Meta(
                   icon: Icons.person_add_outlined,
-                  text: '${user.following} following',
-                  onTap: () => _usersSheet(context, user.id, 'Following'),
+                  text: context.l10n.p0Following('${user.following}'),
+                  onTap: () => _usersSheet(context, user.id, followers: false),
                 ),
             ],
           ),
@@ -215,12 +216,16 @@ class _ProfileHeader extends StatelessWidget {
     );
   }
 
-  void _usersSheet(BuildContext context, int userId, String title) {
+  void _usersSheet(
+    BuildContext context,
+    int userId, {
+    required bool followers,
+  }) {
     unawaited(
       UsersSheet.show(
         context,
-        title: title,
-        provider: title == 'Followers'
+        title: followers ? context.l10n.followers : context.l10n.following,
+        provider: followers
             ? userFollowersProvider(userId)
             : userFollowingProvider(userId),
       ),
@@ -268,7 +273,7 @@ class _FollowButton extends ConsumerWidget {
         following ? Icons.person_remove_outlined : Icons.person_add_outlined,
         size: 16,
       ),
-      label: Text(following ? 'Unfollow' : 'Follow'),
+      label: Text(following ? context.l10n.unfollow : context.l10n.follow),
       onPressed: followed.value == null
           ? null
           : () => _toggle(context, ref, following),
@@ -326,7 +331,7 @@ class _ContributionHeatmap extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$total contributions in the last year',
+              context.l10n.p0ContributionsInTheLastYear(total),
               style: theme.textTheme.labelMedium,
             ),
             const SizedBox(height: Insets.sm),
@@ -405,7 +410,7 @@ class _EditProfileSheet extends ConsumerStatefulWidget {
 
 class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   late final Map<String, TextEditingController> _fields = {
-    for (final e in _entries)
+    for (final e in _entries(context.l10n))
       e.$1: TextEditingController(text: e.$2(widget.user) ?? ''),
   };
   late final TextEditingController _statusEmoji = TextEditingController(
@@ -416,17 +421,19 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   );
   bool _busy = false;
 
-  static const List<(String, String? Function(GitLabUser), String)> _entries = [
-    ('name', _name, 'Name'),
-    ('pronouns', _pronouns, 'Pronouns'),
-    ('job_title', _jobTitle, 'Job title'),
-    ('organization', _organization, 'Organization'),
-    ('location', _location, 'Location'),
-    ('public_email', _publicEmail, 'Public email'),
-    ('website_url', _websiteUrl, 'Website'),
-    ('twitter', _twitter, 'Twitter'),
-    ('linkedin', _linkedin, 'LinkedIn'),
-    ('bio', _bio, 'Bio'),
+  static List<(String, String? Function(GitLabUser), String)> _entries(
+    AppLocalizations l10n,
+  ) => [
+    ('name', _name, l10n.fieldName),
+    ('pronouns', _pronouns, l10n.fieldPronouns),
+    ('job_title', _jobTitle, l10n.fieldJobTitle),
+    ('organization', _organization, l10n.fieldOrganization),
+    ('location', _location, l10n.fieldLocation),
+    ('public_email', _publicEmail, l10n.fieldPublicEmail),
+    ('website_url', _websiteUrl, l10n.fieldWebsite),
+    ('twitter', _twitter, l10n.fieldTwitter),
+    ('linkedin', _linkedin, l10n.fieldLinkedin),
+    ('bio', _bio, l10n.fieldBio),
   ];
 
   static String? _name(GitLabUser u) => u.name;
@@ -510,7 +517,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Edit profile',
+                context.l10n.editProfile,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: Insets.md),
@@ -520,9 +527,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     flex: 2,
                     child: TextField(
                       controller: _statusEmoji,
-                      decoration: const InputDecoration(
-                        labelText: 'Status emoji',
-                        hintText: 'e.g. 🌴',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.statusEmoji,
+                        hintText: context.l10n.eG,
                       ),
                     ),
                   ),
@@ -531,14 +538,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     flex: 5,
                     child: TextField(
                       controller: _statusMessage,
-                      decoration: const InputDecoration(
-                        labelText: 'Status message',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.statusMessage,
                       ),
                     ),
                   ),
                 ],
               ),
-              for (final e in _entries)
+              for (final e in _entries(context.l10n))
                 Padding(
                   padding: const EdgeInsets.only(top: Insets.sm),
                   child: TextField(
@@ -552,7 +559,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                 children: [
                   TextButton(
                     onPressed: _busy ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(context.l10n.actionCancel),
                   ),
                   const SizedBox(width: Insets.sm),
                   FilledButton(
@@ -562,7 +569,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                             dimension: 16,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Save'),
+                        : Text(context.l10n.actionSave),
                   ),
                 ],
               ),
@@ -587,7 +594,10 @@ class _UserProjects extends ConsumerWidget {
       value: projects,
       onRetry: () => ref.invalidate(provider),
       data: (items) => items.isEmpty
-          ? const EmptyState(icon: Icons.folder_outlined, title: 'No projects')
+          ? EmptyState(
+              icon: Icons.folder_outlined,
+              title: context.l10n.projectsEmpty,
+            )
           : ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: Insets.sm),
               itemCount: items.length,
@@ -622,7 +632,7 @@ class _MembershipsSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Memberships', style: theme.textTheme.titleMedium),
+            Text(context.l10n.memberships, style: theme.textTheme.titleMedium),
             const SizedBox(height: Insets.sm),
             for (final m in items)
               ListTile(
@@ -640,7 +650,7 @@ class _MembershipsSection extends ConsumerWidget {
                   [
                     context.l10n.accessLevelName(m.accessLevel),
                     if (m.expiresAt != null)
-                      'expires ${Format.date(m.expiresAt)}',
+                      context.l10n.expiresDate(Format.date(m.expiresAt!)),
                   ].join(' · '),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.inkFaint,

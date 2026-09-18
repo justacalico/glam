@@ -4645,6 +4645,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Locked artifacts may remain. Requires a maintainer role.'**
   String get deleteArtifactsBody;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfile;
+
+  /// No description provided for @joinedP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {p0}'**
+  String joinedP0(Object p0);
+
+  /// No description provided for @p0Followers.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} followers'**
+  String p0Followers(Object p0);
+
+  /// No description provided for @p0Following.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} following'**
+  String p0Following(Object p0);
+
+  /// No description provided for @unfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get unfollow;
+
+  /// No description provided for @follow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get follow;
+
+  /// No description provided for @p0ContributionsInTheLastYear.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} contributions in the last year'**
+  String p0ContributionsInTheLastYear(Object p0);
+
+  /// No description provided for @statusEmoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Status emoji'**
+  String get statusEmoji;
+
+  /// No description provided for @eG.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 🌴'**
+  String get eG;
+
+  /// No description provided for @statusMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Status message'**
+  String get statusMessage;
+
+  /// No description provided for @memberships.
+  ///
+  /// In en, this message translates to:
+  /// **'Memberships'**
+  String get memberships;
+
+  /// No description provided for @fieldPronouns.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronouns'**
+  String get fieldPronouns;
+
+  /// No description provided for @fieldJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get fieldJobTitle;
+
+  /// No description provided for @fieldOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get fieldOrganization;
+
+  /// No description provided for @fieldLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get fieldLocation;
+
+  /// No description provided for @fieldPublicEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Public email'**
+  String get fieldPublicEmail;
+
+  /// No description provided for @fieldWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get fieldWebsite;
+
+  /// No description provided for @fieldTwitter.
+  ///
+  /// In en, this message translates to:
+  /// **'Twitter'**
+  String get fieldTwitter;
+
+  /// No description provided for @fieldLinkedin.
+  ///
+  /// In en, this message translates to:
+  /// **'LinkedIn'**
+  String get fieldLinkedin;
+
+  /// No description provided for @fieldBio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get fieldBio;
+
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get followers;
+
+  /// No description provided for @following.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get following;
 }
 
 class _AppLocalizationsDelegate

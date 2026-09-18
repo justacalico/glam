@@ -2413,4 +2413,81 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteArtifactsBody => '锁定的产物可能保留。需要维护者权限。';
+
+  @override
+  String get profile => '个人资料';
+
+  @override
+  String get editProfile => '编辑资料';
+
+  @override
+  String joinedP0(Object p0) {
+    return '$p0 加入';
+  }
+
+  @override
+  String p0Followers(Object p0) {
+    return '$p0 位关注者';
+  }
+
+  @override
+  String p0Following(Object p0) {
+    return '正在关注 $p0 人';
+  }
+
+  @override
+  String get unfollow => '取消关注';
+
+  @override
+  String get follow => '关注';
+
+  @override
+  String p0ContributionsInTheLastYear(Object p0) {
+    return '过去一年 $p0 次贡献';
+  }
+
+  @override
+  String get statusEmoji => '状态表情';
+
+  @override
+  String get eG => '例如 🌴';
+
+  @override
+  String get statusMessage => '状态消息';
+
+  @override
+  String get memberships => '成员关系';
+
+  @override
+  String get fieldPronouns => '代称';
+
+  @override
+  String get fieldJobTitle => '职位';
+
+  @override
+  String get fieldOrganization => '组织';
+
+  @override
+  String get fieldLocation => '位置';
+
+  @override
+  String get fieldPublicEmail => '公开邮箱';
+
+  @override
+  String get fieldWebsite => '网站';
+
+  @override
+  String get fieldTwitter => 'Twitter';
+
+  @override
+  String get fieldLinkedin => 'LinkedIn';
+
+  @override
+  String get fieldBio => '简介';
+
+  @override
+  String get followers => '关注者';
+
+  @override
+  String get following => '正在关注';
 }
