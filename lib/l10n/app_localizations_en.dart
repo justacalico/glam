@@ -16,4 +16,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSystem => 'System';
+
+  @override
+  String get actionAdd => 'Add';
+
+  @override
+  String get actionCancel => 'Cancel';
+
+  @override
+  String get actionClose => 'Close';
+
+  @override
+  String get actionConfirm => 'Confirm';
+
+  @override
+  String get actionCopy => 'Copy';
+
+  @override
+  String get actionCopied => 'Copied';
+
+  @override
+  String get actionCreate => 'Create';
+
+  @override
+  String get actionDelete => 'Delete';
+
+  @override
+  String get actionDone => 'Done';
+
+  @override
+  String get actionEdit => 'Edit';
+
+  @override
+  String get actionOk => 'OK';
+
+  @override
+  String get actionRefresh => 'Refresh';
+
+  @override
+  String get actionRetry => 'Retry';
+
+  @override
+  String get actionRevoke => 'Revoke';
+
+  @override
+  String get actionSave => 'Save';
+
+  @override
+  String get actionSearch => 'Search';
+
+  @override
+  String get actionSignOut => 'Sign out';
+
+  @override
+  String get errorRequired => 'Required';
+
+  @override
+  String get errorGeneric => 'Something went wrong';
 }
