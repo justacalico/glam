@@ -1758,4 +1758,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeLinkTooltip => 'Remove link';
+
+  @override
+  String get markdownSupported => 'Markdown supported';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get confidential => 'Confidential';
+
+  @override
+  String get onlyVisibleToMembersAndAssignees =>
+      'Only visible to members and assignees';
+
+  @override
+  String get createIssue => 'Create issue';
 }

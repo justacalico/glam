@@ -1735,4 +1735,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeLinkTooltip => '移除链接';
+
+  @override
+  String get markdownSupported => '支持 Markdown';
+
+  @override
+  String get weight => '权重';
+
+  @override
+  String get confidential => '保密';
+
+  @override
+  String get onlyVisibleToMembersAndAssignees => '仅成员和负责人可见';
+
+  @override
+  String get createIssue => '创建议题';
 }

@@ -3421,6 +3421,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove link'**
   String get removeLinkTooltip;
+
+  /// No description provided for @markdownSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Markdown supported'**
+  String get markdownSupported;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @confidential.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidential'**
+  String get confidential;
+
+  /// No description provided for @onlyVisibleToMembersAndAssignees.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible to members and assignees'**
+  String get onlyVisibleToMembersAndAssignees;
+
+  /// No description provided for @createIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Create issue'**
+  String get createIssue;
 }
 
 class _AppLocalizationsDelegate

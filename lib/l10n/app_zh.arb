@@ -553,5 +553,10 @@
   "unlinkP0FromThisIssue": "从此议题取消链接 #{p0}。",
   "relatedMergeRequests": "相关合并请求",
   "willBeClosedBy": "将被关闭",
-  "noRelatedMergeRequests": "没有相关合并请求"
+  "noRelatedMergeRequests": "没有相关合并请求",
+  "markdownSupported": "支持 Markdown",
+  "weight": "权重",
+  "confidential": "保密",
+  "onlyVisibleToMembersAndAssignees": "仅成员和负责人可见",
+  "createIssue": "创建议题"
 }

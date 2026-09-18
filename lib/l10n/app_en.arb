@@ -553,5 +553,10 @@
   "moreCount": "+{p0}",
   "linkSummary": "{p0} · {p1}",
   "issueIidField": "Issue #",
-  "removeLinkTooltip": "Remove link"
+  "removeLinkTooltip": "Remove link",
+  "markdownSupported": "Markdown supported",
+  "weight": "Weight",
+  "confidential": "Confidential",
+  "onlyVisibleToMembersAndAssignees": "Only visible to members and assignees",
+  "createIssue": "Create issue"
 }
