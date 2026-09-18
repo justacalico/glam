@@ -3534,4 +3534,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get branchFilter => '分支';
+
+  @override
+  String get todoPending => '待处理';
+
+  @override
+  String get todoDone => '已完成';
+
+  @override
+  String get targetIssue => '议题';
+
+  @override
+  String get targetMr => '合并请求';
+
+  @override
+  String get targetEpic => '史诗';
 }

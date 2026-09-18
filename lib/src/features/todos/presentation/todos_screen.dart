@@ -32,7 +32,11 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
     final filter = (state: _state, action: null, type: _type);
     final state = ref.watch(todosProvider(filter));
     final notifier = ref.read(todosProvider(filter).notifier);
-    const states = {'pending': 'Pending', 'done': 'Done', null: 'All'};
+    final states = {
+      'pending': context.l10n.todoPending,
+      'done': context.l10n.todoDone,
+      null: context.l10n.stateAll,
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -69,9 +73,15 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                 ],
                 const Spacer(),
                 FilterMenu(
-                  title: 'type',
+                  title: context.l10n.type,
                   current: _type,
                   options: const ['Issue', 'MergeRequest', 'Commit', 'Epic'],
+                  labels: {
+                    'Issue': context.l10n.targetIssue,
+                    'MergeRequest': context.l10n.targetMr,
+                    'Commit': context.l10n.commit,
+                    'Epic': context.l10n.targetEpic,
+                  },
                   onSelect: (t) => setState(() => _type = t),
                 ),
               ],

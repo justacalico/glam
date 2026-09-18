@@ -1094,5 +1094,10 @@
   "mrScopeCreated": "由我创建",
   "mrScopeReview": "请我评审",
   "scopeFilter": "范围",
-  "branchFilter": "分支"
+  "branchFilter": "分支",
+  "todoPending": "待处理",
+  "todoDone": "已完成",
+  "targetIssue": "议题",
+  "targetMr": "合并请求",
+  "targetEpic": "史诗"
 }

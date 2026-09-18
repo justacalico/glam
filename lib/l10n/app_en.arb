@@ -1094,5 +1094,10 @@
   "mrScopeCreated": "Created by me",
   "mrScopeReview": "Review requested",
   "scopeFilter": "Scope",
-  "branchFilter": "Branch"
+  "branchFilter": "Branch",
+  "todoPending": "Pending",
+  "todoDone": "Done",
+  "targetIssue": "Issue",
+  "targetMr": "Merge request",
+  "targetEpic": "Epic"
 }

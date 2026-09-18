@@ -6667,6 +6667,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Branch'**
   String get branchFilter;
+
+  /// No description provided for @todoPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get todoPending;
+
+  /// No description provided for @todoDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get todoDone;
+
+  /// No description provided for @targetIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue'**
+  String get targetIssue;
+
+  /// No description provided for @targetMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge request'**
+  String get targetMr;
+
+  /// No description provided for @targetEpic.
+  ///
+  /// In en, this message translates to:
+  /// **'Epic'**
+  String get targetEpic;
 }
 
 class _AppLocalizationsDelegate

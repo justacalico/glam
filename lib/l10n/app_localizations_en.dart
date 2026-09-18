@@ -3576,4 +3576,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get branchFilter => 'Branch';
+
+  @override
+  String get todoPending => 'Pending';
+
+  @override
+  String get todoDone => 'Done';
+
+  @override
+  String get targetIssue => 'Issue';
+
+  @override
+  String get targetMr => 'Merge request';
+
+  @override
+  String get targetEpic => 'Epic';
 }
