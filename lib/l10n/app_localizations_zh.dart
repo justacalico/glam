@@ -633,4 +633,99 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get overviewForkedFrom => '派生自';
+
+  @override
+  String get tabOverview => '概览';
+
+  @override
+  String get tabPipelines => '流水线';
+
+  @override
+  String get tabEnvironments => '环境';
+
+  @override
+  String get tabFlags => '功能开关';
+
+  @override
+  String get tabAlerts => '告警';
+
+  @override
+  String get tabMembers => '成员';
+
+  @override
+  String get tabForks => '派生';
+
+  @override
+  String get tabContributors => '贡献者';
+
+  @override
+  String get tabPackages => '软件包';
+
+  @override
+  String get tabRegistry => '注册表';
+
+  @override
+  String get tabWiki => 'Wiki';
+
+  @override
+  String get tabBoards => '看板';
+
+  @override
+  String get tabMilestones => '里程碑';
+
+  @override
+  String get tabLabels => '标签';
+
+  @override
+  String get tabFiles => '文件';
+
+  @override
+  String get tabCommits => '提交';
+
+  @override
+  String get tabBranches => '分支';
+
+  @override
+  String get tabTags => '标记';
+
+  @override
+  String get tabReleases => '发布';
+
+  @override
+  String get starrersTitle => '加星用户';
+
+  @override
+  String get actionStar => '加星';
+
+  @override
+  String get actionFork => '派生';
+
+  @override
+  String get actionCopyCloneUrl => '复制克隆地址';
+
+  @override
+  String get actionOpenBrowser => '在浏览器打开';
+
+  @override
+  String get snackStarred => '已加星';
+
+  @override
+  String snackForked(String path) {
+    return '已派生到 $path';
+  }
+
+  @override
+  String get snackForkFailed => '派生项目失败';
+
+  @override
+  String get snackCloneCopied => '克隆地址已复制';
+
+  @override
+  String get contributorsEmpty => '暂无贡献者';
+
+  @override
+  String get latestPipeline => '最新流水线';
+
+  @override
+  String get forksEmpty => '暂无派生';
 }

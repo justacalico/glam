@@ -252,5 +252,43 @@
         "type": "String"
       }
     }
+  },
+  "tabOverview": "Overview",
+  "tabPipelines": "Pipelines",
+  "tabEnvironments": "Environments",
+  "tabFlags": "Flags",
+  "tabAlerts": "Alerts",
+  "tabMembers": "Members",
+  "tabForks": "Forks",
+  "tabContributors": "Contributors",
+  "tabPackages": "Packages",
+  "tabRegistry": "Registry",
+  "tabWiki": "Wiki",
+  "tabBoards": "Boards",
+  "tabMilestones": "Milestones",
+  "tabLabels": "Labels",
+  "tabFiles": "Files",
+  "tabCommits": "Commits",
+  "tabBranches": "Branches",
+  "tabTags": "Tags",
+  "tabReleases": "Releases",
+  "starrersTitle": "Starrers",
+  "actionStar": "Star",
+  "actionFork": "Fork",
+  "actionCopyCloneUrl": "Copy clone URL",
+  "actionOpenBrowser": "Open in browser",
+  "snackStarred": "Starred",
+  "snackForked": "Forked to {path}",
+  "snackForkFailed": "Could not fork the project",
+  "snackCloneCopied": "Clone URL copied",
+  "contributorsEmpty": "No contributors",
+  "latestPipeline": "Latest pipeline",
+  "forksEmpty": "No forks yet",
+  "@snackForked": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
   }
 }

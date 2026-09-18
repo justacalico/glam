@@ -1321,6 +1321,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forked from'**
   String get overviewForkedFrom;
+
+  /// No description provided for @tabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get tabOverview;
+
+  /// No description provided for @tabPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipelines'**
+  String get tabPipelines;
+
+  /// No description provided for @tabEnvironments.
+  ///
+  /// In en, this message translates to:
+  /// **'Environments'**
+  String get tabEnvironments;
+
+  /// No description provided for @tabFlags.
+  ///
+  /// In en, this message translates to:
+  /// **'Flags'**
+  String get tabFlags;
+
+  /// No description provided for @tabAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get tabAlerts;
+
+  /// No description provided for @tabMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get tabMembers;
+
+  /// No description provided for @tabForks.
+  ///
+  /// In en, this message translates to:
+  /// **'Forks'**
+  String get tabForks;
+
+  /// No description provided for @tabContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors'**
+  String get tabContributors;
+
+  /// No description provided for @tabPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get tabPackages;
+
+  /// No description provided for @tabRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Registry'**
+  String get tabRegistry;
+
+  /// No description provided for @tabWiki.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get tabWiki;
+
+  /// No description provided for @tabBoards.
+  ///
+  /// In en, this message translates to:
+  /// **'Boards'**
+  String get tabBoards;
+
+  /// No description provided for @tabMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestones'**
+  String get tabMilestones;
+
+  /// No description provided for @tabLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get tabLabels;
+
+  /// No description provided for @tabFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get tabFiles;
+
+  /// No description provided for @tabCommits.
+  ///
+  /// In en, this message translates to:
+  /// **'Commits'**
+  String get tabCommits;
+
+  /// No description provided for @tabBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get tabBranches;
+
+  /// No description provided for @tabTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tabTags;
+
+  /// No description provided for @tabReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'Releases'**
+  String get tabReleases;
+
+  /// No description provided for @starrersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Starrers'**
+  String get starrersTitle;
+
+  /// No description provided for @actionStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Star'**
+  String get actionStar;
+
+  /// No description provided for @actionFork.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork'**
+  String get actionFork;
+
+  /// No description provided for @actionCopyCloneUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy clone URL'**
+  String get actionCopyCloneUrl;
+
+  /// No description provided for @actionOpenBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in browser'**
+  String get actionOpenBrowser;
+
+  /// No description provided for @snackStarred.
+  ///
+  /// In en, this message translates to:
+  /// **'Starred'**
+  String get snackStarred;
+
+  /// No description provided for @snackForked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forked to {path}'**
+  String snackForked(String path);
+
+  /// No description provided for @snackForkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not fork the project'**
+  String get snackForkFailed;
+
+  /// No description provided for @snackCloneCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Clone URL copied'**
+  String get snackCloneCopied;
+
+  /// No description provided for @contributorsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contributors'**
+  String get contributorsEmpty;
+
+  /// No description provided for @latestPipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest pipeline'**
+  String get latestPipeline;
+
+  /// No description provided for @forksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No forks yet'**
+  String get forksEmpty;
 }
 
 class _AppLocalizationsDelegate

@@ -635,4 +635,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get overviewForkedFrom => 'Forked from';
+
+  @override
+  String get tabOverview => 'Overview';
+
+  @override
+  String get tabPipelines => 'Pipelines';
+
+  @override
+  String get tabEnvironments => 'Environments';
+
+  @override
+  String get tabFlags => 'Flags';
+
+  @override
+  String get tabAlerts => 'Alerts';
+
+  @override
+  String get tabMembers => 'Members';
+
+  @override
+  String get tabForks => 'Forks';
+
+  @override
+  String get tabContributors => 'Contributors';
+
+  @override
+  String get tabPackages => 'Packages';
+
+  @override
+  String get tabRegistry => 'Registry';
+
+  @override
+  String get tabWiki => 'Wiki';
+
+  @override
+  String get tabBoards => 'Boards';
+
+  @override
+  String get tabMilestones => 'Milestones';
+
+  @override
+  String get tabLabels => 'Labels';
+
+  @override
+  String get tabFiles => 'Files';
+
+  @override
+  String get tabCommits => 'Commits';
+
+  @override
+  String get tabBranches => 'Branches';
+
+  @override
+  String get tabTags => 'Tags';
+
+  @override
+  String get tabReleases => 'Releases';
+
+  @override
+  String get starrersTitle => 'Starrers';
+
+  @override
+  String get actionStar => 'Star';
+
+  @override
+  String get actionFork => 'Fork';
+
+  @override
+  String get actionCopyCloneUrl => 'Copy clone URL';
+
+  @override
+  String get actionOpenBrowser => 'Open in browser';
+
+  @override
+  String get snackStarred => 'Starred';
+
+  @override
+  String snackForked(String path) {
+    return 'Forked to $path';
+  }
+
+  @override
+  String get snackForkFailed => 'Could not fork the project';
+
+  @override
+  String get snackCloneCopied => 'Clone URL copied';
+
+  @override
+  String get contributorsEmpty => 'No contributors';
+
+  @override
+  String get latestPipeline => 'Latest pipeline';
+
+  @override
+  String get forksEmpty => 'No forks yet';
 }
