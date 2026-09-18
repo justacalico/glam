@@ -3224,4 +3224,61 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get templateDefault => '默认';
+
+  @override
+  String get exportReady => '可下载';
+
+  @override
+  String get exportQueued => '排队中';
+
+  @override
+  String get exportRunning => '导出中';
+
+  @override
+  String get exportRegenerating => '重新生成中';
+
+  @override
+  String get exportFailed => '导出失败';
+
+  @override
+  String get exportNone => '暂无导出';
+
+  @override
+  String get runnerOnline => '在线';
+
+  @override
+  String get runnerOffline => '离线';
+
+  @override
+  String get runnerStale => '过期';
+
+  @override
+  String get runnerNeverContacted => '从未连接';
+
+  @override
+  String get statusUnknown => '未知';
+
+  @override
+  String get hookEventPush => '推送';
+
+  @override
+  String get hookEventTagPush => '标签推送';
+
+  @override
+  String get hookEventIssues => '议题';
+
+  @override
+  String get hookEventComments => '评论';
+
+  @override
+  String get hookEventMrs => '合并请求';
+
+  @override
+  String get hookEventPipeline => '流水线';
+
+  @override
+  String get hookEventJob => '作业';
+
+  @override
+  String get hookEventSubgroup => '子群组';
 }

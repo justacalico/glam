@@ -33,7 +33,7 @@ class RunnerTile extends StatelessWidget {
       ),
       subtitle: Text(
         [
-          runner.statusLabel,
+          context.l10n.runnerStatus(runner.status),
           runner.typeLabel,
           if (runner.tagList.isNotEmpty) runner.tagList.join(', '),
         ].join(' · '),

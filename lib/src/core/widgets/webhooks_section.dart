@@ -183,7 +183,9 @@ class _HookTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12),
       ),
-      subtitle: Text(hook.eventLabels.join(', ')),
+      subtitle: Text(
+        hook.eventLabels.map(context.l10n.webhookEvent).join(', '),
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

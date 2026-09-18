@@ -69,3 +69,52 @@ extension AccessLevelL10n on AppLocalizations {
     _ => roleLevelOther(level),
   };
 }
+
+/// Export status labels keyed on the API status slug.
+extension ExportStatusL10n on AppLocalizations {
+  String exportStatus(String status) => switch (status) {
+    'finished' => exportReady,
+    'queued' => exportQueued,
+    'started' => exportRunning,
+    'regeneration_in_progress' => exportRegenerating,
+    'failed' => exportFailed,
+    _ => exportNone,
+  };
+}
+
+/// Runner status labels keyed on the API status slug.
+extension RunnerStatusL10n on AppLocalizations {
+  String runnerStatus(String status) => switch (status) {
+    'online' => runnerOnline,
+    'offline' => runnerOffline,
+    'stale' => runnerStale,
+    'never_contacted' => runnerNeverContacted,
+    _ => status.isEmpty ? statusUnknown : status,
+  };
+}
+
+/// Protected-branch/tag/environment access level labels.
+extension ProtectedLevelL10n on AppLocalizations {
+  String protectedLevel(int level) => switch (level) {
+    0 => noOne,
+    30 => developersMaintainers,
+    40 => maintainers,
+    60 => admins,
+    _ => roleLevelOther(level),
+  };
+}
+
+/// Webhook event labels keyed on the event slug.
+extension WebhookEventL10n on AppLocalizations {
+  String webhookEvent(String slug) => switch (slug) {
+    'push' => hookEventPush,
+    'tag push' => hookEventTagPush,
+    'issues' => hookEventIssues,
+    'comments' => hookEventComments,
+    'merge requests' => hookEventMrs,
+    'pipeline' => hookEventPipeline,
+    'job' => hookEventJob,
+    'subgroup' => hookEventSubgroup,
+    _ => slug,
+  };
+}

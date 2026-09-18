@@ -196,8 +196,10 @@ class _ProtectedBranchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final push = branch.pushLevels.map(ProtectedBranch.levelLabel).join(', ');
-    final merge = branch.mergeLevels.map(ProtectedBranch.levelLabel).join(', ');
+    final push = branch.pushLevels.map(context.l10n.protectedLevel).join(', ');
+    final merge = branch.mergeLevels
+        .map(context.l10n.protectedLevel)
+        .join(', ');
     return ListTile(
       dense: true,
       leading: Icon(
@@ -571,7 +573,7 @@ class _ProtectedEnvironmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deploy = env.deployLevels.map(ProtectedBranch.levelLabel).join(', ');
+    final deploy = env.deployLevels.map(context.l10n.protectedLevel).join(', ');
     return ListTile(
       dense: true,
       leading: const Icon(Icons.cloud_outlined, size: 18),

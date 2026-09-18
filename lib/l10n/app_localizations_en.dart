@@ -3265,4 +3265,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get templateDefault => 'Default';
+
+  @override
+  String get exportReady => 'Ready to download';
+
+  @override
+  String get exportQueued => 'Queued';
+
+  @override
+  String get exportRunning => 'Exporting';
+
+  @override
+  String get exportRegenerating => 'Regenerating';
+
+  @override
+  String get exportFailed => 'Export failed';
+
+  @override
+  String get exportNone => 'No export yet';
+
+  @override
+  String get runnerOnline => 'Online';
+
+  @override
+  String get runnerOffline => 'Offline';
+
+  @override
+  String get runnerStale => 'Stale';
+
+  @override
+  String get runnerNeverContacted => 'Never contacted';
+
+  @override
+  String get statusUnknown => 'Unknown';
+
+  @override
+  String get hookEventPush => 'push';
+
+  @override
+  String get hookEventTagPush => 'tag push';
+
+  @override
+  String get hookEventIssues => 'issues';
+
+  @override
+  String get hookEventComments => 'comments';
+
+  @override
+  String get hookEventMrs => 'merge requests';
+
+  @override
+  String get hookEventPipeline => 'pipeline';
+
+  @override
+  String get hookEventJob => 'job';
+
+  @override
+  String get hookEventSubgroup => 'subgroup';
 }

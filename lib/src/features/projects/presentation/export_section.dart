@@ -40,10 +40,11 @@ class ExportSection extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  status?.statusLabel ??
-                      (export.hasError
-                          ? context.l10n.loadStatusError
-                          : context.l10n.miscLoading),
+                  status != null
+                      ? context.l10n.exportStatus(status.status)
+                      : (export.hasError
+                            ? context.l10n.loadStatusError
+                            : context.l10n.miscLoading),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

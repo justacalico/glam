@@ -6079,6 +6079,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default'**
   String get templateDefault;
+
+  /// No description provided for @exportReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to download'**
+  String get exportReady;
+
+  /// No description provided for @exportQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get exportQueued;
+
+  /// No description provided for @exportRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting'**
+  String get exportRunning;
+
+  /// No description provided for @exportRegenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerating'**
+  String get exportRegenerating;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed'**
+  String get exportFailed;
+
+  /// No description provided for @exportNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No export yet'**
+  String get exportNone;
+
+  /// No description provided for @runnerOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get runnerOnline;
+
+  /// No description provided for @runnerOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get runnerOffline;
+
+  /// No description provided for @runnerStale.
+  ///
+  /// In en, this message translates to:
+  /// **'Stale'**
+  String get runnerStale;
+
+  /// No description provided for @runnerNeverContacted.
+  ///
+  /// In en, this message translates to:
+  /// **'Never contacted'**
+  String get runnerNeverContacted;
+
+  /// No description provided for @statusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get statusUnknown;
+
+  /// No description provided for @hookEventPush.
+  ///
+  /// In en, this message translates to:
+  /// **'push'**
+  String get hookEventPush;
+
+  /// No description provided for @hookEventTagPush.
+  ///
+  /// In en, this message translates to:
+  /// **'tag push'**
+  String get hookEventTagPush;
+
+  /// No description provided for @hookEventIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'issues'**
+  String get hookEventIssues;
+
+  /// No description provided for @hookEventComments.
+  ///
+  /// In en, this message translates to:
+  /// **'comments'**
+  String get hookEventComments;
+
+  /// No description provided for @hookEventMrs.
+  ///
+  /// In en, this message translates to:
+  /// **'merge requests'**
+  String get hookEventMrs;
+
+  /// No description provided for @hookEventPipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'pipeline'**
+  String get hookEventPipeline;
+
+  /// No description provided for @hookEventJob.
+  ///
+  /// In en, this message translates to:
+  /// **'job'**
+  String get hookEventJob;
+
+  /// No description provided for @hookEventSubgroup.
+  ///
+  /// In en, this message translates to:
+  /// **'subgroup'**
+  String get hookEventSubgroup;
 }
 
 class _AppLocalizationsDelegate
