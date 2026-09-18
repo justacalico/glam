@@ -2863,4 +2863,68 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noEvidenceCollected => '未收集到证据';
+
+  @override
+  String get searchGitlab => '搜索 GitLab';
+
+  @override
+  String get projectsIssuesMergeRequestsCodeAnd => '项目、议题、合并请求、代码等。';
+
+  @override
+  String get noResults => '没有结果';
+
+  @override
+  String get markAllDone => '全部标为完成';
+
+  @override
+  String get nothingOnYourPlate => '没有待办事项';
+
+  @override
+  String get markDone => '标为完成';
+
+  @override
+  String get newPage => '新建页面';
+
+  @override
+  String get noWikiPages => '没有 wiki 页面';
+
+  @override
+  String get deletePage => '删除页面？';
+
+  @override
+  String get thisCannotBeUndone => '此操作无法撤销。';
+
+  @override
+  String get content => '内容';
+
+  @override
+  String get markdown => 'Markdown';
+
+  @override
+  String get attachFile => '附加文件';
+
+  @override
+  String get createPage => '创建页面';
+
+  @override
+  String lineColon(Object p0) {
+    return ':$p0';
+  }
+
+  @override
+  String commitMeta(Object p0, Object p1, Object p2) {
+    return '$p0 · $p1 · $p2';
+  }
+
+  @override
+  String get contentRequired => '内容必填';
+
+  @override
+  String get pageSaveFailed => '无法保存页面';
+
+  @override
+  String get editPage => '编辑页面';
+
+  @override
+  String get newWikiPage => '新建 wiki 页面';
 }

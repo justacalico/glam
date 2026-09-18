@@ -29,6 +29,7 @@ import 'package:glam/src/features/search/domain/search_result.dart';
 import 'package:glam/src/features/snippets/domain/snippet.dart';
 import 'package:glam/src/features/snippets/presentation/snippets_screen.dart';
 import 'package:glam/src/app/theme/app_typography.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Global or container-scoped search. Pass [projectId] or [groupId] to
 /// scope the scope list and the endpoint.
@@ -90,7 +91,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             onChanged: (v) =>
                 _debouncer(() => setState(() => _term = v.trim())),
             decoration: InputDecoration(
-              hintText: 'Search',
+              hintText: context.l10n.searchTitle,
               prefixIcon: const Icon(Icons.search, size: 18),
               isDense: true,
               filled: true,
@@ -137,10 +138,10 @@ class _Prompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EmptyState(
+    return EmptyState(
       icon: Icons.search,
-      title: 'Search GitLab',
-      message: 'Projects, issues, merge requests, code, and more.',
+      title: context.l10n.searchGitlab,
+      message: context.l10n.projectsIssuesMergeRequestsCodeAnd,
     );
   }
 }
@@ -165,7 +166,10 @@ class _Results extends ConsumerWidget {
         onRefresh: notifier.refresh,
         padding: const EdgeInsets.symmetric(vertical: Insets.sm),
         separator: Divider(height: 1, color: colors.border),
-        empty: const EmptyState(icon: Icons.search_off, title: 'No results'),
+        empty: EmptyState(
+          icon: Icons.search_off,
+          title: context.l10n.noResults,
+        ),
         itemBuilder: (context, index) =>
             _ResultTile(item: data.items[index], scope: query.scope),
       ),
@@ -252,7 +256,10 @@ class _BlobTile extends StatelessWidget {
                   ),
                 ),
                 if (blob.startLine != null)
-                  Text(':${blob.startLine}', style: theme.textTheme.bodySmall),
+                  Text(
+                    context.l10n.lineColon('${blob.startLine}'),
+                    style: theme.textTheme.bodySmall,
+                  ),
               ],
             ),
             const SizedBox(height: Insets.sm),
@@ -298,8 +305,11 @@ class _CommitTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        '${commit.shortId} · ${commit.authorName ?? ''} '
-        '· ${Format.relative(commit.committedAt)}',
+        context.l10n.commitMeta(
+          commit.shortId,
+          commit.authorName ?? '',
+          Format.relative(commit.committedAt),
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -330,7 +340,10 @@ class _NoteTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        '${note.author?.name ?? ''} · ${Format.relative(note.createdAt)}',
+        context.l10n.tagReleasedAt(
+          note.author?.name ?? '',
+          Format.relative(note.createdAt),
+        ),
         maxLines: 1,
       ),
       dense: true,
@@ -352,7 +365,7 @@ class _MilestoneTile extends StatelessWidget {
       title: Text(milestone.title, style: theme.textTheme.titleSmall),
       subtitle: Text(
         milestone.dueDate != null
-            ? 'Due ${Format.date(milestone.dueDate)}'
+            ? context.l10n.dueOn(Format.date(milestone.dueDate!))
             : '',
       ),
       dense: true,

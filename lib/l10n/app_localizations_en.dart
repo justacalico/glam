@@ -2902,4 +2902,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noEvidenceCollected => 'No evidence collected';
+
+  @override
+  String get searchGitlab => 'Search GitLab';
+
+  @override
+  String get projectsIssuesMergeRequestsCodeAnd =>
+      'Projects, issues, merge requests, code, and more.';
+
+  @override
+  String get noResults => 'No results';
+
+  @override
+  String get markAllDone => 'Mark all done';
+
+  @override
+  String get nothingOnYourPlate => 'Nothing on your plate';
+
+  @override
+  String get markDone => 'Mark done';
+
+  @override
+  String get newPage => 'New page';
+
+  @override
+  String get noWikiPages => 'No wiki pages';
+
+  @override
+  String get deletePage => 'Delete page?';
+
+  @override
+  String get thisCannotBeUndone => 'This cannot be undone.';
+
+  @override
+  String get content => 'Content';
+
+  @override
+  String get markdown => 'Markdown';
+
+  @override
+  String get attachFile => 'Attach file';
+
+  @override
+  String get createPage => 'Create page';
+
+  @override
+  String lineColon(Object p0) {
+    return ':$p0';
+  }
+
+  @override
+  String commitMeta(Object p0, Object p1, Object p2) {
+    return '$p0 · $p1 · $p2';
+  }
+
+  @override
+  String get contentRequired => 'Content is required';
+
+  @override
+  String get pageSaveFailed => 'Could not save the page';
+
+  @override
+  String get editPage => 'Edit page';
+
+  @override
+  String get newWikiPage => 'New wiki page';
 }

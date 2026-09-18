@@ -12,6 +12,7 @@ import 'package:glam/src/core/widgets/filter_menu.dart';
 import 'package:glam/src/core/widgets/paged_list_view.dart';
 import 'package:glam/src/features/todos/application/todos_providers.dart';
 import 'package:glam/src/features/todos/domain/todo.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// The user's to-do queue: pending items with swipe-to-done.
 class TodosScreen extends ConsumerStatefulWidget {
@@ -35,11 +36,11 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-dos'),
+        title: Text(context.l10n.todosTitle),
         actions: [
           if (_state == 'pending')
             IconButton(
-              tooltip: 'Mark all done',
+              tooltip: context.l10n.markAllDone,
               icon: const Icon(Icons.done_all, size: 20),
               onPressed: () => unawaited(_markAllDone(ref)),
             ),
@@ -90,9 +91,9 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                   color: colors.border,
                   indent: Insets.lg,
                 ),
-                empty: const EmptyState(
+                empty: EmptyState(
                   icon: Icons.check_circle_outline,
-                  title: 'Nothing on your plate',
+                  title: context.l10n.nothingOnYourPlate,
                 ),
                 itemBuilder: (context, index) {
                   final todo = data.items[index];
@@ -178,7 +179,7 @@ class _TodoTile extends StatelessWidget {
             ),
             if (pending)
               IconButton(
-                tooltip: 'Mark done',
+                tooltip: context.l10n.markDone,
                 icon: Icon(
                   Icons.check_circle_outline,
                   size: 20,

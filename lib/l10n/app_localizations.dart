@@ -5461,6 +5461,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No evidence collected'**
   String get noEvidenceCollected;
+
+  /// No description provided for @searchGitlab.
+  ///
+  /// In en, this message translates to:
+  /// **'Search GitLab'**
+  String get searchGitlab;
+
+  /// No description provided for @projectsIssuesMergeRequestsCodeAnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects, issues, merge requests, code, and more.'**
+  String get projectsIssuesMergeRequestsCodeAnd;
+
+  /// No description provided for @noResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get noResults;
+
+  /// No description provided for @markAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all done'**
+  String get markAllDone;
+
+  /// No description provided for @nothingOnYourPlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on your plate'**
+  String get nothingOnYourPlate;
+
+  /// No description provided for @markDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark done'**
+  String get markDone;
+
+  /// No description provided for @newPage.
+  ///
+  /// In en, this message translates to:
+  /// **'New page'**
+  String get newPage;
+
+  /// No description provided for @noWikiPages.
+  ///
+  /// In en, this message translates to:
+  /// **'No wiki pages'**
+  String get noWikiPages;
+
+  /// No description provided for @deletePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete page?'**
+  String get deletePage;
+
+  /// No description provided for @thisCannotBeUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get thisCannotBeUndone;
+
+  /// No description provided for @content.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get content;
+
+  /// No description provided for @markdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Markdown'**
+  String get markdown;
+
+  /// No description provided for @attachFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach file'**
+  String get attachFile;
+
+  /// No description provided for @createPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create page'**
+  String get createPage;
+
+  /// No description provided for @lineColon.
+  ///
+  /// In en, this message translates to:
+  /// **':{p0}'**
+  String lineColon(Object p0);
+
+  /// No description provided for @commitMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} · {p1} · {p2}'**
+  String commitMeta(Object p0, Object p1, Object p2);
+
+  /// No description provided for @contentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Content is required'**
+  String get contentRequired;
+
+  /// No description provided for @pageSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the page'**
+  String get pageSaveFailed;
+
+  /// No description provided for @editPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit page'**
+  String get editPage;
+
+  /// No description provided for @newWikiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'New wiki page'**
+  String get newWikiPage;
 }
 
 class _AppLocalizationsDelegate
