@@ -506,5 +506,6 @@
   "stateOpen": "打开",
   "stateClosed": "已关闭",
   "stateAll": "全部",
-  "stateMerged": "已合并"
+  "stateMerged": "已合并",
+  "searchGroups": "搜索群组"
 }

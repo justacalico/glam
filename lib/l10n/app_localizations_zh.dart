@@ -1533,9 +1533,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audit => '审计';
 
   @override
-  String get deleteGroup2 => 'Delete group?';
-
-  @override
   String get noProjectsInThisGroup => '此群组中没有项目';
 
   @override
@@ -1579,4 +1576,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stateMerged => '已合并';
+
+  @override
+  String get searchGroups => '搜索群组';
 }

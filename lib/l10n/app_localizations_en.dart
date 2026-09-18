@@ -1551,9 +1551,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audit => 'Audit';
 
   @override
-  String get deleteGroup2 => 'Delete group?';
-
-  @override
   String get noProjectsInThisGroup => 'No projects in this group';
 
   @override
@@ -1600,4 +1597,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stateMerged => 'Merged';
+
+  @override
+  String get searchGroups => 'Search groups';
 }

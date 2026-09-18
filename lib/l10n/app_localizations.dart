@@ -3050,12 +3050,6 @@ abstract class AppLocalizations {
   /// **'Audit'**
   String get audit;
 
-  /// No description provided for @deleteGroup2.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete group?'**
-  String get deleteGroup2;
-
   /// No description provided for @noProjectsInThisGroup.
   ///
   /// In en, this message translates to:
@@ -3145,6 +3139,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Merged'**
   String get stateMerged;
+
+  /// No description provided for @searchGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Search groups'**
+  String get searchGroups;
 }
 
 class _AppLocalizationsDelegate

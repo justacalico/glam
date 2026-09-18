@@ -61,7 +61,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
               Insets.xs,
             ),
             child: SearchField(
-              hint: 'Search groups',
+              hint: context.l10n.searchGroups,
               onChanged: (v) => setState(() => _query = v),
             ),
           ),

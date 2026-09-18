@@ -492,7 +492,6 @@
   "variables": "Variables",
   "tokens": "Tokens",
   "audit": "Audit",
-  "deleteGroup2": "Delete group?",
   "noProjectsInThisGroup": "No projects in this group",
   "noProjectsSharedWithThisGroup": "No projects shared with this group",
   "noIterations": "No iterations",
@@ -507,5 +506,6 @@
   "stateOpen": "Open",
   "stateClosed": "Closed",
   "stateAll": "All",
-  "stateMerged": "Merged"
+  "stateMerged": "Merged",
+  "searchGroups": "Search groups"
 }
