@@ -33,7 +33,7 @@ class PagesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel('Pages'),
+        SectionLabel(context.l10n.pages),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -102,9 +102,11 @@ class PagesSection extends ConsumerWidget {
                         subtitle: Text(
                           [
                             d.verified ? 'Verified' : 'Unverified',
-                            if (d.autoSslEnabled) 'Auto SSL',
+                            if (d.autoSslEnabled) context.l10n.autoSsl,
                             if (d.expiresAt != null)
-                              'cert expires ${Format.date(d.expiresAt)}',
+                              context.l10n.certExpiresP0(
+                                Format.date(d.expiresAt),
+                              ),
                           ].join(' · '),
                         ),
                         trailing: IconButton(
@@ -204,7 +206,7 @@ class PagesSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.removeDomainConfirm,
-      body: '"$domain" will stop serving this Pages site.',
+      body: context.l10n.p0WillStopServingThisPages(domain),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -225,7 +227,7 @@ class PagesSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.unpublishPages,
-      body: 'The site goes offline until the next Pages deployment.',
+      body: context.l10n.theSiteGoesOfflineUntilThe,
     );
     if (ok != true || !context.mounted) {
       return;

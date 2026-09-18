@@ -39,7 +39,7 @@ class AccessTokensSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Project access tokens')),
+            Expanded(child: SectionLabel(context.l10n.projectAccessTokens)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
               label: Text(context.l10n.actionAdd),
@@ -300,7 +300,7 @@ class AccessTokensSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.revokeAccessToken,
-      body: '"${t.name}" stops working immediately.',
+      body: context.l10n.p0StopsWorkingImmediately(t.name),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -344,7 +344,7 @@ class _AccessTokenTile extends StatelessWidget {
           else if (t.expired)
             'expired'
           else if (t.expiresAt != null)
-            'expires ${Format.date(t.expiresAt!)}',
+            context.l10n.expiresDate(Format.date(t.expiresAt!)),
         ].join(' · '),
       ),
       trailing: t.revoked

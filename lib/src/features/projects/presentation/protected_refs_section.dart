@@ -171,7 +171,7 @@ class ProtectedBranchesSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.unprotectBranch,
-      body: '"${b.name}" will accept pushes again.',
+      body: context.l10n.p0WillAcceptPushesAgain(b.name),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -210,9 +210,9 @@ class _ProtectedBranchTile extends StatelessWidget {
       ),
       subtitle: Text(
         [
-          'push: $push',
-          'merge: $merge',
-          if (branch.allowForcePush) 'force push allowed',
+          context.l10n.pushP0(push),
+          context.l10n.mergeP02(merge),
+          if (branch.allowForcePush) context.l10n.forcePushAllowed,
         ].join(' · '),
       ),
       trailing: IconButton(
@@ -395,7 +395,7 @@ class ProtectedTagsSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.unprotectTag,
-      body: '"${tag.name}" can be created by anyone with push access.',
+      body: context.l10n.p0CanBeCreatedByAnyone(tag.name),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -497,7 +497,7 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
                 ),
                 const SizedBox(height: Insets.md),
                 _LevelPicker(
-                  label: 'Allowed to deploy',
+                  label: context.l10n.allowedToDeploy,
                   value: deployLevel,
                   onChanged: (v) => setState(() => deployLevel = v),
                 ),
@@ -507,7 +507,7 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -516,7 +516,7 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Protect'),
+              child: Text(context.l10n.protect),
             ),
           ],
         ),
@@ -545,8 +545,8 @@ class ProtectedEnvironmentsSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Unprotect environment?',
-      body: '"${env.name}" will accept deploys again.',
+      title: context.l10n.unprotectEnvironment,
+      body: context.l10n.p0WillAcceptDeploysAgain(env.name),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -579,7 +579,7 @@ class _ProtectedEnvironmentTile extends StatelessWidget {
         env.name,
         style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
-      subtitle: Text('deploy: ${deploy.isEmpty ? 'none' : deploy}'),
+      subtitle: Text(context.l10n.deployP0(deploy.isEmpty ? 'none' : deploy)),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, size: 18),
         onPressed: onDelete,
@@ -604,10 +604,10 @@ class FreezePeriodsSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Deploy freezes')),
+            Expanded(child: SectionLabel(context.l10n.deployFreezes)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add freeze'),
+              label: Text(context.l10n.addFreeze),
               onPressed: () => _edit(context, ref, null),
             ),
           ],
@@ -628,11 +628,11 @@ class FreezePeriodsSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.ac_unit_outlined,
-                      title: 'No deploy freezes',
+                      title: context.l10n.noDeployFreezes,
                     ),
                   )
                 : Column(
@@ -662,7 +662,11 @@ class FreezePeriodsSection extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(existing == null ? 'Add deploy freeze' : 'Edit freeze'),
+        title: Text(
+          existing == null
+              ? context.l10n.addDeployFreeze
+              : context.l10n.editFreeze,
+        ),
         content: SizedBox(
           width: 420,
           child: Column(
@@ -671,25 +675,25 @@ class FreezePeriodsSection extends ConsumerWidget {
               TextField(
                 controller: start,
                 autofocus: existing == null,
-                decoration: const InputDecoration(
-                  labelText: 'Freeze start (cron)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.freezeStartCron,
                   hintText: '0 23 * * 5',
                 ),
               ),
               const SizedBox(height: Insets.sm),
               TextField(
                 controller: end,
-                decoration: const InputDecoration(
-                  labelText: 'Freeze end (cron)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.freezeEndCron,
                   hintText: '0 7 * * 1',
                 ),
               ),
               const SizedBox(height: Insets.sm),
               TextField(
                 controller: zone,
-                decoration: const InputDecoration(
-                  labelText: 'Timezone',
-                  hintText: 'UTC',
+                decoration: InputDecoration(
+                  labelText: context.l10n.timezone,
+                  hintText: context.l10n.utc,
                 ),
               ),
             ],
@@ -698,7 +702,7 @@ class FreezePeriodsSection extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -707,7 +711,7 @@ class FreezePeriodsSection extends ConsumerWidget {
               }
               Navigator.pop(context, true);
             },
-            child: const Text('Save'),
+            child: Text(context.l10n.actionSave),
           ),
         ],
       ),
@@ -745,8 +749,11 @@ class FreezePeriodsSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Delete deploy freeze?',
-      body: '"${period.freezeStart}" to "${period.freezeEnd}" will be removed.',
+      title: context.l10n.deleteDeployFreeze,
+      body: context.l10n.p0ToP1WillBeRemoved(
+        period.freezeStart,
+        period.freezeEnd,
+      ),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -779,15 +786,15 @@ class RemoteMirrorsSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Mirroring repositories')),
+            Expanded(child: SectionLabel(context.l10n.mirroringRepositories)),
             TextButton.icon(
               icon: const Icon(Icons.sync, size: 16),
-              label: const Text('Sync now'),
+              label: Text(context.l10n.syncNow),
               onPressed: () => _syncNow(context, ref),
             ),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add'),
+              label: Text(context.l10n.actionAdd),
               onPressed: () => _add(context, ref),
             ),
           ],
@@ -808,11 +815,11 @@ class RemoteMirrorsSection extends ConsumerWidget {
               child: Text('$e'),
             ),
             data: (list) => list.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(Insets.lg),
                     child: EmptyState(
                       icon: Icons.sync_outlined,
-                      title: 'No mirrors',
+                      title: context.l10n.noMirrors,
                     ),
                   )
                 : Column(
@@ -840,7 +847,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Mirror repository'),
+          title: Text(context.l10n.mirrorRepository),
           content: SizedBox(
             width: 420,
             child: Column(
@@ -849,16 +856,16 @@ class RemoteMirrorsSection extends ConsumerWidget {
                 TextField(
                   controller: url,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Git repository URL',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.gitRepositoryUrl,
                     hintText: 'https://user:token@example.com/repo.git',
                   ),
                 ),
                 const SizedBox(height: Insets.sm),
                 TextField(
                   controller: regex,
-                  decoration: const InputDecoration(
-                    labelText: 'Branch regex (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.branchRegexOptional,
                     hintText: r'^(main|release/.*)$',
                   ),
                 ),
@@ -866,7 +873,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text('Only protected branches'),
+                  title: Text(context.l10n.onlyProtectedBranches),
                   value: onlyProtected,
                   onChanged: (v) => setState(() => onlyProtected = v ?? false),
                 ),
@@ -874,7 +881,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: const Text('Keep divergent refs'),
+                  title: Text(context.l10n.keepDivergentRefs),
                   value: keepDivergent,
                   onChanged: (v) => setState(() => keepDivergent = v ?? false),
                 ),
@@ -884,7 +891,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.actionCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -893,7 +900,7 @@ class RemoteMirrorsSection extends ConsumerWidget {
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Add'),
+              child: Text(context.l10n.actionAdd),
             ),
           ],
         ),
@@ -957,8 +964,8 @@ class RemoteMirrorsSection extends ConsumerWidget {
   ) async {
     final ok = await confirmAdminAction(
       context,
-      title: 'Delete mirror?',
-      body: 'Syncing from ${mirror.url} will stop.',
+      title: context.l10n.deleteMirror,
+      body: context.l10n.syncingFromP0WillStop(mirror.url),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -990,12 +997,12 @@ class _RemoteMirrorTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final subtitle = [
-      if (mirror.onlyProtectedBranches) 'protected only',
-      if (mirror.keepDivergentRefs) 'keep divergent',
+      if (mirror.onlyProtectedBranches) context.l10n.protectedOnly,
+      if (mirror.keepDivergentRefs) context.l10n.keepDivergent,
       if (mirror.mirrorBranchRegex != null) mirror.mirrorBranchRegex!,
-      if (mirror.lastError != null) 'error: ${mirror.lastError}',
+      if (mirror.lastError != null) context.l10n.errorP0('${mirror.lastError}'),
       if (mirror.lastUpdateAt != null)
-        'synced ${Format.dateTime(mirror.lastUpdateAt)}',
+        context.l10n.syncedP0(Format.dateTime(mirror.lastUpdateAt!)),
     ].join(' · ');
     return ListTile(
       dense: true,
@@ -1047,7 +1054,7 @@ class _FreezePeriodTile extends StatelessWidget {
       dense: true,
       leading: const Icon(Icons.ac_unit_outlined, size: 18),
       title: Text(
-        '${period.freezeStart} → ${period.freezeEnd}',
+        context.l10n.branchArrow(period.freezeStart, period.freezeEnd),
         style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
       subtitle: Text(period.cronTimezone),
@@ -1087,7 +1094,7 @@ class _ProtectedTagTile extends StatelessWidget {
         tag.name,
         style: const TextStyle(fontFamily: GlamFonts.mono, fontSize: 12.5),
       ),
-      subtitle: Text('create: $create'),
+      subtitle: Text(context.l10n.createP0(create)),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, size: 18),
         onPressed: onDelete,

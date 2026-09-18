@@ -31,7 +31,7 @@ class ApprovalRulesSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Merge request approvals')),
+            Expanded(child: SectionLabel(context.l10n.mergeRequestApprovals)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
               label: Text(context.l10n.actionAdd),
@@ -283,7 +283,7 @@ class ApprovalRulesSection extends ConsumerWidget {
     final ok = await confirmAdminAction(
       context,
       title: context.l10n.deleteApprovalRule,
-      body: '"${rule.name}" no longer gates merges.',
+      body: context.l10n.p0NoLongerGatesMerges(rule.name),
     );
     if (ok != true || !context.mounted) {
       return;
@@ -359,9 +359,9 @@ class _RuleTile extends StatelessWidget {
         [
           if (rule.ruleType != null && rule.ruleType != 'regular')
             rule.ruleType!.replaceAll('_', ' '),
-          '${rule.approvalsRequired} required',
-          '${rule.eligibleApproverCount} eligible',
-          if (rule.containsHiddenGroups) 'includes hidden groups',
+          context.l10n.p0Required(rule.approvalsRequired),
+          context.l10n.p0Eligible(rule.eligibleApproverCount),
+          if (rule.containsHiddenGroups) context.l10n.includesHiddenGroups,
           if (approvers.isNotEmpty) approvers.join(', '),
         ].join(' · '),
         maxLines: 2,

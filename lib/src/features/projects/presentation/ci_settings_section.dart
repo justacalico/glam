@@ -22,7 +22,7 @@ class CiSettingsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel('CI/CD'),
+        SectionLabel(context.l10n.ciCd),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,

@@ -5743,6 +5743,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Commits'**
   String get commitsTitle;
+
+  /// No description provided for @projectAccessTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Project access tokens'**
+  String get projectAccessTokens;
+
+  /// No description provided for @mergeRequestApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge request approvals'**
+  String get mergeRequestApprovals;
+
+  /// No description provided for @p0Required.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} required'**
+  String p0Required(Object p0);
+
+  /// No description provided for @p0Eligible.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} eligible'**
+  String p0Eligible(Object p0);
+
+  /// No description provided for @includesHiddenGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'includes hidden groups'**
+  String get includesHiddenGroups;
+
+  /// No description provided for @deployKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Deploy keys'**
+  String get deployKeys;
+
+  /// No description provided for @writeAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'write access'**
+  String get writeAccess;
+
+  /// No description provided for @addedP0.
+  ///
+  /// In en, this message translates to:
+  /// **'added {p0}'**
+  String addedP0(Object p0);
+
+  /// No description provided for @pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages'**
+  String get pages;
+
+  /// No description provided for @autoSsl.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto SSL'**
+  String get autoSsl;
+
+  /// No description provided for @certExpiresP0.
+  ///
+  /// In en, this message translates to:
+  /// **'cert expires {p0}'**
+  String certExpiresP0(Object p0);
+
+  /// No description provided for @pushP0.
+  ///
+  /// In en, this message translates to:
+  /// **'push: {p0}'**
+  String pushP0(Object p0);
+
+  /// No description provided for @mergeP02.
+  ///
+  /// In en, this message translates to:
+  /// **'merge: {p0}'**
+  String mergeP02(Object p0);
+
+  /// No description provided for @forcePushAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'force push allowed'**
+  String get forcePushAllowed;
+
+  /// No description provided for @allowedToDeploy.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed to deploy'**
+  String get allowedToDeploy;
+
+  /// No description provided for @unprotectEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Unprotect environment?'**
+  String get unprotectEnvironment;
+
+  /// No description provided for @deployP0.
+  ///
+  /// In en, this message translates to:
+  /// **'deploy: {p0}'**
+  String deployP0(Object p0);
+
+  /// No description provided for @deployFreezes.
+  ///
+  /// In en, this message translates to:
+  /// **'Deploy freezes'**
+  String get deployFreezes;
+
+  /// No description provided for @addFreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Add freeze'**
+  String get addFreeze;
+
+  /// No description provided for @noDeployFreezes.
+  ///
+  /// In en, this message translates to:
+  /// **'No deploy freezes'**
+  String get noDeployFreezes;
+
+  /// No description provided for @addDeployFreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Add deploy freeze'**
+  String get addDeployFreeze;
+
+  /// No description provided for @editFreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit freeze'**
+  String get editFreeze;
+
+  /// No description provided for @freezeStartCron.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze start (cron)'**
+  String get freezeStartCron;
+
+  /// No description provided for @freezeEndCron.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze end (cron)'**
+  String get freezeEndCron;
+
+  /// No description provided for @deleteDeployFreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete deploy freeze?'**
+  String get deleteDeployFreeze;
+
+  /// No description provided for @mirroringRepositories.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirroring repositories'**
+  String get mirroringRepositories;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @noMirrors.
+  ///
+  /// In en, this message translates to:
+  /// **'No mirrors'**
+  String get noMirrors;
+
+  /// No description provided for @mirrorRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror repository'**
+  String get mirrorRepository;
+
+  /// No description provided for @gitRepositoryUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Git repository URL'**
+  String get gitRepositoryUrl;
+
+  /// No description provided for @branchRegexOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch regex (optional)'**
+  String get branchRegexOptional;
+
+  /// No description provided for @onlyProtectedBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Only protected branches'**
+  String get onlyProtectedBranches;
+
+  /// No description provided for @keepDivergentRefs.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep divergent refs'**
+  String get keepDivergentRefs;
+
+  /// No description provided for @deleteMirror.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete mirror?'**
+  String get deleteMirror;
+
+  /// No description provided for @protectedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'protected only'**
+  String get protectedOnly;
+
+  /// No description provided for @keepDivergent.
+  ///
+  /// In en, this message translates to:
+  /// **'keep divergent'**
+  String get keepDivergent;
+
+  /// No description provided for @errorP0.
+  ///
+  /// In en, this message translates to:
+  /// **'error: {p0}'**
+  String errorP0(Object p0);
+
+  /// No description provided for @syncedP0.
+  ///
+  /// In en, this message translates to:
+  /// **'synced {p0}'**
+  String syncedP0(Object p0);
+
+  /// No description provided for @createP0.
+  ///
+  /// In en, this message translates to:
+  /// **'create: {p0}'**
+  String createP0(Object p0);
+
+  /// No description provided for @ciCd.
+  ///
+  /// In en, this message translates to:
+  /// **'CI/CD'**
+  String get ciCd;
+
+  /// No description provided for @p0NoLongerGatesMerges.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" no longer gates merges.'**
+  String p0NoLongerGatesMerges(Object p0);
+
+  /// No description provided for @p0WillStopServingThisPages.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" will stop serving this Pages site.'**
+  String p0WillStopServingThisPages(Object p0);
+
+  /// No description provided for @theSiteGoesOfflineUntilThe.
+  ///
+  /// In en, this message translates to:
+  /// **'The site goes offline until the next Pages deployment.'**
+  String get theSiteGoesOfflineUntilThe;
+
+  /// No description provided for @p0WillAcceptPushesAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" will accept pushes again.'**
+  String p0WillAcceptPushesAgain(Object p0);
+
+  /// No description provided for @p0CanBeCreatedByAnyone.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" can be created by anyone with push access.'**
+  String p0CanBeCreatedByAnyone(Object p0);
+
+  /// No description provided for @p0WillAcceptDeploysAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" will accept deploys again.'**
+  String p0WillAcceptDeploysAgain(Object p0);
+
+  /// No description provided for @p0ToP1WillBeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{p0}\" to \"{p1}\" will be removed.'**
+  String p0ToP1WillBeRemoved(Object p0, Object p1);
+
+  /// No description provided for @syncingFromP0WillStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing from {p0} will stop.'**
+  String syncingFromP0WillStop(Object p0);
+
+  /// No description provided for @mergeMethodCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge commit'**
+  String get mergeMethodCommit;
+
+  /// No description provided for @mergeMethodRebase.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebase and merge'**
+  String get mergeMethodRebase;
+
+  /// No description provided for @mergeMethodFf.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast-forward merge'**
+  String get mergeMethodFf;
+
+  /// No description provided for @squashNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not allow'**
+  String get squashNever;
+
+  /// No description provided for @squashAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Require'**
+  String get squashAlways;
+
+  /// No description provided for @squashDefaultOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow, on by default'**
+  String get squashDefaultOn;
+
+  /// No description provided for @squashDefaultOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow, off by default'**
+  String get squashDefaultOff;
+
+  /// No description provided for @templateDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get templateDefault;
 }
 
 class _AppLocalizationsDelegate

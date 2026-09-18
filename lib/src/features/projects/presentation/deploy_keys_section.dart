@@ -28,7 +28,7 @@ class DeployKeysSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Expanded(child: SectionLabel('Deploy keys')),
+            Expanded(child: SectionLabel(context.l10n.deployKeys)),
             TextButton.icon(
               icon: const Icon(Icons.add, size: 16),
               label: Text(context.l10n.actionAdd),
@@ -69,9 +69,9 @@ class DeployKeysSection extends ConsumerWidget {
                           subtitle: Text(
                             [
                               k.fingerprint,
-                              if (k.canPush) 'write access',
+                              if (k.canPush) context.l10n.writeAccess,
                               if (k.createdAt != null)
-                                'added ${Format.date(k.createdAt!)}',
+                                context.l10n.addedP0(Format.date(k.createdAt!)),
                             ].join(' · '),
                             style: const TextStyle(
                               fontFamily: GlamFonts.mono,

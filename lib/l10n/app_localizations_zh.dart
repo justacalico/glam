@@ -3022,4 +3022,206 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get commitsTitle => '提交';
+
+  @override
+  String get projectAccessTokens => '项目访问令牌';
+
+  @override
+  String get mergeRequestApprovals => '合并请求审批';
+
+  @override
+  String p0Required(Object p0) {
+    return '需要 $p0 个';
+  }
+
+  @override
+  String p0Eligible(Object p0) {
+    return '$p0 个可审批';
+  }
+
+  @override
+  String get includesHiddenGroups => '包含隐藏群组';
+
+  @override
+  String get deployKeys => '部署密钥';
+
+  @override
+  String get writeAccess => '写权限';
+
+  @override
+  String addedP0(Object p0) {
+    return '添加于 $p0';
+  }
+
+  @override
+  String get pages => 'Pages';
+
+  @override
+  String get autoSsl => 'Auto SSL';
+
+  @override
+  String certExpiresP0(Object p0) {
+    return '证书到期 $p0';
+  }
+
+  @override
+  String pushP0(Object p0) {
+    return '推送：$p0';
+  }
+
+  @override
+  String mergeP02(Object p0) {
+    return '合并：$p0';
+  }
+
+  @override
+  String get forcePushAllowed => '允许强制推送';
+
+  @override
+  String get allowedToDeploy => '允许部署';
+
+  @override
+  String get unprotectEnvironment => '取消环境保护？';
+
+  @override
+  String deployP0(Object p0) {
+    return '部署：$p0';
+  }
+
+  @override
+  String get deployFreezes => '部署冻结';
+
+  @override
+  String get addFreeze => '添加冻结';
+
+  @override
+  String get noDeployFreezes => '没有部署冻结';
+
+  @override
+  String get addDeployFreeze => '添加部署冻结';
+
+  @override
+  String get editFreeze => '编辑冻结';
+
+  @override
+  String get freezeStartCron => '冻结开始（cron）';
+
+  @override
+  String get freezeEndCron => '冻结结束（cron）';
+
+  @override
+  String get deleteDeployFreeze => '删除部署冻结？';
+
+  @override
+  String get mirroringRepositories => '镜像仓库';
+
+  @override
+  String get syncNow => '立即同步';
+
+  @override
+  String get noMirrors => '没有镜像';
+
+  @override
+  String get mirrorRepository => '镜像仓库';
+
+  @override
+  String get gitRepositoryUrl => 'Git 仓库 URL';
+
+  @override
+  String get branchRegexOptional => '分支正则（可选）';
+
+  @override
+  String get onlyProtectedBranches => '仅受保护分支';
+
+  @override
+  String get keepDivergentRefs => '保留分叉引用';
+
+  @override
+  String get deleteMirror => '删除镜像？';
+
+  @override
+  String get protectedOnly => '仅受保护';
+
+  @override
+  String get keepDivergent => '保留分叉';
+
+  @override
+  String errorP0(Object p0) {
+    return '错误：$p0';
+  }
+
+  @override
+  String syncedP0(Object p0) {
+    return '已同步 $p0';
+  }
+
+  @override
+  String createP0(Object p0) {
+    return '创建：$p0';
+  }
+
+  @override
+  String get ciCd => 'CI/CD';
+
+  @override
+  String p0NoLongerGatesMerges(Object p0) {
+    return '“$p0”不再阻止合并。';
+  }
+
+  @override
+  String p0WillStopServingThisPages(Object p0) {
+    return '“$p0”将停止提供此 Pages 站点。';
+  }
+
+  @override
+  String get theSiteGoesOfflineUntilThe => '站点将离线，直到下一次 Pages 部署。';
+
+  @override
+  String p0WillAcceptPushesAgain(Object p0) {
+    return '“$p0”将再次接受推送。';
+  }
+
+  @override
+  String p0CanBeCreatedByAnyone(Object p0) {
+    return '任何有推送权限的人都可以创建“$p0”。';
+  }
+
+  @override
+  String p0WillAcceptDeploysAgain(Object p0) {
+    return '“$p0”将再次接受部署。';
+  }
+
+  @override
+  String p0ToP1WillBeRemoved(Object p0, Object p1) {
+    return '“$p0”到“$p1”将被移除。';
+  }
+
+  @override
+  String syncingFromP0WillStop(Object p0) {
+    return '从 $p0 同步将停止。';
+  }
+
+  @override
+  String get mergeMethodCommit => '合并提交';
+
+  @override
+  String get mergeMethodRebase => '变基并合并';
+
+  @override
+  String get mergeMethodFf => '快进合并';
+
+  @override
+  String get squashNever => '不允许';
+
+  @override
+  String get squashAlways => '必须';
+
+  @override
+  String get squashDefaultOn => '允许，默认开启';
+
+  @override
+  String get squashDefaultOff => '允许，默认关闭';
+
+  @override
+  String get templateDefault => '默认';
 }

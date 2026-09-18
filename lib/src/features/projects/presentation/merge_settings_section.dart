@@ -36,10 +36,10 @@ class MergeSettingsSection extends ConsumerWidget {
               _ChoiceTile(
                 label: context.l10n.mergeMethod,
                 value: project.mergeMethod ?? 'merge',
-                options: const {
-                  'merge': 'Merge commit',
-                  'rebase_merge': 'Rebase and merge',
-                  'ff': 'Fast-forward merge',
+                options: {
+                  'merge': context.l10n.mergeMethodCommit,
+                  'rebase_merge': context.l10n.mergeMethodRebase,
+                  'ff': context.l10n.mergeMethodFf,
                 },
                 onChanged: (v) => _set(context, ref, mergeMethod: v),
               ),
@@ -47,11 +47,11 @@ class MergeSettingsSection extends ConsumerWidget {
               _ChoiceTile(
                 label: context.l10n.squashCommits,
                 value: project.squashOption ?? 'default_off',
-                options: const {
-                  'never': 'Do not allow',
-                  'always': 'Require',
-                  'default_on': 'Allow, on by default',
-                  'default_off': 'Allow, off by default',
+                options: {
+                  'never': context.l10n.squashNever,
+                  'always': context.l10n.squashAlways,
+                  'default_on': context.l10n.squashDefaultOn,
+                  'default_off': context.l10n.squashDefaultOff,
                 },
                 onChanged: (v) => _set(context, ref, squashOption: v),
               ),
@@ -294,7 +294,7 @@ class _TemplateTile extends StatelessWidget {
       dense: true,
       title: Text(label),
       subtitle: Text(
-        value == null || value!.isEmpty ? 'Default' : value!,
+        value == null || value!.isEmpty ? context.l10n.templateDefault : value!,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

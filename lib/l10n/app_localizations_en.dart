@@ -3062,4 +3062,207 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commitsTitle => 'Commits';
+
+  @override
+  String get projectAccessTokens => 'Project access tokens';
+
+  @override
+  String get mergeRequestApprovals => 'Merge request approvals';
+
+  @override
+  String p0Required(Object p0) {
+    return '$p0 required';
+  }
+
+  @override
+  String p0Eligible(Object p0) {
+    return '$p0 eligible';
+  }
+
+  @override
+  String get includesHiddenGroups => 'includes hidden groups';
+
+  @override
+  String get deployKeys => 'Deploy keys';
+
+  @override
+  String get writeAccess => 'write access';
+
+  @override
+  String addedP0(Object p0) {
+    return 'added $p0';
+  }
+
+  @override
+  String get pages => 'Pages';
+
+  @override
+  String get autoSsl => 'Auto SSL';
+
+  @override
+  String certExpiresP0(Object p0) {
+    return 'cert expires $p0';
+  }
+
+  @override
+  String pushP0(Object p0) {
+    return 'push: $p0';
+  }
+
+  @override
+  String mergeP02(Object p0) {
+    return 'merge: $p0';
+  }
+
+  @override
+  String get forcePushAllowed => 'force push allowed';
+
+  @override
+  String get allowedToDeploy => 'Allowed to deploy';
+
+  @override
+  String get unprotectEnvironment => 'Unprotect environment?';
+
+  @override
+  String deployP0(Object p0) {
+    return 'deploy: $p0';
+  }
+
+  @override
+  String get deployFreezes => 'Deploy freezes';
+
+  @override
+  String get addFreeze => 'Add freeze';
+
+  @override
+  String get noDeployFreezes => 'No deploy freezes';
+
+  @override
+  String get addDeployFreeze => 'Add deploy freeze';
+
+  @override
+  String get editFreeze => 'Edit freeze';
+
+  @override
+  String get freezeStartCron => 'Freeze start (cron)';
+
+  @override
+  String get freezeEndCron => 'Freeze end (cron)';
+
+  @override
+  String get deleteDeployFreeze => 'Delete deploy freeze?';
+
+  @override
+  String get mirroringRepositories => 'Mirroring repositories';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get noMirrors => 'No mirrors';
+
+  @override
+  String get mirrorRepository => 'Mirror repository';
+
+  @override
+  String get gitRepositoryUrl => 'Git repository URL';
+
+  @override
+  String get branchRegexOptional => 'Branch regex (optional)';
+
+  @override
+  String get onlyProtectedBranches => 'Only protected branches';
+
+  @override
+  String get keepDivergentRefs => 'Keep divergent refs';
+
+  @override
+  String get deleteMirror => 'Delete mirror?';
+
+  @override
+  String get protectedOnly => 'protected only';
+
+  @override
+  String get keepDivergent => 'keep divergent';
+
+  @override
+  String errorP0(Object p0) {
+    return 'error: $p0';
+  }
+
+  @override
+  String syncedP0(Object p0) {
+    return 'synced $p0';
+  }
+
+  @override
+  String createP0(Object p0) {
+    return 'create: $p0';
+  }
+
+  @override
+  String get ciCd => 'CI/CD';
+
+  @override
+  String p0NoLongerGatesMerges(Object p0) {
+    return '\"$p0\" no longer gates merges.';
+  }
+
+  @override
+  String p0WillStopServingThisPages(Object p0) {
+    return '\"$p0\" will stop serving this Pages site.';
+  }
+
+  @override
+  String get theSiteGoesOfflineUntilThe =>
+      'The site goes offline until the next Pages deployment.';
+
+  @override
+  String p0WillAcceptPushesAgain(Object p0) {
+    return '\"$p0\" will accept pushes again.';
+  }
+
+  @override
+  String p0CanBeCreatedByAnyone(Object p0) {
+    return '\"$p0\" can be created by anyone with push access.';
+  }
+
+  @override
+  String p0WillAcceptDeploysAgain(Object p0) {
+    return '\"$p0\" will accept deploys again.';
+  }
+
+  @override
+  String p0ToP1WillBeRemoved(Object p0, Object p1) {
+    return '\"$p0\" to \"$p1\" will be removed.';
+  }
+
+  @override
+  String syncingFromP0WillStop(Object p0) {
+    return 'Syncing from $p0 will stop.';
+  }
+
+  @override
+  String get mergeMethodCommit => 'Merge commit';
+
+  @override
+  String get mergeMethodRebase => 'Rebase and merge';
+
+  @override
+  String get mergeMethodFf => 'Fast-forward merge';
+
+  @override
+  String get squashNever => 'Do not allow';
+
+  @override
+  String get squashAlways => 'Require';
+
+  @override
+  String get squashDefaultOn => 'Allow, on by default';
+
+  @override
+  String get squashDefaultOff => 'Allow, off by default';
+
+  @override
+  String get templateDefault => 'Default';
 }
