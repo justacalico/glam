@@ -375,5 +375,6 @@
   "lintCiConfig": "Lint CI 配置",
   "pasteYourGitlabCiYmlHere": "在此粘贴 .gitlab-ci.yml",
   "lintJobsList": "作业：{p0}",
-  "lint": "Lint"
+  "lint": "Lint",
+  "auditEvents": "审计事件"
 }

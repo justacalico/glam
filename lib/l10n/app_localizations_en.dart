@@ -1180,4 +1180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String lintJobsList(String p0) {
     return 'Jobs: $p0';
   }
+
+  @override
+  String get auditEvents => 'Audit events';
 }

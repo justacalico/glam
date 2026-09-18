@@ -2353,6 +2353,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jobs: {p0}'**
   String lintJobsList(String p0);
+
+  /// No description provided for @auditEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit events'**
+  String get auditEvents;
 }
 
 class _AppLocalizationsDelegate

@@ -1168,4 +1168,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String lintJobsList(String p0) {
     return '作业：$p0';
   }
+
+  @override
+  String get auditEvents => '审计事件';
 }

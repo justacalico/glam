@@ -452,5 +452,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "auditEvents": "Audit events"
 }
