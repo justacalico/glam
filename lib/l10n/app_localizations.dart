@@ -4453,6 +4453,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'\"{p0}\" stops running.'**
   String scheduleStopsRunning(Object p0);
+
+  /// No description provided for @jobP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Job #{p0}'**
+  String jobP0(Object p0);
+
+  /// No description provided for @erase.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase'**
+  String get erase;
+
+  /// No description provided for @browseArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse artifacts'**
+  String get browseArtifacts;
+
+  /// No description provided for @keepArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep artifacts'**
+  String get keepArtifacts;
+
+  /// No description provided for @byP0.
+  ///
+  /// In en, this message translates to:
+  /// **'by {p0}'**
+  String byP0(Object p0);
+
+  /// No description provided for @copyTrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy trace'**
+  String get copyTrace;
+
+  /// No description provided for @pipelineP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline #{p0}'**
+  String pipelineP0(Object p0);
+
+  /// No description provided for @stages.
+  ///
+  /// In en, this message translates to:
+  /// **'Stages'**
+  String get stages;
+
+  /// No description provided for @tests.
+  ///
+  /// In en, this message translates to:
+  /// **'Tests'**
+  String get tests;
+
+  /// No description provided for @downstream.
+  ///
+  /// In en, this message translates to:
+  /// **'Downstream'**
+  String get downstream;
+
+  /// No description provided for @noJobsInThisPipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs in this pipeline'**
+  String get noJobsInThisPipeline;
+
+  /// No description provided for @allowedToFail.
+  ///
+  /// In en, this message translates to:
+  /// **'allowed to fail'**
+  String get allowedToFail;
+
+  /// No description provided for @noTestReport.
+  ///
+  /// In en, this message translates to:
+  /// **'No test report'**
+  String get noTestReport;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @errors.
+  ///
+  /// In en, this message translates to:
+  /// **'Errors'**
+  String get errors;
+
+  /// No description provided for @coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage'**
+  String get coverage;
+
+  /// No description provided for @thisPipelineRanWithoutExtraVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'This pipeline ran without extra variables.'**
+  String get thisPipelineRanWithoutExtraVariables;
+
+  /// No description provided for @noDownstreamPipelines.
+  ///
+  /// In en, this message translates to:
+  /// **'No downstream pipelines'**
+  String get noDownstreamPipelines;
+
+  /// No description provided for @thisPipelineDidNotTriggerAny.
+  ///
+  /// In en, this message translates to:
+  /// **'This pipeline did not trigger any child pipelines.'**
+  String get thisPipelineDidNotTriggerAny;
+
+  /// No description provided for @statText.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} {p1}{p2}'**
+  String statText(Object p0, Object p1, Object p2);
+
+  /// No description provided for @durationInSecs.
+  ///
+  /// In en, this message translates to:
+  /// **'in {p0}s'**
+  String durationInSecs(Object p0);
+
+  /// No description provided for @secsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0}s'**
+  String secsValue(Object p0);
+
+  /// No description provided for @refAtSha.
+  ///
+  /// In en, this message translates to:
+  /// **'{p0} @ {p1}'**
+  String refAtSha(Object p0, Object p1);
+
+  /// No description provided for @eraseJobConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase job?'**
+  String get eraseJobConfirm;
+
+  /// No description provided for @deleteArtifactsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete artifacts?'**
+  String get deleteArtifactsConfirm;
+
+  /// No description provided for @deleteArtifactsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete artifacts'**
+  String get deleteArtifactsAction;
+
+  /// No description provided for @eraseJobAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase job'**
+  String get eraseJobAction;
+
+  /// No description provided for @hideRetriedJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide retried jobs'**
+  String get hideRetriedJobs;
+
+  /// No description provided for @showRetriedJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Show retried jobs'**
+  String get showRetriedJobs;
+
+  /// No description provided for @runManualJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Run manual job'**
+  String get runManualJob;
+
+  /// No description provided for @eraseJobBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The trace and artifacts are permanently removed.'**
+  String get eraseJobBody;
+
+  /// No description provided for @deleteArtifactsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked artifacts may remain. Requires a maintainer role.'**
+  String get deleteArtifactsBody;
 }
 
 class _AppLocalizationsDelegate

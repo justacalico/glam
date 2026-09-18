@@ -2303,4 +2303,114 @@ class AppLocalizationsZh extends AppLocalizations {
   String scheduleStopsRunning(Object p0) {
     return '“$p0”将停止运行。';
   }
+
+  @override
+  String jobP0(Object p0) {
+    return '作业 #$p0';
+  }
+
+  @override
+  String get erase => '清除';
+
+  @override
+  String get browseArtifacts => '浏览产物';
+
+  @override
+  String get keepArtifacts => '保留产物';
+
+  @override
+  String byP0(Object p0) {
+    return '由 $p0';
+  }
+
+  @override
+  String get copyTrace => '复制日志';
+
+  @override
+  String pipelineP0(Object p0) {
+    return '流水线 #$p0';
+  }
+
+  @override
+  String get stages => '阶段';
+
+  @override
+  String get tests => '测试';
+
+  @override
+  String get downstream => '下游';
+
+  @override
+  String get noJobsInThisPipeline => '此流水线没有作业';
+
+  @override
+  String get allowedToFail => '允许失败';
+
+  @override
+  String get noTestReport => '没有测试报告';
+
+  @override
+  String get total => '总计';
+
+  @override
+  String get errors => '错误';
+
+  @override
+  String get coverage => '覆盖率';
+
+  @override
+  String get thisPipelineRanWithoutExtraVariables => '此流水线没有使用额外变量运行。';
+
+  @override
+  String get noDownstreamPipelines => '没有下游流水线';
+
+  @override
+  String get thisPipelineDidNotTriggerAny => '此流水线未触发任何子流水线。';
+
+  @override
+  String statText(Object p0, Object p1, Object p2) {
+    return '$p0 $p1$p2';
+  }
+
+  @override
+  String durationInSecs(Object p0) {
+    return '$p0 秒内';
+  }
+
+  @override
+  String secsValue(Object p0) {
+    return '$p0 秒';
+  }
+
+  @override
+  String refAtSha(Object p0, Object p1) {
+    return '$p0 @ $p1';
+  }
+
+  @override
+  String get eraseJobConfirm => '清除作业？';
+
+  @override
+  String get deleteArtifactsConfirm => '删除产物？';
+
+  @override
+  String get deleteArtifactsAction => '删除产物';
+
+  @override
+  String get eraseJobAction => '清除作业';
+
+  @override
+  String get hideRetriedJobs => '隐藏重试作业';
+
+  @override
+  String get showRetriedJobs => '显示重试作业';
+
+  @override
+  String get runManualJob => '运行手动作业';
+
+  @override
+  String get eraseJobBody => '日志和产物将被永久移除。';
+
+  @override
+  String get deleteArtifactsBody => '锁定的产物可能保留。需要维护者权限。';
 }

@@ -2333,4 +2333,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String scheduleStopsRunning(Object p0) {
     return '\"$p0\" stops running.';
   }
+
+  @override
+  String jobP0(Object p0) {
+    return 'Job #$p0';
+  }
+
+  @override
+  String get erase => 'Erase';
+
+  @override
+  String get browseArtifacts => 'Browse artifacts';
+
+  @override
+  String get keepArtifacts => 'Keep artifacts';
+
+  @override
+  String byP0(Object p0) {
+    return 'by $p0';
+  }
+
+  @override
+  String get copyTrace => 'Copy trace';
+
+  @override
+  String pipelineP0(Object p0) {
+    return 'Pipeline #$p0';
+  }
+
+  @override
+  String get stages => 'Stages';
+
+  @override
+  String get tests => 'Tests';
+
+  @override
+  String get downstream => 'Downstream';
+
+  @override
+  String get noJobsInThisPipeline => 'No jobs in this pipeline';
+
+  @override
+  String get allowedToFail => 'allowed to fail';
+
+  @override
+  String get noTestReport => 'No test report';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get errors => 'Errors';
+
+  @override
+  String get coverage => 'Coverage';
+
+  @override
+  String get thisPipelineRanWithoutExtraVariables =>
+      'This pipeline ran without extra variables.';
+
+  @override
+  String get noDownstreamPipelines => 'No downstream pipelines';
+
+  @override
+  String get thisPipelineDidNotTriggerAny =>
+      'This pipeline did not trigger any child pipelines.';
+
+  @override
+  String statText(Object p0, Object p1, Object p2) {
+    return '$p0 $p1$p2';
+  }
+
+  @override
+  String durationInSecs(Object p0) {
+    return 'in ${p0}s';
+  }
+
+  @override
+  String secsValue(Object p0) {
+    return '${p0}s';
+  }
+
+  @override
+  String refAtSha(Object p0, Object p1) {
+    return '$p0 @ $p1';
+  }
+
+  @override
+  String get eraseJobConfirm => 'Erase job?';
+
+  @override
+  String get deleteArtifactsConfirm => 'Delete artifacts?';
+
+  @override
+  String get deleteArtifactsAction => 'Delete artifacts';
+
+  @override
+  String get eraseJobAction => 'Erase job';
+
+  @override
+  String get hideRetriedJobs => 'Hide retried jobs';
+
+  @override
+  String get showRetriedJobs => 'Show retried jobs';
+
+  @override
+  String get runManualJob => 'Run manual job';
+
+  @override
+  String get eraseJobBody => 'The trace and artifacts are permanently removed.';
+
+  @override
+  String get deleteArtifactsBody =>
+      'Locked artifacts may remain. Requires a maintainer role.';
 }
