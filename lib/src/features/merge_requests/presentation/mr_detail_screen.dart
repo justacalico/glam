@@ -480,7 +480,7 @@ class _MergeBoxState extends ConsumerState<_MergeBox> {
               const SizedBox(width: Insets.sm),
               Expanded(
                 child: Text(
-                  mr.mergeabilityLabel,
+                  mr.mergeabilityText(context.l10n),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),

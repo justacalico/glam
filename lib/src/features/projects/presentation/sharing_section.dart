@@ -221,7 +221,7 @@ class _SharedGroupTile extends StatelessWidget {
     return ListTile(
       dense: true,
       leading: Icon(Icons.group_outlined, size: 18, color: colors.inkMuted),
-      title: Text(group.displayName),
+      title: Text(group.localizedName(context.l10n)),
       subtitle: Text(
         [
           group.roleLabel,

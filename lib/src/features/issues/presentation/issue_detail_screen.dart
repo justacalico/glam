@@ -463,7 +463,7 @@ class _Header extends StatelessWidget {
             if (issue.iteration != null)
               _MetaRow(
                 icon: Icons.event_repeat_outlined,
-                label: issue.iteration!.label,
+                label: issue.iteration!.localizedLabel(context.l10n),
                 colors: colors,
                 theme: theme,
               ),

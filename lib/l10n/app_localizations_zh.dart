@@ -3600,4 +3600,82 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get domainUnverified => '未验证';
+
+  @override
+  String levelN(Object p0) {
+    return '级别 $p0';
+  }
+
+  @override
+  String get runnerPaused => '已暂停';
+
+  @override
+  String get runnerProjectType => '项目';
+
+  @override
+  String get mrReadyToMerge => '可以合并';
+
+  @override
+  String get mrCannotMerge => '无法合并';
+
+  @override
+  String get mrHasConflicts => '存在冲突';
+
+  @override
+  String get mrNeedsRebase => '需要变基';
+
+  @override
+  String get mrPipelineMustPass => '流水线必须通过';
+
+  @override
+  String get mrUnresolvedDiscussions => '有未解决的讨论';
+
+  @override
+  String get mrNeedsApproval => '需要审批';
+
+  @override
+  String get mrBlocked => '已阻塞';
+
+  @override
+  String get mrWaitingOnStatusChecks => '等待状态检查';
+
+  @override
+  String get reasonMentioned => '提到了你';
+
+  @override
+  String get reasonApprovalRequired => '需要审批';
+
+  @override
+  String get reasonBuildFailed => '构建失败';
+
+  @override
+  String get reasonMarked => '已标记';
+
+  @override
+  String get reasonSubscribed => '已订阅';
+
+  @override
+  String get issueScopeAssigned => '指派给我';
+
+  @override
+  String get issueScopeCreated => '由我创建';
+
+  @override
+  String get searchScopeCode => '代码';
+
+  @override
+  String get searchScopeUsers => '用户';
+
+  @override
+  String get searchScopeSnippetCode => '代码片段内容';
+
+  @override
+  String iterationN(Object p0) {
+    return '迭代 $p0';
+  }
+
+  @override
+  String groupN(Object p0) {
+    return '群组 $p0';
+  }
 }

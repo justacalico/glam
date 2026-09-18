@@ -3642,4 +3642,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get domainUnverified => 'Unverified';
+
+  @override
+  String levelN(Object p0) {
+    return 'Level $p0';
+  }
+
+  @override
+  String get runnerPaused => 'Paused';
+
+  @override
+  String get runnerProjectType => 'Project';
+
+  @override
+  String get mrReadyToMerge => 'Ready to merge';
+
+  @override
+  String get mrCannotMerge => 'Cannot merge';
+
+  @override
+  String get mrHasConflicts => 'Has conflicts';
+
+  @override
+  String get mrNeedsRebase => 'Needs rebase';
+
+  @override
+  String get mrPipelineMustPass => 'Pipeline must pass';
+
+  @override
+  String get mrUnresolvedDiscussions => 'Unresolved discussions';
+
+  @override
+  String get mrNeedsApproval => 'Needs approval';
+
+  @override
+  String get mrBlocked => 'Blocked';
+
+  @override
+  String get mrWaitingOnStatusChecks => 'Waiting on status checks';
+
+  @override
+  String get reasonMentioned => 'Mentioned you';
+
+  @override
+  String get reasonApprovalRequired => 'Approval required';
+
+  @override
+  String get reasonBuildFailed => 'Build failed';
+
+  @override
+  String get reasonMarked => 'Marked';
+
+  @override
+  String get reasonSubscribed => 'Subscribed';
+
+  @override
+  String get issueScopeAssigned => 'Assigned';
+
+  @override
+  String get issueScopeCreated => 'Created';
+
+  @override
+  String get searchScopeCode => 'Code';
+
+  @override
+  String get searchScopeUsers => 'Users';
+
+  @override
+  String get searchScopeSnippetCode => 'Snippet code';
+
+  @override
+  String iterationN(Object p0) {
+    return 'Iteration $p0';
+  }
+
+  @override
+  String groupN(Object p0) {
+    return 'group $p0';
+  }
 }

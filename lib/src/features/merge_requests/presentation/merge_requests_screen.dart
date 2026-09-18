@@ -59,7 +59,10 @@ class _MergeRequestsScreenState extends ConsumerState<MergeRequestsScreen> {
                 child: SegmentedButton<MrScope>(
                   segments: [
                     for (final scope in MrScope.values)
-                      ButtonSegment(value: scope, label: Text(scope.label)),
+                      ButtonSegment(
+                        value: scope,
+                        label: Text(context.l10n.mrScopeLabel(scope)),
+                      ),
                   ],
                   selected: {filter.scope},
                   onSelectionChanged: (s) => _setFilter(

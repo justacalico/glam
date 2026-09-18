@@ -259,7 +259,7 @@ class _IssueLinkTile extends StatelessWidget {
         title: Text(issue.title, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(
           context.l10n.linkSummary(
-            link.typeLabel,
+            context.l10n.issueLinkType(link.linkType),
             issue.references ?? context.l10n.issueIid(issue.iid),
           ),
           maxLines: 1,

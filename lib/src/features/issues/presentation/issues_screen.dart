@@ -65,7 +65,10 @@ class _IssuesScreenState extends ConsumerState<IssuesScreen> {
                 child: SegmentedButton<IssueScope>(
                   segments: [
                     for (final scope in IssueScope.values)
-                      ButtonSegment(value: scope, label: Text(scope.label)),
+                      ButtonSegment(
+                        value: scope,
+                        label: Text(context.l10n.issueScopeLabel(scope)),
+                      ),
                   ],
                   selected: {filter.scope},
                   onSelectionChanged: (s) => _setFilter(

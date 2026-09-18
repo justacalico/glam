@@ -425,7 +425,7 @@ class _InvitedGroups extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         [
-                          g.displayName,
+                          g.localizedName(context.l10n),
                           g.roleLabel,
                           if (g.expiresAt != null)
                             'expires ${Format.date(g.expiresAt)}',
@@ -584,7 +584,9 @@ class _InvitedGroups extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.removeNamedConfirm(group.displayName)),
+        title: Text(
+          context.l10n.removeNamedConfirm(group.localizedName(context.l10n)),
+        ),
         content: Text(context.l10n.thatGroupLosesAccessToThis),
         actions: [
           TextButton(

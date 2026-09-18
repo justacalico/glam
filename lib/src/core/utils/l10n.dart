@@ -1,7 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:glam/l10n/app_localizations.dart';
 import 'package:glam/src/core/api/api_exception.dart';
+import 'package:glam/src/core/models/iteration.dart';
+import 'package:glam/src/core/models/shared_group.dart';
 import 'package:glam/src/features/boards/domain/board.dart';
+import 'package:glam/src/features/issues/data/issues_repository.dart';
+import 'package:glam/src/features/merge_requests/data/merge_requests_repository.dart';
+import 'package:glam/src/features/merge_requests/domain/merge_request.dart';
 
 export 'package:glam/l10n/app_localizations.dart';
 
@@ -153,4 +158,108 @@ extension BoardListL10n on BoardList {
     'closed' => l10n.stateClosed,
     _ => title,
   };
+}
+
+/// Localized labels for the global issue-list scope segmented control.
+extension IssueScopeL10n on AppLocalizations {
+  String issueScopeLabel(IssueScope scope) => switch (scope) {
+    IssueScope.assigned => issueScopeAssigned,
+    IssueScope.created => issueScopeCreated,
+    IssueScope.all => stateAll,
+  };
+}
+
+/// Localized labels for the global MR-list scope segmented control.
+extension MrScopeL10n on AppLocalizations {
+  String mrScopeLabel(MrScope scope) => switch (scope) {
+    MrScope.all => stateAll,
+    MrScope.assigned => mrScopeAssigned,
+    MrScope.created => mrScopeCreated,
+    MrScope.review => mrScopeReview,
+  };
+}
+
+/// Localized notification reasons — unknown reasons fall back to the raw
+/// API value with underscores stripped.
+extension NotificationReasonL10n on AppLocalizations {
+  String notificationReason(String reason) => switch (reason) {
+    'assigned' => dashIssuesSub,
+    'mentioned' => reasonMentioned,
+    'review_requested' => mrScopeReview,
+    'approval_required' => reasonApprovalRequired,
+    'build_failed' => reasonBuildFailed,
+    'marked' => reasonMarked,
+    'subscribed' => reasonSubscribed,
+    _ => reason.replaceAll('_', ' '),
+  };
+}
+
+/// Localized runner kind labels.
+extension RunnerTypeL10n on AppLocalizations {
+  String runnerTypeLabel(String runnerType) => switch (runnerType) {
+    'instance_type' => shared,
+    'group_type' => group,
+    _ => runnerProjectType,
+  };
+}
+
+/// Localized merge-readiness hint, mirroring `MergeRequest.mergeabilityLabel`.
+extension MergeabilityL10n on MergeRequest {
+  String mergeabilityText(AppLocalizations l10n) =>
+      switch (detailedMergeStatus) {
+        'mergeable' => l10n.mrReadyToMerge,
+        'broken_status' || 'not_open' => l10n.mrCannotMerge,
+        'conflict' => l10n.mrHasConflicts,
+        'need_rebase' => l10n.mrNeedsRebase,
+        'ci_must_pass' || 'ci_still_running' => l10n.mrPipelineMustPass,
+        'discussions_not_resolved' => l10n.mrUnresolvedDiscussions,
+        'draft_status' => l10n.draft,
+        'not_approved' => l10n.mrNeedsApproval,
+        'blocked_status' => l10n.mrBlocked,
+        'external_status_checks' => l10n.mrWaitingOnStatusChecks,
+        'checking' || 'unchecked' => l10n.checking,
+        _ =>
+          mergeStatus == 'can_be_merged'
+              ? l10n.mrReadyToMerge
+              : l10n.statusUnknown,
+      };
+}
+
+/// Localized issue-link type labels.
+extension IssueLinkL10n on AppLocalizations {
+  String issueLinkType(String linkType) => switch (linkType) {
+    'blocks' => blocks,
+    'is_blocked_by' => blockedBy,
+    _ => relatesTo,
+  };
+}
+
+/// Localized search-scope labels, keyed by the API scope name.
+extension SearchScopeL10n on AppLocalizations {
+  String searchScopeLabel(String apiName) => switch (apiName) {
+    'projects' => projectsTitle,
+    'issues' => issuesTitle,
+    'merge_requests' => navMrs,
+    'commits' => commitsTitle,
+    'blobs' => searchScopeCode,
+    'wiki_blobs' => tabWiki,
+    'notes' => hookComments,
+    'milestones' => tabMilestones,
+    'users' => searchScopeUsers,
+    'snippet_titles' => snippetsTitle,
+    _ => searchScopeSnippetCode,
+  };
+}
+
+/// Iteration display label — title or date range pass through, the iid
+/// fallback localizes.
+extension IterationL10n on Iteration {
+  String localizedLabel(AppLocalizations l10n) =>
+      label.startsWith('Iteration ') ? l10n.iterationN(iid) : label;
+}
+
+/// Shared-group display name — the numeric fallback localizes.
+extension SharedGroupL10n on SharedGroup {
+  String localizedName(AppLocalizations l10n) =>
+      groupFullPath ?? groupName ?? l10n.groupN(groupId);
 }

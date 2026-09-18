@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:glam/src/features/projects/domain/protected_branch.dart';
 
 /// A protected tag rule (`/projects/:id/protected_tags`). Tags matching
 /// `name` (a wildcard like `v*`) can only be created by the listed
@@ -8,12 +7,12 @@ class ProtectedTag extends Equatable {
   const ProtectedTag({
     required this.name,
     this.createLevels = const [],
-    this.createLabels = const [],
+    this.createRules = const [],
   });
 
   factory ProtectedTag.fromJson(Map<String, dynamic> json) {
     final levels = <int>[];
-    final labels = <String>[];
+    final rules = <ProtectedTagRule>[];
     if (json['create_access_levels'] is List) {
       for (final l in json['create_access_levels'] as List) {
         if (l is! Map<String, dynamic>) {
@@ -23,18 +22,16 @@ class ProtectedTag extends Equatable {
         if (level != null) {
           levels.add(level);
         }
-        // Group/user-scoped entries carry a null level plus a
-        // description like a group name — keep it readable.
-        labels.add(
-          l['access_level_description'] as String? ??
-              (level == null ? 'Custom' : ProtectedBranch.levelLabel(level)),
-        );
+        rules.add((
+          level: level,
+          description: l['access_level_description'] as String?,
+        ));
       }
     }
     return ProtectedTag(
       name: json['name'] as String? ?? '',
       createLevels: levels,
-      createLabels: labels,
+      createRules: rules,
     );
   }
 
@@ -43,11 +40,15 @@ class ProtectedTag extends Equatable {
   /// Access levels allowed to create matching tags (0/30/40/60).
   final List<int> createLevels;
 
-  /// Display strings per rule — `access_level_description` values.
-  final List<String> createLabels;
+  /// Raw create rules — the UI resolves levels to localized labels.
+  final List<ProtectedTagRule> createRules;
 
   bool get isWildcard => name.contains('*');
 
   @override
   List<Object?> get props => [name];
 }
+
+/// One create rule on a protected tag: either an access level or a
+/// group/user-scoped entry described by [description].
+typedef ProtectedTagRule = ({int? level, String? description});

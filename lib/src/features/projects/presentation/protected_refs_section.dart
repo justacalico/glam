@@ -1085,7 +1085,17 @@ class _ProtectedTagTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final create = tag.createLabels.isEmpty ? '—' : tag.createLabels.join(', ');
+    final create = tag.createRules.isEmpty
+        ? '—'
+        : tag.createRules
+              .map(
+                (r) =>
+                    r.description ??
+                    (r.level == null
+                        ? context.l10n.levelCustom
+                        : context.l10n.protectedLevel(r.level!)),
+              )
+              .join(', ');
     return ListTile(
       dense: true,
       leading: Icon(

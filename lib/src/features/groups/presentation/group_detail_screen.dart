@@ -543,7 +543,7 @@ class _IterationsTab extends ConsumerWidget {
               dense: true,
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.event_repeat_outlined, size: 18),
-              title: Text(it.label),
+              title: Text(it.localizedLabel(context.l10n)),
               subtitle: it.state.isEmpty
                   ? null
                   : Text(

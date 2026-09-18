@@ -6787,6 +6787,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unverified'**
   String get domainUnverified;
+
+  /// No description provided for @levelN.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {p0}'**
+  String levelN(Object p0);
+
+  /// No description provided for @runnerPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get runnerPaused;
+
+  /// No description provided for @runnerProjectType.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get runnerProjectType;
+
+  /// No description provided for @mrReadyToMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to merge'**
+  String get mrReadyToMerge;
+
+  /// No description provided for @mrCannotMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot merge'**
+  String get mrCannotMerge;
+
+  /// No description provided for @mrHasConflicts.
+  ///
+  /// In en, this message translates to:
+  /// **'Has conflicts'**
+  String get mrHasConflicts;
+
+  /// No description provided for @mrNeedsRebase.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs rebase'**
+  String get mrNeedsRebase;
+
+  /// No description provided for @mrPipelineMustPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline must pass'**
+  String get mrPipelineMustPass;
+
+  /// No description provided for @mrUnresolvedDiscussions.
+  ///
+  /// In en, this message translates to:
+  /// **'Unresolved discussions'**
+  String get mrUnresolvedDiscussions;
+
+  /// No description provided for @mrNeedsApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs approval'**
+  String get mrNeedsApproval;
+
+  /// No description provided for @mrBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get mrBlocked;
+
+  /// No description provided for @mrWaitingOnStatusChecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting on status checks'**
+  String get mrWaitingOnStatusChecks;
+
+  /// No description provided for @reasonMentioned.
+  ///
+  /// In en, this message translates to:
+  /// **'Mentioned you'**
+  String get reasonMentioned;
+
+  /// No description provided for @reasonApprovalRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval required'**
+  String get reasonApprovalRequired;
+
+  /// No description provided for @reasonBuildFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Build failed'**
+  String get reasonBuildFailed;
+
+  /// No description provided for @reasonMarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked'**
+  String get reasonMarked;
+
+  /// No description provided for @reasonSubscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribed'**
+  String get reasonSubscribed;
+
+  /// No description provided for @issueScopeAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get issueScopeAssigned;
+
+  /// No description provided for @issueScopeCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get issueScopeCreated;
+
+  /// No description provided for @searchScopeCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get searchScopeCode;
+
+  /// No description provided for @searchScopeUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get searchScopeUsers;
+
+  /// No description provided for @searchScopeSnippetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Snippet code'**
+  String get searchScopeSnippetCode;
+
+  /// No description provided for @iterationN.
+  ///
+  /// In en, this message translates to:
+  /// **'Iteration {p0}'**
+  String iterationN(Object p0);
+
+  /// No description provided for @groupN.
+  ///
+  /// In en, this message translates to:
+  /// **'group {p0}'**
+  String groupN(Object p0);
 }
 
 class _AppLocalizationsDelegate

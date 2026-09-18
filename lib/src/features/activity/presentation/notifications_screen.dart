@@ -85,7 +85,7 @@ class _NotificationTile extends StatelessWidget {
       ),
       subtitle: Text(
         [
-          notification.reasonLabel,
+          context.l10n.notificationReason(notification.reason),
           if (notification.projectPath != null) notification.projectPath!,
           Format.relative(notification.createdAt),
         ].join(' · '),

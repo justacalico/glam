@@ -116,7 +116,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: Insets.sm),
                     child: ChoiceChip(
-                      label: Text(s.label),
+                      label: Text(context.l10n.searchScopeLabel(s.apiName)),
                       selected: _scope == s,
                       onSelected: (_) => setState(() => _scope = s),
                       showCheckmark: false,

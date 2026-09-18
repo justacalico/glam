@@ -484,7 +484,10 @@ class NotificationSection extends ConsumerWidget {
                       items: [
                         for (final e
                             in NotificationSettings.levelLabels.entries)
-                          DropdownMenuItem(value: e.key, child: Text(e.value)),
+                          DropdownMenuItem(
+                            value: e.key,
+                            child: Text(context.l10n.notificationLevel(e.key)),
+                          ),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -842,7 +845,10 @@ class PreferencesSection extends ConsumerWidget {
             hint: Text(context.l10n.miscDefault),
             items: [
               for (final e in options.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
+                DropdownMenuItem(
+                  value: e.key,
+                  child: Text(context.l10n.notificationLevel(e.key)),
+                ),
             ],
             onChanged: (v) {
               if (v != null) {
