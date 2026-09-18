@@ -10,4 +10,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appTitle => 'Glam';
+
+  @override
+  String get settingsLanguage => '语言';
+
+  @override
+  String get languageSystem => '跟随系统';
 }

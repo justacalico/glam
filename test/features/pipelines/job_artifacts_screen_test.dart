@@ -15,11 +15,11 @@ Widget _app(Widget child, GitLabApiClient client) {
   return ProviderScope(
     overrides: [apiClientProvider.overrideWithValue(client)],
     child: MaterialApp(
-    theme: GlamTheme.light(),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: child,
-  ),
+      theme: GlamTheme.light(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    ),
   );
 }
 

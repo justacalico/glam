@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glam/src/app/theme/app_colors.dart';
 import 'package:glam/src/app/theme/app_spacing.dart';
+import 'package:glam/src/app/locale_controller.dart';
 import 'package:glam/src/app/theme/theme_controller.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 import 'package:glam/src/core/widgets/section_header.dart';
 import 'package:glam/src/features/account/application/account_providers.dart';
 import 'package:glam/src/features/account/presentation/account_sections.dart';
@@ -52,6 +54,31 @@ class SettingsScreen extends ConsumerWidget {
                   selected: {themeMode},
                   onSelectionChanged: (modes) =>
                       ref.read(themeModeProvider.notifier).set(modes.first),
+                ),
+              ),
+            ],
+          ),
+          _Section(
+            label: context.l10n.settingsLanguage,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Insets.lg,
+                  vertical: Insets.sm,
+                ),
+                child: SegmentedButton<String>(
+                  segments: [
+                    ButtonSegment(
+                      value: 'system',
+                      icon: const Icon(Icons.brightness_auto),
+                      label: Text(context.l10n.languageSystem),
+                    ),
+                    const ButtonSegment(value: 'en', label: Text('English')),
+                    const ButtonSegment(value: 'zh', label: Text('简体中文')),
+                  ],
+                  selected: {_localeName(ref.watch(localeProvider))},
+                  onSelectionChanged: (names) =>
+                      ref.read(localeProvider.notifier).set(names.first),
                 ),
               ),
             ],
@@ -149,3 +176,9 @@ class _Section extends StatelessWidget {
     );
   }
 }
+
+String _localeName(Locale? locale) => switch (locale?.languageCode) {
+  'en' => 'en',
+  'zh' => 'zh',
+  _ => 'system',
+};

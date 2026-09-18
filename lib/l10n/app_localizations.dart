@@ -103,6 +103,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Glam'**
   String get appTitle;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get languageSystem;
 }
 
 class _AppLocalizationsDelegate

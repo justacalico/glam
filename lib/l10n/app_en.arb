@@ -1,4 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Glam"
+  "appTitle": "Glam",
+  "settingsLanguage": "Language",
+  "languageSystem": "System"
 }

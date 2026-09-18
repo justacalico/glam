@@ -35,4 +35,16 @@ void main() {
     await storage.setCodeWrap(true);
     expect(storage.codeWrap, isTrue);
   });
+
+  test('locale defaults to system and persists', () async {
+    final storage = await makeStorage();
+    expect(storage.localeName, 'system');
+    await storage.setLocaleName('zh');
+    expect(storage.localeName, 'zh');
+  });
+
+  test('reads persisted locale', () async {
+    final storage = await makeStorage(seed: {'glam.locale': 'en'});
+    expect(storage.localeName, 'en');
+  });
 }
