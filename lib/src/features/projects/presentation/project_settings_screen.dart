@@ -27,6 +27,7 @@ import 'package:glam/src/features/projects/presentation/sharing_section.dart';
 import 'package:glam/src/features/projects/presentation/storage_section.dart';
 import 'package:glam/src/features/projects/presentation/triggers_section.dart';
 import 'package:glam/src/features/projects/presentation/webhooks_section.dart';
+import 'package:glam/src/core/utils/l10n.dart';
 
 /// Project settings: general info, feature toggles, archive, and CI/CD
 /// variables.
@@ -40,7 +41,7 @@ class ProjectSettingsScreen extends ConsumerWidget {
     final project = ref.watch(projectProvider(projectId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Project settings')),
+      appBar: AppBar(title: Text(context.l10n.projectSettingsTitle)),
       body: AsyncValueWidget<Project>(
         value: project,
         onRetry: () => ref.invalidate(projectProvider(projectId)),
@@ -171,7 +172,7 @@ class _GeneralSectionState extends ConsumerState<_GeneralSection> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Settings saved')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.settingsSaved)));
       }
     } finally {
       if (mounted) {
@@ -186,7 +187,7 @@ class _GeneralSectionState extends ConsumerState<_GeneralSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('General'),
+        _SectionTitle(context.l10n.sectionGeneral),
         Container(
           padding: const EdgeInsets.all(Insets.lg),
           decoration: BoxDecoration(
@@ -198,37 +199,54 @@ class _GeneralSectionState extends ConsumerState<_GeneralSection> {
             children: [
               TextField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Project name'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldProjectName,
+                ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               TextField(
                 controller: _description,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldDescription,
+                ),
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               DropdownButtonFormField<String>(
                 initialValue: _visibility,
-                decoration: const InputDecoration(labelText: 'Visibility'),
-                items: const [
-                  DropdownMenuItem(value: 'private', child: Text('Private')),
-                  DropdownMenuItem(value: 'internal', child: Text('Internal')),
-                  DropdownMenuItem(value: 'public', child: Text('Public')),
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldVisibility,
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: 'private',
+                    child: Text(context.l10n.visibilityPrivate),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internal',
+                    child: Text(context.l10n.visibilityInternal),
+                  ),
+                  DropdownMenuItem(
+                    value: 'public',
+                    child: Text(context.l10n.visibilityPublic),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _visibility = v!),
               ),
               const SizedBox(height: Insets.md),
               TextField(
                 controller: _topics,
-                decoration: const InputDecoration(
-                  labelText: 'Topics (comma separated)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.fieldTopics,
                 ),
               ),
-              const SizedBox(height: Insets.lg),
+              SizedBox(height: Insets.lg),
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton(
                   onPressed: _saving ? null : _save,
-                  child: Text(_saving ? 'Saving…' : 'Save'),
+                  child: Text(
+                    _saving ? context.l10n.miscSaving : context.l10n.actionSave,
+                  ),
                 ),
               ),
             ],
@@ -251,7 +269,7 @@ class _FeaturesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Features'),
+        _SectionTitle(context.l10n.sectionFeatures),
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
@@ -261,25 +279,25 @@ class _FeaturesSection extends ConsumerWidget {
           child: Column(
             children: [
               _FeatureSwitch(
-                label: 'Issues',
+                label: context.l10n.issuesTitle,
                 value: project.issuesEnabled,
                 onChanged: (v) => _set(ref, issuesEnabled: v),
               ),
               _divider(colors),
               _FeatureSwitch(
-                label: 'Merge requests',
+                label: context.l10n.mrsTitle,
                 value: project.mergeRequestsEnabled,
                 onChanged: (v) => _set(ref, mergeRequestsEnabled: v),
               ),
               _divider(colors),
               _FeatureSwitch(
-                label: 'Wiki',
+                label: context.l10n.tabWiki,
                 value: project.wikiEnabled,
                 onChanged: (v) => _set(ref, wikiEnabled: v),
               ),
               _divider(colors),
               _FeatureSwitch(
-                label: 'Snippets',
+                label: context.l10n.snippetsTitle,
                 value: project.snippetsEnabled,
                 onChanged: (v) => _set(ref, snippetsEnabled: v),
               ),
@@ -388,7 +406,7 @@ class _DangerSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Danger zone'),
+        _SectionTitle(context.l10n.sectionDangerZone),
         Container(
           padding: const EdgeInsets.all(Insets.lg),
           decoration: BoxDecoration(
@@ -403,8 +421,8 @@ class _DangerSection extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       project.archived
-                          ? 'This project is archived.'
-                          : 'Archiving makes the project read-only.',
+                          ? context.l10n.dangerArchived
+                          : context.l10n.dangerArchiveHint,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -418,37 +436,41 @@ class _DangerSection extends ConsumerWidget {
                       }
                       ref.invalidate(projectProvider(project.id.toString()));
                     },
-                    child: Text(project.archived ? 'Unarchive' : 'Archive'),
+                    child: Text(
+                      project.archived
+                          ? context.l10n.actionUnarchive
+                          : context.l10n.actionArchive,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Move the project to another namespace.',
+                      context.l10n.dangerTransferHint,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                   OutlinedButton(
                     onPressed: () => _transfer(context, ref),
-                    child: const Text('Transfer'),
+                    child: Text(context.l10n.actionTransfer),
                   ),
                 ],
               ),
-              const SizedBox(height: Insets.md),
+              SizedBox(height: Insets.md),
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Deleting removes the project and its repository.',
+                      context.l10n.dangerDeleteHint,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                   OutlinedButton(
                     onPressed: () => _deleteProject(context, ref),
-                    child: const Text('Delete'),
+                    child: Text(context.l10n.actionDelete),
                   ),
                 ],
               ),
@@ -467,18 +489,18 @@ class _DangerSection extends ConsumerWidget {
         builder: (context, ref, _) {
           final namespaces = ref.watch(namespacesProvider);
           return AlertDialog(
-            title: Text('Transfer ${project.name}?'),
+            title: Text(context.l10n.transferConfirm(project.name)),
             content: SizedBox(
               width: 360,
               child: namespaces.when(
-                loading: () => const Padding(
+                loading: () => Padding(
                   padding: EdgeInsets.all(Insets.lg),
                   child: Center(child: CircularProgressIndicator()),
                 ),
                 error: (e, _) => Text('$e'),
                 data: (items) => DropdownButtonFormField<GitlabNamespace>(
-                  decoration: const InputDecoration(
-                    labelText: 'New namespace',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldNewNamespace,
                     border: OutlineInputBorder(),
                   ),
                   items: [
@@ -495,11 +517,11 @@ class _DangerSection extends ConsumerWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.actionCancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Transfer'),
+                child: Text(context.l10n.actionTransfer),
               ),
             ],
           );
@@ -533,19 +555,18 @@ class _DangerSection extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${project.pathWithNamespace}?'),
-        content: const Text(
-          'This deletes the project and its repository. On gitlab.com '
-          'deletion is delayed; on self-managed it may be immediate.',
+        title: Text(
+          context.l10n.deleteProjectConfirm(project.pathWithNamespace),
         ),
+        content: Text(context.l10n.deleteProjectBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete project'),
+            child: Text(context.l10n.actionDeleteProject),
           ),
         ],
       ),

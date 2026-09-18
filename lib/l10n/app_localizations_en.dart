@@ -730,4 +730,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forksEmpty => 'No forks yet';
+
+  @override
+  String get projectSettingsTitle => 'Project settings';
+
+  @override
+  String get settingsSaved => 'Settings saved';
+
+  @override
+  String get sectionGeneral => 'General';
+
+  @override
+  String get fieldProjectName => 'Project name';
+
+  @override
+  String get fieldTopics => 'Topics (comma separated)';
+
+  @override
+  String get sectionFeatures => 'Features';
+
+  @override
+  String get sectionDangerZone => 'Danger zone';
+
+  @override
+  String get dangerArchived => 'This project is archived.';
+
+  @override
+  String get dangerArchiveHint => 'Archiving makes the project read-only.';
+
+  @override
+  String get dangerTransferHint => 'Move the project to another namespace.';
+
+  @override
+  String get dangerDeleteHint =>
+      'Deleting removes the project and its repository.';
+
+  @override
+  String transferConfirm(String name) {
+    return 'Transfer $name?';
+  }
+
+  @override
+  String get fieldNewNamespace => 'New namespace';
+
+  @override
+  String deleteProjectConfirm(String path) {
+    return 'Delete $path?';
+  }
+
+  @override
+  String get deleteProjectBody =>
+      'This deletes the project and its repository. On gitlab.com deletion is delayed; on self-managed it may be immediate.';
+
+  @override
+  String get actionDeleteProject => 'Delete project';
+
+  @override
+  String get fieldPathHint => 'Defaults to the name';
+
+  @override
+  String get fieldNamespace => 'Namespace';
+
+  @override
+  String get namespacePersonal => 'Personal namespace';
+
+  @override
+  String get initReadme => 'Initialize with a README';
 }

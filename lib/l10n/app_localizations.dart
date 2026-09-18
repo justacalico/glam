@@ -1507,6 +1507,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No forks yet'**
   String get forksEmpty;
+
+  /// No description provided for @projectSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Project settings'**
+  String get projectSettingsTitle;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get settingsSaved;
+
+  /// No description provided for @sectionGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get sectionGeneral;
+
+  /// No description provided for @fieldProjectName.
+  ///
+  /// In en, this message translates to:
+  /// **'Project name'**
+  String get fieldProjectName;
+
+  /// No description provided for @fieldTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics (comma separated)'**
+  String get fieldTopics;
+
+  /// No description provided for @sectionFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get sectionFeatures;
+
+  /// No description provided for @sectionDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get sectionDangerZone;
+
+  /// No description provided for @dangerArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'This project is archived.'**
+  String get dangerArchived;
+
+  /// No description provided for @dangerArchiveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Archiving makes the project read-only.'**
+  String get dangerArchiveHint;
+
+  /// No description provided for @dangerTransferHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the project to another namespace.'**
+  String get dangerTransferHint;
+
+  /// No description provided for @dangerDeleteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting removes the project and its repository.'**
+  String get dangerDeleteHint;
+
+  /// No description provided for @transferConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer {name}?'**
+  String transferConfirm(String name);
+
+  /// No description provided for @fieldNewNamespace.
+  ///
+  /// In en, this message translates to:
+  /// **'New namespace'**
+  String get fieldNewNamespace;
+
+  /// No description provided for @deleteProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {path}?'**
+  String deleteProjectConfirm(String path);
+
+  /// No description provided for @deleteProjectBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes the project and its repository. On gitlab.com deletion is delayed; on self-managed it may be immediate.'**
+  String get deleteProjectBody;
+
+  /// No description provided for @actionDeleteProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete project'**
+  String get actionDeleteProject;
+
+  /// No description provided for @fieldPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Defaults to the name'**
+  String get fieldPathHint;
+
+  /// No description provided for @fieldNamespace.
+  ///
+  /// In en, this message translates to:
+  /// **'Namespace'**
+  String get fieldNamespace;
+
+  /// No description provided for @namespacePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal namespace'**
+  String get namespacePersonal;
+
+  /// No description provided for @initReadme.
+  ///
+  /// In en, this message translates to:
+  /// **'Initialize with a README'**
+  String get initReadme;
 }
 
 class _AppLocalizationsDelegate

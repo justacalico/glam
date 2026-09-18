@@ -728,4 +728,68 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get forksEmpty => '暂无派生';
+
+  @override
+  String get projectSettingsTitle => '项目设置';
+
+  @override
+  String get settingsSaved => '设置已保存';
+
+  @override
+  String get sectionGeneral => '通用';
+
+  @override
+  String get fieldProjectName => '项目名称';
+
+  @override
+  String get fieldTopics => '主题（逗号分隔）';
+
+  @override
+  String get sectionFeatures => '功能';
+
+  @override
+  String get sectionDangerZone => '危险操作';
+
+  @override
+  String get dangerArchived => '此项目已归档。';
+
+  @override
+  String get dangerArchiveHint => '归档后项目将变为只读。';
+
+  @override
+  String get dangerTransferHint => '将项目转移到其他命名空间。';
+
+  @override
+  String get dangerDeleteHint => '删除将移除项目及其仓库。';
+
+  @override
+  String transferConfirm(String name) {
+    return '转移 $name？';
+  }
+
+  @override
+  String get fieldNewNamespace => '新命名空间';
+
+  @override
+  String deleteProjectConfirm(String path) {
+    return '删除 $path？';
+  }
+
+  @override
+  String get deleteProjectBody => '将删除项目及其仓库。gitlab.com 上删除会延迟执行；自建实例上可能立即删除。';
+
+  @override
+  String get actionDeleteProject => '删除项目';
+
+  @override
+  String get fieldPathHint => '默认使用名称';
+
+  @override
+  String get fieldNamespace => '命名空间';
+
+  @override
+  String get namespacePersonal => '个人命名空间';
+
+  @override
+  String get initReadme => '使用 README 初始化';
 }

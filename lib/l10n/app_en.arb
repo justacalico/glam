@@ -290,5 +290,39 @@
         "type": "String"
       }
     }
+  },
+  "projectSettingsTitle": "Project settings",
+  "settingsSaved": "Settings saved",
+  "sectionGeneral": "General",
+  "fieldProjectName": "Project name",
+  "fieldTopics": "Topics (comma separated)",
+  "sectionFeatures": "Features",
+  "sectionDangerZone": "Danger zone",
+  "dangerArchived": "This project is archived.",
+  "dangerArchiveHint": "Archiving makes the project read-only.",
+  "dangerTransferHint": "Move the project to another namespace.",
+  "dangerDeleteHint": "Deleting removes the project and its repository.",
+  "transferConfirm": "Transfer {name}?",
+  "fieldNewNamespace": "New namespace",
+  "deleteProjectConfirm": "Delete {path}?",
+  "deleteProjectBody": "This deletes the project and its repository. On gitlab.com deletion is delayed; on self-managed it may be immediate.",
+  "actionDeleteProject": "Delete project",
+  "fieldPathHint": "Defaults to the name",
+  "fieldNamespace": "Namespace",
+  "namespacePersonal": "Personal namespace",
+  "initReadme": "Initialize with a README",
+  "@transferConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteProjectConfirm": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
   }
 }
