@@ -37,7 +37,8 @@ test:
     GIT_DEPTH: "1"
   script:
     # The cirruslabs stable image lags behind pubspec's Dart constraint;
-    # upgrade inside the job to the real latest stable.
+    # its checkout is detached, so switch channel before upgrading.
+    - flutter channel stable
     - flutter upgrade
     - flutter pub get
     - flutter analyze
