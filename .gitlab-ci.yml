@@ -19,6 +19,7 @@ stages:
 variables:
   GLAB_ENABLE_CI_AUTOLOGIN: "true"
   GLAB_VERSION: "1.113.0"
+  FLUTTER_VERSION: "3.44.6"
   GIT_DEPTH: "0"
   GIT_STRATEGY: "fetch"
 
@@ -36,10 +37,11 @@ test:
   variables:
     GIT_DEPTH: "1"
   script:
-    # The cirruslabs stable image lags behind pubspec's Dart constraint;
-    # its checkout is detached, so switch channel before upgrading.
-    - flutter channel stable
-    - flutter upgrade
+    # The image's bundled Flutter lags behind pubspec's Dart constraint and
+    # its checkout is detached, so fetch the pinned SDK like the GitHub
+    # workflow does.
+    - git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$CI_PROJECT_DIR/.flutter-sdk"
+    - export PATH="$CI_PROJECT_DIR/.flutter-sdk/bin:$PATH"
     - flutter pub get
     - flutter analyze
     - flutter test
