@@ -54,6 +54,25 @@ flutter run -d linux   # or macos, windows, android, ios
 On first launch, enter your instance URL (e.g. `gitlab.com` or a
 self-hosted host) and a personal access token with `api` scope.
 
+## Install on iPhone or iPad
+
+Every release ships an unsigned `.ipa` that you can sideload with
+[AltStore](https://altstore.io) or SideStore:
+
+1. In AltStore open the **Sources** tab and tap **+**.
+2. Add this source URL:
+
+   ```
+   https://gitlab.com/HttpAnimations/Glam/-/raw/main/altstore/apps.json
+   ```
+
+3. Open the **Glam** source and install the version you want.
+
+You can also open
+`altstore://source?url=https://gitlab.com/HttpAnimations/Glam/-/raw/main/altstore/apps.json`
+on the device to add it in one tap. The source updates itself: each
+release pipeline adds the new `.ipa` to `altstore/apps.json`.
+
 ## Layout
 
 Feature-first under `lib/src/features/<name>/`, each split into

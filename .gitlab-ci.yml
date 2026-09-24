@@ -24,7 +24,7 @@ variables:
   GIT_STRATEGY: "fetch"
 
 default:
-  tags: [linux-true]
+  tags: [linux-truenas]
 
 .github-common: &github-common
   image: alpine:3.19
@@ -166,3 +166,4 @@ github-release-sync:
     - bash scripts/install-glab.sh
   script:
     - bash scripts/sync-from-github.sh
+    - bash scripts/update-altstore.sh
