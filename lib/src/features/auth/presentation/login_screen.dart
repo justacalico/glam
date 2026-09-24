@@ -76,13 +76,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final card = ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 420),
-      child: Container(
+      child: Padding(
         padding: const EdgeInsets.all(Insets.xxl),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: Radii.borderLg,
-          border: Border.all(color: colors.border),
-        ),
         child: Form(
           key: _formKey,
           child: Column(
