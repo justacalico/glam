@@ -12,6 +12,7 @@ import 'package:glam/src/features/auth/application/auth_providers.dart';
 import 'package:glam/src/features/auth/application/session_controller.dart';
 import 'package:glam/src/features/auth/domain/session.dart';
 import 'package:glam/src/features/auth/domain/user.dart';
+import 'package:glam/src/features/auth/presentation/login_screen.dart';
 import 'package:glam/src/features/home/presentation/dashboard_screen.dart';
 import 'package:glam/src/features/issues/presentation/issue_detail_screen.dart';
 import 'package:glam/src/features/merge_requests/presentation/mr_detail_screen.dart';
@@ -40,6 +41,10 @@ void main() {
           const MethodChannel('plugins.flutter.io/path_provider'),
           (call) async => Directory.systemTemp.path,
         );
+  });
+
+  testWidgets('login', (tester) async {
+    await _shot(tester, 'login', const LoginScreen(), size: phone, dark: true);
   });
 
   testWidgets('dashboard', (tester) async {
@@ -211,6 +216,7 @@ Future<void> _shot(
   Widget child, {
   required Size size,
   void Function(FakeDioAdapter adapter)? stubs,
+  bool dark = false,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -229,7 +235,7 @@ Future<void> _shot(
       // The extra Scaffold gives tab-body screens a Material ancestor;
       // full-screen children are Scaffolds themselves and nest fine.
       child: MaterialApp(
-        theme: GlamTheme.light(),
+        theme: dark ? GlamTheme.dark() : GlamTheme.light(),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: child),
