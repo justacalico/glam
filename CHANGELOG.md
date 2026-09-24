@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.0 - 2026-09-24
+#### Features
+- 添加自动更新的 AltStore 源 - (7c6e6e5) - HttpAnimations
+
+- - -
+
 ## v0.1.0 - 2026-09-23
 #### Features
 - 设置页加语言切换，支持跟随系统、英文、简体中文 - (dc4bd2d) - HttpAnimations
