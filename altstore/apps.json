@@ -1,0 +1,57 @@
+{
+  "name": "Glam",
+  "identifier": "dev.glam.source",
+  "apps": [
+    {
+      "name": "Glam",
+      "bundleIdentifier": "dev.glam.glam",
+      "developerName": "HttpAnimations",
+      "subtitle": "A GitLab client for iPhone and iPad.",
+      "localizedDescription": "Glam is a GitLab client that works against gitlab.com or any self-hosted instance. Browse projects, issues, merge requests, pipelines and more over the REST v4 API. Sign in with a personal access token; it stays in the device keychain.",
+      "iconURL": "https://gitlab.com/HttpAnimations/Glam/-/raw/main/altstore/icon.png",
+      "tintColor": "FC6D26",
+      "category": "developer",
+      "screenshotURLs": [
+        "https://gitlab.com/HttpAnimations/Glam/-/raw/main/test/goldens/goldens/dashboard.png",
+        "https://gitlab.com/HttpAnimations/Glam/-/raw/main/test/goldens/goldens/projects.png",
+        "https://gitlab.com/HttpAnimations/Glam/-/raw/main/test/goldens/goldens/issue.png",
+        "https://gitlab.com/HttpAnimations/Glam/-/raw/main/test/goldens/goldens/pipelines.png"
+      ],
+      "versions": [
+        {
+          "version": "nightly",
+          "date": "2026-09-23",
+          "downloadURL": "https://gitlab.com/HttpAnimations/Glam/-/releases/nightly/downloads/glam-ios-arm64-unsigned.ipa",
+          "size": 11062759,
+          "minOSVersion": "14.0"
+        },
+        {
+          "version": "0.1.0",
+          "date": "2026-09-23",
+          "downloadURL": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.1.0/downloads/glam-ios-arm64-unsigned.ipa",
+          "size": 11062758,
+          "minOSVersion": "14.0"
+        }
+      ],
+      "appPermissions": {}
+    }
+  ],
+  "news": [
+    {
+      "identifier": "release-nightly",
+      "title": "Glam nightly",
+      "caption": "Glam nightly for iOS is now available.",
+      "date": "2026-09-23",
+      "url": "https://gitlab.com/HttpAnimations/Glam/-/releases/nightly",
+      "tintColor": "FC6D26"
+    },
+    {
+      "identifier": "release-v0.1.0",
+      "title": "Glam v0.1.0",
+      "caption": "Glam 0.1.0 for iOS is now available.",
+      "date": "2026-09-23",
+      "url": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.1.0",
+      "tintColor": "FC6D26"
+    }
+  ]
+}

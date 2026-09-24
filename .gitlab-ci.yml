@@ -166,3 +166,4 @@ github-release-sync:
     - bash scripts/install-glab.sh
   script:
     - bash scripts/sync-from-github.sh
+    - bash scripts/update-altstore.sh
