@@ -19,16 +19,16 @@
       ],
       "versions": [
         {
-          "version": "0.2.0",
-          "date": "2026-09-24",
-          "downloadURL": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.2.0/downloads/glam-ios-arm64-unsigned.ipa",
-          "size": 11062760,
-          "minOSVersion": "14.0"
-        },
-        {
           "version": "nightly",
           "date": "2026-09-24",
           "downloadURL": "https://gitlab.com/HttpAnimations/Glam/-/releases/nightly/downloads/glam-ios-arm64-unsigned.ipa",
+          "size": 11059815,
+          "minOSVersion": "14.0"
+        },
+        {
+          "version": "0.2.0",
+          "date": "2026-09-24",
+          "downloadURL": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.2.0/downloads/glam-ios-arm64-unsigned.ipa",
           "size": 11062760,
           "minOSVersion": "14.0"
         },
@@ -45,19 +45,19 @@
   ],
   "news": [
     {
-      "identifier": "release-v0.2.0",
-      "title": "Glam v0.2.0",
-      "caption": "Glam 0.2.0 for iOS is now available.",
-      "date": "2026-09-24",
-      "url": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.2.0",
-      "tintColor": "FC6D26"
-    },
-    {
       "identifier": "release-nightly",
       "title": "Glam nightly",
       "caption": "Glam nightly for iOS is now available.",
       "date": "2026-09-24",
       "url": "https://gitlab.com/HttpAnimations/Glam/-/releases/nightly",
+      "tintColor": "FC6D26"
+    },
+    {
+      "identifier": "release-v0.2.0",
+      "title": "Glam v0.2.0",
+      "caption": "Glam 0.2.0 for iOS is now available.",
+      "date": "2026-09-24",
+      "url": "https://gitlab.com/HttpAnimations/Glam/-/releases/v0.2.0",
       "tintColor": "FC6D26"
     },
     {
